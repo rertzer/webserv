@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:44:12 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/26 16:02:07 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/26 16:44:57 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int ConfFile::setServName(char *av)
 		pos = fullText.find ("server_name");
 		if (pos == std::string::npos)
 			continue;
-		// std::cout << "fullText.substr(pos + 12)[0] = " << fullText.substr(pos + 11)[0] << " of string = " << fullText.substr(pos) << std::endl;
 		if (fullText.substr(pos + 11)[0] != ' ') // 12 equal to server_name len
 			continue;
 		servString = fullText.substr(pos + 1);
