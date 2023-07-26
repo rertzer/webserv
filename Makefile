@@ -91,8 +91,8 @@ $(NAME): $(OBJS)
 clean:
 	rm -f $(OBJS)
 	rm -f $(DEPS)
+	rm -fd $(OBJ_DIR)$(SERV_DIR)
 	rm -fd $(OBJ_DIR)
-
 fclean: clean
 	rm -f $(NAME)
 
