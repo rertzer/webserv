@@ -1,0 +1,44 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   note                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/26 09:55:40 by pjay              #+#    #+#             */
+/*   Updated: 2023/07/26 11:25:44 by pjay             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/*
+	AF_INET is the family of address for IPv4
+	Socket programming in C++ is the way of combining or connecting two nodes with each other over a network
+	so that they can communicate easily without losing any data.
+	One socket listen to a port and the other reach the first one to form a connection
+	Socket is something connected to a port  (number 80 in our case)
+	the server just wait, listen to the socket for a client to make a connextion request
+	To make a connection request : the client try to connect to the server, on the server's machine and port
+	The client needs to identify himself
+	Bind in computer programming : bind allows a resource to be sent or received.
+	int bind(int socket, const struct sockaddr *address, socklen_t address_len);
+	(carefull in c++ there is a std::bind but doesnt do the same)
+	For example, one may bind a request to TCP/IP, indicating that it is ready to receive or send information.
+
+	Generally, the application requesting the data is called the client.
+	The application servicing the request is called the server.
+
+	How to make everything work together :
+		- Socket: Create a new communication |Client and Server|
+		- Bind: Attach a local address to a socket |SERVER|
+		- Listen: Announce willingness to accept connections, goes on passive mode and wait for the connection |SERVER|
+		- Connect: Actively attempt to establish a connection |CLIENT|
+		- Accept: Block caller until a connection request arrives, it extract the first connection request on the queue of pending connections(to the listening sockfd), creacte a new connected socket and returns a new file descriptor referring to that socket|SERVER|
+		- Send: Send some data over a connection |Client and Server|
+		- Receive: Receive some data over a connection |Client and Server|
+		- Close: Release the connection
+
+	To understand more about epoll = https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642#:~:text=epoll%20stands%20for%20event%20poll,well%20as%20level%2Dtriggered%20notifications.
+
+	To understand nginx parsing https://www.nginx.com/wp-content/uploads/2018/12/NGINX-Conf-2018-slides_Hulegaard-config-analysis.pdf;
+
+*/
