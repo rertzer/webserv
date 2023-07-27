@@ -1,5 +1,5 @@
 .env
 .swp
-.txt
+#.txt
 .vscode
 **/.vscode

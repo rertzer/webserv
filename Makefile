@@ -11,13 +11,15 @@ OBJ_DIR = ./obj/
 INC_DIR = ./includes
 
 SERV_DIR = server_test/
+SOCKET_DIR = socket/
 
-SOURCES := main.cpp
+SOURCES := 
 
-SERV_SOURCES = ConfFile.cpp
+SERV_SOURCES =
+SOCKET_SOURCES = socket_test.cpp
 
 SOURCES += $(addprefix $(SERV_DIR), $(SERV_SOURCES))
-
+SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
 
 OBJ = $(SOURCES:.cpp=.o)
 
@@ -43,7 +45,9 @@ clean:
 	rm -f $(OBJS)
 	rm -f $(DEPS)
 	rm -fd $(OBJ_DIR)$(SERV_DIR)
+	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
 	rm -fd $(OBJ_DIR)
+
 fclean: clean
 	rm -f $(NAME)
 
