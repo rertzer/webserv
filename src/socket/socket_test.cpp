@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/27 16:14:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/29 12:33:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	main()
 
 	int	server_id = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	
-	if (server_id == 0)
+	if (server_id == -1)
 	{
 		std::cout << "BAD!!! socket failed\n";
 		return 1;
