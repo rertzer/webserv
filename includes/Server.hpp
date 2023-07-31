@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 10:35:40 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/31 11:47:13 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 class Server
 {
 	private:
+	//port ecouter
 		int _servSocket;
 		std::string _servName;
 		struct sockaddr_in _servSide;

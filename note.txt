@@ -27,3 +27,16 @@
 	To understand more about epoll = https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642#:~:text=epoll%20stands%20for%20event%20poll,well%20as%20level%2Dtriggered%20notifications.
 
 	To understand nginx parsing https://www.nginx.com/wp-content/uploads/2018/12/NGINX-Conf-2018-slides_Hulegaard-config-analysis.pdf;
+
+A faire :
+ - Finir le parsing du server
+ - Quand on a recu un message, on cree une stuct avec les infos puis il faut traiter la requete en fonction de la structure.
+
+	class Request{
+		private:
+			int _nPort;
+			std::string _nameServ;
+			std::string _Query;
+			std::sstream _content; // http 1.1 rcp
+	}
+ - Checker la reponse a ma requete.
