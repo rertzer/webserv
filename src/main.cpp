@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 12:28:57 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/31 14:36:06 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,18 @@
 
 int main(int ac, char **av)
 {
-	if (ac != 2 || std::string(av[1]).substr(std::string(av[1]).find(".")) != ".conf")
+	if (ac != 2)
 	{
 		std::cout << "The program need 1 parametter, a .conf parametter" << std::endl;
 		return (1);
+	}
+	std::string arg(av[1]);
+	std::string confExtension = ".conf";
+	size_t extensionPos = arg.length() - confExtension.length();
+	if (arg.compare(extensionPos, confExtension.length(), confExtension) != 0)
+	{
+		std::cout << "The program needs a .conf parameter" << std::endl;
+		return 1;
 	}
 	if (checkConfFile(av[1]) == -1)
 		return (1);
