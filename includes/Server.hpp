@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 11:47:13 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/31 12:25:30 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,7 @@
 class Server
 {
 	private:
-	//port ecouter
-		int _servSocket;
-		std::string _servName;
-		struct sockaddr_in _servSide;
-		std::vector<std::string> _defaultPage;
-		std::string _root;
-		std::map<std::string, std::string> _errorPage;
-		std::map<std::string, std::string> _location; // Reflechir a en faire une classe
-		// Server();
-		// Server operator=(const Server& rhs);
-		// Server(const Server& rhs);
+		int servSocket;
 
 	public :
 		Server(std::vector<std::string> servStrings);

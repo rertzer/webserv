@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 11:42:37 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/31 12:27:46 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,10 @@ Server::Server(std::vector<std::string> servStrings)
 			_errorPage.insert(std::pair<std::string, std::string>(errorNb, errorPage));
 		}
 	}
+
 	printServ(*this);
 }
+
 
 
 Server::~Server()
