@@ -22,7 +22,7 @@
 		- Accept: Block caller until a connection request arrives, it extract the first connection request on the queue of pending connections(to the listening sockfd), creacte a new connected socket and returns a new file descriptor referring to that socket|SERVER|
 		- Send: Send some data over a connection |Client and Server|
 		- Receive: Receive some data over a connection |Client and Server|
-		- Close: Release the connection
+		- Close: Releasegi the connection
 
 	To understand more about epoll = https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642#:~:text=epoll%20stands%20for%20event%20poll,well%20as%20level%2Dtriggered%20notifications.
 
