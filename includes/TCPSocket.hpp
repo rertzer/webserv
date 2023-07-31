@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 09:58:56 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 17:24:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,10 @@ class TCPSocket
 {
 	public:
 		TCPSocket(int p);
+		TCPSocket(TCPSocket const & rhs);
 		TCPSocket();
 		~TCPSocket();
+		TCPSocket &	operator=(TCPSocket const & rhs);
 
 		int			getPort() const;
 		int			getFd() const;
@@ -37,8 +39,6 @@ class TCPSocket
 		int			send(std::string const & msg);
 
 	private:
-		TCPSocket(TCPSocket const & rhs);
-		TCPSocket &	operator=(TCPSocket const & rhs);
 		
 		class	SocketException: public std::exception
 		{
@@ -54,6 +54,7 @@ class TCPSocket
 		socklen_t			socket_addr_length;
 		char				buffer[1024];
 		std::string			msg;
+
 		static const int	backlog;
 		static const int	buffer_size;
 };

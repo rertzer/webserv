@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 12:30:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 17:32:03 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,35 @@
 
 # include <iostream>
 # include <stdlib.h>
+# include <list>
 # include <map>
+# include <algorithm>
 # include <unistd.h>
 # include <sys/epoll.h>
+
 # include "TCPSocket.hpp"
+# include "Event.hpp"
 
 class	Polling
 {
 	public:
 		Polling();
 		~Polling();
-		void	addMotherSocket(TCPSocket &soc);
-		void	addCommectSocket(TCPSocket & soc);
-		void	removeSocket(TCPSocket & soc);
+
+		void	addMotherSocket(int port);
+		void	connect(Event const & ev);
+		void	removeMotherSocket(int fd);
+		void	removeSocket(int fd);
 		int		wait();
 		Event	getEvent(int n) const;
-		Event	getNextEvent() const;
+		Event	nextEvent();
+		TCPSocket &	getSocketByFd(int fd);
+		bool	isMother(Event ev) const;
+
 	private:
-		Polling(const Polling & rhs){};
-		Polling & operator=(const Polling & rhs){};
-		void	addSocket(TCPSocket & soc);
+		Polling & operator=(const Polling & rhs);
+		Polling(const Polling & rhs);
+		void	addSocket(TCPSocket & soc, int events);
 
 		class PollingException: public std::exception
 		{
@@ -43,13 +52,14 @@ class	Polling
 				{
 					return ("Error: polling error");
 				}
-		}
+		};
 		
-		int						epoll_fd;
-		int						events_nb;
-		int						next_event;
-		struct epoll_event 		events[42];
-		map<int, TCPSocket &>	powerstrip;
+		int							epoll_fd;
+		int							events_nb;
+		int							next_event;
+		struct epoll_event 			events[42];
+		std::list<int>				mother_fds;
+		std::map<int, TCPSocket>	powerstrip;
 
 };
 

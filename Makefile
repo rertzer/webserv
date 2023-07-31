@@ -16,7 +16,7 @@ SOCKET_DIR = socket/
 SOURCES := 
 
 SERV_SOURCES =
-SOCKET_SOURCES = TCPSocket.cpp socket_test2.cpp
+SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp socket_test2.cpp
 
 SOURCES += $(addprefix $(SERV_DIR), $(SERV_SOURCES))
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))

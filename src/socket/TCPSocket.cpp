@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 10:01:24 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 17:41:21 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,13 @@ TCPSocket::TCPSocket():socket_fd(0)
 	buffer[0] = '\0';
 }
 
+TCPSocket::TCPSocket(TCPSocket const &rhs)
+{
+	std::cout << "copy constructor fd " << rhs.getFd() << std::endl;
+	*this = rhs;
+}
+
+
 TCPSocket::~TCPSocket()
 {
 	std::cout << "Default TCPSocket destructor fd " << getFd() << std::endl;
@@ -48,6 +55,21 @@ TCPSocket::~TCPSocket()
 		::close(socket_fd);
 		socket_fd = 0;
 	}
+}
+
+TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
+{
+	std::cout << "assign op fd " << rhs.getFd() << std::endl;
+	if (this != &rhs)
+	{
+		socket_fd = rhs.socket_fd;
+		socket_addr = rhs.socket_addr;
+		socket_addr_length = rhs.socket_addr_length;
+		msg = rhs.msg;
+		for (int i = 0; i < 1024; i++)
+			buffer[i] = rhs.buffer[i];
+	}	
+	return *this;
 }
 
 int	TCPSocket::getPort() const
@@ -93,17 +115,6 @@ int	TCPSocket::send(std::string const & msg)
 }
 
 // Private
-TCPSocket::TCPSocket(TCPSocket const &rhs)
-{
-	static_cast<void>(rhs);
-}
-
-TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
-{
-	static_cast<void>(rhs);
-	return *this;
-}
-
 // STATIC CONST
 //max length to which the queue of pending connections may grow
 const int	TCPSocket::backlog = 42;
