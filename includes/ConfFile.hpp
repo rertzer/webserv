@@ -6,17 +6,16 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:22:52 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/26 12:28:15 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/27 11:44:48 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
 #include "macroDef.hpp"
 
 class ConfFile
 {
 	private :
-		struct sockaddr_in _servSide;
-		std::string _servName;
 		ConfFile();
 	public :
 		ConfFile(const ConfFile& rhs);

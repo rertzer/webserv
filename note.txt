@@ -1,16 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   note                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/26 09:55:40 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/26 11:25:44 by pjay             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/*
 	AF_INET is the family of address for IPv4
 	Socket programming in C++ is the way of combining or connecting two nodes with each other over a network
 	so that they can communicate easily without losing any data.
@@ -40,5 +27,3 @@
 	To understand more about epoll = https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642#:~:text=epoll%20stands%20for%20event%20poll,well%20as%20level%2Dtriggered%20notifications.
 
 	To understand nginx parsing https://www.nginx.com/wp-content/uploads/2018/12/NGINX-Conf-2018-slides_Hulegaard-config-analysis.pdf;
-
-*/

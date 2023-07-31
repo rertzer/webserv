@@ -14,10 +14,9 @@ SERV_DIR = server_test/
 
 SOURCES := main.cpp
 
-SERV_SOURCES = ConfFile.cpp
+SERV_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp
 
 SOURCES += $(addprefix $(SERV_DIR), $(SERV_SOURCES))
-
 
 OBJ = $(SOURCES:.cpp=.o)
 
