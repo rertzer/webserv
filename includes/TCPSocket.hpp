@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/29 13:03:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 09:58:56 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class TCPSocket
 		int			getPort() const;
 		int			getFd() const;
 		void		accept(TCPSocket & csoc);
+		void		close();
 		int			read();
 		std::string	getMessage() const;
 		int			send(std::string const & msg);

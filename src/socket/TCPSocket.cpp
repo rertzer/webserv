@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/29 13:49:17 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 10:01:24 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,20 @@ TCPSocket::TCPSocket(int p)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " successfully created\n";
 }
 
-TCPSocket::TCPSocket()
+TCPSocket::TCPSocket():socket_fd(0)
 {
+	std::cout << "Default TCPSocket constructor fd " << getFd() << std::endl;
 	buffer[0] = '\0';
 }
 
 TCPSocket::~TCPSocket()
 {
-	close(socket_fd);
+	std::cout << "Default TCPSocket destructor fd " << getFd() << std::endl;
+	if (socket_fd)
+	{
+		::close(socket_fd);
+		socket_fd = 0;
+	}
 }
 
 int	TCPSocket::getPort() const
@@ -60,6 +66,13 @@ void	TCPSocket::accept(TCPSocket & csoc)
 	if (csoc.socket_fd == -1)
 		throw(SocketException());
 	std::cout << "New connection " << csoc.socket_fd << " from TCP socket " << socket_fd << " on port " << getPort() << std::endl;
+}
+
+void	TCPSocket::close()
+{
+	if (socket_fd)
+		::close(socket_fd);
+	socket_fd = 0;
 }
 
 int	TCPSocket::read()

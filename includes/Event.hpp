@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/29 11:27:43 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 12:13:16 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ class	Event
 
 		TCPSocket &	getSocket();
 		int			getEvents();
-		bool		isEpollin();
-		bool		isEpollout();
+		bool		isIn();
+		bool		isOut();
 
 	private:
 		Event(){};

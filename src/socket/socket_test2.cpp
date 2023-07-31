@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/29 13:55:42 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/07/31 12:30:22 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ int	main()
 		if (epfd == -1)
 		{
 			std::cout << "BAD!! epoll_create failed\n";
-			mother_socket.~TCPSocket();
 			return 1;
 		}
 
@@ -47,9 +46,9 @@ int	main()
 			return 1;
 		}
 		int i = 0;
-		while (i < 16)
+		TCPSocket connect;
+		while (i < 2)
 		{
-			TCPSocket connect;
 			int nfds = epoll_wait(epfd, events, 42, -1);
 			if (nfds == -1)
 			{
@@ -73,7 +72,7 @@ int	main()
 					{
 						std::cout << "BAD!! epoll_ctl  2 failed\n";
 						mother_socket.~TCPSocket();
-						connect.~TCPSocket();
+						connect.close();
 						close(epfd);
 						return 1;
 					}
@@ -94,6 +93,7 @@ int	main()
 						std::string msg = "Hello World! from " + oss.str();
 						int sz = connect.send(msg);
 						std::cout << "hello message sent by " << events[n].data.fd << " of size " << sz << std::endl;
+						connect.close();
 					}
 					else
 					{
