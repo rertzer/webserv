@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 09:28:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 15:46:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class	Polling
 		void	removeMotherSocket(int fd);
 		void	removeSocket(int fd);
 		int		wait();
-		Event	getEvent(int n) const;
+		Event	getEvent(int n);
 		Event	nextEvent();
 		TCPSocket *	getSocketByFd(int fd);
 		bool	isMother(Event ev) const;

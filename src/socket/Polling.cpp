@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 10:41:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 16:55:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ Polling	&	Polling::operator=(Polling const & rhs)
 void	Polling::addMotherSocket(int port)
 {
 	TCPSocket *	soc = new TCPSocket(port);
-	addSocket(soc, EPOLLIN);
+	addSocket(soc, EPOLLIN | EPOLLET);
 	mother_fds.push_back(soc->getFd());
 }
 
@@ -60,7 +60,7 @@ void	Polling::connect(Event const & ev)
 {
 	TCPSocket *	soc = new TCPSocket();
 	powerstrip[ev.getSocketFd()]->accept(*soc);
-	addSocket(soc, EPOLLIN | EPOLLOUT);// | EPOLLET);
+	addSocket(soc, EPOLLIN | EPOLLOUT | EPOLLET);
 	std::cout << "New connection fd: " << soc->getFd() << std::endl;
 }
 
@@ -87,11 +87,11 @@ int	Polling::wait()
 	return events_nb;
 }
 
-Event Polling::getEvent(int n) const
+Event Polling::getEvent(int n)
 {
 	if (n < 0 || n >= events_nb)
 		throw (PollingException());
-	return Event(events[n].data.fd, events[n].events);
+	return Event(events[n].data.fd, events[n].events, powerstrip[events[n].data.fd]);
 }
 
 Event Polling::nextEvent()
@@ -119,7 +119,6 @@ Polling::Polling(Polling const & rhs)
 {
 	static_cast<void>(rhs);
 }
-
 
 void	Polling::addSocket(TCPSocket * soc, int events)
 {

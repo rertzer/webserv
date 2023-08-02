@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 17:41:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 16:40:55 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ TCPSocket::TCPSocket(int p)
 	if (socket_fd == -1)
 		throw(SocketException());
 
+	int	value = 1;
+	setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
 	if (bind(socket_fd, reinterpret_cast<struct sockaddr*>(&socket_addr), sizeof(socket_addr)) == -1)
 		throw(SocketException());
 
@@ -65,7 +67,8 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
 		socket_addr_length = rhs.socket_addr_length;
-		msg = rhs.msg;
+		msg_in = rhs.msg_in;
+		msg_out = rhs.msg_out;
 		for (int i = 0; i < 1024; i++)
 			buffer[i] = rhs.buffer[i];
 	}	
@@ -100,18 +103,35 @@ void	TCPSocket::close()
 int	TCPSocket::read()
 {
 	int	read_size = ::read(socket_fd, buffer, buffer_size);
-	msg = buffer;
+	msg_in = buffer;
 	return read_size;
 }
 
-std::string	TCPSocket::getMessage() const
+std::string	TCPSocket::getMessageIn() const
 {
-	return msg;
+	return msg_in;
 }
 
-int	TCPSocket::send(std::string const & msg)
+std::string TCPSocket::getMessageOut() const
 {
-	return ::send(socket_fd, msg.c_str(), msg.length(), 0);
+	return msg_out;
+}
+
+void	TCPSocket::setMessageIn(std::string msg)
+{
+	msg_in = msg;
+}
+
+void	TCPSocket::setMessageOut(std::string msg)
+{
+	msg_out = msg;
+}
+
+int	TCPSocket::send()
+{
+	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
+	msg_out.clear();
+	return len;
 }
 
 // Private

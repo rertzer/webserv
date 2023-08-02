@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 12:13:55 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 18:19:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@ int	main()
 	{
 		Polling pool;
 		pool.addMotherSocket(8080);
-		int i = 0;
-		while (i < 8)
+		int i = 1;
+		while (i)
 		{
+			i++;
 			std::cout << "Waiting...\n";
 			int nfds = pool.wait();
 			
@@ -36,7 +37,6 @@ int	main()
 			for (int n = 0; n < nfds; n++)
 			{
 				Event 		ev = pool.nextEvent();
-				TCPSocket *	soc = pool.getSocketByFd(ev.getSocketFd());
 
 				std::cout << "\nn is " << n << ", fd is: " << ev.getSocketFd() << " and  events are: " << ev.getEvents() << std::endl;
 				if (ev.getEvents() & EPOLLIN)
@@ -58,34 +58,14 @@ int	main()
 				
 				if (pool.isMother(ev))
 				{
-					i++;
 					if (ev.isIn())
 						pool.connect(ev);
 				}
 				else
 				{
 					std::cout << "events on " << ev.getSocketFd() << std::endl;
-					if (ev.isIn())
-					{
-						std::cout << "isIn event\n";
-						int readsz = soc->read();
-						std::cout << "read: " << readsz << std::endl;
-						std::cout << soc->getMessage() << std::endl;
-					}
-					if (ev.isOut())
-					{
-						std::ostringstream oss;
-						oss << ev.getSocketFd();
-						std::string msg = "Hello World! from " + oss.str();
-						int sz = soc->send(msg);
-						std::cout << "hello message sent by " << ev.getSocketFd() << " of size " << sz << std::endl;
-						//soc->close();
-						//pool.removeSocket(ev.getSocketFd());
-					}
-					else
-					{
-						std::cout << "other event: " << ev.getEvents() << std::endl;
-					}
+					
+					ev.handleEvent();
 				}
 			}
 		}

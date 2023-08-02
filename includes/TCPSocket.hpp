@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 17:24:58 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 13:53:09 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,11 @@ class TCPSocket
 		void		accept(TCPSocket & csoc);
 		void		close();
 		int			read();
-		std::string	getMessage() const;
-		int			send(std::string const & msg);
+		std::string	getMessageIn() const;
+		std::string	getMessageOut() const;
+		void		setMessageIn(std::string msg);
+		void		setMessageOut(std::string msg);
+		int			send();
 
 	private:
 		
@@ -53,7 +56,8 @@ class TCPSocket
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
 		char				buffer[1024];
-		std::string			msg;
+		std::string			msg_in;
+		std::string			msg_out;
 
 		static const int	backlog;
 		static const int	buffer_size;
