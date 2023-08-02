@@ -10,19 +10,24 @@ OBJ_DIR = ./obj/
 
 INC_DIR = ./includes
 
-SERV_DIR = server_test/
+SERV_DIR = server/
+
+PARS_DIR = parser/
 
 SOURCES := main.cpp
 
-SERV_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp
+SERV_SOURCES =
+
+PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
 SOURCES += $(addprefix $(SERV_DIR), $(SERV_SOURCES))
+
+SOURCES += $(addprefix $(PARS_DIR), $(PARS_SOURCES))
 
 OBJ = $(SOURCES:.cpp=.o)
 
 OBJS := $(addprefix $(OBJ_DIR), $(OBJ))
 DEPS = $(OBJS:.o=.d)
-
 
 
 all: $(NAME)
