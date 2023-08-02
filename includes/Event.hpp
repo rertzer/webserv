@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 16:53:44 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 11:46:08 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # include <iostream>
 # include <sys/epoll.h>
 # include "TCPSocket.hpp"
+
+typedef void	(*handlefun)();
 
 class	Event
 {
@@ -27,15 +29,28 @@ class	Event
 		Event &	operator=(Event const & rhs);
 		
 		int			getSocketFd() const;
-		int			getEvents();
+		int			getEvents() const;
 		bool		isIn();
 		bool		isOut();
+		bool		isRdhup();
+		bool		isPri();
+		bool		isErr();
+		bool		isHup();
+		bool		isEt();
+		bool		isOneshot();
+		void		handleEvent();
+		void		handleIn();
+		void		handleOut();
+		void		handleError();
 
 	private:
 		Event();
 
 		int			soc_fd;
 		int			events;
+
+		static const std::vector<int>    ev;
+
 		
 };
 #endif

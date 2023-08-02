@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 17:52:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 10:41:09 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@ Polling::~Polling()
 		close(epoll_fd);
 		epoll_fd = 0;
 	}
+	for (std::map<int, TCPSocket*>::iterator it = powerstrip.begin(); it != powerstrip.end(); it++)
+	{
+		delete (it->second);
+	}
 }
 
 Polling	&	Polling::operator=(Polling const & rhs)
@@ -47,19 +51,17 @@ Polling	&	Polling::operator=(Polling const & rhs)
 
 void	Polling::addMotherSocket(int port)
 {
-	TCPSocket	soc(port);
-	std::cout << "adding socket\n";
+	TCPSocket *	soc = new TCPSocket(port);
 	addSocket(soc, EPOLLIN);
-	std::cout << "push in mfds\n";
-	mother_fds.push_back(soc.getFd());
+	mother_fds.push_back(soc->getFd());
 }
 
 void	Polling::connect(Event const & ev)
 {
-	TCPSocket	soc;
-	powerstrip[ev.getSocketFd()].accept(soc);
-	addSocket(soc, EPOLLIN | EPOLLOUT | EPOLLET);
-	std::cout << "New connection fd: " << soc.getFd() << std::endl;
+	TCPSocket *	soc = new TCPSocket();
+	powerstrip[ev.getSocketFd()]->accept(*soc);
+	addSocket(soc, EPOLLIN | EPOLLOUT);// | EPOLLET);
+	std::cout << "New connection fd: " << soc->getFd() << std::endl;
 }
 
 void	Polling::removeMotherSocket(int fd)
@@ -72,21 +74,19 @@ void	Polling::removeSocket(int fd)
 {
 	if (::epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL))
 		throw (PollingException());
+	delete (powerstrip[fd]);
 	powerstrip.erase(fd);
 }
 
 int	Polling::wait()
 {
-	std::cout << "c\n";
 	events_nb = ::epoll_wait(epoll_fd, events, 42, -1);
-	std::cout << "d\n";
 	if (events_nb == -1)
 		throw (PollingException());
 	next_event = 0;
 	return events_nb;
 }
 
-//Event(TCPSocket &, int events) 
 Event Polling::getEvent(int n) const
 {
 	if (n < 0 || n >= events_nb)
@@ -101,7 +101,7 @@ Event Polling::nextEvent()
 	return ev;
 }
 
-TCPSocket &	Polling::getSocketByFd(int fd)
+TCPSocket *	Polling::getSocketByFd(int fd)
 {
 	return powerstrip[fd];
 }
@@ -121,13 +121,12 @@ Polling::Polling(Polling const & rhs)
 }
 
 
-void	Polling::addSocket(TCPSocket & soc, int events)
+void	Polling::addSocket(TCPSocket * soc, int events)
 {
 	struct epoll_event ev;
 	ev.events = events;
-	ev.data.fd = soc.getFd();
-	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, soc.getFd(), &ev))
+	ev.data.fd = soc->getFd();
+	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, soc->getFd(), &ev))
 		throw (PollingException());
-	powerstrip[soc.getFd()] = soc;
-	std::cout << "fd in powerstrip " << powerstrip[soc.getFd()].getFd() << std::endl;
+	powerstrip[soc->getFd()] = soc;
 }

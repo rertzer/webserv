@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/31 17:32:03 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/02 09:28:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,13 @@ class	Polling
 		int		wait();
 		Event	getEvent(int n) const;
 		Event	nextEvent();
-		TCPSocket &	getSocketByFd(int fd);
+		TCPSocket *	getSocketByFd(int fd);
 		bool	isMother(Event ev) const;
 
 	private:
 		Polling & operator=(const Polling & rhs);
 		Polling(const Polling & rhs);
-		void	addSocket(TCPSocket & soc, int events);
+		void	addSocket(TCPSocket * soc, int events);
 
 		class PollingException: public std::exception
 		{
@@ -59,7 +59,7 @@ class	Polling
 		int							next_event;
 		struct epoll_event 			events[42];
 		std::list<int>				mother_fds;
-		std::map<int, TCPSocket>	powerstrip;
+		std::map<int, TCPSocket *>	powerstrip;
 
 };
 
