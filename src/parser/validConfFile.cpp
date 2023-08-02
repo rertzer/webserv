@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 09:54:11 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 10:37:39 by pjay             ###   ########.fr       */
+/*   Updated: 2023/07/31 14:40:14 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,10 @@ static int checkBracket(std::ifstream& conf);
 int checkConfFile(char *av)
 {
 	std::ifstream conf;
-	try
+	conf.open(av, std::fstream::in);
+	if (!conf.is_open())
 	{
-		conf.open(av, std::fstream::in);
-	}
-	catch (std::exception &e)
-	{
-		std::cout << e.what() << std::endl;
+		std::cout << "The file " << av << " doesn't exist" << std::endl;
 		return (-1);
 	}
 	if (checkBracket(conf) == 0)

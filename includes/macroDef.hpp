@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 09:48:08 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/02 11:43:48 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 #include <exception>
 #include <vector>
 #include <map>
+#include <string>
+#include <cstring>
+#include <cstddef>
+#include <bits/stdc++.h>
 
 
 //CFNG stand for Conf File No Good
