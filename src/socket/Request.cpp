@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 13:54:00 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 15:00:59 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,11 @@ Request::Request(int p, std::string msg):port(p), status(200)
 		//content
 		std::string cont = msg.substr(h + 4);
 		//content << cont;
+		if (static_cast<unsigned int>(h + 4) < msg.length())
+		{
+			std::string cont = msg.substr(h + 4);
+			content << cont;
+		}
 		//trailer
 	}
 	catch (const Request::RequestException &e)
@@ -80,14 +85,26 @@ const std::string	& Request::getProtocol() const
 	return protocol;
 }
 
-const std::string	& Request::getMethod() const
+const std::string &	Request::getMethod() const
 {
 	return method;
 }
 
-const std::string	 & Request::getQuery() const
+const std::string &	Request::getQuery() const
 {
 	return query;
+}
+
+std::string	Request::getField(std::string const & name) const
+{
+	std::map<std::string, std::string>::const_iterator it = header.find(name);
+	if (it == header.end())
+	{
+		it = trailer.find(name);
+		if (it == trailer.end())
+			return "";
+	}
+	return it->second;
 }
 
 const std::map<std::string, std::string> &	Request::getHeader() const
@@ -105,7 +122,7 @@ const std::stringstream &	Request::getContent() const
 	return content;
 }
 
-void	Request::addField(std::string field)
+void	Request::addField(std::string const & field)
 {
 	int	k = field.find(":");
 	if (k == -1 || k == 0)
@@ -166,6 +183,6 @@ std::ostream &	operator<<(std::ostream & ost, Request const & rhs)
 	ost << "Trailer:\n";
 	for (std::map<std::string, std::string>::const_iterator it = rhs.getTrailer().begin(); it != rhs.getTrailer().end(); it++)
 		ost << "\t" << it->first << ": " << it->second << "\n";
-	ost << "content: " << rhs.getContent() << "\n";
+	ost << "content: " << rhs.getContent().str() << "\n";
 	return ost;
 }

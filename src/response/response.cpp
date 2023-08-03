@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 14:55:14 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 15:22:35 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,20 +44,31 @@ std::string readFile(std::string file)
 	}
 }
 
-std::string sendResponse(Request& req, Server& serv)
+Server findTheServ(Request& req, std::vector<Server>& serv)
 {
-	std::string fileStr = readFile(serv.getRoot() + req.getQuery());
+	for (std::vector<Server>::it serv.begin(); it != serv.end(); it++)
+	{
+		
+	}
+}
+
+//chercher le field host
+std::string sendResponse(Request& req, std::vector<Server>& serv)
+{
+
+	Server foundServ = findTheServ(req, serv);
+	std::string fileStr = (foundServ.getRoot() + req.getQuery());
 	if (req.getQuery() == '/')
 	{
-		for (std::vector<std::string>::iterator it = serv.getDefaultPage().begin(); it != serv.getDefaultPage().end(); it++)
+		for (std::vector<std::string>::iterator it = foundServ.getDefaultPage().begin(); it != serv.getDefaultPage().end(); it++)
 		{
-			if ((fileStr = readFile(serv.getRoot() + *it)) != "404")
+			if ((fileStr = readFile(foundServ.getRoot() + *it)) != "404")
 				break;
 		}
 	}
 	else if (fileStr == "404")
 	{
-		fileStr = readFile(serv.getRoot() + serv.getErrorPage("404"));
+		fileStr = readFile(foundServ.getRoot() + foundServ.getErrorPage("404"));
 		return ("HTTP/1.1 404 Not Found\r\n\r\n"
 					"Content-Type: text/html\r\n"
 					"Content-Length: " + std::to_string(fileStr.length()) + "\r\n"

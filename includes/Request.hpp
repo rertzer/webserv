@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 13:53:28 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 14:59:17 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ class Request
 		const std::map<std::string, std::string> &		getHeader() const;
 		const std::map<std::string, std::string> &		getTrailer() const;
 		const std::stringstream &						getContent() const;
-		void											addField(std::string field);
+		std::string										getField(std::string const & name) const;
+		void											addField(std::string const & field);
 		//std::string	getHost() const;
 	private:
 		//Request();
