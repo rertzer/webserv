@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 10:33:03 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 11:34:12 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,29 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <map>
 #include <sys/epoll.h>
 #include <iostream>
 
 #include "Polling.hpp"
+#include "Server.hpp"
 
-int	testSocket()
+int	testSocket(std::vector<Server> serv)
 {
 	try
 	{
 		Polling pool;
-		pool.addMotherSocket(8080);
+		std::map<int, int>	unique_port;
+		for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++)
+		{
+			std::vector<int>	vp = it->getListenPort();
+			for (std::vector<int>::iterator jt = vp.begin(); jt != vp.end(); jt++)
+				unique_port[*jt] = 1;
+		}
+		for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
+			pool.addMotherSocket(it->first);
+
 		int i = 1;
 		while (i)
 		{

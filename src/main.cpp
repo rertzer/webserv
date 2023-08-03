@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 10:29:05 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 11:03:19 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 int main(int ac, char **av)
 {
+	// Quand pas de param il faut fournir un fichier par defaut
 	if (ac != 2)
 	{
 		std::cout << "The program need 1 parametter, a .conf parametter" << std::endl;
@@ -34,6 +35,6 @@ int main(int ac, char **av)
 	std::vector<Server> serv;
 	if (fillServ(av[1], serv) == -1)
 		return (1);
-	std::cout << "-------------TEST SOCKE------------------T" << std::endl << std::endl;
-	testSocket();
+	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
+	testSocket(serv);
 }

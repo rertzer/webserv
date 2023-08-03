@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 11:17:36 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 13:53:28 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,20 @@ class Request
 
 		Request &	operator=(Request const & rhs);
 
+		int												getPort() const;
+		int												getStatus() const;
+		const std::string &								getProtocol() const;
+		const std::string &								getMethod() const;
+		const std::string &								getQuery() const;
+		const std::map<std::string, std::string> &		getHeader() const;
+		const std::map<std::string, std::string> &		getTrailer() const;
+		const std::stringstream &						getContent() const;
+		void											addField(std::string field);
 		//std::string	getHost() const;
 	private:
 		//Request();
 		void	setControlData(std::string cdata);
+		void	setHeader(std::string head);
 
 		class	RequestException: public std::exception
 		{
@@ -50,5 +60,7 @@ class Request
 		std::string							protocol; //
 		std::stringstream					content; //
 };
+
+std::ostream &	operator<<(std::ostream & ost, Request const & rhs);
 
 #endif
