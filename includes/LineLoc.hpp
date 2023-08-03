@@ -1,30 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ConfFile.hpp                                       :+:      :+:    :+:   */
+/*   LineLoc.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/26 11:22:52 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/26 12:28:15 by pjay             ###   ########.fr       */
+/*   Created: 2023/08/02 11:02:41 by pjay              #+#    #+#             */
+/*   Updated: 2023/08/02 11:21:01 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "macroDef.hpp"
 
-class ConfFile
+class LineLoc
 {
 	private :
-		struct sockaddr_in _servSide;
-		std::string _servName;
-		ConfFile();
+		std::string _cmd;
+		std::vector <std::string> _args;
 	public :
-		ConfFile(const ConfFile& rhs);
-		ConfFile operator=(const ConfFile& rhs);
-		~ConfFile();
-		ConfFile(char *av);
-		int setServName(char *av);
-		int setServSide(char *av);
-		std::string getServName();
-		struct sockaddr_in getServSide();
+		std::string& getCmd();
+		std::vector <std::string>& getArgs();
+		LineLoc(std::string line);
 };

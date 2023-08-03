@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_test.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/07/29 12:33:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 10:24:13 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <netinet/in.h>
 #include <iostream>
 
-int	main()
+int	testSocket()
 {
 	struct sockaddr_in	server_addr, peer_addr;
 	server_addr.sin_family = AF_INET;
@@ -27,7 +27,7 @@ int	main()
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 
 	int	server_id = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-	
+
 	if (server_id == -1)
 	{
 		std::cout << "BAD!!! socket failed\n";
@@ -48,7 +48,7 @@ int	main()
 	}
 
 	std::cout << "server_id is : " << server_id << std::endl;
-	
+
 	socklen_t	peer_addr_size = sizeof(peer_addr);
 
 	struct epoll_event ev, events[42];
@@ -131,7 +131,7 @@ int	main()
 					std::string msg = "Hello World! from " + oss.str();
 					int sz = send(events[n].data.fd, msg.c_str(), msg.length(), 0);
 					std::cout << "hello message sent by " << events[n].data.fd << " of size " << sz << std::endl;
-					
+
 				}
 				else
 				{

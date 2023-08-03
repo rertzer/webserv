@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_test2.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 18:19:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 10:33:03 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 #include "Polling.hpp"
 
-int	main()
+int	testSocket()
 {
 	try
 	{
@@ -31,9 +31,9 @@ int	main()
 			i++;
 			std::cout << "Waiting...\n";
 			int nfds = pool.wait();
-			
+
 			std::cout << "\n\n\nepoll collected " << nfds << " fd's. i is " << i << std::endl;
-	
+
 			for (int n = 0; n < nfds; n++)
 			{
 				Event 		ev = pool.nextEvent();
@@ -55,7 +55,7 @@ int	main()
 					std::cout << "EPOLLET\n";
 				if (ev.getEvents() & EPOLLONESHOT)
 					std::cout << "EPOLLONESHOT\n";
-				
+
 				if (pool.isMother(ev))
 				{
 					if (ev.isIn())
@@ -64,7 +64,7 @@ int	main()
 				else
 				{
 					std::cout << "events on " << ev.getSocketFd() << std::endl;
-					
+
 					ev.handleEvent();
 				}
 			}

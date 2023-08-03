@@ -6,19 +6,34 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/26 16:45:26 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 10:29:05 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ConfFile.hpp"
+#include "Server.hpp"
+#include "macroDef.hpp"
+
 
 int main(int ac, char **av)
 {
-	if (ac != 2 || std::string(av[1]).substr(std::string(av[1]).find(".")) != ".conf")
+	if (ac != 2)
 	{
 		std::cout << "The program need 1 parametter, a .conf parametter" << std::endl;
 		return (1);
 	}
-	ConfFile confFile(av[1]);
-	std::cout << "Name of the server is " << confFile.getServName() << std::endl;
+	std::string arg(av[1]);
+	std::string confExtension = ".conf";
+	size_t extensionPos = arg.length() - confExtension.length();
+	if (arg.compare(extensionPos, confExtension.length(), confExtension) != 0)
+	{
+		std::cout << "The program needs a .conf parameter" << std::endl;
+		return 1;
+	}
+	if (checkConfFile(av[1]) == -1)
+		return (1);
+	std::vector<Server> serv;
+	if (fillServ(av[1], serv) == -1)
+		return (1);
+	std::cout << "-------------TEST SOCKE------------------T" << std::endl << std::endl;
+	testSocket();
 }

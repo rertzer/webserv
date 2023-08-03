@@ -1,16 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   note                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/26 09:55:40 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/26 11:25:44 by pjay             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-/*
 	AF_INET is the family of address for IPv4
 	Socket programming in C++ is the way of combining or connecting two nodes with each other over a network
 	so that they can communicate easily without losing any data.
@@ -35,10 +22,285 @@
 		- Accept: Block caller until a connection request arrives, it extract the first connection request on the queue of pending connections(to the listening sockfd), creacte a new connected socket and returns a new file descriptor referring to that socket|SERVER|
 		- Send: Send some data over a connection |Client and Server|
 		- Receive: Receive some data over a connection |Client and Server|
-		- Close: Release the connection
+		- Close: Releasegi the connection
 
 	To understand more about epoll = https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642#:~:text=epoll%20stands%20for%20event%20poll,well%20as%20level%2Dtriggered%20notifications.
 
 	To understand nginx parsing https://www.nginx.com/wp-content/uploads/2018/12/NGINX-Conf-2018-slides_Hulegaard-config-analysis.pdf;
 
-*/
+A faire :
+ - Finir le parsing du server
+ - Quand on a recu un message, on cree une stuct avec les infos puis il faut traiter la requete en fonction de la structure.
+
+	class Request{
+		private:
+			int _nPort; //
+			std::string _nameServ;
+			std::string _methode;
+			std::string _Query;
+			std::sstream _content; // http 1.1 rcp par exemple un fichier
+	}
+ - Query ? page requise
+ - Requete cgi
+
+ - Checker la reponse a ma requete.
+
+This is what the server receive : TCP socket 4 on port 8080 successfully created
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 2
+
+n is 0, fd is: 4 and  events are: 1
+EPOLLIN
+Default TCPSocket constructor fd 0
+New connection 5 from TCP socket 4 on port 8080
+New connection fd: 5
+Waiting...
+
+
+
+epoll collected 2 fd's. i is 3
+
+n is 0, fd is: 5 and  events are: 4
+EPOLLOUT
+events on 5
+execute handle fun 4
+Connection fd 5: Nothing to send
+
+n is 1, fd is: 4 and  events are: 1
+EPOLLIN
+Default TCPSocket constructor fd 0
+New connection 6 from TCP socket 4 on port 8080
+New connection fd: 6
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 4
+
+n is 0, fd is: 6 and  events are: 4
+EPOLLOUT
+events on 6
+execute handle fun 4
+Connection fd 6: Nothing to send
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 5
+
+n is 0, fd is: 5 and  events are: 5
+EPOLLIN
+EPOLLOUT
+events on 5
+execute handle fun 1
+fd 5 is reading
+GET / HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+
+Control data:
+GET / HTTP/1.1
+Headers:
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+epoll collected 1 fd's. i is 2
+
+n is 0, fd is: 4 and  events are: 1
+EPOLLIN
+Default TCPSocket constructor fd 0
+New connection 5 from TCP socket 4 on port 8080
+New connection fd: 5
+Waiting...
+
+
+
+epoll collected 2 fd's. i is 3
+
+n is 0, fd is: 5 and  events are: 4
+EPOLLOUT
+events on 5
+execute handle fun 4
+Connection fd 5: Nothing to send
+
+n is 1, fd is: 4 and  events are: 1
+EPOLLIN
+Default TCPSocket constructor fd 0
+New connection 6 from TCP socket 4 on port 8080
+New connection fd: 6
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 4
+
+n is 0, fd is: 6 and  events are: 4
+EPOLLOUTepoll collected 1 fd's. i is 2
+
+n is 0, fd is: 4 and  events are: 1
+EPOLLIN
+Default TCPSocket constructor fd 0
+New connection 5 from TCP socket 4 on port 8080
+New connection fd: 5
+Waiting...
+
+
+
+epoll collected 2 fd's. i is 3
+
+n is 0, fd is: 5 and  events are: 4
+EPOLLOUT
+events on 5
+execute handle fun 4
+Connection fd 5: Nothing to send
+
+n is 1, fd is: 4 and  events are: 1
+EPOLLIN
+Default TCPSocket constructor fd 0
+New connection 6 from TCP socket 4 on port 8080
+New connection fd: 6
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 4
+
+n is 0, fd is: 6 and  events are: 4
+EPOLLOUT
+events on 6
+execute handle fun 4
+Connection fd 6: Nothing to send
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 5
+
+n is 0, fd is: 5 and  events are: 5
+EPOLLIN
+EPOLLOUT
+events on 5
+execute handle fun 1
+fd 5 is reading
+GET / HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+events on 6
+execute handle fun 4
+Connection fd 6: Nothing to send
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 5
+
+n is 0, fd is: 5 and  events are: 5
+EPOLLIN
+EPOLLOUT
+events on 5
+execute handle fun 1
+fd 5 is reading
+GET / HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Content:
+
+
+execute handle fun 4
+Connection fd 5 send 73 char
+Waiting...
+
+
+
+epoll collected 1 fd's. i is 6
+
+n is 0, fd is: 6 and  events are: 5
+EPOLLIN
+EPOLLOUT
+events on 6
+execute handle fun 1
+fd 6 is reading
+GET /favicon.ico HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+sec-ch-ua-platform: "Linux"
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: http://localhost:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+
+Control data:
+GET /favicon.ico HTTP/1.1
+Headers:
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36
+sec-ch-ua-platform: "Linux"
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: http://localhost:8080/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9

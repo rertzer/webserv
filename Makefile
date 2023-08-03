@@ -10,22 +10,25 @@ OBJ_DIR = ./obj/
 
 INC_DIR = ./includes
 
-SERV_DIR = server_test/
 SOCKET_DIR = socket/
 
-SOURCES := 
+PARS_DIR = parser_serv/
 
-SERV_SOURCES =
+SOURCES := main.cpp
+
 SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp socket_test2.cpp
 
-SOURCES += $(addprefix $(SERV_DIR), $(SERV_SOURCES))
+PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
+
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
+
+SOURCES += $(addprefix $(PARS_DIR), $(PARS_SOURCES))
 
 OBJ = $(SOURCES:.cpp=.o)
 
 OBJS := $(addprefix $(OBJ_DIR), $(OBJ))
-DEPS = $(OBJS:.o=.d)
 
+DEPS = $(OBJS:.o=.d)
 
 
 all: $(NAME)
@@ -44,7 +47,7 @@ $(NAME): $(OBJS)
 clean:
 	rm -f $(OBJS)
 	rm -f $(DEPS)
-	rm -fd $(OBJ_DIR)$(SERV_DIR)
+	rm -fd $(OBJ_DIR)$(PARS_DIR)
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
 	rm -fd $(OBJ_DIR)
 
