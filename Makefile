@@ -12,7 +12,7 @@ INC_DIR = ./includes
 
 SERV_DIR = server/
 
-PARS_DIR = parser/
+PARS_DIR = parser_serv/
 
 SOURCES := main.cpp
 

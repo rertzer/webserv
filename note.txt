@@ -34,9 +34,13 @@ A faire :
 
 	class Request{
 		private:
-			int _nPort;
+			int _nPort; //
 			std::string _nameServ;
+			std::string _methode;
 			std::string _Query;
-			std::sstream _content; // http 1.1 rcp
+			std::sstream _content; // http 1.1 rcp par exemple un fichier 
 	}
+ - Query ? page requise
+ - Requete cgi
+
  - Checker la reponse a ma requete.
