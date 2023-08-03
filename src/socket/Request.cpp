@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 15:09:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 15:47:23 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ void	Request::setHeader(std::string head)
 	while (start != -1)
 	{
 		end = head.find("\r\n", start);
-		std::string	field = head.substr(start, end - (start));
+		std::string	field = head.substr(start, end - start);
 		addField(field);
 		if (end == -1)
 			start = end;

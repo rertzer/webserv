@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 14:55:17 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 16:01:21 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,11 @@ void	Event::handleIn()
 	Request req(soc_fd, soc->getMessageIn());
 	std::string h = req.getField("Host");
 	std::cout << "Host is : $" << h << "$" << std::endl;
+	std::cout << "Accept-Encoding values:\n";
+	h = req.getField("Accept-Encoding");
+	std::vector<std::string> acc = splitCsv(h);
+	for (unsigned int i = 0; i < acc.size(); i++)
+		std::cout << acc[i] << std::endl;
 	soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");	
 }
 
