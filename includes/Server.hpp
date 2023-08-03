@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 11:06:28 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:11:32 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Server
 	public :
 		Server(std::vector<std::string> servStrings);
 		~Server();
+		std::vector<std::string>& getDefaultPage();
 		std::string& getServName();
 		//int& getServSocket();
 		//struct sockaddr_in& getServSide();

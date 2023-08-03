@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 11:34:12 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:50:02 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ int	testSocket(std::vector<Server> serv)
 				else
 				{
 					std::cout << "events on " << ev.getSocketFd() << std::endl;
-
 					ev.handleEvent();
 				}
 			}

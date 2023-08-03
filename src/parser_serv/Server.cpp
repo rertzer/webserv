@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 10:51:59 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/03 14:11:29 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,4 +133,9 @@ std::vector<Location>& Server::getAllLocation()
 std::vector<int>& Server::getListenPort()
 {
 	return (_nPort);
+}
+
+std::vector<std::string>& Server::getDefaultPage()
+{
+	return (_defaultPage);
 }

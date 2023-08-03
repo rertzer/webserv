@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Event.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 18:11:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:30:14 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class	Event
 		~Event();
 
 		Event &	operator=(Event const & rhs);
-		
+
 		int			getSocketFd() const;
 		TCPSocket *	getSocket() const;
 		int			getEvents() const;
