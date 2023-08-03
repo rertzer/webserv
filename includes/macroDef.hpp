@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 11:32:46 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:27:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,3 +37,4 @@ class Server;
 int checkConfFile(char *av);
 int fillServ(char *av , std::vector<Server>& serv);
 int	testSocket(std::vector<Server>);
+void	stringTrim(std::string & str);

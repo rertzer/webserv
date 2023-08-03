@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 11:34:12 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:54:21 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int	testSocket(std::vector<Server> serv)
 			for (int n = 0; n < nfds; n++)
 			{
 				Event 		ev = pool.nextEvent();
+				ev.setServ(serv);
 
 				std::cout << "\nn is " << n << ", fd is: " << ev.getSocketFd() << " and  events are: " << ev.getEvents() << std::endl;
 				if (ev.getEvents() & EPOLLIN)

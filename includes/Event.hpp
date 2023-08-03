@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 18:11:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:54:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 
 # include "TCPSocket.hpp"
 # include "Request.hpp"
+# include "Server.hpp"
 
 class	Event
 {
@@ -33,6 +34,7 @@ class	Event
 		int			getSocketFd() const;
 		TCPSocket *	getSocket() const;
 		int			getEvents() const;
+		void		setServ(std::vector<Server> s);
 		bool		isIn() const;
 		bool		isOut() const;
 		bool		isRdhup() const;
@@ -52,6 +54,7 @@ class	Event
 		int			soc_fd;
 		int			events;
 		TCPSocket *	soc;
+		std::vector<Server> serv;
 
 		typedef void	(Event::*handlefun)();
 		static const int    ev[7];

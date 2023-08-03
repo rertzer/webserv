@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 18:10:30 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:55:17 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ TCPSocket *	Event::getSocket() const
 int	Event::getEvents() const
 {
 	return events;
+}
+
+void	Event::setServ(std::vector<Server> s)
+{
+	serv = s;
 }
 
 bool	Event::isIn() const
@@ -115,6 +120,8 @@ void	Event::handleIn()
 	soc->read();
 	std::cout << soc->getMessageIn() << std::endl;
 	Request req(soc_fd, soc->getMessageIn());
+	std::string h = req.getField("Host");
+	std::cout << "Host is : $" << h << "$" << std::endl;
 	soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");	
 }
 

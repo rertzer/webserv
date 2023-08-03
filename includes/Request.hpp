@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 13:48:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 14:12:38 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ class Request
 		const std::map<std::string, std::string> &		getHeader() const;
 		const std::map<std::string, std::string> &		getTrailer() const;
 		const std::stringstream &						getContent() const;
-		void											addField(std::string field);
+		std::string										getField(std::string const & name) const;
+		void											addField(std::string const & field);
 		//std::string	getHost() const;
 	private:
 		//Request();
