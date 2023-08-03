@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 14:12:57 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 15:09:48 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,8 @@ void	Request::addField(std::string const & field)
 		throw (RequestException());
 	std::string	key = field.substr(0, k);
 	std::string	val = field.substr(k + 1);
+	stringTrim(val);
+	stringTrim(key);
 	// A FAIRE tester pas d'esapce avant le :
 	if (header.find(key) == header.end())
 		header[key] = val;

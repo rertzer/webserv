@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 14:12:38 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 15:11:50 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # include <iostream>
 # include <sstream>
 # include <exception>
+
+# include "macroDef.hpp"
 
 class Request
 {
