@@ -6,29 +6,37 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 18:17:01 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 10:08:18 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request(int p, std::string msg):port(p), status(400)
+Request::Request(int p, std::string msg):port(p), status(200)
 {
-	//control data
-	int c = msg.find("\r\n");
-	if (c == -1)
-		return;
-	std::string cdata = msg.substr(0, c);
-	//headers
-int	h = msg.find("\r\n\r\n", c + 1);
-	if (h == -1)
-		return;
-	std::string head = msg.substr(c, h);
-	//content
-	std::string cont = msg.substr(h);
-	//trailer
-	status = 200;
-	std::cout << "Control data:\n" << cdata << "\nHeaders: " << head << "\nContent: " << cont << std::endl;
+	try
+	{
+		//control data
+		int c = msg.find("\r\n");
+		if (c == -1)
+			throw (RequestException());
+		setControlData(msg.substr(0, c));
+		//headers
+		int	h = msg.find("\r\n\r\n", c + 1);
+		if (h == -1)
+			throw (RequestException());
+		std::string head = msg.substr(c + 1, h - c - 1);
+		//content
+		std::string cont = msg.substr(h);
+		//trailer
+		std::cout << "method: $" << method << "$\nquery: $" << query << "$\nprotocol: $" << protocol << "$" <<std::endl;
+		std::cout << "\nHeaders: " << head << "\nContent: " << cont << std::endl;
+	}
+	catch (const Request::RequestException &e)
+	{
+		std::cerr << e.what() << std::endl;
+		status = 400;
+	}
 }
 
 Request::Request(Request const & rhs)
@@ -54,4 +62,16 @@ Request &	Request::operator=(Request const & rhs)
 	return *this;
 }
 
+void	Request::setControlData(std::string cdata)
+{
+	int	m = cdata.find(" ");
+	if (m == -1)
+		throw (RequestException());
+	method = cdata.substr(0, m);
 
+	int	q = cdata.find(" ", m + 1);
+	if (q == -1)
+		throw (RequestException());
+	query = cdata.substr(m + 1, q - m - 1);
+	protocol = cdata.substr(q + 1);
+}
