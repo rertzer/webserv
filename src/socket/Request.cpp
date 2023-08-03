@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 10:08:18 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 13:48:02 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,3 +75,5 @@ void	Request::setControlData(std::string cdata)
 	query = cdata.substr(m + 1, q - m - 1);
 	protocol = cdata.substr(q + 1);
 }
+
+

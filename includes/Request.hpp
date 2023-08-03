@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 09:50:54 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/03 11:17:36 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Request
 	private:
 		//Request();
 		void	setControlData(std::string cdata);
-		
+
 		class	RequestException: public std::exception
 		{
 			public:
@@ -42,13 +42,13 @@ class Request
 				}
 		};
 		int									port;
-		int									status;
-		std::map<std::string, std::string>	header;
-		std::map<std::string, std::string>	trailer;
+		int									status; //
+		std::map<std::string, std::string>	header; //
+		std::map<std::string, std::string>	trailer; //
 		std::string							method;
 		std::string							query;
-		std::string							protocol;
-		std::stringstream					content;
+		std::string							protocol; //
+		std::stringstream					content; //
 };
 
 #endif
