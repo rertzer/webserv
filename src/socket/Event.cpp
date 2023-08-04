@@ -6,11 +6,12 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/04 09:45:01 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/04 14:30:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Event.hpp"
+
 
 //Public
 Event::Event(int sfd, int e, TCPSocket* s):soc_fd(sfd), events(e), soc(s)
@@ -127,8 +128,10 @@ void	Event::handleIn()
 	std::vector<std::string> acc = splitCsv(h);
 	for (unsigned int i = 0; i < acc.size(); i++)
 		std::cout << acc[i] << std::endl;
-	//soc->setMessageOut(sendResponse(req, this->serv));
-	soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");
+	Response res(req, this->serv);
+	std::cout << "Reponse = " << res.getResponse() << std::endl;
+	soc->setMessageOut(res.getResponse());
+	//soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");
 }
 
 void	Event::handleOut()

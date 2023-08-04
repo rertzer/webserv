@@ -22,7 +22,7 @@ SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp 
 
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
-RESP_SOURCES = response.cpp
+RESP_SOURCES = Response.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
 
@@ -43,6 +43,9 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -MMD $< -o $@ -I $(INC_DIR)
 
+debug : CXXFLAGS += DEBUG
+debug : re
+	./$(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o  $@ $(OBJS)

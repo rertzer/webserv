@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/04 09:21:35 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/04 12:06:06 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include "Request.hpp"
 # include "Server.hpp"
 # include "macroDef.hpp"
+# include "Response.hpp"
 
 class	Event
 {

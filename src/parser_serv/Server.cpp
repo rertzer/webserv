@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 14:11:29 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/04 12:19:26 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,10 @@ Server::Server(std::vector<std::string> servStrings)
 	bool locOpen = false;
 	std::vector<std::string> locString;
 	std::vector<bool> bracOpen;
-	std::cout << "size of servString vector = " << servStrings.size() << std::endl;
+	//std::cout << "size of servString vector = " << servStrings.size() << std::endl;
 	for (std::vector<std::string>::iterator it = servStrings.begin(); it != servStrings.end(); it++)
 	{
-		std::cout << *it << std::endl;
+		//std::cout << *it << std::endl;
 		if (it->find("listen") != std::string::npos)
 			_nPort.push_back(atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str()));
 		if (it->find("server_name") != std::string::npos)
@@ -96,7 +96,7 @@ Server::Server(std::vector<std::string> servStrings)
 			}
 		}
 	}
-	printServ(*this);
+	//printServ(*this);
 }
 
 Server::~Server()
@@ -138,4 +138,37 @@ std::vector<int>& Server::getListenPort()
 std::vector<std::string>& Server::getDefaultPage()
 {
 	return (_defaultPage);
+}
+
+Server& Server::operator=(const Server& rhs)
+{
+	#ifdef DEBUG
+		std::cout << "Server copy by operator called" << std::endl;
+	#endif
+	if (this != &rhs)
+	{
+		_servName = rhs._servName;
+		_root = rhs._root;
+		_errorPage = rhs._errorPage;
+		_location = rhs._location;
+		_nPort = rhs._nPort;
+		_defaultPage = rhs._defaultPage;
+	}
+	return (*this);
+}
+
+Server::Server(const Server& rhs)
+{
+	#ifdef DEBUG
+		std::cout << "Server copy constructor called" << std::endl;
+	#endif
+	*this = rhs;
+}
+
+Server::Server()
+{
+	#ifdef DEBUG
+		std::cout << "Server default constructor called" << std::endl;
+	#endif
+
 }
