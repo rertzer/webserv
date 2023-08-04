@@ -14,13 +14,19 @@ SOCKET_DIR = socket/
 
 PARS_DIR = parser_serv/
 
+RESP_DIR = response/
+
 SOURCES := main.cpp
 
-SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp socket_test2.cpp
+SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp socket_test2.cpp
 
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
+RESP_SOURCES = response.cpp
+
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
+
+SOURCES += $(addprefix $(RESP_DIR), $(RESP_SOURCES))
 
 SOURCES += $(addprefix $(PARS_DIR), $(PARS_SOURCES))
 
@@ -49,6 +55,7 @@ clean:
 	rm -f $(DEPS)
 	rm -fd $(OBJ_DIR)$(PARS_DIR)
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
+	rm -fd $(OBJ_DIR)$(RESP_DIR)
 	rm -fd $(OBJ_DIR)
 
 fclean: clean
