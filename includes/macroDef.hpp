@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/03 15:29:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/04 09:44:25 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,5 @@ int checkConfFile(char *av);
 int fillServ(char *av , std::vector<Server>& serv);
 int	testSocket(std::vector<Server>);
 void	stringTrim(std::string & str);
+std::vector<std::string>	splitCsv(std::string const & str);
 std::string sendResponse(Request& req, std::vector<Server>& serv);

@@ -18,7 +18,7 @@ RESP_DIR = response/
 
 SOURCES := main.cpp
 
-SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp socket_test2.cpp
+SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp splitCsv.cpp socket_test2.cpp
 
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
