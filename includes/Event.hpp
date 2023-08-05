@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 14:54:51 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/05 11:30:16 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,6 @@ class	Event
 
 		typedef void	(Event::*handlefun)();
 		static const int    ev[7];
+		static const int	line_max;
 };
 #endif

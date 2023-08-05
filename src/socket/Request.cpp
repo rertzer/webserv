@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 15:47:23 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/05 11:05:15 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ Request::Request(int p, std::string msg):port(p), status(200)
 	try
 	{
 		//control data
-		int c = msg.find("\r\n");
+/*		int c = msg.find("\r\n");
 		if (c == -1)
-			throw (RequestException());
-		setControlData(msg.substr(0, c));
+			throw (RequestException());*/
+		setControlData(msg);
 		
-		//headers
+		/*headers
 		int	h = msg.find("\r\n\r\n", c + 2);
 		if (h == -1)
 			throw (RequestException());
@@ -35,14 +35,14 @@ Request::Request(int p, std::string msg):port(p), status(200)
 			std::string cont = msg.substr(h + 4);
 			content << cont;
 		}
-		//trailer
+		//trailer*/
 	}
 	catch (const Request::RequestException &e)
 	{
 		std::cerr << e.what() << std::endl;
 		status = 400;
 	}
-	std::cout << "Request created:\n" << *this << "Processing..." << std::endl;
+	std::cout << "Request created:\n" << *this << std::endl;
 }
 
 Request::Request(Request const & rhs)

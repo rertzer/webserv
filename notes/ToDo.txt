@@ -1,0 +1,20 @@
+================================================================================
+Pjay:
+
+readFile:
+	si le contenu du file est "404", ca marchera pas
+	il faut distinguer une page absente 404 d'un droit insuffisant ou
+	d'une erreur interne 5xx
+	
+findTheServ
+	dans le field name et value sont deja separes: c'est une map, inutile de 
+	faire find(Host:)
+	
+Si pas de fichier conf fourni en argument en prendre un par defaut
+
+erreur valgrind: parce qu'on stop le programme comme des cochons. Il faut signal(SIGINT)
+pour une fermeture propre.
+
+===============================================================================
+rertzer:
+Il faudrait faire une classe ErrorException()

@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 16:40:55 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/05 11:33:45 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,8 @@ void	TCPSocket::close()
 }
 
 int	TCPSocket::read()
-{
+{	
 	int	read_size = ::read(socket_fd, buffer, buffer_size);
-	msg_in = buffer;
 	return read_size;
 }
 
@@ -127,6 +126,36 @@ void	TCPSocket::setMessageOut(std::string msg)
 	msg_out = msg;
 }
 
+std::string	TCPSocket::readLine()
+{
+	int	pos = -1;
+	std::string	line;
+
+	while (1)
+	{
+		pos = msg_in.find("\r\n");
+		if (pos != -1)
+		{
+			line = msg_in.substr(0, pos);
+			msg_in = msg_in.erase(0, pos + 2);
+			std::cout << "read line " << line << std::endl;
+			break;
+		}
+
+		int len = read();
+
+		if (len == -1)
+			throw (SocketException());
+		if (len == 0)
+			throw (SocketException());
+		if (msg_in.length() + static_cast<unsigned int>(len) >= line_size_max)
+			throw (SocketException());
+
+		msg_in += buffer;
+	}
+	return line;
+}
+
 int	TCPSocket::send()
 {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
@@ -140,3 +169,4 @@ int	TCPSocket::send()
 const int	TCPSocket::backlog = 42;
 //read buffer size
 const int	TCPSocket::buffer_size = 1024;
+const unsigned int	TCPSocket::line_size_max = 20000;

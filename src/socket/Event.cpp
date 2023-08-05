@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 16:01:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/05 11:34:00 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,18 +116,39 @@ void	Event::handleEvent()
 
 void	Event::handleIn()
 {
-	std::cout << "fd " << soc_fd << " is reading\n";
-	soc->read();
-	std::cout << soc->getMessageIn() << std::endl;
-	Request req(soc_fd, soc->getMessageIn());
-	std::string h = req.getField("Host");
-	std::cout << "Host is : $" << h << "$" << std::endl;
-	std::cout << "Accept-Encoding values:\n";
-	h = req.getField("Accept-Encoding");
-	std::vector<std::string> acc = splitCsv(h);
-	for (unsigned int i = 0; i < acc.size(); i++)
-		std::cout << acc[i] << std::endl;
-	soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");	
+	int	line_nb = 0;
+	try
+	{
+		std::cout << "fd " << soc_fd << " is reading\n";
+		std::string line = soc->readLine();
+		std::cout << "line is: $" << line << "$\n";
+		std::cout << "remain: $" << soc->getMessageIn() << "$" << std::endl;
+		Request req(soc_fd, line);
+		while (line.length())
+		{
+			if (line_nb >= line_max)
+				break;
+			line = soc->readLine();
+			if (line.length())
+			{
+				req.addField(line);
+				line_nb++;
+			}
+		}
+		std::string h = req.getField("Host");
+		std::cout << "Host is : $" << h << "$" << std::endl;
+		std::cout << "Accept-Encoding values:\n";
+		h = req.getField("Accept-Encoding");
+		std::vector<std::string> acc = splitCsv(h);
+		for (unsigned int i = 0; i < acc.size(); i++)
+			std::cout << acc[i] << std::endl;
+		soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");
+	}
+	catch (const TCPSocket::SocketException & e)
+	{
+		std::cerr << e.what() << std::endl;
+		soc->setMessageOut("HTTP/1.1 400 Bad Request\r\nHost: localhost:8080\r\nConnection:close\r\n\r\n");
+	}
 }
 
 void	Event::handleOut()
@@ -152,4 +173,5 @@ Event::Event()
 {}
 
 //Static const
-int const    Event::ev[7] = {EPOLLIN, EPOLLOUT, EPOLLRDHUP, EPOLLPRI, EPOLLERR, EPOLLHUP, EPOLLONESHOT};
+int const 	Event::ev[7] = {EPOLLIN, EPOLLOUT, EPOLLRDHUP, EPOLLPRI, EPOLLERR, EPOLLHUP, EPOLLONESHOT};
+int const	Event::line_max = 1024;

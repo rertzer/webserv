@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 13:53:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/05 11:31:01 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ class TCPSocket
 		std::string	getMessageOut() const;
 		void		setMessageIn(std::string msg);
 		void		setMessageOut(std::string msg);
+		std::string	readLine();
 		int			send();
 
-	private:
 		
 		class	SocketException: public std::exception
 		{
@@ -52,6 +52,7 @@ class TCPSocket
 				}
 		};
 
+	private:
 		int					socket_fd;
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
@@ -59,8 +60,9 @@ class TCPSocket
 		std::string			msg_in;
 		std::string			msg_out;
 
-		static const int	backlog;
-		static const int	buffer_size;
+		static const int			backlog;
+		static const int			buffer_size;
+		static const unsigned int	line_size_max;
 };
 
 #endif
