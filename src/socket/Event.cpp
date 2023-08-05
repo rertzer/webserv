@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/05 11:34:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/05 12:10:12 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void	Event::handleIn()
 		std::string line = soc->readLine();
 		std::cout << "line is: $" << line << "$\n";
 		std::cout << "remain: $" << soc->getMessageIn() << "$" << std::endl;
-		Request req(soc_fd, line);
+		Request req(soc->getPort(), line);
 		while (line.length())
 		{
 			if (line_nb >= line_max)
