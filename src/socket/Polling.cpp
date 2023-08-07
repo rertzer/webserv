@@ -6,11 +6,13 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 16:55:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 15:40:02 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Polling.hpp"
+
+extern sig_atomic_t	quitok;
 
 //Public
 Polling::Polling():epoll_fd(0), events_nb(0), next_event(-1)
@@ -25,6 +27,7 @@ Polling::~Polling()
 {
 	if (epoll_fd)
 	{
+		std::cout << "Closing epoll fd " << epoll_fd << std::endl;
 		close(epoll_fd);
 		epoll_fd = 0;
 	}
@@ -81,6 +84,8 @@ void	Polling::removeSocket(int fd)
 int	Polling::wait()
 {
 	events_nb = ::epoll_wait(epoll_fd, events, 42, -1);
+	if (quitok)
+		return 0;
 	if (events_nb == -1)
 		throw (PollingException());
 	next_event = 0;

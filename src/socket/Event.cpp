@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/05 12:10:12 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 15:53:45 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,10 +144,12 @@ void	Event::handleIn()
 			std::cout << acc[i] << std::endl;
 		soc->setMessageOut("HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nHello world!\r\n");
 	}
-	catch (const TCPSocket::SocketException & e)
+	catch (const ErrorException & e)
 	{
-		std::cerr << e.what() << std::endl;
-		soc->setMessageOut("HTTP/1.1 400 Bad Request\r\nHost: localhost:8080\r\nConnection:close\r\n\r\n");
+		std::stringstream ss;
+		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\n";
+		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
+		soc->setMessageOut(ss.str());
 	}
 }
 
@@ -157,6 +159,7 @@ void	Event::handleOut()
 	{
 		int len = soc->send();
 		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
+
 		soc->close();
 	}
 	else

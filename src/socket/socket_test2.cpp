@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 14:54:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 15:20:35 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@
 
 #include "Polling.hpp"
 #include "Server.hpp"
+#include "Status.hpp"
+#include "ErrorException.hpp"
+
+extern sig_atomic_t	quitok;
 
 int	testSocket(std::vector<Server> serv)
 {
@@ -43,6 +47,12 @@ int	testSocket(std::vector<Server> serv)
 			i++;
 			std::cout << "Waiting...\n";
 			int nfds = pool.wait();
+			std::cout << "got something" << std::endl;
+			if (quitok)
+			{
+				std::cout << "quitting the loop\n";
+				break;
+			}
 
 			std::cout << "\n\n\nepoll collected " << nfds << " fd's. i is " << i << std::endl;
 
@@ -83,7 +93,11 @@ int	testSocket(std::vector<Server> serv)
 			}
 		}
 	}
-	catch(const std::exception &e)
+	catch (const TCPSocket::SocketException & e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
 	}

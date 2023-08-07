@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/05 11:33:45 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 12:55:40 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	TCPSocket::accept(TCPSocket & csoc)
 {
 	csoc.socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&csoc.socket_addr), &csoc.socket_addr_length);
 	if (csoc.socket_fd == -1)
-		throw(SocketException());
+		throw(ErrorException(500));
 	std::cout << "New connection " << csoc.socket_fd << " from TCP socket " << socket_fd << " on port " << getPort() << std::endl;
 }
 

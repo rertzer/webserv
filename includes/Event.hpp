@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/05 11:30:16 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 13:06:45 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define EVENT_HPP
 
 # include <iostream>
+# include <sstream>
 # include <map>
 # include <vector>
 # include <sys/epoll.h>

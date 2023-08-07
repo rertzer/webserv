@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/05 11:05:15 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 13:11:33 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ Request::Request(int p, std::string msg):port(p), status(200)
 		}
 		//trailer*/
 	}
-	catch (const Request::RequestException &e)
+	catch (const ErrorException & e)
 	{
-		std::cerr << e.what() << std::endl;
-		status = 400;
+		std::cerr << e.what() << " " << e.getCode() << std::endl;
+		status = e.getCode();
 	}
 	std::cout << "Request created:\n" << *this << std::endl;
 }
@@ -124,7 +124,7 @@ void	Request::addField(std::string const & field)
 {
 	int	k = field.find(":");
 	if (k == -1 || k == 0)
-		throw (RequestException());
+		throw (ErrorException(400));
 	std::string	key = field.substr(0, k);
 	std::string	val = field.substr(k + 1);
 	stringTrim(val);
@@ -141,12 +141,12 @@ void	Request::setControlData(std::string cdata)
 {
 	int	m = cdata.find(" ");
 	if (m == -1)
-		throw (RequestException());
+		throw (ErrorException(400));
 	method = cdata.substr(0, m);
 
 	int	q = cdata.find(" ", m + 1);
 	if (q == -1)
-		throw (RequestException());
+		throw (ErrorException(400));
 	query = cdata.substr(m + 1, q - (m + 1));
 	protocol = cdata.substr(q + 1);
 }

@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/05 11:31:01 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/07 12:56:05 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <exception>
 # include <sys/socket.h>
 # include <netinet/in.h>
+
+# include "ErrorException.hpp"
 
 class TCPSocket
 {
