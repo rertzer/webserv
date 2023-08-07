@@ -11,17 +11,17 @@ OBJ_DIR = ./obj/
 INC_DIR = ./includes
 
 SOCKET_DIR = socket/
-
+EXCEPTION_DIR = exception/
 PARS_DIR = parser_serv/
 
 SOURCES := main.cpp
 
 SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp splitCsv.cpp socket_test2.cpp
-
+EXCEPTION_SOURCES = ErrorException.cpp Status.cpp
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
-
+SOURCES += $(addprefix $(EXCEPTION_DIR), $(EXCEPTION_SOURCES))
 SOURCES += $(addprefix $(PARS_DIR), $(PARS_SOURCES))
 
 OBJ = $(SOURCES:.cpp=.o)
@@ -48,6 +48,7 @@ clean:
 	rm -f $(OBJS)
 	rm -f $(DEPS)
 	rm -fd $(OBJ_DIR)$(PARS_DIR)
+	rm -fd $(OBJ_DIR)$(EXCEPTION_DIR)
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
 	rm -fd $(OBJ_DIR)
 
