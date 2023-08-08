@@ -9,7 +9,8 @@
 		<p>Veuillez entrer le texte et sa clé</p>
 		<form action="cesar.php" method="post">
 			<div>
-				<input type="text" name="texte_area" value="" />
+				<textarea type="text" name="texte_area" rows="8" cols="70" maxlength=10000 value="">
+				</textarea>
 				<select name="cypher_key">
 					<option value="1">A</option>
 					<option value="2">B</option>
@@ -40,12 +41,16 @@
 				</select>
 			<div>
 			</div>
-				<input type="submit" name="chiffrer" value="cypher" />
-				<input type="submit" name="déchiffrer" value="uncypher" />
+				<input type="submit" name="cipher" value="chiffrer" />
+				<input type="submit" name="decipher" value="déchiffrer" />
 			</div>
 		</form>
 		<?php
-			echo 'cucu';
+			if (isset($_POST['cipher']))
+			{
+				$texte = $_POST['texte_area'];
+				echo "$texte";
+			}
 		?>
 	</body>
 </html>
