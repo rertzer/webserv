@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 12:56:05 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 10:21:59 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 
+# include <string.h>
 # include "ErrorException.hpp"
 
 class TCPSocket
@@ -34,7 +35,7 @@ class TCPSocket
 
 		int			getPort() const;
 		int			getFd() const;
-		void		accept(TCPSocket & csoc);
+		void		accept(TCPSocket * csoc);
 		void		close();
 		int			read();
 		std::string	getMessageIn() const;
@@ -58,7 +59,7 @@ class TCPSocket
 		int					socket_fd;
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
-		char				buffer[1024];
+		char				buffer[1025];
 		std::string			msg_in;
 		std::string			msg_out;
 

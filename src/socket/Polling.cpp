@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 15:40:02 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 11:08:37 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ void	Polling::addMotherSocket(int port)
 void	Polling::connect(Event const & ev)
 {
 	TCPSocket *	soc = new TCPSocket();
-	powerstrip[ev.getSocketFd()]->accept(*soc);
+	powerstrip[ev.getSocketFd()]->accept(soc);
 	addSocket(soc, EPOLLIN | EPOLLOUT | EPOLLET);
-	std::cout << "New connection fd: " << soc->getFd() << std::endl;
+	std::cout << "New connection fd: " << soc->getFd() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxx" << std::endl;
 }
 
 void	Polling::removeMotherSocket(int fd)
@@ -75,6 +75,7 @@ void	Polling::removeMotherSocket(int fd)
 
 void	Polling::removeSocket(int fd)
 {
+	std::cout << "Removing socket " << fd << std::endl;
 	if (::epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL))
 		throw (PollingException());
 	delete (powerstrip[fd]);

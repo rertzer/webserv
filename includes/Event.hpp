@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 13:06:45 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 10:58:08 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ class	Event
 		bool		isHup() const;
 		bool		isEt() const;
 		bool		isOneshot() const;
-		void		handleEvent();
-		void		handleIn();
-		void		handleOut();
-		void		handleError();
+		int			handleEvent();
+		int			handleIn();
+		int			handleOut();
+		int			handleError();
 
 	private:
 		Event();
@@ -57,7 +57,7 @@ class	Event
 		TCPSocket *	soc;
 		std::vector<Server> serv;
 
-		typedef void	(Event::*handlefun)();
+		typedef int			(Event::*handlefun)();
 		static const int    ev[7];
 		static const int	line_max;
 };

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 15:20:35 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 11:22:09 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,10 @@ int	testSocket(std::vector<Server> serv)
 				{
 					std::cout << "events on " << ev.getSocketFd() << std::endl;
 
-					ev.handleEvent();
+					int	 close_fd = ev.handleEvent();
+					std::cout << "Value returned is " << close_fd << std::endl;
+					if (close_fd)
+						pool.removeSocket(close_fd);
 				}
 			}
 		}

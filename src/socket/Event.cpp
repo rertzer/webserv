@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 15:53:45 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 11:20:24 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,9 @@ bool	Event::isOneshot() const
 	return (events & EPOLLONESHOT);
 }
 
-void	Event::handleEvent()
+int	Event::handleEvent()
 {
+	int	close_fd = 0;
 	std::map<int, handlefun> whichfun;
 	whichfun[EPOLLIN] = &Event::handleIn;
 	whichfun[EPOLLOUT] = &Event::handleOut;
@@ -109,12 +110,16 @@ void	Event::handleEvent()
 		{
 			std::cout << "execute handle fun " << ev[i] << std::endl;
 			handlefun fun = whichfun[ev[i]];
-			(this->*fun)();
+			close_fd = (this->*fun)();
+			std::cout << "return value is " << close_fd << std::endl;
+			if (close_fd)
+				return close_fd;
 		}
 	}
+	return close_fd;
 }
 
-void	Event::handleIn()
+int	Event::handleIn()
 {
 	int	line_nb = 0;
 	try
@@ -151,24 +156,25 @@ void	Event::handleIn()
 		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
 		soc->setMessageOut(ss.str());
 	}
+	return 0;
 }
 
-void	Event::handleOut()
+int	Event::handleOut()
 {
 	if (!soc->getMessageOut().empty())
 	{
 		int len = soc->send();
 		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
-
-		soc->close();
+		return (soc->getFd());
 	}
-	else
-		std::cout << "Connection fd " << soc_fd << ": Nothing to send\n";
+	std::cout << "Connection fd " << soc_fd << ": Nothing to send\n";
+	return 0;
 }
 
-void	Event::handleError()
+int	Event::handleError()
 {
 	std::cout << "Handle Error\n";
+	return 0;
 }
 
 //Private
