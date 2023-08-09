@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 14:03:49 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 16:00:00 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int	testSocket(std::vector<Server> serv)
 			i++;
 			std::cout << "Waiting...\n";
 			int nfds = pool.wait();
-			std::cout << "got something" << std::endl;
 			if (quitok)
 			{
 				std::cout << "quitting the loop\n";
@@ -86,10 +85,9 @@ int	testSocket(std::vector<Server> serv)
 				}
 				else
 				{
-					std::cout << "events on " << ev.getSocketFd() << std::endl;
+					std::cout << "events on " << ev.getSocketFd() << "mport: " << ev.getSocket()->getMotherPort() << std::endl;
 
 					int	 close_fd = ev.handleEvent();
-					std::cout << "Value returned is " << close_fd << std::endl;
 					if (close_fd)
 						pool.removeSocket(close_fd);
 				}

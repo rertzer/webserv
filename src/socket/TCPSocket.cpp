@@ -6,14 +6,14 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 13:48:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 15:58:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPSocket.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p)
+TCPSocket::TCPSocket(int p):mother_port(p)
 {
 	memset(&buffer, 0, 1025);
 	socket_addr_length = sizeof(socket_addr);
@@ -38,7 +38,7 @@ TCPSocket::TCPSocket(int p)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " successfully created\n";
 }
 
-TCPSocket::TCPSocket():socket_fd(0)
+TCPSocket::TCPSocket():socket_fd(0), mother_port(0)
 {
 	std::cout << "Default TCPSocket constructor fd " << getFd() << std::endl;
 
@@ -66,6 +66,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 	std::cout << "assign op fd " << rhs.getFd() << std::endl;
 	if (this != &rhs)
 	{
+		
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
 		socket_addr_length = rhs.socket_addr_length;
@@ -82,6 +83,11 @@ int	TCPSocket::getPort() const
 	return ntohs(socket_addr.sin_port);
 }
 
+int	TCPSocket::getMotherPort() const
+{
+	return mother_port;
+}
+
 int	TCPSocket::getFd() const
 {
 	return socket_fd;
@@ -92,6 +98,7 @@ void	TCPSocket::accept(TCPSocket * csoc)
 	csoc->socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&csoc->socket_addr), &csoc->socket_addr_length);
 	if (csoc->socket_fd == -1)
 		throw(ErrorException(500));
+	csoc->mother_port = getPort();
 	std::cout << "New connection " << csoc->socket_fd <<  ":" << csoc->getPort() << " from TCP socket " << socket_fd << " on port " << getPort() << "addr_len " << csoc->socket_addr_length << std::endl;
 }
 
