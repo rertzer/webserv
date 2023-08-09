@@ -26,6 +26,7 @@ class Response
 		std::string _content;
 	public:
 		Response(Request& req, std::vector<Server> serv);
+		Response(std::vector<Server> serv, int codeErr);
 		void dealWithGet(Request req);
 		std::string getResponse();
 };

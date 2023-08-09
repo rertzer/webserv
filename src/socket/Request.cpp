@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/04 09:45:06 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/09 14:20:09 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,9 @@
 
 Request::Request(int p, std::string msg):port(p), status(200)
 {
-	try
-	{
-		//control data
-		int c = msg.find("\r\n");
-		if (c == -1)
-			throw (RequestException());
-		setControlData(msg.substr(0, c));
-
-		//headers
-		int	h = msg.find("\r\n\r\n", c + 2);
-		if (h == -1)
-			throw (RequestException());
-		std::string head = msg.substr(c + 2, h - (c + 2));
-		setHeader(head);
-
-		//content
-		std::string cont = msg.substr(h + 4);
-		//content << cont;
-		if (static_cast<unsigned int>(h + 4) < msg.length())
-		{
-			std::string cont = msg.substr(h + 4);
-			content << cont;
-		}
-		//trailer
-	}
-	catch (const Request::RequestException &e)
-	{
-		std::cerr << e.what() << std::endl;
-		status = 400;
-	}
-	std::cout << "Request created:\n" << *this << "Processing..." << std::endl;
+	setControlData(msg);
+	
+	std::cout << "Request created:\n" << *this << std::endl;
 }
 
 Request::Request(Request const & rhs)
@@ -126,7 +98,7 @@ void	Request::addField(std::string const & field)
 {
 	int	k = field.find(":");
 	if (k == -1 || k == 0)
-		throw (RequestException());
+		throw (ErrorException(400));
 	std::string	key = field.substr(0, k);
 	std::string	val = field.substr(k + 1);
 	stringTrim(val);
@@ -143,32 +115,36 @@ void	Request::setControlData(std::string cdata)
 {
 	int	m = cdata.find(" ");
 	if (m == -1)
-		throw (RequestException());
+		throw (ErrorException(400));
 	method = cdata.substr(0, m);
 
 	int	q = cdata.find(" ", m + 1);
 	if (q == -1)
-		throw (RequestException());
+		throw (ErrorException(400));
 	query = cdata.substr(m + 1, q - (m + 1));
 	protocol = cdata.substr(q + 1);
+	void checkControlData();
 }
 
-void	Request::setHeader(std::string head)
+void	Request::checkControlData() const
 {
-	int	start = 0;
-	int	end = -1;
+	if (protocol != "HTTP/1.1")
+		throw (ErrorException(505));
+	std::vector<std::string> allowed_methods;
 
-	while (start != -1)
+	allowed_methods.push_back("GET");
+	allowed_methods.push_back("HEAD");
+	allowed_methods.push_back("POST");
+	allowed_methods.push_back("DELETE");
+
+	for (unsigned int i = 0; i < allowed_methods.size(); i++)
 	{
-		end = head.find("\r\n", start);
-		std::string	field = head.substr(start, end - start);
-		addField(field);
-		if (end == -1)
-			start = end;
-		else
-			start = end + 2;
+		if (method == allowed_methods[i])
+			return;
 	}
+	throw (ErrorException(501));
 }
+
 
 //
 

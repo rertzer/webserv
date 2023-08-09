@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/04 12:06:06 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/09 13:58:01 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define EVENT_HPP
 
 # include <iostream>
+# include <sstream>
 # include <map>
 # include <vector>
 # include <sys/epoll.h>
@@ -45,10 +46,10 @@ class	Event
 		bool		isHup() const;
 		bool		isEt() const;
 		bool		isOneshot() const;
-		void		handleEvent();
-		void		handleIn();
-		void		handleOut();
-		void		handleError();
+		int			handleEvent();
+		int			handleIn();
+		int			handleOut();
+		int			handleError();
 
 	private:
 		Event();
@@ -58,7 +59,8 @@ class	Event
 		TCPSocket *	soc;
 		std::vector<Server> serv;
 
-		typedef void	(Event::*handlefun)();
+		typedef int			(Event::*handlefun)();
 		static const int    ev[7];
+		static const int	line_max;
 };
 #endif

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/03 15:29:42 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/09 14:04:54 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <exception>
 
 # include "macroDef.hpp"
+# include "Status.hpp"
+# include "ErrorException.hpp"
 
 class Request
 {
@@ -40,11 +42,10 @@ class Request
 		const std::stringstream &						getContent() const;
 		std::string										getField(std::string const & name) const;
 		void											addField(std::string const & field);
-		//std::string	getHost() const;
 	private:
 		//Request();
 		void	setControlData(std::string cdata);
-		void	setHeader(std::string head);
+		void	checkControlData() const;
 
 		class	RequestException: public std::exception
 		{
@@ -60,8 +61,8 @@ class Request
 		std::map<std::string, std::string>	trailer; //
 		std::string							method;
 		std::string							query;
-		std::string							protocol; //
-		std::stringstream					content; //
+		std::string							protocol;
+		std::stringstream					content;
 };
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs);

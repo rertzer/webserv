@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/02 13:53:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 13:44:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 
+# include <string.h>
+# include "ErrorException.hpp"
+
 class TCPSocket
 {
 	public:
@@ -32,16 +35,16 @@ class TCPSocket
 
 		int			getPort() const;
 		int			getFd() const;
-		void		accept(TCPSocket & csoc);
+		void		accept(TCPSocket * csoc);
 		void		close();
 		int			read();
 		std::string	getMessageIn() const;
 		std::string	getMessageOut() const;
 		void		setMessageIn(std::string msg);
 		void		setMessageOut(std::string msg);
+		std::string	readLine();
 		int			send();
 
-	private:
 		
 		class	SocketException: public std::exception
 		{
@@ -52,15 +55,17 @@ class TCPSocket
 				}
 		};
 
+	private:
 		int					socket_fd;
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
-		char				buffer[1024];
+		char				buffer[1025];
 		std::string			msg_in;
 		std::string			msg_out;
 
-		static const int	backlog;
-		static const int	buffer_size;
+		static const int			backlog;
+		static const int			buffer_size;
+		static const unsigned int	line_size_max;
 };
 
 #endif
