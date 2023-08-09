@@ -40,6 +40,12 @@ A faire :
 			std::string _Query;
 			std::sstream _content; // http 1.1 rcp par exemple un fichier
 	}
+
+ - Changer le retour de la reponse si impossible d'ouvrir le ficher (throw une erreur)
+ - regarder si cest le chemin qui est pas bon ou impossible de l'ouvrir (pas les droits)
+ - Checker si la personne ne cherche pas a revenir en arriere.
+ - Lecture d'un fichier eviter getline(html, css, img, etc..)
+
  - Query ? page requise
  - Requete cgi
 

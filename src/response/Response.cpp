@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/04 14:42:40 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/05 12:00:14 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,11 @@ Server findTheServ(Request& req, std::vector<Server>& serv)
 		std::cout << "Rotation" << std::endl;
 		if (req.getField("Host").substr(0, req.getField("Host").find(":")) == it->getServName())
 		{
+			std::cout << "port = " << req.getPort() << std::endl;
 			for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
 			{
+				std::cout << "host = " << req.getField("Host") << std::endl;
+
 				if (atoi(req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str()) == *it2)
 					return (*it);
 			}
@@ -90,9 +93,10 @@ void Response::dealWithGet(Request req)
 		}
 		else
 		{
+			std::cout << "Accept field = " << req.getField("Accept") << std::endl;
 			_status = "200 OK";
 			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
-			_contentLength = fileStr.length();
+			_contentLength = fileStr.length(); // mettre en string
 			_content = fileStr;
 		}
 	}
