@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 11:47:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 13:20:29 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ int	Event::handleIn()
 	catch (const ErrorException & e)
 	{
 		std::stringstream ss;
-		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\n";
+		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nSomething Bad Happened\r\n";
 		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
 		soc->setMessageOut(ss.str());
 	}

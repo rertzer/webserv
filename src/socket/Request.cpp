@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 12:00:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 13:17:28 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,23 @@ void	Request::setControlData(std::string cdata)
 
 void	Request::checkControlData() const
 {
-	
+	if (protocol != "HTTP/1.0")
+		throw (ErrorException(505));
+	std::vector<std::string> allowed_methods;
+
+	allowed_methods.push_back("GET");
+	allowed_methods.push_back("HEAD");
+	allowed_methods.push_back("POST");
+	allowed_methods.push_back("DELETE");
+
+	for (unsigned int i = 0; i < allowed_methods.size(); i++)
+	{
+		if (method == allowed_methods[i])
+			return;
+	}
+	throw (ErrorException(501));
 }
+
 
 //
 
