@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 13:11:33 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 12:00:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,34 +14,8 @@
 
 Request::Request(int p, std::string msg):port(p), status(200)
 {
-	try
-	{
-		//control data
-/*		int c = msg.find("\r\n");
-		if (c == -1)
-			throw (RequestException());*/
-		setControlData(msg);
-		
-		/*headers
-		int	h = msg.find("\r\n\r\n", c + 2);
-		if (h == -1)
-			throw (RequestException());
-		std::string head = msg.substr(c + 2, h - (c + 2));
-		setHeader(head);
-		
-		//content
-		if (static_cast<unsigned int>(h + 4) < msg.length())
-		{
-			std::string cont = msg.substr(h + 4);
-			content << cont;
-		}
-		//trailer*/
-	}
-	catch (const ErrorException & e)
-	{
-		std::cerr << e.what() << " " << e.getCode() << std::endl;
-		status = e.getCode();
-	}
+	setControlData(msg);
+	
 	std::cout << "Request created:\n" << *this << std::endl;
 }
 
@@ -149,23 +123,12 @@ void	Request::setControlData(std::string cdata)
 		throw (ErrorException(400));
 	query = cdata.substr(m + 1, q - (m + 1));
 	protocol = cdata.substr(q + 1);
+	void checkControlData();
 }
 
-void	Request::setHeader(std::string head)
+void	Request::checkControlData() const
 {
-	int	start = 0;
-	int	end = -1;
-
-	while (start != -1)
-	{
-		end = head.find("\r\n", start);
-		std::string	field = head.substr(start, end - start);
-		addField(field);
-		if (end == -1)
-			start = end;
-		else
-			start = end + 2;
-	}
+	
 }
 
 //

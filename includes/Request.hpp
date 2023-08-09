@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 12:34:27 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 12:00:05 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,10 @@ class Request
 		const std::stringstream &						getContent() const;
 		std::string										getField(std::string const & name) const;
 		void											addField(std::string const & field);
-		//std::string	getHost() const;
 	private:
 		//Request();
 		void	setControlData(std::string cdata);
-		void	setHeader(std::string head);
+		void	checkControlData() const;
 
 		class	RequestException: public std::exception
 		{
@@ -64,6 +63,7 @@ class Request
 		std::string							query;
 		std::string							protocol;
 		std::stringstream					content;
+		
 };
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs);
