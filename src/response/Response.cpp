@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/05 12:00:14 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/10 10:56:43 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,20 +55,30 @@ Server findTheServ(Request& req, std::vector<Server>& serv)
 	while (it != serv.end())
 	{
 		std::cout << "Rotation" << std::endl;
-		if (req.getField("Host").substr(0, req.getField("Host").find(":")) == it->getServName())
+		if (req.getField("Host") == it->getServName())
 		{
 			std::cout << "port = " << req.getPort() << std::endl;
-			for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
+			if (it->getListenPort().size() > 1)
 			{
-				std::cout << "host = " << req.getField("Host") << std::endl;
+				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
+				{
+					std::cout << "host = " << req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str() <<"  << *it2 = " << *it2 <<  std::endl;
 
-				if (atoi(req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str()) == *it2)
-					return (*it);
+					if (atoi(req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str()) == *it2)
+						return (*it);
+				}
 			}
+			else
+			{
+				std::cout << "host = " << req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str() <<"  << *it2 = " << *it->getListenPort().begin() <<  std::endl;
+				if (atoi(req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str()) == *it->getListenPort().begin())
+						return (*it);
+			}
+
 		}
 		it++;
 	}
-	return (*it);
+	return (*(serv.begin()));
 }
 
 void Response::dealWithGet(Request req)
