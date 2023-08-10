@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 13:58:01 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:24:24 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,5 @@ class	Event
 
 		typedef int			(Event::*handlefun)();
 		static const int    ev[7];
-		static const int	line_max;
 };
 #endif

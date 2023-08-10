@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 15:12:49 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:24:55 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,25 +121,9 @@ int	Event::handleEvent()
 
 int	Event::handleIn()
 {
-	int	line_nb = 0;
 	try
 	{
-		std::cout << "fd " << soc_fd << " is reading\n";
-		std::string line = soc->readLine();
-		Request req(soc->getPort(), line);
-		while (line.length())
-		{
-			if (line_nb >= line_max)
-				break;
-			line = soc->readLine();
-			if (line.length())
-			{
-				req.addField(line);
-				line_nb++;
-			}
-		}
-		std::string h = req.getField("Host");
-		std::cout << "Host is : $" << h << "$" << std::endl;
+		Request req(soc);
 		Response resp(req, this->serv);
 		soc->setMessageOut(resp.getResponse());
 	}
@@ -177,4 +161,3 @@ Event::Event()
 
 //Static const
 int const 	Event::ev[7] = {EPOLLIN, EPOLLOUT, EPOLLRDHUP, EPOLLPRI, EPOLLERR, EPOLLHUP, EPOLLONESHOT};
-int const	Event::line_max = 1024;

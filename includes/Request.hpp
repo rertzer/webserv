@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 14:04:54 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:24:42 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,14 @@
 # include <exception>
 
 # include "macroDef.hpp"
+# include "TCPSocket.hpp"
 # include "Status.hpp"
 # include "ErrorException.hpp"
 
 class Request
 {
 	public:
-		Request(int p, std::string msg);
+		Request(TCPSocket * s);
 		Request(Request const & rhs);
 		~Request();
 
@@ -41,11 +42,18 @@ class Request
 		const std::map<std::string, std::string> &		getTrailer() const;
 		const std::stringstream &						getContent() const;
 		std::string										getField(std::string const & name) const;
+		int												getIntField(std::string const & name) const;
 		void											addField(std::string const & field);
 	private:
 		//Request();
-		void	setControlData(std::string cdata);
+		void	setControlData();
+		void	setHeader();
+		void	setContent();
+		void	setContentByChunked();
+		void	setContentByLength(int len);
 		void	checkControlData() const;
+		void	checkHeader() const;
+		bool	contentExist() const;
 
 		class	RequestException: public std::exception
 		{
@@ -56,13 +64,16 @@ class Request
 				}
 		};
 		int									port;
-		int									status; //
-		std::map<std::string, std::string>	header; //
-		std::map<std::string, std::string>	trailer; //
+		int									status;
+		TCPSocket *							soc;
+		std::map<std::string, std::string>	header;
+		std::map<std::string, std::string>	trailer;
 		std::string							method;
 		std::string							query;
 		std::string							protocol;
 		std::stringstream					content;
+
+		static const int	line_max;
 };
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs);

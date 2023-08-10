@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 15:58:58 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:57:27 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,28 @@ int	TCPSocket::read()
 	if (read_size > 0)
 		buffer[read_size] = '\0';
 	return read_size;
+}
+
+int	TCPSocket::rawRead(std::stringstream & content, int len)
+{
+	int	total_read = 0;
+
+    content << msg_in;
+	len -= msg_in.length();
+	msg_in.clear();
+
+	while (len > 0)
+	{
+		std::cout << "len to read: " << len << ". Total read: " << total_read << std::endl;
+		int to_read = (len < buffer_size) ? len : buffer_size;
+		int	read_size = ::read(socket_fd, buffer, to_read);
+		if (read_size < 0 || (read_size == 0 && len))
+			throw (ErrorException(500));
+		content.write(buffer, read_size);
+		len -= read_size;
+		total_read += read_size;
+	}
+	return total_read;
 }
 
 std::string	TCPSocket::getMessageIn() const

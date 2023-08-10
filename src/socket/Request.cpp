@@ -6,15 +6,19 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 15:27:08 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:27:48 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request(int p, std::string msg):port(p), status(200)
+Request::Request(TCPSocket * s):port(s->getMotherPort()), status(100), soc(s)
 {
-	setControlData(msg);
+	std::cout << "fd " << soc->getFd() << " is reading\n";
+	setControlData();
+	setHeader();
+	if (contentExist())
+		setContent();
 	
 	std::cout << "Request created:\n" << *this << std::endl;
 }
@@ -79,6 +83,15 @@ std::string	Request::getField(std::string const & name) const
 	return it->second;
 }
 
+int	Request::getIntField(std::string const & name) const
+{
+	std::stringstream ss;
+	ss << getField(name);
+	int val = 0;
+	ss >> val;
+	return val;
+}
+
 const std::map<std::string, std::string> &	Request::getHeader() const
 {
 	return header;
@@ -111,19 +124,82 @@ void	Request::addField(std::string const & field)
 }
 
 // Private
-void	Request::setControlData(std::string cdata)
+void	Request::setControlData()
 {
-	int	m = cdata.find(" ");
+	std::cout << "setControlData\n";
+	std::string line = soc->readLine();
+
+	if (line.empty())
+		line = soc->readLine();
+
+	int	m = line.find(" ");
 	if (m == -1)
 		throw (ErrorException(400));
-	method = cdata.substr(0, m);
+	method = line.substr(0, m);
 
-	int	q = cdata.find(" ", m + 1);
+	int	q = line.find(" ", m + 1);
 	if (q == -1)
 		throw (ErrorException(400));
-	query = cdata.substr(m + 1, q - (m + 1));
-	protocol = cdata.substr(q + 1);
+	query = line.substr(m + 1, q - (m + 1));
+	
+	protocol = line.substr(q + 1);
+	
 	checkControlData();
+}
+
+void	Request::setHeader()
+{
+	int	line_nb = 1;
+
+	std::cout << "setHeader\n";
+	std::string	line = soc->readLine();
+
+	while (line.length())
+	{
+		if (line_nb >= line_max)
+			break;
+		if (line.length())
+		{
+			addField(line);
+			line_nb++;
+		}
+		line = soc->readLine();
+	}
+}
+
+void	Request::setContent()
+{
+	std::cout << "setContent\n";
+	std::string trans_encoding = getField("Transfer-Encoding");
+
+	if (! trans_encoding.empty())
+	{
+		if (trans_encoding == "chunked")
+			setContentByChunked();
+		else
+			throw (ErrorException(501));
+	}
+	else
+	{
+		int len = getIntField("Content-Length");
+		
+		if (len > 0 && len < 16777216)
+			setContentByLength(len);
+		else
+			throw (ErrorException(400));
+	}
+}
+
+void	Request::setContentByChunked()
+{
+	std::cout << "setContentByChunked\n";
+}
+
+
+void	Request::setContentByLength(int len)
+{
+	std::cout << "setContentByLength\n";
+	soc->rawRead(content, len);
 }
 
 void	Request::checkControlData() const
@@ -144,6 +220,26 @@ void	Request::checkControlData() const
 	}
 	throw (ErrorException(501));
 }
+
+void	Request::checkHeader() const
+{
+	if (getField("Host").empty())
+		throw (ErrorException(400));
+}
+
+bool	Request::contentExist() const
+{
+	int	content = 0;
+	if (! getField("Transfer-Encoding").empty())
+		content++;
+	if (! getField("Content-Length").empty())
+		content++;
+	if (content == 2)
+		throw (ErrorException(400));
+	if (content)
+		return true;
+	return false;
+}
 //
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs)
@@ -162,3 +258,6 @@ std::ostream &	operator<<(std::ostream & ost, Request const & rhs)
 	ost << "content: " << rhs.getContent().str() << "\n";
 	return ost;
 }
+
+// static const
+int const	Request::line_max = 1024;

@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 15:55:29 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:19:37 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define TCPSOCKET_HPP
 
 # include <iostream>
+# include <sstream>
 # include <string>
 # include <stdlib.h>
 # include <unistd.h>
@@ -39,6 +40,7 @@ class TCPSocket
 		void		accept(TCPSocket * csoc);
 		void		close();
 		int			read();
+		int			rawRead(std::stringstream & content, int len);
 		std::string	getMessageIn() const;
 		std::string	getMessageOut() const;
 		void		setMessageIn(std::string msg);
