@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/10 11:15:19 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/10 14:24:00 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,28 +50,26 @@ std::string readFile(std::string file)
 Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
-	return *it;
 	std::cout << "Number of serv " << serv.size() << std::endl;
 	std::cout << "Req port = " << req.getPort() << std::endl;
 	while (it != serv.end())
 	{
 		std::cout << "Rotation" << std::endl;
+		std::cout << req.getField("Host") << " == " << it->getServName() << std::endl;
 		if (req.getField("Host") == it->getServName())
 		{
-			std::cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
 			std::cout << "port = " << req.getPort() << std::endl;
 			if (it->getListenPort().size() > 1)
 			{
 				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
 				{
-					std::cout  << "Mother port " << motherPort << std::endl;
+					//std::cout  << "Mother port " << motherPort << " comparint to " << *it2 << std::endl;
 					if (motherPort == *it2)
 						return (*it);
 				}
 			}
 			else
 			{
-				std::cout  << "Mother port " << motherPort << std::endl;
 				if (motherPort == *it->getListenPort().begin())
 						return (*it);
 			}
@@ -94,7 +92,7 @@ void Response::dealWithGet(Request req)
 			if (fileStr != "404")
 				break;
 		}
-		std::cout << "file found = " << fileStr << std::endl;
+		//std::cout << "file found = " << fileStr << std::endl;
 		if (fileStr == "404")
 		{
 			_status = "404 Not Found";
@@ -113,9 +111,9 @@ void Response::dealWithGet(Request req)
 	}
 	else
 	{
-		std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
+		//std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
 		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
-		std::cout << "Content that is not root " << fileStr << std::endl;
+		//std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404")
 		{
 			_status = "404 Not Found";
@@ -129,7 +127,7 @@ void Response::dealWithGet(Request req)
 			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
 			_content = fileStr;
 			_contentLength = fileStr.length();
-			std::cout << "Content that is not root " << fileStr << std::endl;
+		//	std::cout << "Content that is not root " << fileStr << std::endl;
 		}
 	}
 }
