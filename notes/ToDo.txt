@@ -8,6 +8,8 @@ autres pages: preciser keep-alive
 
 Le content type est vide
 Content Length: ne s'affiche pas correctement avec telnet. ?il faut l'envoyer sous forme de string?
+
+Limit client body size in conffile
 ===============================================================================
 rertzer:
 
@@ -21,7 +23,6 @@ cote client:d'abord on shutdown 1 puis on close apres reponse du serveur
 
 Envoyer les bons messages d'erreur
 
-Attention le stream du content peut etre un binaire
 
 gerer le champ connection et ses fields
 
@@ -30,3 +31,5 @@ Vider les buffers
 nom des champs case insensitive
 
 implementer setContentByChunked
+
+si aucun socket ouvert, fermer le programme
