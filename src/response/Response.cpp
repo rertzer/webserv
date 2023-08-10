@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/10 10:56:43 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/10 11:15:19 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,10 @@ std::string readFile(std::string file)
 //First : We find the hostname corresponding to the request
 //Second : We find the port corresponding to the request
 //if he match both we return the server
-Server findTheServ(Request& req, std::vector<Server>& serv)
+Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
+	return *it;
 	std::cout << "Number of serv " << serv.size() << std::endl;
 	std::cout << "Req port = " << req.getPort() << std::endl;
 	while (it != serv.end())
@@ -57,21 +58,21 @@ Server findTheServ(Request& req, std::vector<Server>& serv)
 		std::cout << "Rotation" << std::endl;
 		if (req.getField("Host") == it->getServName())
 		{
+			std::cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
 			std::cout << "port = " << req.getPort() << std::endl;
 			if (it->getListenPort().size() > 1)
 			{
 				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
 				{
-					std::cout << "host = " << req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str() <<"  << *it2 = " << *it2 <<  std::endl;
-
-					if (atoi(req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str()) == *it2)
+					std::cout  << "Mother port " << motherPort << std::endl;
+					if (motherPort == *it2)
 						return (*it);
 				}
 			}
 			else
 			{
-				std::cout << "host = " << req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str() <<"  << *it2 = " << *it->getListenPort().begin() <<  std::endl;
-				if (atoi(req.getField("Host").substr(req.getField("Host").find(":") + 1, req.getField("Host").length()).c_str()) == *it->getListenPort().begin())
+				std::cout  << "Mother port " << motherPort << std::endl;
+				if (motherPort == *it->getListenPort().begin())
 						return (*it);
 			}
 
@@ -143,9 +144,9 @@ std::string Response::getResponse()
 	return (response);
 }
 
-Response::Response(Request& req, std::vector<Server> serv)
+Response::Response(Request& req, std::vector<Server> serv, int motherPort)
 {
-	_serv = findTheServ(req, serv);
+	_serv = findTheServ(req, serv, motherPort);
 	if (req.getMethod() == "GET")
 	{
 		dealWithGet(req);

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 14:20:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 15:27:08 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void	Request::setControlData(std::string cdata)
 		throw (ErrorException(400));
 	query = cdata.substr(m + 1, q - (m + 1));
 	protocol = cdata.substr(q + 1);
-	void checkControlData();
+	checkControlData();
 }
 
 void	Request::checkControlData() const
@@ -144,8 +144,6 @@ void	Request::checkControlData() const
 	}
 	throw (ErrorException(501));
 }
-
-
 //
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs)

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 14:05:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:11:02 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,6 @@ int	Event::handleEvent()
 			std::cout << "execute handle fun " << ev[i] << std::endl;
 			handlefun fun = whichfun[ev[i]];
 			close_fd = (this->*fun)();
-			std::cout << "return value is " << close_fd << std::endl;
 			if (close_fd)
 				return close_fd;
 		}
@@ -127,8 +126,6 @@ int	Event::handleIn()
 	{
 		std::cout << "fd " << soc_fd << " is reading\n";
 		std::string line = soc->readLine();
-		std::cout << "line is: $" << line << "$\n";
-		std::cout << "remain: $" << soc->getMessageIn() << "$" << std::endl;
 		Request req(soc->getPort(), line);
 		while (line.length())
 		{
@@ -143,13 +140,7 @@ int	Event::handleIn()
 		}
 		std::string h = req.getField("Host");
 		std::cout << "Host is : $" << h << "$" << std::endl;
-		std::cout << "Accept-Encoding values:\n";
-		h = req.getField("Accept-Encoding");
-		std::vector<std::string> acc = splitCsv(h);
-		for (unsigned int i = 0; i < acc.size(); i++)
-			std::cout << acc[i] << std::endl;
-		Response resp(req, this->serv);
-		std::cout << "Answer send = " << resp.getResponse() << std::endl;
+		Response resp(req, this->serv, getSocket()->getMotherPort());
 		soc->setMessageOut(resp.getResponse());
 	}
 	catch (const ErrorException & e)

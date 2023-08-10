@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 13:44:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/09 15:55:29 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class TCPSocket
 		TCPSocket &	operator=(TCPSocket const & rhs);
 
 		int			getPort() const;
+		int			getMotherPort() const;
 		int			getFd() const;
 		void		accept(TCPSocket * csoc);
 		void		close();
@@ -57,6 +58,7 @@ class TCPSocket
 
 	private:
 		int					socket_fd;
+		int					mother_port;
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
 		char				buffer[1025];
