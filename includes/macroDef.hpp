@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/04 09:44:25 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/11 15:06:15 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,3 +41,4 @@ int	testSocket(std::vector<Server>);
 void	stringTrim(std::string & str);
 std::vector<std::string>	splitCsv(std::string const & str);
 std::string sendResponse(Request& req, std::vector<Server>& serv);
+std::string intToString(int n);

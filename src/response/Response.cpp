@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/10 14:24:00 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/11 15:25:02 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,24 @@
 //                                "<html><body>Hello</body></html>";
 
 
-std::string readFile(std::string file)
+std::string Response::readFile(std::string file)
 {
 	std::ifstream fileOp;
 	fileOp.open(file.c_str());
 	std::cout << "File to open = " << file << std::endl;
+	if (access(file.c_str(), F_OK) == -1)
+	{
+			_readFileAccess = FILE_NOT_FOUND;
+			return ("404");
+	}
+	if (access(file.c_str(), R_OK) == -1)
+	{
+			_readFileAccess = ACCESS_DENIED;
+			return ("403");
+	}
 	if (fileOp.is_open())
 	{
+		std::cout << "Enterrqrwlpeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
 		std::string stocked;
 		std::string fileStr;
 		while (getline(fileOp, stocked))
@@ -39,6 +50,7 @@ std::string readFile(std::string file)
 	else
 	{
 		fileOp.close();
+		_readFileAccess = FILE_NOT_FOUND;
 		return ("404");
 	}
 }
@@ -50,20 +62,14 @@ std::string readFile(std::string file)
 Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
-	std::cout << "Number of serv " << serv.size() << std::endl;
-	std::cout << "Req port = " << req.getPort() << std::endl;
 	while (it != serv.end())
 	{
-		std::cout << "Rotation" << std::endl;
-		std::cout << req.getField("Host") << " == " << it->getServName() << std::endl;
 		if (req.getField("Host") == it->getServName())
 		{
-			std::cout << "port = " << req.getPort() << std::endl;
 			if (it->getListenPort().size() > 1)
 			{
 				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
 				{
-					//std::cout  << "Mother port " << motherPort << " comparint to " << *it2 << std::endl;
 					if (motherPort == *it2)
 						return (*it);
 				}
@@ -80,33 +86,58 @@ Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 	return (*(serv.begin()));
 }
 
+void Response::CreateErrorPage(Request req, int codeErr)
+{
+	switch (codeErr)
+	{
+		case 404 :
+			_status = "404 Not Found";
+			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
+			_content = readFile(_serv.getRoot() + _serv.getErrorPage("404"));
+			_contentLength = intToString(_content.length());
+			break;
+		case 403 :
+			_status = "403 Access denied";
+			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
+			_content = readFile(_serv.getRoot() + _serv.getErrorPage("403"));
+			_contentLength = intToString(_content.length());
+			break;
+		default : // pop this part just didn t know default
+			_status = "404 Not Found";
+			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
+			_content = readFile(_serv.getRoot() + _serv.getErrorPage("404"));
+			_contentLength = intToString(_content.length());
+	}
+
+
+}
+
 void Response::dealWithGet(Request req)
 {
 	_method = "GET";
 	if (req.getQuery() == "/")
 	{
-		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
+		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
 			fileStr = readFile(_serv.getRoot() + *it);
-			if (fileStr != "404")
+			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
+				break;
+			if (fileStr != "404" && _readFileAccess != FILE_NOT_FOUND)
 				break;
 		}
 		//std::cout << "file found = " << fileStr << std::endl;
-		if (fileStr == "404")
-		{
-			_status = "404 Not Found";
-			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
-			_contentLength = fileStr.length();
-			_content = readFile(_serv.getRoot() + _serv.getErrorPage("404"));
-		}
+		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
+			CreateErrorPage(req, 404);
+		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
+			CreateErrorPage(req, 403);
 		else
 		{
 			std::cout << "Accept field = " << req.getField("Accept") << std::endl;
 			_status = "200 OK";
 			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
-			_contentLength = fileStr.length(); // mettre en string
 			_content = fileStr;
+			_contentLength = intToString(_content.length()); // mettre en string
 		}
 	}
 	else
@@ -114,19 +145,16 @@ void Response::dealWithGet(Request req)
 		//std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
 		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
 		//std::cout << "Content that is not root " << fileStr << std::endl;
-		if (fileStr == "404")
-		{
-			_status = "404 Not Found";
-			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
-			_content = readFile(_serv.getRoot() + _serv.getErrorPage("404"));
-			_contentLength = fileStr.length();
-		}
+		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
+			CreateErrorPage(req, 404);
+		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
+			CreateErrorPage(req, 403);
 		else
 		{
 			_status = "200 OK";
 			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
 			_content = fileStr;
-			_contentLength = fileStr.length();
+			_contentLength = intToString(_content.length());
 		//	std::cout << "Content that is not root " << fileStr << std::endl;
 		}
 	}
@@ -144,6 +172,7 @@ std::string Response::getResponse()
 
 Response::Response(Request& req, std::vector<Server> serv, int motherPort)
 {
+	_readFileAccess = OK;
 	_serv = findTheServ(req, serv, motherPort);
 	if (req.getMethod() == "GET")
 	{
