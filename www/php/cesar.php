@@ -9,9 +9,8 @@
 		<p>Veuillez entrer le texte et sa clé</p>
 		<form action="cesar.php" method="post">
 			<div>
-				<textarea type="text" name="texte_area" rows="8" cols="70" maxlength=10000 value="">
-				</textarea>
-				<select name="cypher_key">
+				<textarea type="text" name="texte_area" rows="8" cols="70" maxlength="10000" placeholder="Votre texte ici"></textarea>
+				<select name="cipher_key">
 					<option value="1">A</option>
 					<option value="2">B</option>
 					<option value="3">C</option>
@@ -46,9 +45,43 @@
 			</div>
 		</form>
 		<?php
+			function cesar_cipher($letter, $key)
+			{
+				$charmin = 'abcdefghijklmnopqrstuvwxyz';
+				$charmaj = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				if (($pos = strpos($charmin, $letter)) !== FALSE)
+				{
+					$newpos = ($pos + $key) % 26;
+					return $charmin[$newpos];
+				}
+				elseif (($pos = strpos($charmaj, $letter)) !== FALSE)
+				{
+					$newpos = ($pos + $key) % 26;
+					return $charmaj[$newpos];
+				}
+				else
+				{
+					return $letter;
+				}
+
+			}
+
 			if (isset($_POST['cipher']))
 			{
 				$texte = $_POST['texte_area'];
+				for ($i = 0; $i < strlen($texte); $i++)
+				{
+					$texte[$i] = cesar_cipher($texte[$i], $_POST['cipher_key']);
+				}
+				echo "$texte";
+			}
+			if (isset($_POST['decipher']))
+			{
+				$texte = $_POST['texte_area'];
+				for ($i = 0; $i < strlen($texte); $i++)
+				{
+					$texte[$i] = cesar_cipher($texte[$i], -1 * $_POST['cipher_key']);
+				}
 				echo "$texte";
 			}
 		?>
