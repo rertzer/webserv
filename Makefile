@@ -12,15 +12,21 @@ INC_DIR = ./includes
 
 SOCKET_DIR = socket/
 EXCEPTION_DIR = exception/
+LISTING_DIR = dirlisting/
 PARS_DIR = parser_serv/
+RESP_DIR = response/
 
 SOURCES := main.cpp
 
 SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp splitCsv.cpp socket_test2.cpp
 EXCEPTION_SOURCES = ErrorException.cpp Status.cpp
+LISTING_SOURCES =
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
+RESP_SOURCES = Response.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
+SOURCES += $(addprefix $(RESP_DIR), $(RESP_SOURCES))
+SOURCES += $(addprefix $(LISTING_DIR), $(LISTING_SOURCES))
 SOURCES += $(addprefix $(EXCEPTION_DIR), $(EXCEPTION_SOURCES))
 SOURCES += $(addprefix $(PARS_DIR), $(PARS_SOURCES))
 
@@ -37,6 +43,9 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -MMD $< -o $@ -I $(INC_DIR)
 
+debug : CXXFLAGS += DEBUG
+debug : re
+	./$(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o  $@ $(OBJS)
@@ -50,6 +59,7 @@ clean:
 	rm -fd $(OBJ_DIR)$(PARS_DIR)
 	rm -fd $(OBJ_DIR)$(EXCEPTION_DIR)
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
+	rm -fd $(OBJ_DIR)$(RESP_DIR)
 	rm -fd $(OBJ_DIR)
 
 fclean: clean

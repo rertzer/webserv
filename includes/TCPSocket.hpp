@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 12:56:05 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/10 11:19:37 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define TCPSOCKET_HPP
 
 # include <iostream>
+# include <sstream>
 # include <string>
 # include <stdlib.h>
 # include <unistd.h>
@@ -21,6 +22,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 
+# include <string.h>
 # include "ErrorException.hpp"
 
 class TCPSocket
@@ -33,10 +35,12 @@ class TCPSocket
 		TCPSocket &	operator=(TCPSocket const & rhs);
 
 		int			getPort() const;
+		int			getMotherPort() const;
 		int			getFd() const;
-		void		accept(TCPSocket & csoc);
+		void		accept(TCPSocket * csoc);
 		void		close();
 		int			read();
+		int			rawRead(std::stringstream & content, int len);
 		std::string	getMessageIn() const;
 		std::string	getMessageOut() const;
 		void		setMessageIn(std::string msg);
@@ -56,9 +60,10 @@ class TCPSocket
 
 	private:
 		int					socket_fd;
+		int					mother_port;
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
-		char				buffer[1024];
+		char				buffer[1025];
 		std::string			msg_in;
 		std::string			msg_out;
 

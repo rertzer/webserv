@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 09:54:11 by pjay              #+#    #+#             */
-/*   Updated: 2023/07/31 14:40:14 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/04 10:12:48 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int checkBracket(std::ifstream& conf)
 	}
 	if (bracketOpen.size() == 0)
 	{
-		std::cout << "Brackets are well closed" << std::endl;
+		//std::cout << "Brackets are well closed" << std::endl;
 		return (0);
 	}
 	else
