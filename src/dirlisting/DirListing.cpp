@@ -1,35 +1,43 @@
 #include "DirListing.hpp"
 
-DirListing::DirListing(std::string path)
+DirListing::DirListing(std::string p):path(p)
 {
 	DIR	*dd;
-
-	dd = opendir(path);
+	dd = opendir(path.c_str());
 	if (dd == NULL)
 		throw (ErrorException(500));
-	setContent(dd);
+	setDirContent(dd);
 	closedir(dd);
 }
 
+DirListing::DirListing(DirListing const & rhs)
+{
+	*this = rhs;
+}
+
+DirListing::~DirListing()
+{}
+
+
+DirListing &	DirListing::operator=(DirListing const & rhs)
+{
+	if (this != &rhs)
+	{
+		path = rhs.path;
+		dir_content = rhs.dir_content;
+	}
+	return *this;
+}
 std::vector<FileDesc>	DirListing::getDirContent() const
 {
 	return dir_content;
 }
 
 //private
-DirListing::Dirlisting()
+DirListing::DirListing()
 {}
 
-DirListing::DirListing(DirListing const & rhs)
-{
-	if (this != &rhs)
-		*this = rhs;
-}
 
-DirListing &	DirListing::operator=(DirListing const & rhs)
-{
-	static_cast<void>(rhs);
-}
 
 void	DirListing::setDirContent(DIR * dd)
 {
@@ -39,7 +47,7 @@ void	DirListing::setDirContent(DIR * dd)
 	entry = readdir(dd);
 	while (entry)
 	{
-		dir_content.push_back(FileDesc(entry));
+		dir_content.push_back(FileDesc(path, entry));
 		entry = readdir(dd);
 	}
 	if (errno)

@@ -6,24 +6,45 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:48:57 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 14:35:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/12 11:01:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "FileDesc.hpp"
+#include <string.h>
 
-FileDesc::FileDesc(std::string path, struct dirent sd)
+FileDesc::FileDesc(std::string path, struct dirent * sd)
 {
 	struct stat	statbuf;
 
-	name = sd.d_name;
+	name = sd->d_name;
 	path += name;
-
 	if (lstat(path.c_str(), &statbuf) == -1)
-		throw (ErrorException(500));
+	{
+		std::cout << strerror(errno) << std::endl;
+		//throw (ErrorException(500));
+	}
 	size = statbuf.st_size;
 	type = statbuf.st_mode & S_IFMT;
-	last_modified = ctime(statbuf.st_mtimi.tv_sec);
+	last_modified = std::ctime(& statbuf.st_mtim.tv_sec);
+}
+
+FileDesc::FileDesc(FileDesc const & rhs)
+{
+		*this = rhs;
+}
+
+FileDesc &	FileDesc::operator=(FileDesc const & rhs)
+{
+
+	if (this != &rhs)
+	{
+		name = rhs.name;
+		last_modified = rhs.last_modified;
+		type = rhs.type;
+		size = rhs.size;
+	}
+	return *this;
 }
 
 FileDesc::~FileDesc()
@@ -41,7 +62,7 @@ std::string	FileDesc::getLastModified() const
 
 std::string	FileDesc::getTypeName() const
 {
-	std::map<struct mode_t, std::string> typenames;
+	std::map<mode_t, std::string> typenames;
 	typenames[S_IFSOCK] = "socket";
 	typenames[S_IFLNK] = "symbolic link";
 	typenames[S_IFREG] = "regular file";
@@ -60,22 +81,11 @@ unsigned int	FileDesc::getSize() const
 
 bool	FileDesc::isDirectory() const
 {
-	if (type == S_ISDIR)
+	if (type == S_IFDIR)
 		return true;
 	return false;
 }
 
 // private
-FileDesc::Filedesc()
+FileDesc::FileDesc()
 {}
-
-FileDesc::FileDesc(FileDesc const & rhs)
-{
-	if (this == &rhs)
-		*this = rhs;
-}
-
-FileDesc &	FileDesc::operator=(FileDesc const & rhs)
-{
-	static_cast<void>(rhs);
-}

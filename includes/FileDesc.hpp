@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:38:51 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 14:20:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/12 10:33:27 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,18 @@
 # include <ctime>
 # include <dirent.h>
 # include <string>
+# include <map>
 # include <sys/stat.h>
+# include "ErrorException.hpp"
 
 class	FileDesc
 {
 	public:
-		FileDesc(std::string path, struct dirent sd);
+		FileDesc(std::string p, struct dirent * sd);
+		FileDesc(FileDesc const & rhs);
 		~FileDesc();
+		FileDesc &	operator=(FileDesc const & rhs);
+
 		std::string		getName() const;
 		std::string		getLastModified() const;
 		std::string		getTypeName() const;
@@ -32,12 +37,10 @@ class	FileDesc
 
 	private:
 		FileDesc();
-		FileDesc(FileDesc const & rhs);
-		operator=(FileDesc const & rhs);
 
 		std::string		name;
 		std::string		last_modified;
-		struct mode_t	type;
+		mode_t			type;
 		unsigned int	size;
 };
 

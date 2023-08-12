@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 09:25:14 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 11:38:50 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/12 10:40:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,5 @@ class	ErrorException: public std::exception
 	private:
 		int	code;
 };
-
 
 #endif
