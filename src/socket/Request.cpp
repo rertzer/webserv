@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/14 09:46:29 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/14 11:46:25 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Request::Request(TCPSocket * s):port(s->getMotherPort()), status(100), soc(s)
 	setHeader();
 	if (contentExist())
 		setContent();
-	
+
 	std::cout << "Request created:\n" << *this << std::endl;
 }
 
@@ -87,7 +87,7 @@ bool	Request::checkField(std::string const & name, std::string const & value) co
 {
 	std::string field = getField(name);
 	std::vector<std::string> all_values = splitCsv(field);
-}*/	
+}*/
 
 int	Request::getIntField(std::string const & name) const
 {
@@ -147,9 +147,9 @@ void	Request::setControlData()
 	if (q == -1)
 		throw (ErrorException(400));
 	query = line.substr(m + 1, q - (m + 1));
-	
+
 	protocol = line.substr(q + 1);
-	
+
 	checkControlData();
 }
 
@@ -157,7 +157,6 @@ void	Request::setHeader()
 {
 	int	line_nb = 1;
 
-	std::cout << "setHeader\n";
 	std::string	line = soc->readLine();
 
 	while (line.length())
@@ -188,7 +187,8 @@ void	Request::setContent()
 	else
 	{
 		int len = getIntField("Content-Length");
-		
+
+		//max content size a definir dans fichier conf
 		if (len > 0 && len < 16777216)
 			setContentByLength(len);
 		else
@@ -204,7 +204,6 @@ void	Request::setContentByChunked()
 
 void	Request::setContentByLength(int len)
 {
-	std::cout << "setContentByLength\n";
 	soc->rawRead(content, len);
 }
 
@@ -215,7 +214,7 @@ void	Request::checkControlData() const
 	std::vector<std::string> allowed_methods;
 
 	allowed_methods.push_back("GET");
-	allowed_methods.push_back("HEAD");
+	allowed_methods.push_back("HEAD");// ???????????????
 	allowed_methods.push_back("POST");
 	allowed_methods.push_back("DELETE");
 

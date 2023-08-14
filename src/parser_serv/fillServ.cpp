@@ -6,13 +6,13 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/04 10:12:30 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/14 11:47:31 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-int fillServ(char *av, std::vector<Server>& serv)
+int fillServ(std::string av, std::vector<Server>& serv)
 {
 	std::ifstream conf;
 	std::string lineString;
@@ -22,7 +22,7 @@ int fillServ(char *av, std::vector<Server>& serv)
 	int countLine = 0;
 	try
 	{
-		conf.open(av, std::fstream::in);
+		conf.open(av.c_str(), std::fstream::in);
 	}
 	catch (std::exception &e)
 	{

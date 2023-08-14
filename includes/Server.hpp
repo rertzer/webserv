@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/04 12:18:36 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/14 11:39:42 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 class Server
 {
 	private:
+		
 		std::string _servName;
 		std::vector<int> _nPort;
 		std::vector<std::string> _defaultPage;

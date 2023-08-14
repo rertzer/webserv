@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPSocket.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 11:19:37 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/14 15:30:22 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class TCPSocket
 		std::string	readLine();
 		int			send();
 
-		
+
 		class	SocketException: public std::exception
 		{
 			public:

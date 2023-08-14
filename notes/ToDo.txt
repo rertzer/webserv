@@ -1,15 +1,20 @@
 ================================================================================
 Pjay:
-	
+
 Si pas de fichier conf fourni en argument en prendre un par defaut
 
-Pages d'erreur: Connection close et pas content length
+si page erreur alors connection close
 autres pages: preciser keep-alive
 
-Le content type est vide
-Content Length: ne s'affiche pas correctement avec telnet. ?il faut l'envoyer sous forme de string?
+Limit client body size in conffile et stocker dans le serv pars
 
-Limit client body size in conffile
+creer une table qui connait tout les types de fichers pour le rajouter apres avoir trouver le type : html = text/html jpeg = image/jpeg
+
+preciser les methodes autorisees dans les differentes routes
+Code la methode delete
+ameliorer le fonction qui creer un errpage en fonction du code d'erreur
+Elle doit pouvoir etre appele comme tu veux
+Avec un post regarde comment fonctionne le content de la request
 ===============================================================================
 rertzer:
 
@@ -36,6 +41,7 @@ si aucun socket ouvert, fermer le programme
 
 directory indexing: autoindex on/off
 
+finir les handle event
 allow_methods
 client_max_body_size
 client_body_temp_path

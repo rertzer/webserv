@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/07 15:31:40 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/14 11:48:49 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,24 +39,33 @@ int main(int ac, char **av)
 	}
 
 	// Quand pas de param il faut fournir un fichier par defaut
-	if (ac != 2)
+	if (ac > 2)
 	{
-		std::cout << "The program need 1 parametter, a .conf parametter" << std::endl;
+		std::cout << "The program can have 1 parameter not more" << std::endl;
 		return (1);
 	}
-
-	std::string arg(av[1]);
-	std::string confExtension = ".conf";
-	size_t extensionPos = arg.length() - confExtension.length();
-	if (arg.compare(extensionPos, confExtension.length(), confExtension) != 0)
+	if (av[1])
 	{
-		std::cout << "The program needs a .conf parameter" << std::endl;
-		return 1;
+		std::string arg(av[1]);
+		std::string confExtension = ".conf";
+		size_t extensionPos = arg.length() - confExtension.length();
+		if (arg.compare(extensionPos, confExtension.length(), confExtension) != 0)
+		{
+			std::cout << "The program needs a .conf parameter" << std::endl;
+			return 1;
+		}
 	}
-	if (checkConfFile(av[1]) == -1)
-		return (1);
 	std::vector<Server> serv;
-	if (fillServ(av[1], serv) == -1)
+	std::string confFileName;
+	if (av[1])
+		confFileName = av[1];
+	else
+	{
+		confFileName = "webserv_2.conf";
+	}
+	if (checkConfFile(confFileName) == -1)
+			return (1);
+	if (fillServ(confFileName, serv) == -1)
 		return (1);
 	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
 	testSocket(serv);

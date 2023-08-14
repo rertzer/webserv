@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TCPSocket.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 11:57:27 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/14 15:30:29 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ TCPSocket::TCPSocket(int p):mother_port(p)
 	socket_addr.sin_family = AF_INET;
 	socket_addr.sin_port = htons(p);
 	socket_addr.sin_addr.s_addr = INADDR_ANY;
-	
+
 
 	socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (socket_fd == -1)
@@ -66,7 +66,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 	std::cout << "assign op fd " << rhs.getFd() << std::endl;
 	if (this != &rhs)
 	{
-		
+
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
 		socket_addr_length = rhs.socket_addr_length;
@@ -74,7 +74,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 		msg_out = rhs.msg_out;
 		for (int i = 0; i < 1024; i++)
 			buffer[i] = rhs.buffer[i];
-	}	
+	}
 	return *this;
 }
 
@@ -112,7 +112,7 @@ void	TCPSocket::close()
 }
 
 int	TCPSocket::read()
-{	
+{
 	int	read_size = ::read(socket_fd, buffer, buffer_size);
 	if (read_size > 0)
 		buffer[read_size] = '\0';
@@ -131,6 +131,7 @@ int	TCPSocket::rawRead(std::stringstream & content, int len)
 	{
 		std::cout << "len to read: " << len << ". Total read: " << total_read << std::endl;
 		int to_read = (len < buffer_size) ? len : buffer_size;
+		// centraliser les read
 		int	read_size = ::read(socket_fd, buffer, to_read);
 		if (read_size < 0 || (read_size == 0 && len))
 			throw (ErrorException(500));
@@ -173,7 +174,7 @@ std::string	TCPSocket::readLine()
 		{
 			line = msg_in.substr(0, pos);
 			msg_in = msg_in.erase(0, pos + 2);
-			std::cout << "read line " << line << std::endl;
+			//std::cout << "read line " << line << std::endl;
 			break;
 		}
 
