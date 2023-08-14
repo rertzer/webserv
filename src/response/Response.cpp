@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/11 15:25:02 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/12 15:34:10 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ std::string Response::readFile(std::string file)
 	}
 	if (fileOp.is_open())
 	{
-		std::cout << "Enterrqrwlpeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
 		std::string stocked;
 		std::string fileStr;
 		while (getline(fileOp, stocked))
@@ -160,6 +159,54 @@ void Response::dealWithGet(Request req)
 	}
 }
 
+void Response::dealWithPost(Request req)
+{
+	_method = "POST";
+	if (req.getQuery() == "/")
+	{
+		std::string fileStr;
+		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
+		{
+			fileStr = readFile(_serv.getRoot() + *it);
+			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
+				break;
+			if (fileStr != "404" && _readFileAccess != FILE_NOT_FOUND)
+				break;
+		}
+		//std::cout << "file found = " << fileStr << std::endl;
+		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
+			CreateErrorPage(req, 404);
+		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
+			CreateErrorPage(req, 403);
+		else
+		{
+			std::cout << "Accept field = " << req.getField("Accept") << std::endl;
+			_status = "200 OK";
+			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
+			_content = fileStr;
+			_contentLength = intToString(_content.length()); // mettre en string
+		}
+	}
+	else
+	{
+		//std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
+		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
+		//std::cout << "Content that is not root " << fileStr << std::endl;
+		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
+			CreateErrorPage(req, 404);
+		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
+			CreateErrorPage(req, 403);
+		else
+		{
+			_status = "200 OK";
+			_contentType = req.getField("Accept").substr(0, req.getField("Accept").find(","));
+			_content = fileStr;
+			_contentLength = intToString(_content.length());
+		//	std::cout << "Content that is not root " << fileStr << std::endl;
+		}
+	}
+}
+
 std::string Response::getResponse()
 {
 	std::string response = "HTTP/1.1 " + _status + " \r\n"
@@ -177,6 +224,10 @@ Response::Response(Request& req, std::vector<Server> serv, int motherPort)
 	if (req.getMethod() == "GET")
 	{
 		dealWithGet(req);
+	}
+	if (req.getMethod() == "POST")
+	{
+		dealWithPost(req);
 	}
 }
 
