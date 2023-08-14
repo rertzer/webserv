@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 11:27:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/14 09:46:29 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,12 @@ std::string	Request::getField(std::string const & name) const
 	}
 	return it->second;
 }
+/*
+bool	Request::checkField(std::string const & name, std::string const & value) const
+{
+	std::string field = getField(name);
+	std::vector<std::string> all_values = splitCsv(field);
+}*/	
 
 int	Request::getIntField(std::string const & name) const
 {

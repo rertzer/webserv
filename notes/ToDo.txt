@@ -33,3 +33,10 @@ nom des champs case insensitive
 implementer setContentByChunked
 
 si aucun socket ouvert, fermer le programme
+
+directory indexing: autoindex on/off
+
+allow_methods
+client_max_body_size
+client_body_temp_path
+
