@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/14 09:16:56 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/15 11:27:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ class Request
 		const std::string &								getQuery() const;
 		const std::map<std::string, std::string> &		getHeader() const;
 		const std::map<std::string, std::string> &		getTrailer() const;
-		const std::stringstream &						getContent() const;
+		const std::string &								getContent() const;
 		std::string										getField(std::string const & name) const;
 		bool											checkField(std::string const & name, std::string const & value) const;
 		int												getIntField(std::string const & name) const;
@@ -51,6 +51,7 @@ class Request
 		void	setHeader();
 		void	setContent();
 		void	setContentByChunked();
+		int		readChunk();
 		void	setContentByLength(int len);
 		void	checkControlData() const;
 		void	checkHeader() const;
@@ -72,9 +73,7 @@ class Request
 		std::string							method;
 		std::string							query;
 		std::string							protocol;
-		std::stringstream					content;
-
-		static const int	line_max;
+		std::string							content;
 };
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs);

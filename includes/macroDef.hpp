@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/14 11:46:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 12:08:35 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Request;
 
 int 						checkConfFile(std::string av);
 int 						fillServ(std::string av , std::vector<Server>& serv);
-int							testSocket(std::vector<Server>);
+int							serverRun(std::vector<Server>);
 std::string 				sendResponse(Request& req, std::vector<Server>& serv);
 void						stringTrim(std::string & str);
 std::vector<std::string>	splitCsv(std::string const & str);
