@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 10:58:41 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/15 11:27:25 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,8 +202,17 @@ void	Request::setContent()
 void	Request::setContentByChunked()
 {
 	std::cout << "setContentByChunked\n";
+	int len = 1;
+	while (len)
+	{
+		len = readChunk();
+	}
 }
 
+int	Request::readChunk()
+{
+	return 0;
+}
 
 void	Request::setContentByLength(int len)
 {
