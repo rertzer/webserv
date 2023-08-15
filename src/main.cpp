@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/07 15:31:40 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/15 09:16:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,5 @@ int main(int ac, char **av)
 	if (fillServ(av[1], serv) == -1)
 		return (1);
 	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
-	testSocket(serv);
+	serverRun(serv);
 }

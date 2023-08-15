@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   socket_test2.cpp                                   :+:      :+:    :+:   */
+/*   server_run.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 16:00:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/15 09:15:06 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 
 extern sig_atomic_t	quitok;
 
-int	testSocket(std::vector<Server> serv)
+int	serverRun(std::vector<Server> serv)
 {
 	try
 	{

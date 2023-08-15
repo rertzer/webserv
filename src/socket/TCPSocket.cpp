@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 11:57:27 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/15 11:09:53 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 // PUBLIC
 TCPSocket::TCPSocket(int p):mother_port(p)
 {
-	memset(&buffer, 0, 1025);
 	socket_addr_length = sizeof(socket_addr);
 
 	memset(&socket_addr, 0, socket_addr_length);
@@ -23,7 +22,6 @@ TCPSocket::TCPSocket(int p):mother_port(p)
 	socket_addr.sin_port = htons(p);
 	socket_addr.sin_addr.s_addr = INADDR_ANY;
 	
-
 	socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (socket_fd == -1)
 		throw(SocketException());
@@ -44,7 +42,6 @@ TCPSocket::TCPSocket():socket_fd(0), mother_port(0)
 
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
-	memset(&buffer, 0, 1025);
 }
 
 TCPSocket::TCPSocket(TCPSocket const &rhs)
@@ -66,14 +63,11 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 	std::cout << "assign op fd " << rhs.getFd() << std::endl;
 	if (this != &rhs)
 	{
-		
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
 		socket_addr_length = rhs.socket_addr_length;
 		msg_in = rhs.msg_in;
 		msg_out = rhs.msg_out;
-		for (int i = 0; i < 1024; i++)
-			buffer[i] = rhs.buffer[i];
 	}	
 	return *this;
 }
@@ -111,34 +105,19 @@ void	TCPSocket::close()
 	}
 }
 
-int	TCPSocket::read()
+int	TCPSocket::readAll()
 {	
+	char * buffer = new char[buffer_size + 1];
 	int	read_size = ::read(socket_fd, buffer, buffer_size);
 	if (read_size > 0)
 		buffer[read_size] = '\0';
+	else
+		throw (SocketException());
+	std::stringstream	ss;
+	ss.write(buffer, buffer_size);
+	delete[] buffer;
+	msg_in = ss.str();
 	return read_size;
-}
-
-int	TCPSocket::rawRead(std::stringstream & content, int len)
-{
-	int	total_read = 0;
-
-    content << msg_in;
-	len -= msg_in.length();
-	msg_in.clear();
-
-	while (len > 0)
-	{
-		std::cout << "len to read: " << len << ". Total read: " << total_read << std::endl;
-		int to_read = (len < buffer_size) ? len : buffer_size;
-		int	read_size = ::read(socket_fd, buffer, to_read);
-		if (read_size < 0 || (read_size == 0 && len))
-			throw (ErrorException(500));
-		content.write(buffer, read_size);
-		len -= read_size;
-		total_read += read_size;
-	}
-	return total_read;
 }
 
 std::string	TCPSocket::getMessageIn() const
@@ -161,34 +140,25 @@ void	TCPSocket::setMessageOut(std::string msg)
 	msg_out = msg;
 }
 
-std::string	TCPSocket::readLine()
+std::string	TCPSocket::getLine()
 {
 	int	pos = -1;
 	std::string	line;
 
-	while (1)
+	pos = msg_in.find("\r\n");
+	if (pos != -1)
 	{
-		pos = msg_in.find("\r\n");
-		if (pos != -1)
-		{
-			line = msg_in.substr(0, pos);
-			msg_in = msg_in.erase(0, pos + 2);
-			std::cout << "read line " << line << std::endl;
-			break;
-		}
-
-		int len = read();
-
-		if (len == -1)
-			throw (SocketException());
-		if (len == 0)
-			throw (SocketException());
-		if (msg_in.length() + static_cast<unsigned int>(len) >= line_size_max)
-			throw (SocketException());
-
-		msg_in += buffer;
+		line = msg_in.substr(0, pos);
+		msg_in = msg_in.erase(0, pos + 2);
+		std::cout << "read line " << line << std::endl;
 	}
 	return line;
+}
+
+void	TCPSocket::getRawData(std::string & content, int len)
+{
+	content = msg_in.substr(0, len);
+	msg_in.erase(0, len);
 }
 
 int	TCPSocket::send()
@@ -203,5 +173,4 @@ int	TCPSocket::send()
 //max length to which the queue of pending connections may grow
 const int	TCPSocket::backlog = 42;
 //read buffer size
-const int	TCPSocket::buffer_size = 1024;
-const unsigned int	TCPSocket::line_size_max = 20000;
+const int	TCPSocket::buffer_size = 12000000;

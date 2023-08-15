@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/14 09:46:29 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/15 10:58:41 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 Request::Request(TCPSocket * s):port(s->getMotherPort()), status(100), soc(s)
 {
 	std::cout << "fd " << soc->getFd() << " is reading\n";
+	soc->readAll();
 	setControlData();
 	setHeader();
 	if (contentExist())
@@ -41,7 +42,7 @@ Request &	Request::operator=(Request const & rhs)
 		trailer = rhs.trailer;
 		query = rhs.query;
 		method = rhs.method;
-		content << rhs.content;
+		content = rhs.content;
 	}
 	return *this;
 }
@@ -82,12 +83,18 @@ std::string	Request::getField(std::string const & name) const
 	}
 	return it->second;
 }
-/*
+
 bool	Request::checkField(std::string const & name, std::string const & value) const
 {
 	std::string field = getField(name);
 	std::vector<std::string> all_values = splitCsv(field);
-}*/	
+	for (size_t i = 0; i < all_values.size(); i++)
+	{
+		if (ciCompare(all_values[i], value))
+			return true;
+	}
+	return false;
+}	
 
 int	Request::getIntField(std::string const & name) const
 {
@@ -108,7 +115,7 @@ const std::map<std::string, std::string> &	Request::getTrailer() const
 	return trailer;
 }
 
-const std::stringstream &	Request::getContent() const
+const std::string &	Request::getContent() const
 {
 	return content;
 }
@@ -132,11 +139,10 @@ void	Request::addField(std::string const & field)
 // Private
 void	Request::setControlData()
 {
-	std::cout << "setControlData\n";
-	std::string line = soc->readLine();
+	std::string line = soc->getLine();
 
 	if (line.empty())
-		line = soc->readLine();
+		line = soc->getLine();
 
 	int	m = line.find(" ");
 	if (m == -1)
@@ -157,19 +163,16 @@ void	Request::setHeader()
 {
 	int	line_nb = 1;
 
-	std::cout << "setHeader\n";
-	std::string	line = soc->readLine();
+	std::string	line = soc->getLine();
 
 	while (line.length())
 	{
-		if (line_nb >= line_max)
-			break;
 		if (line.length())
 		{
 			addField(line);
 			line_nb++;
 		}
-		line = soc->readLine();
+		line = soc->getLine();
 	}
 }
 
@@ -180,7 +183,7 @@ void	Request::setContent()
 
 	if (! trans_encoding.empty())
 	{
-		if (trans_encoding == "chunked")
+		if (checkField("Transfer-Encoding", "chunked"))
 			setContentByChunked();
 		else
 			throw (ErrorException(501));
@@ -205,7 +208,7 @@ void	Request::setContentByChunked()
 void	Request::setContentByLength(int len)
 {
 	std::cout << "setContentByLength\n";
-	soc->rawRead(content, len);
+	soc->getRawData(content, len);
 }
 
 void	Request::checkControlData() const
@@ -215,7 +218,6 @@ void	Request::checkControlData() const
 	std::vector<std::string> allowed_methods;
 
 	allowed_methods.push_back("GET");
-	allowed_methods.push_back("HEAD");
 	allowed_methods.push_back("POST");
 	allowed_methods.push_back("DELETE");
 
@@ -261,9 +263,6 @@ std::ostream &	operator<<(std::ostream & ost, Request const & rhs)
 	ost << "Trailer:\n";
 	for (std::map<std::string, std::string>::const_iterator it = rhs.getTrailer().begin(); it != rhs.getTrailer().end(); it++)
 		ost << "\t" << it->first << ": " << it->second << "\n";
-	ost << "content: " << rhs.getContent().str() << "\n";
+	ost << "content: " << rhs.getContent() << "\n";
 	return ost;
 }
-
-// static const
-int const	Request::line_max = 1024;
