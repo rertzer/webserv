@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/14 16:53:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 11:59:11 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 void Response::CreateErrorPage(int codeErr)
 {
 	_status = Status::getMsg(codeErr);
-	_contentType = getContentKey(_serv.getErrorPage(intToString(codeErr)));
+	_contentType = getContentKey(_serv.getErrorPage(intToString(codeErr)).substr(_serv.getErrorPage(intToString(codeErr)).rfind(".") + 1, _serv.getErrorPage(intToString(codeErr)).length()));
 	_content = readFile(_serv.getRoot() + _serv.getErrorPage(intToString(codeErr)));
 	_contentLength = intToString(_content.length());
 }
@@ -122,7 +122,8 @@ void Response::dealWithGet(Request req)
 	}
 	else
 	{
-		//std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
+
+		std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
 		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
 		//std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
@@ -175,7 +176,7 @@ void Response::dealWithPost(Request req)
 	{
 		//std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
 		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
-		//std::cout << "Content that is not root " << fileStr << std::endl;
+		std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
 			CreateErrorPage(404);
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
@@ -207,7 +208,10 @@ std::string Response::getContentKey(std::string value)
 	if (value == ".py" || value == ".php")
 		return "text/html";
 	if (it == _allContentType.end())
+	{
+		std::cout << "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP" << std::endl;
 		throw (ErrorException(404));
+	}
 	else
 	{
 		std::cout << "Content key = found " << it->second + "/" + value << std::endl;
