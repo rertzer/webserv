@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 12:09:14 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 13:25:38 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,8 +160,6 @@ void	Request::setControlData()
 
 void	Request::setHeader()
 {
-	int	line_nb = 1;
-
 	std::string	line = soc->getLine();
 
 	while (line.length())
@@ -169,7 +167,6 @@ void	Request::setHeader()
 		if (line.length())
 		{
 			addField(line);
-			line_nb++;
 		}
 		line = soc->getLine();
 	}
@@ -207,11 +204,23 @@ void	Request::setContentByChunked()
 	{
 		len = readChunk();
 	}
+	setTrailer(); 
 }
 
 int	Request::readChunk()
 {
-	return 0;
+	std::stringstream ss;
+	ss << std::hex << soc->getLine();
+	int	size;
+	ss >> size;
+	soc->addRawData(content, size);
+	soc->getLine();
+	return size;
+}
+
+void	Request::setTrailer()
+{
+	setHeader();
 }
 
 void	Request::setContentByLength(int len)
@@ -222,6 +231,7 @@ void	Request::setContentByLength(int len)
 
 void	Request::checkControlData() const
 {
+	std::cout << "protcol is $" << protocol << "$\n";
 	if (protocol != "HTTP/1.1")
 		throw (ErrorException(505));
 	std::vector<std::string> allowed_methods;

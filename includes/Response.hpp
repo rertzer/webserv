@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/14 16:51:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 14:44:15 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Request.hpp"
 #include "Server.hpp"
 #include "Status.hpp"
+#include "Cgi.hpp"
 
 enum codeProb{
 	OK = 200,
@@ -40,6 +41,7 @@ class Response
 		void dealWithGet(Request req);
 		void dealWithPost(Request req);
 		std::string readFile(std::string file);
+		std::string	runFile(std::string, Request & req);
 		std::string getResponse();
 		void CreateErrorPage(int codeErr);
 		std::string getContentKey(std::string value);

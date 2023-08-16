@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 12:08:53 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 13:04:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,11 @@ void	TCPSocket::getRawData(std::string & content, int len)
 	msg_in.erase(0, len);
 }
 
+void	TCPSocket::addRawData(std::string & content, int len)
+{
+	content += msg_in.substr(0, len);
+	msg_in.erase(0, len);
+}
 int	TCPSocket::send()
 {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
