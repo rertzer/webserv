@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 13:04:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/16 13:30:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	TCPSocket::readAll()
 	else
 		throw (SocketException());
 	std::stringstream	ss;
-	ss.write(buffer, buffer_size);
+	ss.write(buffer, read_size);
 	delete[] buffer;
 	msg_in = ss.str();
 	return read_size;

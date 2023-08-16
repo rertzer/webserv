@@ -6,14 +6,14 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/16 12:03:12 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/16 14:06:35 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cgi.hpp"
 
 //public
-Cgi::Cgi(std::string m, std::string p, Request & r):method(m), path(p), req(r)
+Cgi::Cgi(std::string m, std::string p, Request & r):method(m), path(p), req(r), buffer(NULL), buffer_size(16000000);
 {
 	setUrl();
 	setEnv();
@@ -94,33 +94,62 @@ void	Cgi::setEnv()
 	env_map["QUERY_STRING"] = query_string;
 }
 
-void	Cgi::execGet(std::string & command)
+void	Cgi::execGet()
 {
 	int	fd[2];
 	int	status;
 
-	if (pipe(fd) == -1)
+	if (::pipe(fd) == -1)
 		throw (ErrorException(500));
-	int	pid = fork();
+	int	pid = ::fork();
 	if (pid < 0)
 		throw (ErrorException(500));
 	if (pid == 0)
-	{
-		if (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1)
-			throw (ErrorException(500));
+		execGetSon(fd);
+	if (pid)
+		execGetFather(fd);
+}
+
+int	Cgi::execGetSon(int* fd)
+{
+		if (::dup2(fd[1], 1) == -1 || ::close(fd[0]) == -1 || ::close(fd[1]) == -1)
+			exit(-1);
 		char** argv = formatArg();
 		char** envp = formatEnv();
-		execve(editCommand().c_str(),, envp);
+		::execve(editCommand().c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
+		exit(-1);
+}
+
+void	Cgi::execGetFather(int* fd)
+{
+	int	status;
+
+	::close(fd[1]);
+	
+	waitpid(pid, &status, 0);
+	if (status == -1)
+	{
+		::close(fd[0]);
 		throw (ErrorException(500));
 	}
-	if (pid)
+	
+	buffer = new char[buffer_size + 1];
+	int	read_size = ::read(fd[0], buffer, buffer_size);
+	if (read_size <= 0)
 	{
-		waitpid(pid, &status, 0);
-		if (dup2(fd[0], 0) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1)
-			throw (ErrorException(500));
+		delete[] buffer;
+		::close(fd[0]);
+		throw (ErrorException(500));
 	}
+	buffer[read_size] = '\0';
+
+	std::stringstream ss;
+	ss.write(buffer, read_size);
+	delete[] buffer;
+	content = ss.str();
+	::close(fd[0]);
 }
 
 void	Cgi::execPost(std::string & command)
@@ -128,22 +157,22 @@ void	Cgi::execPost(std::string & command)
 
 char**	Cgi::formatArgv()
 {
-	char** argv = new char*[1];
-	argv[0] = new char[path.size()];
-	*argv[0] = path.c_str();
+	const char** argv = new const char*[1];
+	//const char* argv[0] = new const char[path.size()];
+	argv[0] = path.c_str();
 	return argv;
 }
 
 char**	Cgi::formatEnv()
 {
-	char** env_array = new char*[env_map.size()];
+	const char** env_array = new const char*[env_map.size()];
 	int	i = 0;
 	for (std::map<std::string, std::string>::const_operator it = env_map.begin(); it != env_map.end(); it++)
 	{
 		std::string	tmp;
 		tmp.append(it->first + "=" + it->second);
-		env_array[i] = new char[string.size()];
-		*env_array[i] = tmp.c_str();
+		//env_array[i] = new char[string.size()];
+		env_array[i] = tmp.c_str();
 		i++;
 	}
 	return env_array;
@@ -152,8 +181,8 @@ char**	Cgi::formatEnv()
 std::string Cgi::editCommand()
 {
 	if (script == "php")
-		return ("php ");
+		return ("php");
 	if (script == "py")
-		return ("python3 ");
+		return ("python3");
 }
 

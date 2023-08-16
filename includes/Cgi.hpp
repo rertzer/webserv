@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/16 11:44:57 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/16 14:07:08 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ class	Cgi
 		void		setUrl();
 		void		setEnv();
 		void		execGet();
+		int			execGetSon(int* fd);
+		void		execGetFather(int* fd);
 		void		execPost();
 
 		std::string	editEnv();
@@ -49,6 +51,8 @@ class	Cgi
 		std::string	query_string;
 		std::string	content;
 		sttd::map<std::string, std::string> env_map;
+		char*	buffer;
+		int		buffer_size;
 		Request & 	req;
 
 };
