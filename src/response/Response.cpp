@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 09:01:15 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 09:44:48 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void checkExec(std::string filePath)
 	{
 		throw (ErrorException(404));
 	}
-	if (access(filePath.c_str(), X_OK) == -1)
+	if (access(filePath.c_str(), R_OK) == -1)
 	{
 		throw (ErrorException(403));
 	}
@@ -164,13 +164,22 @@ void Response::dealWithPost(Request req)
 	feelPart(req);
 }
 
-// void Response::dealWithDelete(Request req)
-// {
-// 	_method = "DELETE";
-// 	checkExec(_serv.getRoot() + req.getQuery());
-// 	if (std::remove((_serv.getRoot() + req.getQuery()).c_str()) != 0)
-// 	_
-// }
+void Response::dealWithDelete(Request req)
+{
+	_method = "DELETE";
+	checkExec(_serv.getRoot() + req.getQuery());
+	if (std::remove((_serv.getRoot() + req.getQuery()).c_str()) != 0)
+	{
+		CreateErrorPage(500);
+	}
+	else
+	{
+		_status = "200 OK";
+		_contentType = "text/html";
+		_content = "<html><body>File deleted</body></html>";
+		_contentLength = intToString(_content.length());
+	}
+}
 
 std::string Response::getResponse()
 {
@@ -349,8 +358,11 @@ Response::Response(Request& req, std::vector<Server> serv, int motherPort)
 			dealWithGet(req);
 		else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
 			dealWithPost(req);
-		// else if (req.getMethod() == "DELETE" && (allowMethod == DELETE || allowMethod == GETDELETE || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
-		// 	dealWithDelete(req);
+		else if (req.getMethod() == "DELETE" && (allowMethod == DELETE || allowMethod == GETDELETE || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
+		{
+			std::cout <<"in delete meth" << std::endl;
+			dealWithDelete(req);
+		}
 		else
 		{
 			std::cout << "Enter here " << std::endl;
@@ -367,10 +379,10 @@ Response::Response(Request& req, std::vector<Server> serv, int motherPort)
 		{
 			dealWithPost(req);
 		}
-		// else if (req.getMethod() == "DELETE")
-		// {
-		// 	dealWithDelete(req);
-		// }
+		else if (req.getMethod() == "DELETE")
+		{
+			dealWithDelete(req);
+		}
 		else
 		{
 
