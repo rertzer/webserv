@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:02:41 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 09:00:45 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 11:15:17 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,3 @@ class LineLoc
 		LineLoc(std::string line);
 		int checkArgs(std::string toFind);
 };
-

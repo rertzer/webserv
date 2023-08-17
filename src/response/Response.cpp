@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 09:44:48 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:29:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ void checkExec(std::string filePath)
 		throw (ErrorException(403));
 	}
 }
-
 
 std::string Response::readFile(std::string file)
 {
@@ -62,6 +61,8 @@ std::string Response::readFile(std::string file)
 	}
 }
 
+
+
 //We need to add something to find default server
 //First : We find the hostname corresponding to the request
 //Second : We find the port corresponding to the request
@@ -81,14 +82,14 @@ void Response::feelPart(Request req)
 			}
 			if (fileStr != "404" && _readFileAccess != FILE_NOT_FOUND)
 			{
-				_contentType = getContentKey(it->substr(it->rfind(".") + 1, it->length()));
+				_contentType = _contentMap.getContentValue(it->substr(it->rfind(".") + 1, it->length()));
 				break;
 			}
 		}
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
-			CreateErrorPage(404);
+			*this = createErrorPage(404, _serv);
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
-			CreateErrorPage(403);
+			*this = createErrorPage(403, _serv);
 		else
 		{
 			_status = "200 OK";
@@ -100,55 +101,17 @@ void Response::feelPart(Request req)
 	{
 		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
-			CreateErrorPage(404);
+			*this = createErrorPage(404, _serv);
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
-			CreateErrorPage(403);
+			*this = createErrorPage(403, _serv);
 		else
 		{
 			_status = "200 OK";
-			_contentType = getContentKey(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
+			_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
 			_contentLength = intToString(_content.length());
 		}
 	}
-}
-
-
-Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
-{
-	std::vector<Server>::iterator it = serv.begin();
-	while (it != serv.end())
-	{
-		if (req.getField("Host") == it->getServName())
-		{
-			if (it->getListenPort().size() > 1)
-			{
-				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
-				{
-					if (motherPort == *it2)
-						return (*it);
-				}
-			}
-			else
-			{
-				if (motherPort == *it->getListenPort().begin())
-						return (*it);
-			}
-
-		}
-		it++;
-	}
-	return (*(serv.begin()));
-}
-
-void Response::CreateErrorPage(int codeErr)
-{
-	std::cout << "codeErr = " << codeErr << std::endl;
-	_status = Status::getMsg(codeErr);
-	_contentType = getContentKey(_serv.getErrorPage(intToString(codeErr)).substr(_serv.getErrorPage(intToString(codeErr)).rfind(".") + 1, _serv.getErrorPage(intToString(codeErr)).length()));
-	_content = readFile(_serv.getRoot() + _serv.getErrorPage(intToString(codeErr)));
-	_contentLength = intToString(_content.length());
-	_connectionClose = "close";
 }
 
 void Response::dealWithGet(Request req)
@@ -170,7 +133,7 @@ void Response::dealWithDelete(Request req)
 	checkExec(_serv.getRoot() + req.getQuery());
 	if (std::remove((_serv.getRoot() + req.getQuery()).c_str()) != 0)
 	{
-		CreateErrorPage(500);
+		*this = createErrorPage(404, _serv);
 	}
 	else
 	{
@@ -193,79 +156,6 @@ std::string Response::getResponse()
 	return (response);
 }
 
-std::string Response::getContentKey(std::string value)
-{
-	std::map<std::string, std::string>::iterator it = _allContentType.find(value);
-	if (value == ".py" || value == ".php")
-		return "text/html";
-	if (it == _allContentType.end())
-	{
-		std::cout << "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP" << std::endl;
-		throw (ErrorException(404));
-	}
-	else
-	{
-		std::cout << "Content key = found " << it->second + "/" + value << std::endl;
-		return (it->second + "/" + value);
-	}
-}
-
-void Response::iniateContentMap()
-{
-	_allContentType["EDI-X12"] = "application";
-	_allContentType["EDIFACT"] = "application";
-	_allContentType["javascript"] = "application";
-	_allContentType["octet-stream"] = "application";
-	_allContentType["ogg"] = "application";
-	_allContentType["pdf"] = "application";
-	_allContentType["xhtml+xml"] = "application";
-	_allContentType["x-shockwave-flash"] = "application";
-	_allContentType["json"] = "application";
-	_allContentType["ld+json"] = "application";
-	_allContentType["xml"] = "application";
-	_allContentType["zip"] = "application";
-	_allContentType["x-www-form-urlencoded"] = "application";
-	_allContentType["mpeg"] = "audio";
-	_allContentType["x-ms-wma"] = "audio";
-	_allContentType["vnd.rn-realaudio"] = "audio";
-	_allContentType["x-wav"] = "audio";
-	_allContentType["gif"] = "image";
-	_allContentType["jpeg"] = "image";
-	_allContentType["png"] = "image";
-	_allContentType["tiff"] = "image";
-	_allContentType["vnd.microsoft.icon"] = "image";
-	_allContentType["x-icon"] = "image";
-	_allContentType["vnd.djvu"] = "image";
-	_allContentType["svg+xml"] = "image";
-	_allContentType["mixed"] = "multipart";
-	_allContentType["alternative"] = "multipart";
-	_allContentType["related"] = "multipart";
-	_allContentType["form-data"] = "multipart";
-	_allContentType["css"] = "text";
-	_allContentType["csv"] = "text";
-	_allContentType["html"] = "text";
-	_allContentType["javascript"] = "text";
-	_allContentType["plain"] = "text";
-	_allContentType["xml"] = "text";
-	_allContentType["mpeg"] = "video";
-	_allContentType["mp4"] = "video";
-	_allContentType["quicktime"] = "video";
-	_allContentType["x-ms-wmv"] = "video";
-	_allContentType["x-msvideo"] = "video";
-	_allContentType["x-flv"] = "video";
-	_allContentType["webm"] = "video";
-	_allContentType["vnd.oasis.opendocument.text"] = "application";
-	_allContentType["vnd.oasis.opendocument.spreadsheet"] = "application";
-	_allContentType["vnd.oasis.opendocument.presentation"] = "application";
-	_allContentType["vnd.oasis.opendocument.graphics"] = "application";
-	_allContentType["vnd.ms-excel"] = "application";
-	_allContentType["vnd.openxmlformats-officedocument.spreadsheetml.sheet"] = "application";
-	_allContentType["vnd.ms-powerpoint"] = "application";
-	_allContentType["vnd.openxmlformats-officedocument.presentationml.presentation"] = "application";
-	_allContentType["msword"] = "application";
-	_allContentType["vnd.openxmlformats-officedocument.wordprocessingml.document"] = "application";
-	_allContentType["vnd.mozilla.xul+xml"] = "application";
-}
 
 int Response::checkIfLocation(std::string path)
 {
@@ -342,12 +232,10 @@ int checkAllowMethod(Location loc)
 	return (-1);
 }
 
-Response::Response(Request& req, std::vector<Server> serv, int motherPort)
+Response::Response(Request& req, Server serv)
 {
 	_readFileAccess = OK;
-	iniateContentMap();
-
-	_serv = findTheServ(req, serv, motherPort);
+	_serv = serv;
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
 		Location loc = getTheLocation(req.getQuery());
@@ -366,28 +254,48 @@ Response::Response(Request& req, std::vector<Server> serv, int motherPort)
 		else
 		{
 			std::cout << "Enter here " << std::endl;
-			CreateErrorPage(405);
+			*this = createErrorPage(405, _serv);
 		}
 	}
 	else
 	{
 		if (req.getMethod() == "GET")
 		{
+			std::cout << "IN GET" << std::endl;
 			dealWithGet(req);
 		}
 		else if (req.getMethod() == "POST")
 		{
+			std::cout << "IN POST" << std::endl;
 			dealWithPost(req);
 		}
 		else if (req.getMethod() == "DELETE")
 		{
+			std::cout << "IN DELETE" << std::endl;
 			dealWithDelete(req);
 		}
 		else
 		{
-
-			CreateErrorPage(405);
+			*this = createErrorPage(404, _serv);
 		}
 	}
 }
 
+Response::Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content)
+{
+	_status = status;
+	_contentType = contentType;
+	_contentLength = contentLength;
+	_connectionClose = connectionClose;
+	_content = content;
+}
+
+Response& Response::operator=(Response const & rhs)
+{
+	_status = rhs._status;
+	_contentType = rhs._contentType;
+	_contentLength = rhs._contentLength;
+	_connectionClose = rhs._connectionClose;
+	_content = rhs._content;
+	return *this;
+}

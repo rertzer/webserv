@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/16 13:45:42 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:23:22 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Request.hpp"
 #include "Server.hpp"
 #include "Status.hpp"
+#include "ContentMap.hpp"
 
 enum codeProb{
 	OK = 200,
@@ -37,25 +38,25 @@ enum methodAllowed
 class Response
 {
 	private:
-		Server _serv;
+		Server		_serv;
 		std::string _method;
 		std::string _status;
 		std::string _contentType;
 		std::string _contentLength;
 		std::string _connectionClose;
-		int _readFileAccess;
 		std::string _content;
-		std::map<std::string, std::string> _allContentType;
+		int 		_readFileAccess;
+		ContentMap	_contentMap;
 
 	public:
-		Response(Request& req, std::vector<Server> serv, int motherPort);
-		Response(std::vector<Server> serv, int codeErr);
+		Response(Request& req, Server serv);
+		Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content);
+		Response& operator=(Response const & rhs);
 		void dealWithGet(Request req);
 		void dealWithPost(Request req);
 		void dealWithDelete(Request req);
 		std::string readFile(std::string file);
 		std::string getResponse();
-		void CreateErrorPage(int codeErr);
 		std::string getContentKey(std::string value);
 		std::string findLocation(std::string path);
 		int checkIfLocation(std::string path);

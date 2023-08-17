@@ -23,7 +23,7 @@ EXCEPTION_SOURCES = ErrorException.cpp Status.cpp
 LISTING_SOURCES =
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
-RESP_SOURCES = Response.cpp utilsResp.cpp
+RESP_SOURCES = Response.cpp utils.cpp contentMap.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
 SOURCES += $(addprefix $(RESP_DIR), $(RESP_SOURCES))
