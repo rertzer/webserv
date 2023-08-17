@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 11:50:26 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 13:33:03 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,17 +83,24 @@ void	Cgi::setUrl()
 	if (pos != -1)
 	{
 		script = "php";
-		path += url.substr(0, pos + 4);
+		uri = url.substr(0, pos + 4);
+		path += uri;
 		path_info = url.substr(pos + 4, -1);
 	}
 }
 
 void	Cgi::setEnv()
 {
+	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 	env_map["REQUEST_METHOD"] = "GET";
+	env_map["SERVER_PROTOCOL"] = "HTTP/1.1";
 	env_map["REQUEST_URI"] = req.getQuery();
-	env_map["PATH_INFO"] = path;
+	env_map["SCRIPT_FILENAME"] = path;
+	env_map["SCRIPT_NAME"] = path;
+	env_map["PATH_INFO"] = path_info;
+	env_map["PATH_TRANSLATED"] = "";
 	env_map["QUERY_STRING"] = query_string;
+	env_map["REMOTE_ADDR"] = "127.0.0.1";
 }
 
 void	Cgi::execGet()
