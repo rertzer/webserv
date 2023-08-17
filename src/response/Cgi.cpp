@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 14:13:01 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 15:56:38 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,7 @@ void	Cgi::execGetFather(int* fd, int pid)
 	ss.write(buffer, read_size);
 	delete[] buffer;
 	content = ss.str();
+	std::cerr << content << std::endl;
 	::close(fd[0]);
 }
 
