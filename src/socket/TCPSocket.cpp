@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/16 13:30:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 13:47:26 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,6 @@ std::string	TCPSocket::getLine()
 	{
 		line = msg_in.substr(0, pos);
 		msg_in = msg_in.erase(0, pos + 2);
-		std::cout << "read line " << line << std::endl;
 	}
 	return (line);
 }

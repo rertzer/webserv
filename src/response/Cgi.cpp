@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:58:31 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 13:59:48 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	Cgi::exec()
 {
 	std::cout << "method: " << method << "\n script: " << script << "\n path: " << path;
 	std::cout << "\n path_info: " << path_info << "\n query_string: " << query_string << std::endl;
-	
+
 	if (method == "GET")
 		execGet();
 	else if (method == "POST")
@@ -83,8 +83,7 @@ void	Cgi::setUrl()
 	if (pos != -1)
 	{
 		script = "php";
-		uri = url.substr(0, pos + 4);
-		path += uri;
+		path += url.substr(0, pos + 4);
 		path_info = url.substr(pos + 4, -1);
 	}
 }
@@ -146,7 +145,7 @@ void	Cgi::execGetFather(int* fd, int pid)
 	int	status;
 
 	::close(fd[1]);
-	
+
 	waitpid(pid, &status, 0);
 	if (status == -1)
 	{
@@ -154,7 +153,7 @@ void	Cgi::execGetFather(int* fd, int pid)
 		::close(fd[0]);
 		throw (ErrorException(500));
 	}
-	
+
 	buffer = new char[buffer_size + 1];
 	int	read_size = ::read(fd[0], buffer, buffer_size);
 	if (read_size <= 0)
@@ -188,7 +187,7 @@ char **	Cgi::formatArgv() const
 
 char**	Cgi::formatEnv() const
 {
-	
+
 	int env_size = req.getHeader().size() + env_map.size() + 1;
 	char** env_array = new char*[env_size];
 	int	i = 0;
@@ -213,7 +212,7 @@ char**	Cgi::formatEnv() const
 
 std::string Cgi::editCommand() const
 {
-	if (script == "php")
+	if (script == "php-cgi")
 		return ("/usr/bin/php");
 	if (script == "py")
 		return ("python3");

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 10:29:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 13:40:14 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 #include <cstring>
 #include <cstddef>
 #include <bits/stdc++.h>
+#include <sys/wait.h>
+
 
 //CFNG stand for Conf File No Good
 #define CONF_FILE_NO_GOOD std::cout << "The conf file doesn't respect subject requirement" << std::endl;
@@ -33,6 +35,7 @@ enum parsEnd {BRAC_OPEN, BRAC_CLOSE, SMI_COL, BAD_END};
 
 class Server;
 class Request;
+class Response;
 
 
 int 						checkConfFile(std::string av);
@@ -44,4 +47,7 @@ std::vector<std::string>	splitCsv(std::string const & str);
 bool						ciCompare(std::string const & left, std::string const & right);
 std::string					lowString(std::string const & str);
 std::string					envFormat(std::string const & str);
-std::string intToString(int n);
+std::string					intToString(int n);
+Server						findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
+std::string					readFile(std::string file);
+Response					createErrorPage(int codeErr, Server serv);

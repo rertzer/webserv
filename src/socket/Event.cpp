@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/14 15:30:53 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:31:17 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,15 +124,19 @@ int	Event::handleIn()
 	try
 	{
 		Request req(soc);
-		Response resp(req, this->serv, soc->getMotherPort());
-		soc->setMessageOut(resp.getResponse());
+		try
+		{
+			Response resp(req, findTheServ(req, this->serv, soc->getMotherPort()));
+			soc->setMessageOut(resp.getResponse());
+		}
+		catch (const ErrorException & e)
+		{
+			soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
+		}
 	}
-	catch (const ErrorException & e)
+	catch(const ErrorException & e)
 	{
-		std::stringstream ss;
-		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nSomething Bad Happened\r\n";
-		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
-		soc->setMessageOut(ss.str());
+		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
 	}
 	return 0;
 }

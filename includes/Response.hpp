@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/15 14:44:15 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 13:40:35 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Request.hpp"
 #include "Server.hpp"
 #include "Status.hpp"
+#include "ContentMap.hpp"
 #include "Cgi.hpp"
 
 enum codeProb{
@@ -24,26 +25,44 @@ enum codeProb{
 	METHOD_NOT_ALLOWED = 405,
 };
 
+enum methodAllowed
+{
+	GET = 1,
+	POST = 2,
+	DELETE = 3,
+	GETPOST = 4,
+	GETPOSTDELETE = 5,
+	GETDELETE = 6,
+	POSTDELETE = 7,
+};
+
 class Response
 {
 	private:
-		Server _serv;
+		Server		_serv;
 		std::string _method;
 		std::string _status;
 		std::string _contentType;
 		std::string _contentLength;
-		int _readFileAccess;
+		std::string _connectionClose;
 		std::string _content;
-		std::map<std::string, std::string> _allContentType;
+		int 		_readFileAccess;
+		ContentMap	_contentMap;
+
 	public:
-		Response(Request& req, std::vector<Server> serv, int motherPort);
-		Response(std::vector<Server> serv, int codeErr);
+		Response(Request& req, Server serv);
+		Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content);
+		Response& operator=(Response const & rhs);
 		void dealWithGet(Request req);
 		void dealWithPost(Request req);
+		void dealWithDelete(Request req);
 		std::string readFile(std::string file);
 		std::string	runFile(std::string, Request & req);
 		std::string getResponse();
-		void CreateErrorPage(int codeErr);
 		std::string getContentKey(std::string value);
+		std::string findLocation(std::string path);
+		int checkIfLocation(std::string path);
+		Location getTheLocation(std::string path);
 		void iniateContentMap();
+		void feelPart(Request req);
 };

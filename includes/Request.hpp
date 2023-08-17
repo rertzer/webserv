@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 13:16:22 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 13:37:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include "TCPSocket.hpp"
 # include "Status.hpp"
 # include "ErrorException.hpp"
+# include "Server.hpp"
 
 class Request
 {
