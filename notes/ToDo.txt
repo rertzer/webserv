@@ -15,6 +15,26 @@ Code la methode delete
 ameliorer le fonction qui creer un errpage en fonction du code d'erreur
 Elle doit pouvoir etre appele comme tu veux
 Avec un post regarde comment fonctionne le content de la request
+
+int	Event::handleIn()
+{
+	try
+	{
+		Request req(soc);
+		Response resp(req, this->serv, soc->getMotherPort());
+		soc->setMessageOut(resp.getResponse());
+	}
+	catch (const ErrorException & e)
+	{
+		std::stringstream ss;
+		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nSomething Bad Happened\r\n";
+		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
+		soc->setMessageOut(ss.str());
+	}
+	return 0;
+}
+
+change this part to create errPage.
 ===============================================================================
 rertzer:
 

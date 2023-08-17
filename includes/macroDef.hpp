@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/15 12:08:35 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 15:29:20 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <cstring>
 #include <cstddef>
 #include <bits/stdc++.h>
+#include <sys/wait.h>
 
 //CFNG stand for Conf File No Good
 #define CONF_FILE_NO_GOOD std::cout << "The conf file doesn't respect subject requirement" << std::endl;

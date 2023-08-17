@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 14:04:59 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/02 11:11:21 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/16 13:44:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ class Location
 		std::vector<LineLoc>  _locationLine;
 	public :
 		void printLoc();
+		Location();
+		std::vector<LineLoc>& getLocationLine();
 		std::string getLocationPath() const;
 		Location(std::vector<std::string> locationStrings);
 };

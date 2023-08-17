@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:08:25 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/02 11:48:00 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/16 13:52:41 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,16 @@ std::string& LineLoc::getCmd()
 std::vector <std::string>& LineLoc::getArgs()
 {
 	return (_args);
+}
+
+int LineLoc::checkArgs(std::string toFind)
+{
+	std::cout << "toFind = " << toFind << std::endl;
+	for (size_t i = 0; i < _args.size(); i++)
+	{
+		std::cout << "args = " << _args[i] << std::endl;
+		if (_args[i] == toFind)
+			return (1);
+	}
+	return (0);
 }
