@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:59:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 14:13:01 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ void	Cgi::setUrl()
 
 void	Cgi::setEnv()
 {
+	env_map["REDIRECT_STATUS"] = "200";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 	env_map["REQUEST_METHOD"] = "GET";
 	env_map["SERVER_PROTOCOL"] = "HTTP/1.1";
@@ -212,8 +213,8 @@ char**	Cgi::formatEnv() const
 
 std::string Cgi::editCommand() const
 {
-	if (script == "php-cgi")
-		return ("/usr/bin/php");
+	if (script == "php")
+		return ("/usr/bin/php-cgi");
 	if (script == "py")
 		return ("python3");
 	return ("");

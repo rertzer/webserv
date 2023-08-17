@@ -66,18 +66,8 @@
 				}
 
 			}
-			if ($_SERVER["QUERY_STRING"] == null)
-			{
-				echo "Imateapot";
-			}
-			else
-			{
-				echo $_SERVER["QUERY_STRING"];
-			}
-			print_r($_GET);
 			if (isset($_GET['cipher']))
 			{
-				echo "meto";
 				$texte = $_GET['texte_area'];
 				for ($i = 0; $i < strlen($texte); $i++)
 				{
