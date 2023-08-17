@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 11:15:08 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:37:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Request
 		void	setContent();
 		void	setContentByChunked();
 		int		readChunk();
+		void	setTrailer();
 		void	setContentByLength(int len);
 		void	checkControlData() const;
 		void	checkHeader() const;

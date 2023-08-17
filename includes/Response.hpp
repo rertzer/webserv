@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 13:23:22 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:40:35 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "Server.hpp"
 #include "Status.hpp"
 #include "ContentMap.hpp"
+#include "Cgi.hpp"
 
 enum codeProb{
 	OK = 200,
@@ -56,6 +57,7 @@ class Response
 		void dealWithPost(Request req);
 		void dealWithDelete(Request req);
 		std::string readFile(std::string file);
+		std::string	runFile(std::string, Request & req);
 		std::string getResponse();
 		std::string getContentKey(std::string value);
 		std::string findLocation(std::string path);

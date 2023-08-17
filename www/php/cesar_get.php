@@ -2,12 +2,13 @@
 <html>
 	<head>
 		<title>Ave Cesar</title>
+		<meta charset="UTF-8">
 	</head>
 	<body>
 		<h1>Ave Cesar</h1>
 		<h2>Chiffreur/Déchiffreur de code Cesar</h2>
 		<p>Veuillez entrer le texte et sa clé</p>
-		<form action="cesar.php" method="post">
+		<form action="cesar_get.php" method="get">
 			<div>
 				<textarea type="text" name="texte_area" rows="8" cols="70" maxlength="10000" placeholder="Votre texte ici"></textarea>
 				<select name="cipher_key">
@@ -65,22 +66,31 @@
 				}
 
 			}
-
-			if (isset($_POST['cipher']))
+			if ($_SERVER["QUERY_STRING"] == null)
 			{
-				$texte = $_POST['texte_area'];
+				echo "Imateapot";
+			}
+			else
+			{
+				echo $_SERVER["QUERY_STRING"];
+			}
+			print_r($_GET);
+			if (isset($_GET['cipher']))
+			{
+				echo "meto";
+				$texte = $_GET['texte_area'];
 				for ($i = 0; $i < strlen($texte); $i++)
 				{
-					$texte[$i] = cesar_cipher($texte[$i], $_POST['cipher_key']);
+					$texte[$i] = cesar_cipher($texte[$i], $_GET['cipher_key']);
 				}
 				echo "$texte";
 			}
-			if (isset($_POST['decipher']))
+			if (isset($_GET['decipher']))
 			{
-				$texte = $_POST['texte_area'];
+				$texte = $_GET['texte_area'];
 				for ($i = 0; $i < strlen($texte); $i++)
 				{
-					$texte[$i] = cesar_cipher($texte[$i], -1 * $_POST['cipher_key']);
+					$texte[$i] = cesar_cipher($texte[$i], -1 * $_GET['cipher_key']);
 				}
 				echo "$texte";
 			}

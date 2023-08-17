@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 12:01:25 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/15 13:03:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class TCPSocket
 		void		setMessageOut(std::string msg);
 		std::string	getLine();
 		void		getRawData(std::string & content, int len);
+		void		addRawData(std::string & content, int len);
 		int			send();
 
 

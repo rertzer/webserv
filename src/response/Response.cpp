@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 13:29:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:53:40 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ std::string Response::readFile(std::string file)
 		fileStr << fileOp.rdbuf();
 		fileOp.close();
 		_readFileAccess = OK;
-		return(fileStr.str());
+		return (fileStr.str());
 	}
 	else
 	{
@@ -61,7 +61,25 @@ std::string Response::readFile(std::string file)
 	}
 }
 
+std::string	Response::runFile(std::string method, Request & req)
+{
+	Cgi	myCgi(method, _serv.getRoot(), req);
 
+	std::cout << "GLOUGLOUGLOUGLOUGLOU " << myCgi.getPath() << std::endl;
+	if (access(myCgi.getPath().c_str(), F_OK) == -1)
+	{
+			_readFileAccess = FILE_NOT_FOUND;
+			return ("404");
+	}
+	if (access(myCgi.getPath().c_str(), R_OK) == -1)
+	{
+			_readFileAccess = ACCESS_DENIED;
+			return ("403");
+	}
+	_readFileAccess = OK;
+	myCgi.exec();
+	return (myCgi.getContent());
+}
 
 //We need to add something to find default server
 //First : We find the hostname corresponding to the request
@@ -70,6 +88,7 @@ std::string Response::readFile(std::string file)
 
 void Response::feelPart(Request req)
 {
+	_method = "GET";
 	if (req.getQuery() == "/")
 	{
 		std::string fileStr;
@@ -99,7 +118,17 @@ void Response::feelPart(Request req)
 	}
 	else
 	{
-		std::string fileStr = readFile(_serv.getRoot() + req.getQuery());
+		std::string	fileStr;
+		if (req.getQuery().find(".php") != std::string::npos)
+		{
+			fileStr= runFile("GET", req);
+		}
+		else
+		{
+			std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
+			fileStr = readFile(_serv.getRoot() + req.getQuery());
+			//std::cout << "Content that is not root " << fileStr << std::endl;
+		}
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
 			*this = createErrorPage(404, _serv);
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
@@ -107,7 +136,10 @@ void Response::feelPart(Request req)
 		else
 		{
 			_status = "200 OK";
-			_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
+			if (req.getQuery().find(".php") != std::string::npos)
+				_contentType = "text/html";
+			else
+				_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
 			_contentLength = intToString(_content.length());
 		}

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 11:14:13 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 13:40:14 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void						stringTrim(std::string & str);
 std::vector<std::string>	splitCsv(std::string const & str);
 bool						ciCompare(std::string const & left, std::string const & right);
 std::string					lowString(std::string const & str);
+std::string					envFormat(std::string const & str);
 std::string					intToString(int n);
 Server						findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
 std::string					readFile(std::string file);
