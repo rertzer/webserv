@@ -8,7 +8,7 @@
 		<h1>Ave Cesar</h1>
 		<h2>Chiffreur/Déchiffreur de code Cesar</h2>
 		<p>Veuillez entrer le texte et sa clé</p>
-		<form action="cesar.php" method="post">
+		<form action="cesar_post.php" method="post">
 			<div>
 				<textarea type="text" name="texte_area" rows="8" cols="70" maxlength="10000" placeholder="Votre texte ici"></textarea>
 				<select name="cipher_key">

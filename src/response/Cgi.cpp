@@ -6,14 +6,14 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/16 14:06:35 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 11:50:26 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cgi.hpp"
 
 //public
-Cgi::Cgi(std::string m, std::string p, Request & r):method(m), path(p), req(r), buffer(NULL), buffer_size(16000000);
+Cgi::Cgi(std::string m, std::string p, Request & r):method(m), path(p), buffer(NULL), buffer_size(16000000), req(r)
 {
 	setUrl();
 	setEnv();
@@ -26,7 +26,7 @@ Cgi::Cgi(Cgi const & rhs):req(rhs.req)
 	path_info = rhs.path_info;
 	query_string = rhs.query_string;
 	content = rhs.content;
-	env_map = env_map;
+	env_map = rhs.env_map;
 }
 
 Cgi::~Cgi()
@@ -42,7 +42,7 @@ Cgi &	Cgi::operator=(Cgi const & rhs)
 		query_string = rhs.query_string;
 		req = rhs.req;
 		content = rhs.content;
-		env_map = env_map;
+		env_map = rhs.env_map;
 	}
 	return *this;
 }
@@ -72,14 +72,14 @@ void	Cgi::exec()
 void	Cgi::setUrl()
 {
 	std::string url = req.getQuery();
-	std::string	query_string;
 	int	pos = url.find('?');
 	if (pos != -1)
 	{
-		query_string = url.substr(0, pos);
-		url.erase(0, pos + 1);
+		query_string = url.substr(pos + 1, -1);
+		url.erase(pos, -1);
 	}
 	pos = url.rfind(".php");
+
 	if (pos != -1)
 	{
 		script = "php";
@@ -90,40 +90,52 @@ void	Cgi::setUrl()
 
 void	Cgi::setEnv()
 {
-	env_map["PATH_INFO"] = path_info;
+	env_map["REQUEST_METHOD"] = "GET";
+	env_map["REQUEST_URI"] = req.getQuery();
+	env_map["PATH_INFO"] = path;
 	env_map["QUERY_STRING"] = query_string;
 }
 
 void	Cgi::execGet()
 {
 	int	fd[2];
-	int	status;
 
+	std::cout << "ExecGet\n";
 	if (::pipe(fd) == -1)
 		throw (ErrorException(500));
+	std::cout << "pipe done\n";
 	int	pid = ::fork();
 	if (pid < 0)
 		throw (ErrorException(500));
 	if (pid == 0)
 		execGetSon(fd);
 	if (pid)
-		execGetFather(fd);
+		execGetFather(fd, pid);
 }
 
 int	Cgi::execGetSon(int* fd)
 {
+	std::cout << "Son___________________\n";
 		if (::dup2(fd[1], 1) == -1 || ::close(fd[0]) == -1 || ::close(fd[1]) == -1)
 			exit(-1);
-		char** argv = formatArg();
+		char** argv = formatArgv();
 		char** envp = formatEnv();
+		std::cerr << editCommand().c_str() << std::endl;
+		int i = 0;
+		while (argv[i])
+			std::cerr << argv[i++] << std::endl;
+		i = 0;
+		while (envp[i])
+			std::cerr << envp[i++] << std::endl;
 		::execve(editCommand().c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
 		exit(-1);
 }
 
-void	Cgi::execGetFather(int* fd)
+void	Cgi::execGetFather(int* fd, int pid)
 {
+	std::cout << "Father___________________________\n";
 	int	status;
 
 	::close(fd[1]);
@@ -131,6 +143,7 @@ void	Cgi::execGetFather(int* fd)
 	waitpid(pid, &status, 0);
 	if (status == -1)
 	{
+		std::cout << "Status -1\n";
 		::close(fd[0]);
 		throw (ErrorException(500));
 	}
@@ -141,6 +154,7 @@ void	Cgi::execGetFather(int* fd)
 	{
 		delete[] buffer;
 		::close(fd[0]);
+		std::cout << "Read size is " << read_size << std::endl;
 		throw (ErrorException(500));
 	}
 	buffer[read_size] = '\0';
@@ -152,37 +166,49 @@ void	Cgi::execGetFather(int* fd)
 	::close(fd[0]);
 }
 
-void	Cgi::execPost(std::string & command)
+void	Cgi::execPost()
 {}
 
-char**	Cgi::formatArgv()
+char **	Cgi::formatArgv() const
 {
-	const char** argv = new const char*[1];
+	char ** argv = new  char *[3];
 	//const char* argv[0] = new const char[path.size()];
-	argv[0] = path.c_str();
+	argv[0] = strdup(editCommand().c_str());
+	argv[1] = strdup(path.c_str());
+	argv[2] = NULL;
 	return argv;
 }
 
-char**	Cgi::formatEnv()
+char**	Cgi::formatEnv() const
 {
-	const char** env_array = new const char*[env_map.size()];
+	
+	int env_size = req.getHeader().size() + env_map.size() + 1;
+	char** env_array = new char*[env_size];
 	int	i = 0;
-	for (std::map<std::string, std::string>::const_operator it = env_map.begin(); it != env_map.end(); it++)
+	for (std::map<std::string, std::string>::const_iterator it = req.getHeader().begin(); it != req.getHeader().end(); it++)
+	{
+		std::string tmp;
+		tmp.append(envFormat(it->first) + "=" + it->second);
+		env_array[i] = strdup(tmp.c_str());
+		i++;
+	}
+
+	for (std::map<std::string, std::string>::const_iterator it = env_map.begin(); it != env_map.end(); it++)
 	{
 		std::string	tmp;
 		tmp.append(it->first + "=" + it->second);
-		//env_array[i] = new char[string.size()];
-		env_array[i] = tmp.c_str();
+		env_array[i] = strdup(tmp.c_str());
 		i++;
 	}
+	env_array[i] = NULL;
 	return env_array;
 }
 
-std::string Cgi::editCommand()
+std::string Cgi::editCommand() const
 {
 	if (script == "php")
-		return ("php");
+		return ("/usr/bin/php");
 	if (script == "py")
 		return ("python3");
+	return ("");
 }
-

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   splitCsv.cpp                                       :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 15:43:07 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 09:28:51 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 10:40:22 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,3 +55,20 @@ std::string	lowString(std::string const & str)
 	}
 	return ci_string;
 }
+
+std::string	envFormat(std::string const & str)
+{
+	std::locale loc;
+	std::string	ci_string;
+
+	for (std::string::size_type i = 0; i <str.length(); ++i)
+	{
+		std::string tmp = "_";
+		tmp[0] = std::toupper(str[i], loc);
+		if (tmp[0] == '-')
+			tmp[0] = '_';
+		ci_string.append(tmp);
+	}
+	return ci_string;
+}
+

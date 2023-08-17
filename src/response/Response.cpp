@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/16 09:14:13 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/17 11:31:12 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ std::string	Response::runFile(std::string method, Request & req)
 {
 	Cgi	myCgi(method, _serv.getRoot(), req);
 
-	std::cout << "GLOUGLOUGLOUGLOUGLOU" << myCgi.getPath() << std::endl; 
+	std::cout << "GLOUGLOUGLOUGLOUGLOU " << myCgi.getPath() << std::endl; 
 	if (access(myCgi.getPath().c_str(), F_OK) == -1)
 	{
 			_readFileAccess = FILE_NOT_FOUND;
@@ -161,7 +161,10 @@ void Response::dealWithGet(Request req)
 		else
 		{
 			_status = "200 OK";
-			_contentType = getContentKey(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
+			if (req.getQuery().find(".php") != std::string::npos)
+				_contentType = "text/html";
+			else
+				_contentType = getContentKey(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
 			_contentLength = intToString(_content.length());
 		//	std::cout << "Content that is not root " << fileStr << std::endl;
