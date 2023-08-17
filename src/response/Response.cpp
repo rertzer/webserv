@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 14:01:39 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/17 14:27:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void Response::feelPart(Request req)
 			_status = "200 OK";
 			_content = fileStr;
 			_contentLength = intToString(_content.length()); // mettre en string
-			_conectionClose = "keep-alive"
+			_connectionClose = "keep-alive";
 		}
 	}
 	else
@@ -143,7 +143,7 @@ void Response::feelPart(Request req)
 				_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
 			_contentLength = intToString(_content.length());
-			_conectionClose = "keep-alive"
+			_connectionClose = "keep-alive";
 		}
 	}
 }

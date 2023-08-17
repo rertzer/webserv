@@ -2,6 +2,8 @@
 Pjay:
 
 Limit client body size in conffile et stocker dans le serv pars
+Definir les cgi | les definir php py
+regarder les autoindex
 
 ===============================================================================
 rertzer:
