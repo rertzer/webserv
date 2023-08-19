@@ -63,7 +63,7 @@
 			<p>Veuillez entrer le texte et sa clé</p>
 			<form action="cesar_get.php" method="get">
 				<div id="ta">
-				<textarea type="text" name="texte_area" rows="18" cols="170" maxlength="10000" placeholder='<?php echo $plh ?>'></textarea>
+				<textarea type="text" name="texte_area" rows="18" cols="70" maxlength="10000" placeholder='<?php echo $plh ?>'></textarea>
 				</div>
 				<div id="ck">
 					<select name="cipher_key">

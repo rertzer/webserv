@@ -6,10 +6,11 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 15:56:38 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/19 12:03:17 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include "Cgi.hpp"
 
 //public
@@ -65,7 +66,7 @@ void	Cgi::exec()
 	if (method == "GET")
 		execGet();
 	else if (method == "POST")
-		execPost();
+		execGet();
 }
 
 //private
@@ -92,7 +93,7 @@ void	Cgi::setEnv()
 {
 	env_map["REDIRECT_STATUS"] = "200";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-	env_map["REQUEST_METHOD"] = "GET";
+	env_map["REQUEST_METHOD"] =  method;
 	env_map["SERVER_PROTOCOL"] = "HTTP/1.1";
 	env_map["REQUEST_URI"] = req.getQuery();
 	env_map["SCRIPT_FILENAME"] = path;
@@ -123,6 +124,33 @@ void	Cgi::execGet()
 int	Cgi::execGetSon(int* fd)
 {
 	std::cout << "Son___________________\n";
+
+		if (method == "POST")
+		{
+			int fdpost[2];
+			std::cerr << "Son post a\n";
+			if (::pipe(fdpost) == -1)
+				exit(-1);
+			std::cerr << "Son post b\n";
+			std::cerr << "content is: $" << req.getContent().c_str() << "$\n";
+			std::cerr << "Length is " << req.getContent().size() << std::endl;
+			int write_size = ::write(fdpost[1], req.getContent().c_str(), req.getContent().size());
+			if (write_size < 1)
+			{
+				perror("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				exit(-1);
+			}
+			
+			std::cerr << "Writen" << write_size << "\nSon post c\n";
+			if (::dup2(fdpost[0], 0) == -1  || ::close(fdpost[0]) == -1 || ::close(fdpost[1]) == -1)
+			{
+				perror("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				exit(-1);
+			}
+			std::cerr << "Son post d\n";
+
+		}
+		std::cerr << "son get part\n";
 		if (::dup2(fd[1], 1) == -1 || ::close(fd[0]) == -1 || ::close(fd[1]) == -1)
 			exit(-1);
 		char** argv = formatArgv();
@@ -130,7 +158,7 @@ int	Cgi::execGetSon(int* fd)
 		std::cerr << editCommand().c_str() << std::endl;
 		int i = 0;
 		while (argv[i])
-			std::cerr << argv[i++] << std::endl;
+			std::cerr << "Son args: " << argv[i++] << std::endl;
 		i = 0;
 		while (envp[i])
 			std::cerr << envp[i++] << std::endl;
@@ -161,7 +189,7 @@ void	Cgi::execGetFather(int* fd, int pid)
 	{
 		delete[] buffer;
 		::close(fd[0]);
-		std::cout << "Read size is " << read_size << std::endl;
+		std::cout << "Status is " << status << " Read size is " << read_size << std::endl;
 		throw (ErrorException(500));
 	}
 	buffer[read_size] = '\0';
