@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 13:34:03 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 13:02:20 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 		return (*(serv.begin()));
 	while (it != serv.end())
 	{
-		if (req.getField("Host") == it->getServName())
+		std::cout << "Enter here = " << req.getField("Host") << "| My serv name is =  "<< it->getServName() + ":" + intToString(req.getPort()) << std::endl;
+		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort()))
 		{
 			if (it->getListenPort().size() > 1)
 			{
@@ -99,4 +100,89 @@ Response createErrorPage(int codeErr, Server serv)
 	std::string connectionClose = "close";
 	Response errResp(status, contentType, contentLength, connectionClose, content);
 	return (errResp);
+}
+
+int checkAllowMethod(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	bool get = false;
+	bool post = false;
+	bool deleteMethod = false;
+	while (it != lineLoc.end())
+	{
+		std::cout << "cmd = " << it->getCmd() << std::endl;
+		if (it->getCmd() == "allow_methods")
+		{
+			if (it->checkArgs("GET") == 1)
+				get = true;
+			if (it->checkArgs("POST") == 1)
+				post = true;
+			if (it->checkArgs("DELETE") == 1)
+				deleteMethod = true;
+		}
+		it++;
+	}
+	if (get && post && deleteMethod)
+		return (GETPOSTDELETE);
+	if (get && post)
+		return (GETPOST);
+	if (get && deleteMethod)
+		return (GETDELETE);
+	if (post && deleteMethod)
+		return (POSTDELETE);
+	if (get)
+		return (GET);
+	if (post)
+		return (POST);
+	if (deleteMethod)
+		return (DELETE);
+	if (!get && !post && !deleteMethod)
+		return (GETPOSTDELETE);
+	return (-1);
+}
+
+bool checkAutoIndex(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	while (it != lineLoc.end())
+	{
+		std::cout << "cmd = " << it->getCmd() << std::endl;
+		if (it->getCmd() == "autoindex")
+		{
+			if (it->checkArgs("on") == 1)
+				return (true);
+			else
+				return (false);
+		}
+		it++;
+	}
+	return (false);
+}
+
+bool changeToIndex(Location loc, Request& req, std::string root)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	while (it != lineLoc.end())
+	{
+		std::cout << "cmd = " << it->getCmd() << std::endl;
+		if (it->getCmd() == "index")
+		{
+			std::vector<std::string> args = it->getArgs();
+			std::cout << "Enter" << std::endl;
+			for (std::vector<std::string>::iterator it2 = args.begin(); it2 != args.end(); it2++)
+			{
+				std::cout << "root + *it2" << root + *it2 << std::endl;
+				if (access((root + *it2).c_str(), F_OK) != -1)
+				{
+					req.setQuery(*it2);
+					return (true);
+				}
+			}
+		}
+		it++;
+	}
+	return (false);
 }

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:37:52 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 11:08:44 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Request
 		bool											checkField(std::string const & name, std::string const & value) const;
 		int												getIntField(std::string const & name) const;
 		void											addField(std::string const & field);
+		void										setQuery(std::string const & query);
 	private:
 		//Request();
 		void	setControlData();

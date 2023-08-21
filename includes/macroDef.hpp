@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 13:40:14 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 12:53:28 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ enum parsEnd {BRAC_OPEN, BRAC_CLOSE, SMI_COL, BAD_END};
 class Server;
 class Request;
 class Response;
+class Location;
 
 
 int 						checkConfFile(std::string av);
@@ -51,3 +52,6 @@ std::string					intToString(int n);
 Server						findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
 std::string					readFile(std::string file);
 Response					createErrorPage(int codeErr, Server serv);
+bool						checkAutoIndex(Location loc);
+int							checkAllowMethod(Location loc);
+bool						changeToIndex(Location loc, Request& req, std::string root);

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 14:27:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 12:53:04 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,52 +228,35 @@ Location Response::getTheLocation(std::string path)
 	return (Location());
 }
 
-int checkAllowMethod(Location loc)
-{
-	std::vector<LineLoc> lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	bool get = false;
-	bool post = false;
-	bool deleteMethod = false;
-	while (it != lineLoc.end())
-	{
-		std::cout << "cmd = " << it->getCmd() << std::endl;
-		if (it->getCmd() == "allow_methods")
-		{
-			if (it->checkArgs("GET") == 1)
-				get = true;
-			if (it->checkArgs("POST") == 1)
-				post = true;
-			if (it->checkArgs("DELETE") == 1)
-				deleteMethod = true;
-		}
-		it++;
-	}
-	if (get && post && deleteMethod)
-		return (GETPOSTDELETE);
-	if (get && post)
-		return (GETPOST);
-	if (get && deleteMethod)
-		return (GETDELETE);
-	if (post && deleteMethod)
-		return (POSTDELETE);
-	if (get)
-		return (GET);
-	if (post)
-		return (POST);
-	if (deleteMethod)
-		return (DELETE);
-	return (-1);
-}
-
 Response::Response(Request& req, Server serv)
 {
 	_readFileAccess = OK;
 	_serv = serv;
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
-		Location loc = getTheLocation(req.getQuery());
-		std::cout << "location found" << loc.getLocationPath() <<std::endl;
+		Location loc;
+		if (req.getQuery()!= "/")
+		{
+			if (req.getQuery()[req.getQuery().length() - 1] == '/')
+			{
+				loc = getTheLocation(req.getQuery());
+				if (checkAutoIndex(loc) == false)
+				{
+					std::cout << "Enter here false " << std::endl;
+					*this = createErrorPage(403, _serv);
+					return ;
+				}
+				else
+				{
+					std::cout << "Enter here true" << std::endl;
+					if (changeToIndex(loc, req, _serv.getRoot()) == false)
+					{
+						*this = createErrorPage(404, _serv);
+						return ;
+					}
+				}
+			}
+		}
 		int allowMethod = checkAllowMethod(loc);
 		std::cout << "AllowMethod = " << allowMethod << std::endl;
 		if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
@@ -293,6 +276,15 @@ Response::Response(Request& req, Server serv)
 	}
 	else
 	{
+		if (req.getQuery()!= "/")
+		{
+			if (req.getQuery()[req.getQuery().length() - 1] == '/')
+			{
+				std::cout << "enter in the else" << std::endl;
+				*this = createErrorPage(403, _serv);
+				return;
+			}
+		}
 		if (req.getMethod() == "GET")
 		{
 			std::cout << "IN GET" << std::endl;

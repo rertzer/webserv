@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:46:35 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 10:58:36 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,11 @@ void	Request::setControlData()
 	protocol = line.substr(q + 1);
 
 	checkControlData();
+}
+
+void	Request::setQuery(std::string const & query)
+{
+	this->query = query;
 }
 
 void	Request::setHeader()
