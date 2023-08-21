@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:46:35 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 11:28:00 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 Request::Request(TCPSocket * s):port(s->getMotherPort()), status(100), soc(s)
 {
 	std::cout << "fd " << soc->getFd() << " is reading\n";
-	soc->readAll();
+	int len = soc->readAll();
+	std::cout << len << " octets read\n";
 	setControlData();
 	setHeader();
 	if (contentExist())

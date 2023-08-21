@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/10 11:24:24 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/21 10:12:44 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,6 @@ class	Event
 		std::vector<Server> serv;
 
 		typedef int			(Event::*handlefun)();
-		static const int    ev[7];
+		static const int    ev[4];
 };
 #endif
