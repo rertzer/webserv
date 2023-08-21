@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 12:53:04 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 13:30:58 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ std::string	Response::runFile(std::string method, Request & req)
 {
 	Cgi	myCgi(method, _serv.getRoot(), req);
 
-	std::cout << "GLOUGLOUGLOUGLOUGLOU " << myCgi.getPath() << std::endl;
 	if (access(myCgi.getPath().c_str(), F_OK) == -1)
 	{
 			_readFileAccess = FILE_NOT_FOUND;
@@ -81,14 +80,10 @@ std::string	Response::runFile(std::string method, Request & req)
 	return (myCgi.getContent());
 }
 
-//We need to add something to find default server
-//First : We find the hostname corresponding to the request
-//Second : We find the port corresponding to the request
-//if he match both we return the server
 
 void Response::feelPart(Request req)
 {
-	_method = "GET";
+	//_method = "GET";
 	if (req.getQuery() == "/")
 	{
 		std::string fileStr;
@@ -122,7 +117,7 @@ void Response::feelPart(Request req)
 		std::string	fileStr;
 		if (req.getQuery().find(".php") != std::string::npos)
 		{
-			fileStr= runFile("GET", req);
+			fileStr= runFile(_method, req);
 		}
 		else
 		{
@@ -138,7 +133,16 @@ void Response::feelPart(Request req)
 		{
 			_status = "200 OK";
 			if (req.getQuery().find(".php") != std::string::npos)
-				_contentType = "text/html";
+			{
+				size_t pos = fileStr.find("\r\n\r\n");
+				if (pos != std::string::npos)
+				{
+					_contentType = fileStr.substr(14, pos);
+					fileStr.erase(0, pos + 4);
+				}
+				else
+					_contentType = "text/html";
+			}
 			else
 				_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
@@ -248,12 +252,14 @@ Response::Response(Request& req, Server serv)
 				}
 				else
 				{
-					std::cout << "Enter here true" << std::endl;
-					if (changeToIndex(loc, req, _serv.getRoot()) == false)
-					{
-						*this = createErrorPage(404, _serv);
-						return ;
-					}
+
+					_content = dirContent(_serv.getRoot(), req.getQuery());
+					_status = "200";
+					_method = req.getMethod();
+					_contentType = "text/html";
+					_contentLength = _content.length();
+					std::cout << "dir content" << _content << std::endl;
+					return ;
 				}
 			}
 		}

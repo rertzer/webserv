@@ -16,11 +16,12 @@ LISTING_DIR = dirlisting/
 PARS_DIR = parser_serv/
 RESP_DIR = response/
 
+
 SOURCES := main.cpp
 
 SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp utils.cpp serverRun.cpp
 EXCEPTION_SOURCES = ErrorException.cpp Status.cpp
-LISTING_SOURCES =
+LISTING_SOURCES = dirContent.cpp DirListing.cpp FileDesc.cpp
 PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
 
 RESP_SOURCES = Response.cpp utils.cpp contentMap.cpp Cgi.cpp
@@ -61,6 +62,7 @@ clean:
 	rm -fd $(OBJ_DIR)$(EXCEPTION_DIR)
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
 	rm -fd $(OBJ_DIR)$(RESP_DIR)
+	rm -fd $(OBJ_DIR)$(LISTING_DIR)
 	rm -fd $(OBJ_DIR)
 
 fclean: clean

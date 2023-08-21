@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 11:37:17 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 11:40:09 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/19 10:06:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,17 @@
 
 std::string ContentMap::getContentValue(std::string value)
 {
+	std::cout << "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP" << value << std::endl;
 	std::map<std::string, std::string>::iterator it = _allContentType.find(value);
-	if (value == ".py" || value == ".php")
+	if (value == "py" || value == "php")
+	{
+		std::cout << "php!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1\n";
 		return "text/html";
+	}
+		if (value == "ico")
+		return "image/svg+xml";
 	if (it == _allContentType.end())
 	{
-		std::cout << "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP" << std::endl;
 		throw (ErrorException(404));
 	}
 	else

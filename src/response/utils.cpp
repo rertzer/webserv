@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 13:02:20 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 13:25:24 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "Server.hpp"
 #include "Status.hpp"
 #include "Response.hpp"
+#include "DirListing.hpp"
 
 std::string readSpecFile(std::string file)
 {
@@ -155,32 +156,6 @@ bool checkAutoIndex(Location loc)
 				return (true);
 			else
 				return (false);
-		}
-		it++;
-	}
-	return (false);
-}
-
-bool changeToIndex(Location loc, Request& req, std::string root)
-{
-	std::vector<LineLoc> lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	while (it != lineLoc.end())
-	{
-		std::cout << "cmd = " << it->getCmd() << std::endl;
-		if (it->getCmd() == "index")
-		{
-			std::vector<std::string> args = it->getArgs();
-			std::cout << "Enter" << std::endl;
-			for (std::vector<std::string>::iterator it2 = args.begin(); it2 != args.end(); it2++)
-			{
-				std::cout << "root + *it2" << root + *it2 << std::endl;
-				if (access((root + *it2).c_str(), F_OK) != -1)
-				{
-					req.setQuery(*it2);
-					return (true);
-				}
-			}
 		}
 		it++;
 	}

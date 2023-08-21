@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:47:26 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 11:25:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int	TCPSocket::readAll()
 {
 	char * buffer = new char[buffer_size + 1];
 	int	read_size = ::read(socket_fd, buffer, buffer_size);
-	if (read_size > 0)
+	if (read_size >= 0)
 		buffer[read_size] = '\0';
 	else
 		throw (SocketException());

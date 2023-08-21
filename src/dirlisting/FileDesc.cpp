@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   FileDesc.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:48:57 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/12 11:01:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/21 13:32:47 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "FileDesc.hpp"
+#include "macroDef.hpp"
 #include <string.h>
 
 FileDesc::FileDesc(std::string path, struct dirent * sd)

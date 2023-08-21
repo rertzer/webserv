@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 12:53:28 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 13:27:36 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,3 +55,4 @@ Response					createErrorPage(int codeErr, Server serv);
 bool						checkAutoIndex(Location loc);
 int							checkAllowMethod(Location loc);
 bool						changeToIndex(Location loc, Request& req, std::string root);
+std::string					dirContent(std::string root, std::string path);

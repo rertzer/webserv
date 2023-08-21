@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:31:17 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 10:26:46 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,13 +99,10 @@ int	Event::handleEvent()
 	std::map<int, handlefun> whichfun;
 	whichfun[EPOLLIN] = &Event::handleIn;
 	whichfun[EPOLLOUT] = &Event::handleOut;
-	whichfun[EPOLLRDHUP] = &Event::handleError;
-	whichfun[EPOLLPRI] = &Event::handleError;
 	whichfun[EPOLLERR] = &Event::handleError;
 	whichfun[EPOLLHUP] = &Event::handleError;
-	whichfun[EPOLLONESHOT] = &Event::handleError;
 
-	for (int i = 0 ; i < 7; i++)
+	for (int i = 0 ; i < 4; i++)
 	{
 		if (events & ev[i])
 		{
@@ -156,7 +153,7 @@ int	Event::handleOut()
 int	Event::handleError()
 {
 	std::cout << "Handle Error\n";
-	return 0;
+	return (soc->getFd());
 }
 
 //Private
@@ -164,4 +161,4 @@ Event::Event()
 {}
 
 //Static const
-int const 	Event::ev[7] = {EPOLLIN, EPOLLOUT, EPOLLRDHUP, EPOLLPRI, EPOLLERR, EPOLLHUP, EPOLLONESHOT};
+int const 	Event::ev[4] = {EPOLLIN, EPOLLOUT, EPOLLERR, EPOLLHUP};

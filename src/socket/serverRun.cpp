@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_run.cpp                                     :+:      :+:    :+:   */
+/*   serverRun.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 09:15:06 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/21 11:10:22 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,9 @@ int	serverRun(std::vector<Server> serv)
 		for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
 			pool.addMotherSocket(it->first);
 
-		int i = 1;
-		while (i)
+		while (1)
 		{
-			i++;
-			std::cout << "Waiting...\n";
+			std::cout << "Listening...\n";
 			int nfds = pool.wait();
 			if (quitok)
 			{
@@ -53,7 +51,7 @@ int	serverRun(std::vector<Server> serv)
 				break;
 			}
 
-			std::cout << "\n\n\nepoll collected " << nfds << " fd's. i is " << i << std::endl;
+			std::cout << "\n\n\nepoll collected " << nfds << " fd's\n";
 
 			for (int n = 0; n < nfds; n++)
 			{
@@ -61,27 +59,23 @@ int	serverRun(std::vector<Server> serv)
 				ev.setServ(serv);
 
 				std::cout << "\nn is " << n << ", fd is: " << ev.getSocketFd() << " and  events are: " << ev.getEvents() << std::endl;
-				if (ev.getEvents() & EPOLLIN)
-					std::cout << "EPOLLIN\n";
-				if (ev.getEvents() & EPOLLOUT)
-					std::cout << "EPOLLOUT\n";
-				if (ev.getEvents() & EPOLLRDHUP)
-					std::cout << "EPOLLRDHUP\n";
-				if (ev.getEvents() & EPOLLPRI)
-					std::cout << "EPOLLPRI\n";
-				if (ev.getEvents() & EPOLLERR)
-					std::cout << "EPOLLERR\n";
-				if (ev.getEvents() & EPOLLHUP)
-					std::cout << "EPOLLHUP\n";
-				if (ev.getEvents() & EPOLLET)
-					std::cout << "EPOLLET\n";
-				if (ev.getEvents() & EPOLLONESHOT)
-					std::cout << "EPOLLONESHOT\n";
 
 				if (pool.isMother(ev))
 				{
 					if (ev.isIn())
 						pool.connect(ev);
+					std::string	event_msg;
+					if (ev.isErr())
+						event_msg += "EPOLLERR ";
+					if (ev.isHup())
+						event_msg += "EPOLLHUP ";
+					if (!event_msg.empty())
+					{
+						int port = ev.getSocket()->getPort();
+						std::cerr << event_msg << ".Restarting connection on port " << port << std::endl;
+						pool.removeSocket(ev.getSocketFd());
+						pool.addMotherSocket(port);
+					}
 				}
 				else
 				{
