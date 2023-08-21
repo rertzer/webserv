@@ -7,7 +7,6 @@ si page erreur alors connection close
 autres pages: preciser keep-alive
 
 Limit client body size in conffile et stocker dans le serv pars
-
 creer une table qui connait tout les types de fichers pour le rajouter apres avoir trouver le type : html = text/html jpeg = image/jpeg
 
 preciser les methodes autorisees dans les differentes routes
