@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 13:30:58 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 14:12:18 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ std::string	Response::runFile(std::string method, Request & req)
 
 void Response::feelPart(Request req)
 {
-	//_method = "GET";
 	if (req.getQuery() == "/")
 	{
 		std::string fileStr;

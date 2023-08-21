@@ -1,19 +1,40 @@
 ================================================================================
 Pjay:
 
+Si pas de fichier conf fourni en argument en prendre un par defaut
+
+si page erreur alors connection close
+autres pages: preciser keep-alive
+
 Limit client body size in conffile et stocker dans le serv pars
-Definir les cgi | les definir php py
-regarder si on gere les autoindex off en dehors des locations
-regarder les autoindex
-Define a list of accepted HTTP methods for the route.
-◦ Define a HTTP redirection.
-◦ Define a directory or a file from where the file should be searched (for example,
-if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is
-/tmp/www/pouic/toto/pouet).
-◦ Turn on or off directory listing.
-◦ Set a default file to answer if the request is a directory.
 
+creer une table qui connait tout les types de fichers pour le rajouter apres avoir trouver le type : html = text/html jpeg = image/jpeg
 
+preciser les methodes autorisees dans les differentes routes
+Code la methode delete
+ameliorer le fonction qui creer un errpage en fonction du code d'erreur
+Elle doit pouvoir etre appele comme tu veux
+Avec un post regarde comment fonctionne le content de la request
+
+int	Event::handleIn()
+{
+	try
+	{
+		Request req(soc);
+		Response resp(req, this->serv, soc->getMotherPort());
+		soc->setMessageOut(resp.getResponse());
+	}
+	catch (const ErrorException & e)
+	{
+		std::stringstream ss;
+		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nSomething Bad Happened\r\n";
+		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
+		soc->setMessageOut(ss.str());
+	}
+	return 0;
+}
+
+change this part to create errPage.
 ===============================================================================
 rertzer:
 
@@ -26,7 +47,6 @@ mode :
 cote client:d'abord on shutdown 1 puis on close apres reponse du serveur
 
 Envoyer les bons messages d'erreur
-
 
 gerer le champ connection et ses fields
 
