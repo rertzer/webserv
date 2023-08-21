@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/10 14:17:13 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 15:08:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ Server::Server(std::vector<std::string> servStrings)
 	bool locOpen = false;
 	std::vector<std::string> locString;
 	std::vector<bool> bracOpen;
+	_maxBodySize = -1;
 	//std::cout << "size of servString vector = " << servStrings.size() << std::endl;
 	for (std::vector<std::string>::iterator it = servStrings.begin(); it != servStrings.end(); it++)
 	{
@@ -67,6 +68,12 @@ Server::Server(std::vector<std::string> servStrings)
 			std::string errorNb = it->substr(it->find("error_page") + 11, 3);
 			std::string errorPage = it->substr(it->find("error_page") + 15, it->find(";") - it->find("error_page") - 15);
 			_errorPage.insert(std::pair<std::string, std::string>(errorNb, errorPage));
+		}
+		if (it->find("client_max_body_size") != std::string::npos)
+		{
+			std::string maxBodySize = it->substr(it->find("client_max_body_size") + 21, it->find(";") - it->find("client_max_body_size") - 21);
+			if (maxBodySize[maxBodySize.length() - 1] == 'M')
+				_maxBodySize = atoi(it->substr(it->find("max_body_size") + 14, it->find(";") - it->find("max_body_size") - 14).c_str());
 		}
 		if (it->find("index ") != std::string::npos)
 		{
@@ -96,6 +103,7 @@ Server::Server(std::vector<std::string> servStrings)
 			}
 		}
 	}
+	std::cout << "body size of " << _servName << " = " << _maxBodySize << std::endl;
 	//printServ(*this);
 }
 
@@ -106,6 +114,12 @@ Server::~Server()
 std::string& Server::getServName()
 {
 	return (_servName);
+}
+
+
+int Server::getBodySize() const
+{
+	return (_maxBodySize);
 }
 
 std::string& Server::getRoot()
