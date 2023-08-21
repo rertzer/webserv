@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 13:07:00 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 17:25:42 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ Request &	Request::operator=(Request const & rhs)
 		status = rhs.status;
 		header = rhs.header;
 		trailer = rhs.trailer;
+		multipart = rhs.multipart;
 		query = rhs.query;
 		method = rhs.method;
 		content = rhs.content;
@@ -83,6 +84,7 @@ std::string	Request::getField(std::string const & name) const
 	}
 	return it->second;
 }
+
 bool	Request::checkField(std::string const & name, std::string const & value) const
 {
 	std::string field = getField(name);
@@ -93,6 +95,60 @@ bool	Request::checkField(std::string const & name, std::string const & value) co
 			return true;
 	}
 	return false;
+}
+
+bool	Request::checkSubField(std::string const & name, std::string const & value) const
+{
+	std::string field = getField(name);
+	std::vector<std::string> all_values = splitCsv(field, ";");
+	for (size_t i = 0; i < all_values.size(); i++)
+	{
+		std::cout << "Comparing $" << all_values[i] << "$ with $" << value << "$\n";
+		if (ciCompare(all_values[i], value))
+			return true;
+	}
+	return false;
+}
+
+bool	Request::isUpload() const
+{
+	if (getMethod() == "POST" && checkSubField("Content-Type", "multipart/form-data"))
+		return true;
+	return false;
+}
+
+void	Request::upload()
+{
+	std::string line = getLine();
+	std::cout << "Uploading.............................................................\n";
+	while (line.length())
+	{
+		int	k = line.find(":");
+		if (k == -1 || k == 0)
+			throw (ErrorException(400));
+		std::string	key = line.substr(0, k);
+		std::string	val = line.substr(k + 1);
+		stringTrim(val);
+		stringTrim(key);
+		multipart[key] = val;
+		std::cout << "Multipart: " << key << " value: " << multipart[key] <<  "$" << std::endl;
+		line = getLine();
+	}
+}
+
+
+std::string	Request::getLine()
+{
+	int	pos = -1;
+	std::string	line;
+
+	pos = content.find("\r\n");
+	if (pos != -1)
+	{
+		line = content.substr(0, pos);
+		line = content.erase(0, pos + 2);
+	}
+	return (line);
 }
 
 int	Request::getIntField(std::string const & name) const
@@ -179,7 +235,6 @@ void	Request::setHeader()
 
 void	Request::setContent()
 {
-	std::cout << "setContent\n";
 	std::string trans_encoding = getField("Transfer-Encoding");
 
 	if (! trans_encoding.empty())
@@ -230,7 +285,6 @@ void	Request::setTrailer()
 
 void	Request::setContentByLength(int len)
 {
-	std::cout << "setContentByLength\n";
 	soc->getRawData(content, len);
 }
 

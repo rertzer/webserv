@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 11:08:44 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 16:38:13 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,15 @@ class Request
 		const std::string &								getContent() const;
 		std::string										getField(std::string const & name) const;
 		bool											checkField(std::string const & name, std::string const & value) const;
+		bool											checkSubField(std::string const & name, std::string const & value) const;
+		bool											isUpload() const;
+		void											upload();
 		int												getIntField(std::string const & name) const;
 		void											addField(std::string const & field);
 		void										setQuery(std::string const & query);
 	private:
 		//Request();
+		std::string	getLine();
 		void	setControlData();
 		void	setHeader();
 		void	setContent();
@@ -73,6 +77,7 @@ class Request
 		TCPSocket *							soc;
 		std::map<std::string, std::string>	header;
 		std::map<std::string, std::string>	trailer;
+		std::map<std::string, std::string>	multipart;
 		std::string							method;
 		std::string							query;
 		std::string							protocol;

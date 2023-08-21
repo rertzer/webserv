@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 14:50:56 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:26:59 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,14 @@ void Response::feelPart(Request req)
 		if (req.getQuery().find(".php") != std::string::npos)
 		{
 			fileStr= runFile(_method, req);
+		}
+		else if (req.isUpload())
+		{
+			std::cout << "CONTENT:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+			std::cout << req.getContent();
+			std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++CONTENT\n";
+			req.upload();
+			fileStr="upload done";
 		}
 		else
 		{
