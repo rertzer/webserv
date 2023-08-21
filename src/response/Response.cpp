@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 13:30:58 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 14:34:41 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,84 +232,93 @@ Location Response::getTheLocation(std::string path)
 	return (Location());
 }
 
+void Response::respWithLoc(Request& req)
+{
+	Location loc;
+	if (req.getQuery()!= "/")
+	{
+		if (req.getQuery()[req.getQuery().length() - 1] == '/')
+		{
+			loc = getTheLocation(req.getQuery());
+			if (checkAutoIndex(loc) == false)
+			{
+				std::cout << "Enter here false " << std::endl;
+				*this = createErrorPage(403, _serv);
+				return;
+			}
+			else
+			{
+				_content = dirContent(_serv.getRoot(), req.getQuery());
+				_status = "200";
+				_method = req.getMethod();
+				_contentType = "text/html";
+				_contentLength = intToString(_content.length());
+				return ;
+			}
+		}
+	}
+	int allowMethod = checkAllowMethod(loc);
+	std::cout << "AllowMethod = " << allowMethod << std::endl;
+	if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
+		dealWithGet(req);
+	else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
+		dealWithPost(req);
+	else if (req.getMethod() == "DELETE" && (allowMethod == DELETE || allowMethod == GETDELETE || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
+	{
+		std::cout <<"in delete meth" << std::endl;
+		dealWithDelete(req);
+	}
+	else
+	{
+		std::cout << "Enter here " << std::endl;
+		*this = createErrorPage(405, _serv);
+	}
+}
+
+void Response::respWithOutLoc(Request& req)
+{
+	if (req.getQuery()!= "/")
+	{
+		if (req.getQuery()[req.getQuery().length() - 1] == '/')
+		{
+			std::cout << "enter in the else" << std::endl;
+			*this = createErrorPage(403, _serv);
+			return;
+		}
+	}
+	if (req.getMethod() == "GET")
+	{
+		std::cout << "IN GET" << std::endl;
+		dealWithGet(req);
+	}
+	else if (req.getMethod() == "POST")
+	{
+		std::cout << "IN POST" << std::endl;
+		dealWithPost(req);
+	}
+	else if (req.getMethod() == "DELETE")
+	{
+		std::cout << "IN DELETE" << std::endl;
+		dealWithDelete(req);
+	}
+	else
+	{
+		*this = createErrorPage(404, _serv);
+	}
+}
+
 Response::Response(Request& req, Server serv)
 {
 	_readFileAccess = OK;
 	_serv = serv;
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
-		Location loc;
-		if (req.getQuery()!= "/")
-		{
-			if (req.getQuery()[req.getQuery().length() - 1] == '/')
-			{
-				loc = getTheLocation(req.getQuery());
-				if (checkAutoIndex(loc) == false)
-				{
-					std::cout << "Enter here false " << std::endl;
-					*this = createErrorPage(403, _serv);
-					return ;
-				}
-				else
-				{
-
-					_content = dirContent(_serv.getRoot(), req.getQuery());
-					_status = "200";
-					_method = req.getMethod();
-					_contentType = "text/html";
-					_contentLength = _content.length();
-					std::cout << "dir content" << _content << std::endl;
-					return ;
-				}
-			}
-		}
-		int allowMethod = checkAllowMethod(loc);
-		std::cout << "AllowMethod = " << allowMethod << std::endl;
-		if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
-			dealWithGet(req);
-		else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
-			dealWithPost(req);
-		else if (req.getMethod() == "DELETE" && (allowMethod == DELETE || allowMethod == GETDELETE || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
-		{
-			std::cout <<"in delete meth" << std::endl;
-			dealWithDelete(req);
-		}
-		else
-		{
-			std::cout << "Enter here " << std::endl;
-			*this = createErrorPage(405, _serv);
-		}
+		std::cout << "EEEEEEEEEEEEEEE" << std::endl;
+		respWithLoc(req);
 	}
 	else
 	{
-		if (req.getQuery()!= "/")
-		{
-			if (req.getQuery()[req.getQuery().length() - 1] == '/')
-			{
-				std::cout << "enter in the else" << std::endl;
-				*this = createErrorPage(403, _serv);
-				return;
-			}
-		}
-		if (req.getMethod() == "GET")
-		{
-			std::cout << "IN GET" << std::endl;
-			dealWithGet(req);
-		}
-		else if (req.getMethod() == "POST")
-		{
-			std::cout << "IN POST" << std::endl;
-			dealWithPost(req);
-		}
-		else if (req.getMethod() == "DELETE")
-		{
-			std::cout << "IN DELETE" << std::endl;
-			dealWithDelete(req);
-		}
-		else
-		{
-			*this = createErrorPage(404, _serv);
-		}
+		respWithOutLoc(req);
 	}
 }
 

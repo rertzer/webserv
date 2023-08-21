@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 10:26:46 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/21 14:14:57 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ int	Event::handleIn()
 		try
 		{
 			Response resp(req, findTheServ(req, this->serv, soc->getMotherPort()));
+			std::cout << resp.getResponse() << std::endl;
 			soc->setMessageOut(resp.getResponse());
 		}
 		catch (const ErrorException & e)

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 13:40:35 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/21 14:24:37 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,6 @@ class Response
 		Location getTheLocation(std::string path);
 		void iniateContentMap();
 		void feelPart(Request req);
+		void respWithLoc(Request &req);
+		void respWithOutLoc(Request& req);
 };
