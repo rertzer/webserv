@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 12:03:16 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 13:37:54 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,9 @@ void	Request::upload(std::string & part)
 		line = getLine(part, "\r\n");
 	}
 	std::string filename = getFileName();
-	std::cout << "Filename is $" << filename << "$\n"; 
+	std::cout << "Filename is $" << filename << "$\n";
+	if (! filename.empty())
+		uploadFile(filename, part);
 }
 
 std::string	Request::getFileName()
@@ -168,11 +170,24 @@ std::string	Request::getFileName()
 	return fn;
 }
 
-void	Request::uploadFile(std::string const & filename)
+void	Request::uploadFile(std::string const & filename, std::string const & part)
 {
 		checkValidFileName(filename);
 		std::string path = "/mnt/nfs/homes/rertzer/projets/webserv/webserv_git/www/upload/";
 		path += filename;
+		if (access(path.c_str(), F_OK) == 0)
+			std::cout << "File " << path << " already exist\n";
+		else
+		{
+			int fd = open(path.c_str(), O_WRONLY | O_CREAT, 00664);
+			if (fd == -1)
+			{
+				perror("oups");
+				throw (ErrorException(500));
+			}
+			write(fd, part.c_str(), part.length());
+			close(fd);
+		}
 
 
 }

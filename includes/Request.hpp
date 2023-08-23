@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 11:39:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 13:13:07 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <iostream>
 # include <sstream>
 # include <exception>
+# include <fcntl.h>
 
 # include "macroDef.hpp"
 # include "TCPSocket.hpp"
@@ -57,7 +58,8 @@ class Request
 		std::string	getLine(std::string & data, std::string const & sep);
 		std::string	getFileName();
 		void		upload(std::string & part);
-		void		upload_file(std::string & filename);
+		void		uploadFile(std::string const & filename, std::string const & part);
+		void		checkValidFileName(std::string const & filename) const;
 		void	setControlData();
 		void	setHeader();
 		void	setContent();

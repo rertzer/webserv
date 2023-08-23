@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 10:49:56 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 13:32:42 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,16 +118,11 @@ void Response::feelPart(Request req)
 		{
 			fileStr= runFile(_method, req);
 		}
-		else if (req.isUpload())
-		{
-			std::cout << "CONTENT:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-			std::cout << req.getContent();
-			std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++CONTENT\n";
-			req.upload_all();
-			fileStr="upload done";
-		}
 		else
 		{
+			if (req.isUpload())
+				req.upload_all();
+
 			std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
 			fileStr = readFile(_serv.getRoot() + req.getQuery());
 			//std::cout << "Content that is not root " << fileStr << std::endl;
