@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 13:37:54 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 14:37:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,7 @@ std::string	Request::getFileName()
 	std::vector<std::string> fields = splitCsv(fn, ";");
 	for (std::vector<std::string>::iterator it = fields.begin(); it != fields.end(); it++)
 	{
+		std::cout << "parsing " << *it << std::endl;
 		int	k = it->find("=");
 		if (k == -1 || k == 0)
 			continue;
@@ -213,7 +214,7 @@ std::string	Request::getLine(std::string const & sep)
 		line = content.substr(0, pos);
 		content.erase(0, pos + sep.length());
 	}
-	std::cout << "POS Is AT " << pos << std::endl;
+	std::cout << "Pos Is At " << pos << std::endl;
 	return (line);
 }
 
