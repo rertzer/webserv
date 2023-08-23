@@ -11,6 +11,7 @@ if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is
 /tmp/www/pouic/toto/pouet).
 si autoindex off afficher un index si un de definit ou alle voir dans la liste des index
 ◦ Set a default file to answer if the request is a directory.
+* Define a place for the uploads
 
 
 ===============================================================================

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 11:25:47 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 12:11:27 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,6 +239,7 @@ std::string Response::getSpecIndex(Location loc)
 			std::cout << "In get spec index = " << (_serv.getRoot() + *it) << std::endl;
 			if (access((_serv.getRoot() + *it).c_str(), F_OK) != -1 && access((_serv.getRoot() + *it).c_str(), R_OK) != -1)
 			{
+				std::cout << "ALL GOOD ??" << std::endl;
 				return (*it);
 			}
 		}
@@ -278,7 +279,10 @@ void Response::respWithLoc(Request& req)
 				if (getSpecIndex(loc) == "")
 					req.setQuery("/");
 				else
+				{
+					std::cout << "Spec index = "<< getSpecIndex(loc) << std::endl;
 					req.setQuery(getSpecIndex(loc));
+				}
 			}
 			else
 			{
