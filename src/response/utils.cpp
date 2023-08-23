@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 13:25:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 14:43:41 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,4 +160,41 @@ bool checkAutoIndex(Location loc)
 		it++;
 	}
 	return (false);
+}
+
+int checkForRedirection(Location& loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	std::cout << "PPPPPPPPPPPPPPPPPPPPPPPPP" << loc.getLocationPath() << std::endl;
+	while (it != lineLoc.end())
+	{
+		std::cout << "cmd = " << it->getCmd() << std::endl;
+		if (it->getCmd() == "return")
+		{
+			std::cout << "return = " << it->getArgs()[0] << std::endl;
+			if (it->getArgs().size() >= 2)
+				return (1);
+		}
+		it++;
+	}
+	return (0);
+}
+
+std::pair<std::string, std::string> RedirectTo(Location& loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	std::pair<std::string, std::string> ret;
+	while (it != lineLoc.end())
+	{
+		if (it->getCmd() == "return")
+		{
+			ret.first = it->getArgs()[0];
+			ret.second = it->getArgs()[1];
+			return (ret);
+		}
+		it++;
+	}
+	return (ret);
 }

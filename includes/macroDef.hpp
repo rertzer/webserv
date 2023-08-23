@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 13:27:36 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 14:27:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <netinet/in.h>
+#include <unistd.h>
 #include <fstream>
 #include <exception>
 #include <vector>
@@ -48,11 +49,13 @@ std::vector<std::string>	splitCsv(std::string const & str);
 bool						ciCompare(std::string const & left, std::string const & right);
 std::string					lowString(std::string const & str);
 std::string					envFormat(std::string const & str);
-std::string					intToString(int n);
-Server						findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
-std::string					readFile(std::string file);
-Response					createErrorPage(int codeErr, Server serv);
-bool						checkAutoIndex(Location loc);
-int							checkAllowMethod(Location loc);
-bool						changeToIndex(Location loc, Request& req, std::string root);
-std::string					dirContent(std::string root, std::string path);
+std::string							intToString(int n);
+Server								findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
+std::string							readFile(std::string file);
+Response							createErrorPage(int codeErr, Server serv);
+bool								checkAutoIndex(Location loc);
+int									checkAllowMethod(Location loc);
+bool								changeToIndex(Location loc, Request& req, std::string root);
+std::string							dirContent(std::string root, std::string path);
+int									checkForRedirection(Location& loc);
+std::pair<std::string, std::string>	RedirectTo(Location& loc);

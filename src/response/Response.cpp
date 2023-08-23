@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 12:11:27 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 14:47:44 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,21 @@ void Response::dealWithGet(Request req)
 void Response::dealWithPost(Request req)
 {
 	_method = "POST";
+
 	feelPart(req);
+}
+
+int CheckForRedirection(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	while (it != lineLoc.end())
+	{
+		if (it->getCmd() == "return")
+			return (1);
+		it++;
+	}
+	return (0);
 }
 
 void Response::dealWithDelete(Request req)
@@ -180,6 +194,11 @@ void Response::dealWithDelete(Request req)
 std::string Response::getResponse()
 {
 	std::string response = "HTTP/1.1 " + _status + " \r\n";
+	if (!_location.empty())
+	{
+		response += "Location: " + _location + "\r\n";
+		return response;
+	}
 	if (!_connectionClose.empty())
 		response += "Connection: " + _connectionClose + "\r\n";
 	response += "Content-Type: " + _contentType + "\r\n"
@@ -194,6 +213,7 @@ int Response::checkIfLocation(std::string path)
 {
 	std::vector<Location> loc = _serv.getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
+	std::cout << "Path before tje substr " << path << std::endl;
 	if (path != "/")
 		path = path.substr(0, path.rfind("/") );
 	while (it != loc.end())
@@ -220,6 +240,7 @@ Location Response::getTheLocation(std::string path)
 	{
 		if (it->getLocationPath() == path)
 		{
+			std::cout << "Check if good location " << it->getLocationPath() << std::endl;
 			return (*it);
 		}
 		it++;
@@ -291,9 +312,18 @@ void Response::respWithLoc(Request& req)
 			}
 		}
 	}
-	loc = getTheLocation(req.getQuery());
+	else
+		loc = getTheLocation(req.getQuery());
 	int allowMethod = checkAllowMethod(loc);
 	std::cout << "AllowMethod = " << allowMethod << std::endl;
+	if (checkForRedirection(loc) == 1)
+	{
+		std::cout << "ENter in the redir zone" << std::endl;
+		std::pair<std::string, std::string> redirection = RedirectTo(loc);
+		_status = Status::getMsg(atoi((redirection.first.c_str())));
+		_location = redirection.second;
+		return ;
+	}
 	if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
 		dealWithGet(req);
 	else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
