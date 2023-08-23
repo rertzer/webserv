@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 17:25:42 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 12:03:16 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,10 +117,18 @@ bool	Request::isUpload() const
 	return false;
 }
 
-void	Request::upload()
+void	Request::upload_all()
 {
-	std::string line = getLine();
+	std::string boundary = getLine("\r\n");
+	std::string part = getLine(boundary);
+	multipart.clear();
+	upload(part);
+}
+
+void	Request::upload(std::string & part)
+{
 	std::cout << "Uploading.............................................................\n";
+	std::string line = getLine(part, "\r\n");
 	while (line.length())
 	{
 		int	k = line.find(":");
@@ -131,24 +139,83 @@ void	Request::upload()
 		stringTrim(val);
 		stringTrim(key);
 		multipart[key] = val;
-		std::cout << "Multipart: " << key << " value: " << multipart[key] <<  "$" << std::endl;
-		line = getLine();
+		std::cout << "Multipart: " << key << "\nvalue: " << multipart[key] <<  "$" << std::endl;
+		line = getLine(part, "\r\n");
 	}
+	std::string filename = getFileName();
+	std::cout << "Filename is $" << filename << "$\n"; 
+}
+
+std::string	Request::getFileName()
+{
+	std::string fn = multipart["Content-Disposition"];
+	std::vector<std::string> fields = splitCsv(fn, ";");
+	for (std::vector<std::string>::iterator it = fields.begin(); it != fields.end(); it++)
+	{
+		int	k = it->find("=");
+		if (k == -1 || k == 0)
+			continue;
+		std::string	key = it->substr(0, k);
+		std::string	val = it->substr(k + 1);
+		stringDoubleQuotTrim(val);
+		stringTrim(key);
+		if (key == "filename")
+		{
+			fn = val;
+			break;
+		}
+	}
+	return fn;
+}
+
+void	Request::uploadFile(std::string const & filename)
+{
+		checkValidFileName(filename);
+		std::string path = "/mnt/nfs/homes/rertzer/projets/webserv/webserv_git/www/upload/";
+		path += filename;
+
+
+}
+
+void	Request::checkValidFileName(std::string const & filename) const
+{
+	if (filename.size() > 255 ||
+			filename.find_first_of("\\\0") != std::string::npos ||
+			filename == "." ||
+			filename == "..")
+		throw ErrorException(400);
 }
 
 
-std::string	Request::getLine()
+std::string	Request::getLine(std::string const & sep)
 {
 	int	pos = -1;
 	std::string	line;
 
-	pos = content.find("\r\n");
+	pos = content.find(sep);
 	if (pos != -1)
 	{
 		line = content.substr(0, pos);
-		line = content.erase(0, pos + 2);
+		content.erase(0, pos + sep.length());
 	}
+	std::cout << "POS Is AT " << pos << std::endl;
 	return (line);
+}
+
+std::string Request::getLine(std::string & data, std::string const & sep)
+{
+	int	pos = -1;
+	std::string	line;
+
+	pos = data.find(sep);
+	if (pos != -1)
+	{
+		line = data.substr(0, pos);
+		data.erase(0, pos + sep.length());
+	}
+	std::cout << "POS Is AT " << pos << std::endl;
+	return (line);
+
 }
 
 int	Request::getIntField(std::string const & name) const

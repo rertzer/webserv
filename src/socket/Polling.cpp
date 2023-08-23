@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 15:26:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 09:38:07 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ Polling	&	Polling::operator=(Polling const & rhs)
 void	Polling::addMotherSocket(int port)
 {
 	TCPSocket *	soc = new TCPSocket(port);
-	addSocket(soc, EPOLLIN | EPOLLET);
+	addSocket(soc, EPOLLIN);
 	mother_fds.push_back(soc->getFd());
 }
 
@@ -63,7 +63,7 @@ void	Polling::connect(Event const & ev)
 {
 	TCPSocket *	soc = new TCPSocket();
 	powerstrip[ev.getSocketFd()]->accept(soc);
-	addSocket(soc, EPOLLIN | EPOLLOUT | EPOLLET);
+	addSocket(soc, EPOLLIN | EPOLLOUT);
 	std::cout << "New connection fd: " << soc->getFd() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxx" << std::endl;
 }
 

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 17:26:59 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 10:49:56 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void Response::feelPart(Request req)
 			std::cout << "CONTENT:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 			std::cout << req.getContent();
 			std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++CONTENT\n";
-			req.upload();
+			req.upload_all();
 			fileStr="upload done";
 		}
 		else
@@ -210,11 +210,8 @@ int Response::checkIfLocation(std::string path)
 		path = path.substr(0, path.rfind("/"));
 	while (it != loc.end())
 	{
-		std::cout << "location path = " << it->getLocationPath() << std::endl;
-		std::cout <<  "path = " << path << std::endl;
 		if (it->getLocationPath() == path)
 		{
-			std::cout << "found a location path" << std::endl;
 			return (0);
 		}
 		it++;

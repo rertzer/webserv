@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 16:38:13 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 11:39:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define REQUEST_HPP
 
 # include <map>
+# include <vector>
 # include <string>
 # include <iostream>
 # include <sstream>
@@ -46,13 +47,17 @@ class Request
 		bool											checkField(std::string const & name, std::string const & value) const;
 		bool											checkSubField(std::string const & name, std::string const & value) const;
 		bool											isUpload() const;
-		void											upload();
+		void											upload_all();
 		int												getIntField(std::string const & name) const;
 		void											addField(std::string const & field);
 		void										setQuery(std::string const & query);
 	private:
 		//Request();
-		std::string	getLine();
+		std::string	getLine(std::string const & sep);
+		std::string	getLine(std::string & data, std::string const & sep);
+		std::string	getFileName();
+		void		upload(std::string & part);
+		void		upload_file(std::string & filename);
 		void	setControlData();
 		void	setHeader();
 		void	setContent();
