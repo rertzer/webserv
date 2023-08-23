@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 14:24:37 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 09:45:25 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,6 @@ class Response
 		void feelPart(Request req);
 		void respWithLoc(Request &req);
 		void respWithOutLoc(Request& req);
+		std::string getSpecIndex(Location loc);
+		void createAutoIndexResp(Request& req, Location loc);
 };

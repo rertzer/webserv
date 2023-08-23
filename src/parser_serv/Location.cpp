@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 15:33:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/16 13:44:23 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 09:30:02 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,20 @@ void Location::printLoc()
 		for (std::vector<std::string>::iterator it2 = it->getArgs().begin(); it2 != it->getArgs().end(); it2++)
 			std::cout << "Value = " << *it2 << std::endl;
 	}
+}
+
+std::vector<std::string> Location::getIndex() {
+
+	std::vector<std::string> _stringIndex;
+	std::vector<LineLoc>::iterator it = _locationLine.begin();
+	while (it != _locationLine.end())
+	{
+		if (it->getCmd() == "index")
+		{
+			_stringIndex = it->getArgs();
+			return (_stringIndex);
+		}
+		it++;
+	}
+	return (_stringIndex);
 }

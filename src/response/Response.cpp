@@ -6,18 +6,11 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 14:34:41 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/23 11:25:47 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
-// GET /repertoire/page.html HTTP/1.1
-
-//  std::string response = "HTTP/1.1 200 OK\r\n"
-//                                "Content-Type: text/html\r\n"
-//                                "Content-Length: 24\r\n"
-//                                "\r\n"
-//                                "<html><body>Hello</body></html>";
 
 void checkExec(std::string filePath)
 {
@@ -122,6 +115,8 @@ void Response::feelPart(Request req)
 		else
 		{
 			std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
+			std::cout << "req.getQuery() = " << req.getQuery() << std::endl;
+			std::cout << "_serv.getRoot() = " << _serv.getRoot() << std::endl;
 			fileStr = readFile(_serv.getRoot() + req.getQuery());
 			//std::cout << "Content that is not root " << fileStr << std::endl;
 		}
@@ -200,7 +195,7 @@ int Response::checkIfLocation(std::string path)
 	std::vector<Location> loc = _serv.getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
 	if (path != "/")
-		path = path.substr(0, path.rfind("/"));
+		path = path.substr(0, path.rfind("/") );
 	while (it != loc.end())
 	{
 		std::cout << "location path = " << it->getLocationPath() << std::endl;
@@ -220,7 +215,7 @@ Location Response::getTheLocation(std::string path)
 	std::vector<Location> loc = _serv.getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
 	if (path != "/")
-		path = path.substr(0, path.rfind("/"));
+		path = path.substr(0, path.rfind("/") );
 	while (it != loc.end())
 	{
 		if (it->getLocationPath() == path)
@@ -230,6 +225,44 @@ Location Response::getTheLocation(std::string path)
 		it++;
 	}
 	return (Location());
+}
+
+std::string Response::getSpecIndex(Location loc)
+{
+	std::vector<std::string> index = loc.getIndex();
+	if (index.size() == 0)
+		return ("");
+	else
+	{
+		for (std::vector<std::string>::iterator it = index.begin() ; it != index.end(); it++)
+		{
+			std::cout << "In get spec index = " << (_serv.getRoot() + *it) << std::endl;
+			if (access((_serv.getRoot() + *it).c_str(), F_OK) != -1 && access((_serv.getRoot() + *it).c_str(), R_OK) != -1)
+			{
+				return (*it);
+			}
+		}
+		return ("");
+	}
+}
+
+void Response::createAutoIndexResp(Request& req, Location loc) {
+
+	int allowMethod = checkAllowMethod(loc);
+	if ((req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE)) || \
+		(req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE)))
+	{
+		_content = dirContent(_serv.getRoot(), req.getQuery());
+		_status = "200";
+		_method = req.getMethod();
+		_contentType = "text/html";
+		_contentLength = intToString(_content.length());
+	}
+	else
+	{
+		*this = createErrorPage(405, _serv);
+	}
+
 }
 
 void Response::respWithLoc(Request& req)
@@ -242,21 +275,19 @@ void Response::respWithLoc(Request& req)
 			loc = getTheLocation(req.getQuery());
 			if (checkAutoIndex(loc) == false)
 			{
-				std::cout << "Enter here false " << std::endl;
-				*this = createErrorPage(403, _serv);
-				return;
+				if (getSpecIndex(loc) == "")
+					req.setQuery("/");
+				else
+					req.setQuery(getSpecIndex(loc));
 			}
 			else
 			{
-				_content = dirContent(_serv.getRoot(), req.getQuery());
-				_status = "200";
-				_method = req.getMethod();
-				_contentType = "text/html";
-				_contentLength = intToString(_content.length());
+				createAutoIndexResp(req, loc);
 				return ;
 			}
 		}
 	}
+	loc = getTheLocation(req.getQuery());
 	int allowMethod = checkAllowMethod(loc);
 	std::cout << "AllowMethod = " << allowMethod << std::endl;
 	if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
@@ -281,9 +312,8 @@ void Response::respWithOutLoc(Request& req)
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
-			std::cout << "enter in the else" << std::endl;
-			*this = createErrorPage(403, _serv);
-			return;
+			std::cout << "enter here7" << std::endl;
+			req.setQuery("/");
 		}
 	}
 	if (req.getMethod() == "GET")
