@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:15:48 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 16:57:17 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int fillServ(std::string av, std::vector<Server>& serv)
 	std::vector<std::string> servStrings;
 	bool servOpen = false;
 	int countLine = 0;
+	int i = 0;
 	try
 	{
 		conf.open(av.c_str(), std::fstream::in);
@@ -60,10 +61,12 @@ int fillServ(std::string av, std::vector<Server>& serv)
 				bracketOpen.pop_back();
 			if (bracketOpen.size() == 0)
 			{
+
 				servOpen = false;
 				servStrings.pop_back();
 				serv.push_back(Server(servStrings));
 				servStrings.clear();
+				i++;
 			}
 		}
 	}

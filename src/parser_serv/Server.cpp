@@ -6,31 +6,21 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 14:23:25 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 17:35:39 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-void printServ(Server& serv)
+
+int Server::getAllowMethods()
 {
-	std::cout << "Server name : " << serv.getServName() << std::endl;
-	std::cout << "Server root : " << serv.getRoot() << std::endl;
-	std::cout << "Server error page : " << std::endl;
-	for (std::vector<int>::iterator it = serv.getListenPort().begin(); it < serv.getListenPort().end(); it++)
-		std::cout << "Listening on port : " << *it  << std::endl;
-	for (std::map<std::string, std::string>::iterator it = serv.getAllErrorPage().begin(); it != serv.getAllErrorPage().end(); it++)
-		std::cout << it->first << " : " << it->second << std::endl;
+	return (_allowedMethod);
+}
 
-	std::cout << "--------Location-------------" << std::endl;
-
-	std::vector<Location> loc = serv.getAllLocation();
-	for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); it++)
-	{
-		std::cout << "Location path : " << it->getLocationPath() << std::endl;
-		std::cout << "Location line : " << std::endl;
-		it->printLoc();
-	}
+std::string Server::getAutoIndex()
+{
+	return (_autoIndex);
 }
 
 Server::Server(std::vector<std::string> servStrings)
@@ -38,12 +28,19 @@ Server::Server(std::vector<std::string> servStrings)
 	bool locOpen = false;
 	std::vector<std::string> locString;
 	std::vector<bool> bracOpen;
+	_allowedMethod = GETPOSTDELETE;
 	_maxBodySize = -1;
 	//std::cout << "size of servString vector = " << servStrings.size() << std::endl;
 	for (std::vector<std::string>::iterator it = servStrings.begin(); it != servStrings.end(); it++)
 	{
 		//std::cout << *it << std::endl;
-		if (it->find("listen") != std::string::npos)
+		if (it->find("allow_methods") != std::string::npos && locOpen == false)
+		{
+			std::cout << "enter allow methods" << std::endl;
+			_allowedMethod = getAllowMethodsServer(it->substr(it->find("allow_methods") + 14, it->find(";") - it->find("allow_methods") - 14));
+			std::cout << "allowed method = " << _allowedMethod << std::endl;
+		}
+		else if (it->find("listen") != std::string::npos && locOpen == false)
 			_nPort.push_back(atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str()));
 		else if (it->find("server_name") != std::string::npos)
 			_servName = it->substr(it->find("server_name") + 12, it->find(";") - it->find("server_name") - 12);
@@ -58,7 +55,10 @@ Server::Server(std::vector<std::string> servStrings)
 			{
 				errorNb = it->substr(it->find("error_page") + 11, 3);
 				if (atoi(errorNb.c_str()) < 300 || atoi(errorNb.c_str()) > 599)
+				{
+					std::cout << "Error nb have to be lower than 599 and upper than 300" << std::endl;
 					throw(ServerException());
+				}
 			}
 			else
 				throw(ServerException());
@@ -84,7 +84,21 @@ Server::Server(std::vector<std::string> servStrings)
 				throw(ServerException());
 			}
 		}
-		else if (it->find("index ") != std::string::npos)
+		else if (it->find("autoindex") != std::string::npos && locOpen == false)
+		{
+			*it = it->substr(it->find("autoindex") + 10, it->find(";") - it->find("autoindex") - 10);
+			std::cout << "autoindex found = " << *it << std::endl;
+			if (*it == "on")
+				_autoIndex = "on";
+			else if (*it == "off")
+				_autoIndex = "off";
+			else
+			{
+				std::cout << "autoindex need to be on or off" << std::endl;
+				throw(ServerException());
+			}
+		}
+		else if (it->find("index ") != std::string::npos && locOpen == false)
 		{
 			std::string defaultPage = it->substr(it->find("index") + 6, it->find(";") - it->find("index ") - 6);
 			std::stringstream ss(defaultPage);
@@ -103,8 +117,8 @@ Server::Server(std::vector<std::string> servStrings)
 		{
 			if (locOpen == false)
 			{
-				std::cout << "HEre oeeqiwieopwq" << std::endl;
 				std::cout << *it << std::endl;
+				std::cout << "line not know"	<< std::endl;
 				throw(ServerException());
 			}
 		}
@@ -123,6 +137,9 @@ Server::Server(std::vector<std::string> servStrings)
 			}
 		}
 	}
+	if (_autoIndex.length() == 0)
+		_autoIndex = "off";
+	std::cout << _allowedMethod<< std::endl;
 	std::cout << "body size of " << _servName << " = " << _maxBodySize << std::endl;
 	//printServ(*this);
 }
@@ -182,6 +199,9 @@ Server& Server::operator=(const Server& rhs)
 	if (this != &rhs)
 	{
 		_servName = rhs._servName;
+		_allowedMethod = rhs._allowedMethod;
+		_autoIndex = rhs._autoIndex;
+		_maxBodySize = rhs._maxBodySize;
 		_root = rhs._root;
 		_errorPage = rhs._errorPage;
 		_location = rhs._location;

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 09:42:06 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/24 16:20:38 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	serverRun(std::vector<Server> serv)
 		}
 		for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
 			pool.addMotherSocket(it->first);
-
 		while (1)
 		{
 			//std::cout << "Listening...\n";

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 13:50:21 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 17:06:06 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,8 +267,10 @@ std::string Response::getSpecIndex(Location loc)
 void Response::createAutoIndexResp(Request& req, Location loc) {
 
 	int allowMethod = checkAllowMethod(loc);
-	if ((req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE)) || \
-		(req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE)))
+	if (allowMethod != -1)
+		_allowedMethods = allowMethod;
+	if ((req.getMethod() == "GET" && (_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE || _allowedMethods == GETPOSTDELETE)) || \
+		(req.getMethod() == "POST" && (_allowedMethods == POST || _allowedMethods == GETPOST || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE)))
 	{
 		_content = dirContent(_root, req.getQuery());
 		_status = "200";
@@ -283,14 +285,14 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 
 }
 
-void Response::respWithLoc(Request& req)
+int Response::respWithLoc(Request& req)
 {
 	Location loc = getTheLocation(req.getQuery());
 	if (req.getQuery() != "/")
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
-			if (checkAutoIndex(loc) == false)
+			if (checkAutoIndex(loc) == 0)
 			{
 				if (getSpecIndex(loc) == "")
 					req.setQuery("/");
@@ -301,15 +303,18 @@ void Response::respWithLoc(Request& req)
 				}
 				loc = getTheLocation(req.getQuery());
 			}
-			else
+			else if (checkAutoIndex(loc) == 1 || _autoIndex == "on")
 			{
 				createAutoIndexResp(req, loc);
-				return ;
+				return (0);
 			}
+			else
+				req.setQuery("/");
 		}
 	}
 	int allowMethod = checkAllowMethod(loc);
-	std::cout << "AllowMethod = " << allowMethod << std::endl;
+	if (allowMethod != -1)
+		_allowedMethods = allowMethod;
 	if (isThereAspecRoot(loc) == 1)
 	{
 		std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
@@ -321,14 +326,55 @@ void Response::respWithLoc(Request& req)
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
 		_status = Status::getMsg(atoi((redirection.first.c_str())));
 		_location = redirection.second;
-		return ;
+		return (0);
 	}
-	std::cout << _root + req.getQuery() << std::endl;
-	if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
+	return (1);
+}
+
+int Response::respWithOutLoc(Request& req)
+{
+	if (req.getQuery()!= "/")
+	{
+		if (req.getQuery()[req.getQuery().length() - 1] == '/')
+		{
+			if (_autoIndex == "on")
+			{
+				createAutoIndexResp(req, Location());
+				return (0);
+			}
+			else
+				req.setQuery("/");
+		}
+	}
+	return (1);
+}
+
+Response::Response(Request& req, Server& serv)
+{
+	std::cout << std::endl << "IN RESPONSE CONSTRUCTOR" << std::endl;
+	_readFileAccess = OK;
+	_serv = serv;
+	_root = _serv.getRoot();
+	_autoIndex = _serv.getAutoIndex();
+	_allowedMethods = serv.getAllowMethods();
+	std::cout << "bedor Allowed methods = " << _allowedMethods << std::endl;
+	if (checkIfLocation(req.getQuery()) != -1)
+	{
+		std::cout << "EEEEEEEEEEEEEEE" << std::endl;
+		if (respWithLoc(req) == 0)
+			return ;
+	}
+	else
+	{
+		if (respWithOutLoc(req) == 0)
+			return ;
+	}
+	std::cout << "after Allowed methods = " << _allowedMethods << std::endl;
+	if (req.getMethod() == "GET" && (_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE || _allowedMethods == GETPOSTDELETE))
 		dealWithGet(req);
-	else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
+	else if (req.getMethod() == "POST" && (_allowedMethods == POST || _allowedMethods == GETPOST || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
 		dealWithPost(req);
-	else if (req.getMethod() == "DELETE" && (allowMethod == DELETE || allowMethod == GETDELETE || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
+	else if (req.getMethod() == "DELETE" && (_allowedMethods == DELETE || _allowedMethods == GETDELETE || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
 	{
 		std::cout <<"in delete meth" << std::endl;
 		dealWithDelete(req);
@@ -338,53 +384,7 @@ void Response::respWithLoc(Request& req)
 		std::cout << "Enter here " << std::endl;
 		*this = createErrorPage(405, _serv);
 	}
-}
-
-void Response::respWithOutLoc(Request& req)
-{
-	if (req.getQuery()!= "/")
-	{
-		if (req.getQuery()[req.getQuery().length() - 1] == '/')
-		{
-			std::cout << "enter here7" << std::endl;
-			req.setQuery("/");
-		}
-	}
-	if (req.getMethod() == "GET")
-	{
-		std::cout << "IN GET" << std::endl;
-		dealWithGet(req);
-	}
-	else if (req.getMethod() == "POST")
-	{
-		std::cout << "IN POST" << std::endl;
-		dealWithPost(req);
-	}
-	else if (req.getMethod() == "DELETE")
-	{
-		std::cout << "IN DELETE" << std::endl;
-		dealWithDelete(req);
-	}
-	else
-	{
-		*this = createErrorPage(404, _serv);
-	}
-}
-
-Response::Response(Request& req, Server serv)
-{
-	_readFileAccess = OK;
-	_serv = serv;
-	_root = _serv.getRoot();
-	if (checkIfLocation(req.getQuery()) != -1)
-	{
-		std::cout << "EEEEEEEEEEEEEEE" << std::endl;
-		respWithLoc(req);
-	}
-	else
-	{
-		respWithOutLoc(req);
-	}
+	std::cout << "OUT RESPONSE CONSTRUCTOR" << std::endl << std::endl << std::endl;
 }
 
 Response::Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content)

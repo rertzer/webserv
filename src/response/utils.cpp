@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:33:51 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 16:46:49 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ std::string intToString(int n)
 	return (ss.str());
 }
 
-Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
+Server& findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
 	if (req.getField("Host").empty())
@@ -110,6 +110,7 @@ int checkAllowMethod(Location loc)
 	bool get = false;
 	bool post = false;
 	bool deleteMethod = false;
+	bool found = false;
 	while (it != lineLoc.end())
 	{
 		std::cout << "cmd = " << it->getCmd() << std::endl;
@@ -121,11 +122,56 @@ int checkAllowMethod(Location loc)
 				post = true;
 			if (it->checkArgs("DELETE") == 1)
 				deleteMethod = true;
+			found = true;
 		}
 		it++;
 	}
+	if (found == true)
+	{
+		if (get && post && deleteMethod)
+			return (GETPOSTDELETE);
+		if (get && post)
+			return (GETPOST);
+		if (get && deleteMethod)
+			return (GETDELETE);
+		if (post && deleteMethod)
+			return (POSTDELETE);
+		if (get)
+			return (GET);
+		if (post)
+			return (POST);
+		if (deleteMethod)
+			return (DELETE);
+		if (!get && !post && !deleteMethod )
+			return (GETPOSTDELETE);
+	}
+	return (-1);
+}
+
+int getAllowMethodsServer(std::string allowMethod)
+{
+	std::stringstream ss(allowMethod);
+	std::string defaultStock;
+	bool get = false;
+	bool post = false;
+	bool deleteMethod = false;
+
+	while (getline(ss,defaultStock, ' '))
+	{
+		if (defaultStock == "GET")
+			get = true;
+		else if (defaultStock =="POST")
+			post = true;
+		else if (defaultStock == "DELETE")
+			deleteMethod = true;
+		else
+		{
+			std::cout << "Error in allowed method" << std::endl;
+			throw (ServerException());
+		}
+	}
 	if (get && post && deleteMethod)
-		return (GETPOSTDELETE);
+	return (GETPOSTDELETE);
 	if (get && post)
 		return (GETPOST);
 	if (get && deleteMethod)
@@ -143,7 +189,7 @@ int checkAllowMethod(Location loc)
 	return (-1);
 }
 
-bool checkAutoIndex(Location loc)
+int checkAutoIndex(Location loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
@@ -152,14 +198,14 @@ bool checkAutoIndex(Location loc)
 		std::cout << "cmd = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "autoindex")
 		{
-			if (it->checkArgs("on") == 1)
-				return (true);
+			if (it->getArgs()[0] == "on")
+				return (1);
 			else
-				return (false);
+				return (0);
 		}
 		it++;
 	}
-	return (false);
+	return (-1);
 }
 
 int checkForRedirection(Location& loc)
@@ -225,4 +271,28 @@ std::string getSpecRoot(Location& loc)
 		it++;
 	}
 	return ("");
+}
+
+
+void printServ(Server& serv)
+{
+	std::cout << "Server name : " << serv.getServName() << std::endl;
+	std::cout << "Server root : " << serv.getRoot() << std::endl;
+	std::cout << "Server Auto index : " << serv.getAutoIndex() << std::endl;
+	std::cout << "Server allowed method : " << serv.getAllowMethods() << std::endl;
+	for (std::vector<int>::iterator it = serv.getListenPort().begin(); it < serv.getListenPort().end(); it++)
+		std::cout << "Listening on port : " << *it  << std::endl;
+	for (std::map<std::string, std::string>::iterator it = serv.getAllErrorPage().begin(); it != serv.getAllErrorPage().end(); it++)
+		std::cout << it->first << " : " << it->second << std::endl;
+
+	std::cout << "--------Location-------------" << std::endl;
+
+	std::vector<Location> loc = serv.getAllLocation();
+	for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); it++)
+	{
+		std::cout << "Location path : " << it->getLocationPath() << std::endl;
+		std::cout << "Location line : " << std::endl;
+		it->printLoc();
+	}
+	std::cout << "----------------------------------------" << std::endl;
 }
