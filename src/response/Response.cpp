@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 14:47:44 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:04:34 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ std::string Response::readFile(std::string file)
 
 std::string	Response::runFile(std::string method, Request & req)
 {
-	Cgi	myCgi(method, _serv.getRoot(), req);
+	Cgi	myCgi(method, _root, req);
 
 	if (access(myCgi.getPath().c_str(), F_OK) == -1)
 	{
@@ -73,7 +73,6 @@ std::string	Response::runFile(std::string method, Request & req)
 	return (myCgi.getContent());
 }
 
-
 void Response::feelPart(Request req)
 {
 	//_method = "GET";
@@ -82,7 +81,7 @@ void Response::feelPart(Request req)
 		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
-			fileStr = readFile(_serv.getRoot() + *it);
+			fileStr = readFile(_root + *it);
 			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			{
 				break;
@@ -114,10 +113,10 @@ void Response::feelPart(Request req)
 		}
 		else
 		{
-			std::cout << "_serv.getRoot() + req.getQuery() = " << _serv.getRoot() + req.getQuery() << std::endl;
+			std::cout << "_root + req.getQuery() = " << _root + req.getQuery() << std::endl;
 			std::cout << "req.getQuery() = " << req.getQuery() << std::endl;
-			std::cout << "_serv.getRoot() = " << _serv.getRoot() << std::endl;
-			fileStr = readFile(_serv.getRoot() + req.getQuery());
+			std::cout << "_root = " << _root << std::endl;
+			fileStr = readFile(_root + req.getQuery());
 			//std::cout << "Content that is not root " << fileStr << std::endl;
 		}
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
@@ -177,8 +176,8 @@ int CheckForRedirection(Location loc)
 void Response::dealWithDelete(Request req)
 {
 	_method = "DELETE";
-	checkExec(_serv.getRoot() + req.getQuery());
-	if (std::remove((_serv.getRoot() + req.getQuery()).c_str()) != 0)
+	checkExec(_root + req.getQuery());
+	if (std::remove((_root + req.getQuery()).c_str()) != 0)
 	{
 		*this = createErrorPage(404, _serv);
 	}
@@ -257,8 +256,8 @@ std::string Response::getSpecIndex(Location loc)
 	{
 		for (std::vector<std::string>::iterator it = index.begin() ; it != index.end(); it++)
 		{
-			std::cout << "In get spec index = " << (_serv.getRoot() + *it) << std::endl;
-			if (access((_serv.getRoot() + *it).c_str(), F_OK) != -1 && access((_serv.getRoot() + *it).c_str(), R_OK) != -1)
+			std::cout << "In get spec index = " << (_root + *it) << std::endl;
+			if (access((_root + *it).c_str(), F_OK) != -1 && access((_root + *it).c_str(), R_OK) != -1)
 			{
 				std::cout << "ALL GOOD ??" << std::endl;
 				return (*it);
@@ -274,7 +273,7 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 	if ((req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE)) || \
 		(req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE)))
 	{
-		_content = dirContent(_serv.getRoot(), req.getQuery());
+		_content = dirContent(_root, req.getQuery());
 		_status = "200";
 		_method = req.getMethod();
 		_contentType = "text/html";
@@ -290,7 +289,7 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 void Response::respWithLoc(Request& req)
 {
 	Location loc;
-	if (req.getQuery()!= "/")
+	if (req.getQuery() != "/")
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
@@ -316,6 +315,8 @@ void Response::respWithLoc(Request& req)
 		loc = getTheLocation(req.getQuery());
 	int allowMethod = checkAllowMethod(loc);
 	std::cout << "AllowMethod = " << allowMethod << std::endl;
+	if (isThereAspecRoot(loc) == 1)
+		_root = getSpecRoot(loc);
 	if (checkForRedirection(loc) == 1)
 	{
 		std::cout << "ENter in the redir zone" << std::endl;
@@ -375,6 +376,7 @@ Response::Response(Request& req, Server serv)
 {
 	_readFileAccess = OK;
 	_serv = serv;
+	_root = _serv.getRoot();
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
 		std::cout << "EEEEEEEEEEEEEEE" << std::endl;

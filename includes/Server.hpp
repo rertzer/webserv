@@ -6,13 +6,14 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 15:07:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:49:21 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include "macroDef.hpp"
 #include "Location.hpp"
+#include "ServerException.hpp"
 
 class Server
 {

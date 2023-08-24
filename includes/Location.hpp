@@ -6,12 +6,15 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 14:04:59 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 09:29:27 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:37:14 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
 #include "macroDef.hpp"
 #include "LineLoc.hpp"
+
+class LineLoc;
 
 class Location
 {

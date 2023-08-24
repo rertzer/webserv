@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 14:43:41 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:05:48 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,4 +197,31 @@ std::pair<std::string, std::string> RedirectTo(Location& loc)
 		it++;
 	}
 	return (ret);
+}
+
+
+int	isThereAspecRoot(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	while (it != lineLoc.end())
+	{
+		if (it->getCmd() == "root")
+			return (1);
+		it++;
+	}
+	return (0);
+}
+
+std::string getSpecRoot(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	while (it != lineLoc.end())
+	{
+		if (it->getCmd() == "root")
+			return (it->getArgs()[0]);
+		it++;
+	}
+	return ("");
 }

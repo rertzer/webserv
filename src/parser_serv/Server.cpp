@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/21 15:08:09 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 10:45:30 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,25 +59,38 @@ Server::Server(std::vector<std::string> servStrings)
 		//std::cout << *it << std::endl;
 		if (it->find("listen") != std::string::npos)
 			_nPort.push_back(atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str()));
-		if (it->find("server_name") != std::string::npos)
+		else if (it->find("server_name") != std::string::npos)
 			_servName = it->substr(it->find("server_name") + 12, it->find(";") - it->find("server_name") - 12);
-		if (it->find("root") != std::string::npos)
+		else if (it->find("root") != std::string::npos)
 			_root = it->substr(it->find("root") + 5, it->find(";") - it->find("root") - 5);
-		if (it->find("error_page") != std::string::npos)
+		else if (it->find("error_page") != std::string::npos)
 		{
-			std::string errorNb = it->substr(it->find("error_page") + 11, 3);
-			std::string errorPage = it->substr(it->find("error_page") + 15, it->find(";") - it->find("error_page") - 15);
+			// need 2 thing behind error_page
+			std::string errorPage;
+			std::string errorNb;
+			if (it->length() > 11 + 3)
+			{
+				errorNb = it->substr(it->find("error_page") + 11, 3);
+				if (atoi(errorNb.c_str()) < 300 || atoi(errorNb.c_str()) > 599)
+					throw(ServerException());
+			}
+			else
+				throw(ServerException());
+			if (it->find("error_page") + 15 != std::string::npos)
+				errorPage = it->substr(it->find("error_page") + 15, it->find(";") - it->find("error_page") - 15);
+			else
+				throw(ServerException());
 			_errorPage.insert(std::pair<std::string, std::string>(errorNb, errorPage));
 		}
-		if (it->find("client_max_body_size") != std::string::npos)
+		else if (it->find("client_max_body_size") != std::string::npos)
 		{
 			std::string maxBodySize = it->substr(it->find("client_max_body_size") + 21, it->find(";") - it->find("client_max_body_size") - 21);
 			if (maxBodySize[maxBodySize.length() - 1] == 'M')
 				_maxBodySize = atoi(it->substr(it->find("max_body_size") + 14, it->find(";") - it->find("max_body_size") - 14).c_str());
 		}
-		if (it->find("index ") != std::string::npos)
+		else if (it->find("index ") != std::string::npos)
 		{
-			std::string defaultPage = it->substr(it->find("index ") + 6, it->find(";") - it->find("index ") - 6);
+			std::string defaultPage = it->substr(it->find("index") + 6, it->find(";") - it->find("index ") - 6);
 			std::stringstream ss(defaultPage);
 			std::string defaultStock;
 			while (getline(ss, defaultStock, ' '))
@@ -86,8 +99,17 @@ Server::Server(std::vector<std::string> servStrings)
 					_defaultPage.push_back(defaultStock);
 			}
 		}
-		if (it->find("location ") != std::string::npos)
+		else if (it->find("location ") != std::string::npos)
 			locOpen = true;
+		else
+		{
+			if (locOpen == false)
+			{
+				std::cout << "HEre oeeqiwieopwq" << std::endl;
+				std::cout << *it << std::endl;
+				throw(ServerException());
+			}
+		}
 		if (locOpen == true)
 		{
 			locString.push_back(*it);

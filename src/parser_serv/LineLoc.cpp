@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:08:25 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/16 13:52:41 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 10:31:45 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,50 @@ LineLoc::LineLoc(std::string line)
 	{
 		if (i == 0)
 		{
+			if (defaultStock.find_first_not_of(" \t") == std::string::npos)
+				throw(ServerException());
 			_cmd = defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
+			if (_cmd != "root" && _cmd != "return" && _cmd != "autoindex" && _cmd != "allow_methods" && _cmd != "index")
+			{
+				std::cout << "cmd = " << _cmd << std::endl;
+				std::cout << "Here 1 " << std::endl;
+				throw(ServerException());
+			}
 		}
 		else if (defaultStock != "")
 		{
+			defaultStock = defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
+			//std::cout << "defaultStock = " << defaultStock << std::endl;
+			if (defaultStock == ";")
+				break;
 			if (defaultStock.find(";") != std::string::npos && defaultStock.find(";") == defaultStock.length() - 1)
 				defaultStock = defaultStock.substr(0, defaultStock.find(";"));
 			_args.push_back(defaultStock);
 		}
 		i++;
+	}
+	if (_cmd == "index" && _args.size() != 1)
+		throw(ServerException());
+	if (_cmd == "root" && _args.size() != 1)
+	{
+		std::cout << "Here 2 " << std::endl;
+		throw(ServerException());
+	}
+	if (_cmd == "return" && _args.size() != 2)
+	{
+		std::cout << "Here 3 " << std::endl;
+		throw(ServerException());
+	}
+	if (_cmd == "autoindex" && _args.size() != 1)
+	{
+		std::cout << "Here 4" << std::endl;
+		throw(ServerException());
+	}
+	if (_cmd == "allow_methods" && _args.size() == 0)
+	{
+		std::cout << "line = " << defaultStock << std::endl;
+		std::cout << "Here 5 " << std::endl;
+		throw(ServerException());
 	}
 }
 

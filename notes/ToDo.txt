@@ -3,7 +3,6 @@ Pjay:
 
 Definir les cgi | les definir php py
 * Define a place for the uploads
-◦ Define a HTTP redirection.
 ◦ Define a directory or a file from where the file should be searched (for example,
 if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is
 /tmp/www/pouic/toto/pouet).

@@ -22,7 +22,7 @@ SOURCES := main.cpp
 SOCKET_SOURCES = TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp utils.cpp serverRun.cpp
 EXCEPTION_SOURCES = ErrorException.cpp Status.cpp
 LISTING_SOURCES = dirContent.cpp DirListing.cpp FileDesc.cpp
-PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp
+PARS_SOURCES = validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp ServerException.cpp
 
 RESP_SOURCES = Response.cpp utils.cpp contentMap.cpp Cgi.cpp
 

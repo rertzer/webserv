@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 14:27:09 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:35:17 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,3 +59,5 @@ bool								changeToIndex(Location loc, Request& req, std::string root);
 std::string							dirContent(std::string root, std::string path);
 int									checkForRedirection(Location& loc);
 std::pair<std::string, std::string>	RedirectTo(Location& loc);
+std::string							getSpecRoot(Location loc);
+int									isThereAspecRoot(Location loc);

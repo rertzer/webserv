@@ -1,25 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ContentMap.hpp                                     :+:      :+:    :+:   */
+/*   ServerException.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/17 11:37:53 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 09:36:12 by pjay             ###   ########.fr       */
+/*   Created: 2023/08/24 09:48:09 by pjay              #+#    #+#             */
+/*   Updated: 2023/08/24 09:48:22 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-#include "macroDef.hpp"
-#include "ErrorException.hpp"
-#include <map>
+#include "ServerException.hpp"
 
-class ContentMap
+const char *	ServerException::what() const throw()
 {
-	private:
-		std::map<std::string, std::string>	_allContentType;
-	public:
-		ContentMap();
-		std::string getContentValue(std::string key);
-};
+	return ("Error: Server parsing error");
+}

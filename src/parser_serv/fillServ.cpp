@@ -6,11 +6,17 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/14 11:47:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 10:34:21 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+
+void printVec(std::vector<std::string> vec)
+{
+	for (std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); it++)
+		std::cout << *it << std::endl;
+}
 
 int fillServ(std::string av, std::vector<Server>& serv)
 {
@@ -34,6 +40,8 @@ int fillServ(std::string av, std::vector<Server>& serv)
 		countLine++;
 		if (lineString.find("#") != std::string::npos)
 			lineString = lineString.substr(0, lineString.find("#"));
+		if (lineString.find_first_not_of(" \t") == std::string::npos)
+			continue;
 		if (lineString.find("server {") != std::string::npos) // I want it to skip the server line
 		{
 			//std::cout << "enter here" << std::endl;
@@ -53,6 +61,9 @@ int fillServ(std::string av, std::vector<Server>& serv)
 			if (bracketOpen.size() == 0)
 			{
 				servOpen = false;
+				std::cout << "ServString send to the parser" << std::endl;
+				servStrings.pop_back();
+				printVec(servStrings);
 				serv.push_back(Server(servStrings));
 				servStrings.clear();
 			}

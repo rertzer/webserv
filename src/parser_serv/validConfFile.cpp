@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 09:54:11 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/14 11:46:34 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 10:15:28 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ int checkBracket(std::ifstream& conf)
 		for (size_t i = 0; i < fullText.size(); i++)
 		{
 			if (isspace(fullText[i]) == false)
+			{
 				fullOfWs = false;
+			}
 		}
 		if (fullOfWs == true || fullText.empty() == true)
 			continue;

@@ -6,11 +6,13 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:02:41 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/17 11:15:17 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:49:58 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "macroDef.hpp"
+
+#pragma once
+#include "Server.hpp"
 
 class LineLoc
 {

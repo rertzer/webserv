@@ -6,11 +6,11 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/23 14:20:43 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 09:36:36 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
+#pragma once
 #include "macroDef.hpp"
 #include "Request.hpp"
 #include "Server.hpp"
@@ -49,6 +49,7 @@ class Response
 		int 		_readFileAccess;
 		ContentMap	_contentMap;
 		std::string _location;
+		std::string _root;
 
 	public:
 		Response(Request& req, Server serv);
