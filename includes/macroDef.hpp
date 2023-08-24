@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:30:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 13:34:19 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ int 						fillServ(std::string av , std::vector<Server>& serv);
 int							serverRun(std::vector<Server>);
 std::string 				sendResponse(Request& req, std::vector<Server>& serv);
 void						stringTrim(std::string & str);
+void						stringDoubleQuotTrim(std::string & str);
 std::vector<std::string>	splitCsv(std::string const & str);
+std::vector<std::string>	splitCsv(std::string const & str, std::string const & sep);
 bool						ciCompare(std::string const & left, std::string const & right);
 std::string					lowString(std::string const & str);
 std::string					envFormat(std::string const & str);

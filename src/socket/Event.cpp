@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 10:09:50 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 13:36:31 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int	Event::handleEvent()
 	{
 		if (events & ev[i])
 		{
-			std::cout << "execute handle fun " << ev[i] << std::endl;
+			//std::cout << "execute handle fun " << ev[i] << std::endl;
 			handlefun fun = whichfun[ev[i]];
 			close_fd = (this->*fun)();
 			if (close_fd)
@@ -146,7 +146,7 @@ int	Event::handleOut()
 		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
 		return (soc->getFd());
 	}
-	std::cout << "Connection fd " << soc_fd << ": Nothing to send\n";
+	//std::cout << "Connection fd " << soc_fd << ": Nothing to send\n";
 	return 0;
 }
 

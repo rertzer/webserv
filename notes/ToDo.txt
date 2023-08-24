@@ -1,16 +1,33 @@
 ================================================================================
 Pjay:
-
 Definir les cgi | les definir php py
 {
 	chaque serveur interprete ou pas
 	tout fichier se terminant par .php / .py (faire un find .php car par forcement a la fin)
-	Associer une extension aa un executable 
+	Associer une extension aa un executable
 }
 * Define a place for the uploads
 
 
+int	Event::handleIn()
+{
+	try
+	{
+		Request req(soc);
+		Response resp(req, this->serv, soc->getMotherPort());
+		soc->setMessageOut(resp.getResponse());
+	}
+	catch (const ErrorException & e)
+	{
+		std::stringstream ss;
+		ss << "HTTP/1.1 " << Status::getMsg(e.getCode()) << "\r\nHost: localhost:8080\r\nConnection:close\r\n\r\nSomething Bad Happened\r\n";
+		std::cerr << e.what() << " " << Status::getMsg(e.getCode()) << std::endl;
+		soc->setMessageOut(ss.str());
+	}
+	return 0;
+}
 
+change this part to create errPage.
 ===============================================================================
 rertzer:
 
@@ -23,7 +40,6 @@ mode :
 cote client:d'abord on shutdown 1 puis on close apres reponse du serveur
 
 Envoyer les bons messages d'erreur
-
 
 gerer le champ connection et ses fields
 

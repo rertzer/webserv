@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:43:39 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 13:50:21 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ std::string	Response::runFile(std::string method, Request & req)
 
 void Response::feelPart(Request req)
 {
-	//_method = "GET";
 	if (req.getQuery() == "/")
 	{
 		std::string fileStr;
@@ -115,9 +114,9 @@ void Response::feelPart(Request req)
 		}
 		else
 		{
-			std::cout << "_root + req.getQuery() = " << _root + req.getQuery() << std::endl;
-			std::cout << "req.getQuery() = " << req.getQuery() << std::endl;
-			std::cout << "_root = " << _root << std::endl;
+			if (req.isUpload())
+				req.upload_all();
+			std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
 			fileStr = readFile(_root + req.getQuery());
 			//std::cout << "Content that is not root " << fileStr << std::endl;
 		}
@@ -152,7 +151,6 @@ void Response::dealWithGet(Request req)
 {
 	_method = "GET";
 	feelPart(req);
-
 }
 
 void Response::dealWithPost(Request req)
@@ -219,11 +217,8 @@ int Response::checkIfLocation(std::string path)
 		path = path.substr(0, path.rfind("/") );
 	while (it != loc.end())
 	{
-		std::cout << "location path = " << it->getLocationPath() << std::endl;
-		std::cout <<  "path = " << path << std::endl;
 		if (it->getLocationPath() == path)
 		{
-			std::cout << "found a location path" << std::endl;
 			return (0);
 		}
 		it++;
@@ -328,6 +323,7 @@ void Response::respWithLoc(Request& req)
 		_location = redirection.second;
 		return ;
 	}
+	std::cout << _root + req.getQuery() << std::endl;
 	if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
 		dealWithGet(req);
 	else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))

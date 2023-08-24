@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 13:07:00 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 13:57:31 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Request::Request(TCPSocket * s):port(s->getMotherPort()), status(100), soc(s)
 	setHeader();
 	if (contentExist())
 		setContent();
-	std::cout << "Request created:\n" << *this << std::endl;
+	//std::cout << "Request created:\n" << *this << std::endl;
 }
 
 Request::Request(Request const & rhs)
@@ -40,6 +40,7 @@ Request &	Request::operator=(Request const & rhs)
 		status = rhs.status;
 		header = rhs.header;
 		trailer = rhs.trailer;
+		multipart = rhs.multipart;
 		query = rhs.query;
 		method = rhs.method;
 		content = rhs.content;
@@ -83,6 +84,7 @@ std::string	Request::getField(std::string const & name) const
 	}
 	return it->second;
 }
+
 bool	Request::checkField(std::string const & name, std::string const & value) const
 {
 	std::string field = getField(name);
@@ -93,6 +95,143 @@ bool	Request::checkField(std::string const & name, std::string const & value) co
 			return true;
 	}
 	return false;
+}
+
+bool	Request::checkSubField(std::string const & name, std::string const & value) const
+{
+	std::string field = getField(name);
+	std::vector<std::string> all_values = splitCsv(field, ";");
+	for (size_t i = 0; i < all_values.size(); i++)
+	{
+		std::cout << "Comparing $" << all_values[i] << "$ with $" << value << "$\n";
+		if (ciCompare(all_values[i], value))
+			return true;
+	}
+	return false;
+}
+
+bool	Request::isUpload() const
+{
+	if (getMethod() == "POST" && checkSubField("Content-Type", "multipart/form-data"))
+		return true;
+	return false;
+}
+
+void	Request::upload_all()
+{
+	std::string boundary = getLine("\r\n");
+	std::string part = getLine(boundary);
+	multipart.clear();
+	upload(part);
+}
+
+void	Request::upload(std::string & part)
+{
+	std::cout << "Uploading.............................................................\n";
+	std::string line = getLine(part, "\r\n");
+	while (line.length())
+	{
+		int	k = line.find(":");
+		if (k == -1 || k == 0)
+			throw (ErrorException(400));
+		std::string	key = line.substr(0, k);
+		std::string	val = line.substr(k + 1);
+		stringTrim(val);
+		stringTrim(key);
+		multipart[key] = val;
+		std::cout << "Multipart: " << key << "\nvalue: " << multipart[key] <<  "$" << std::endl;
+		line = getLine(part, "\r\n");
+	}
+	std::string filename = getFileName();
+	std::cout << "Filename is $" << filename << "$\n";
+	if (! filename.empty())
+		uploadFile(filename, part);
+}
+
+std::string	Request::getFileName()
+{
+	std::string fn = multipart["Content-Disposition"];
+	std::vector<std::string> fields = splitCsv(fn, ";");
+	for (std::vector<std::string>::iterator it = fields.begin(); it != fields.end(); it++)
+	{
+		std::cout << "parsing " << *it << std::endl;
+		int	k = it->find("=");
+		if (k == -1 || k == 0)
+			continue;
+		std::string	key = it->substr(0, k);
+		std::string	val = it->substr(k + 1);
+		stringDoubleQuotTrim(val);
+		stringTrim(key);
+		if (key == "filename")
+		{
+			fn = val;
+			break;
+		}
+	}
+	return fn;
+}
+
+void	Request::uploadFile(std::string const & filename, std::string const & part)
+{
+		checkValidFileName(filename);
+		std::string path = "/mnt/nfs/homes/pjay/Cursus42/cercle5/webserv/www/upload/";
+		path += filename;
+		if (access(path.c_str(), F_OK) == 0)
+			std::cout << "File " << path << " already exist\n";
+		else
+		{
+			int fd = open(path.c_str(), O_WRONLY | O_CREAT, 00664);
+			if (fd == -1)
+			{
+				perror("oups");
+				throw (ErrorException(500));
+			}
+			write(fd, part.c_str(), part.length());
+			close(fd);
+		}
+
+
+}
+
+void	Request::checkValidFileName(std::string const & filename) const
+{
+	if (filename.size() > 255 ||
+			filename.find_first_of("\\\0") != std::string::npos ||
+			filename == "." ||
+			filename == "..")
+		throw ErrorException(400);
+}
+
+
+std::string	Request::getLine(std::string const & sep)
+{
+	int	pos = -1;
+	std::string	line;
+
+	pos = content.find(sep);
+	if (pos != -1)
+	{
+		line = content.substr(0, pos);
+		content.erase(0, pos + sep.length());
+	}
+	std::cout << "Pos Is At " << pos << std::endl;
+	return (line);
+}
+
+std::string Request::getLine(std::string & data, std::string const & sep)
+{
+	int	pos = -1;
+	std::string	line;
+
+	pos = data.find(sep);
+	if (pos != -1)
+	{
+		line = data.substr(0, pos);
+		data.erase(0, pos + sep.length());
+	}
+	std::cout << "POS Is AT " << pos << std::endl;
+	return (line);
+
 }
 
 int	Request::getIntField(std::string const & name) const
@@ -179,7 +318,6 @@ void	Request::setHeader()
 
 void	Request::setContent()
 {
-	std::cout << "setContent\n";
 	std::string trans_encoding = getField("Transfer-Encoding");
 
 	if (! trans_encoding.empty())
@@ -230,7 +368,6 @@ void	Request::setTrailer()
 
 void	Request::setContentByLength(int len)
 {
-	std::cout << "setContentByLength\n";
 	soc->getRawData(content, len);
 }
 

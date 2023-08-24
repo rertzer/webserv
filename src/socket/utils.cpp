@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 15:43:07 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 10:40:22 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/21 16:07:56 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,19 @@
 
 std::vector<std::string>	splitCsv(std::string const & str)
 {
+	return splitCsv(str, ",");
+}
+
+
+std::vector<std::string>	splitCsv(std::string const & str, std::string const & sep)
+{
 	int	start = 0;
 	int	end = -1;
 	std::vector<std::string>	splited;
 	
 	while (end)
 	{
-		end = str.find(",", start);
+		end = str.find(sep, start);
 		std::string field = str.substr(start, end - start);
 		stringTrim(field);
 		splited.push_back(field);

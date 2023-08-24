@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/15 13:03:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/24 13:27:37 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ class TCPSocket
 		};
 
 	private:
+		void	setParam();
+
 		int					socket_fd;
 		int					mother_port;
 		struct sockaddr_in	socket_addr;

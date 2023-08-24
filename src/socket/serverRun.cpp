@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 11:10:22 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/23 09:42:06 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	serverRun(std::vector<Server> serv)
 
 		while (1)
 		{
-			std::cout << "Listening...\n";
+			//std::cout << "Listening...\n";
 			int nfds = pool.wait();
 			if (quitok)
 			{
@@ -51,14 +51,14 @@ int	serverRun(std::vector<Server> serv)
 				break;
 			}
 
-			std::cout << "\n\n\nepoll collected " << nfds << " fd's\n";
+			//std::cout << "\n\n\nepoll collected " << nfds << " fd's\n";
 
 			for (int n = 0; n < nfds; n++)
 			{
 				Event 		ev = pool.nextEvent();
 				ev.setServ(serv);
 
-				std::cout << "\nn is " << n << ", fd is: " << ev.getSocketFd() << " and  events are: " << ev.getEvents() << std::endl;
+				//std::cout << "\nn is " << n << ", fd is: " << ev.getSocketFd() << " and  events are: " << ev.getEvents() << std::endl;
 
 				if (pool.isMother(ev))
 				{
@@ -79,7 +79,7 @@ int	serverRun(std::vector<Server> serv)
 				}
 				else
 				{
-					std::cout << "events on " << ev.getSocketFd() << "mport: " << ev.getSocket()->getMotherPort() << std::endl;
+					//std::cout << "events on " << ev.getSocketFd() << "mport: " << ev.getSocket()->getMotherPort() << std::endl;
 
 					int	 close_fd = ev.handleEvent();
 					if (close_fd)
