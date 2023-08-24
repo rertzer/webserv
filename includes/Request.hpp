@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 13:13:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/24 14:41:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <string>
 # include <iostream>
 # include <sstream>
+# include <fstream>
 # include <exception>
 # include <fcntl.h>
 

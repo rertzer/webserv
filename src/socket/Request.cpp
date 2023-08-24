@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 13:57:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 15:06:20 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,20 +174,21 @@ std::string	Request::getFileName()
 void	Request::uploadFile(std::string const & filename, std::string const & part)
 {
 		checkValidFileName(filename);
-		std::string path = "/mnt/nfs/homes/pjay/Cursus42/cercle5/webserv/www/upload/";
+		std::string path = "/mnt/nfs/homes/rertzer/projets/webserv/webserv_git/www/upload/";
 		path += filename;
 		if (access(path.c_str(), F_OK) == 0)
 			std::cout << "File " << path << " already exist\n";
 		else
 		{
-			int fd = open(path.c_str(), O_WRONLY | O_CREAT, 00664);
-			if (fd == -1)
+			std::ofstream upfile(path.c_str(), std::ofstream::out);
+			if (upfile.fail())
 			{
-				perror("oups");
+				perror("Failed to create file");
+				std::cout << path << std::endl;
 				throw (ErrorException(500));
 			}
-			write(fd, part.c_str(), part.length());
-			close(fd);
+			upfile.write(part.c_str(), part.length());
+			upfile.close();
 		}
 
 
@@ -309,9 +310,7 @@ void	Request::setHeader()
 	while (line.length())
 	{
 		if (line.length())
-		{
 			addField(line);
-		}
 		line = soc->getLine();
 	}
 }
@@ -331,8 +330,7 @@ void	Request::setContent()
 	{
 		int len = getIntField("Content-Length");
 
-		//max content size a definir dans fichier conf
-		if (len > 0 && len < 16777216)
+		if (len > 0)
 			setContentByLength(len);
 		else
 			throw (ErrorException(400));

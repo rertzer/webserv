@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 13:26:57 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/24 16:09:44 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ void	TCPSocket::accept(TCPSocket * csoc)
 
 void	TCPSocket::setParam()
 {
-	int optval = 500000;
+	int optval = 200000;
 	socklen_t optlen = sizeof(optval);
 	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
 		std::cout << "setsockopt error\n";
@@ -194,4 +194,4 @@ int	TCPSocket::send()
 //max length to which the queue of pending connections may grow
 const int	TCPSocket::backlog = 42;
 //read buffer size
-const int	TCPSocket::buffer_size = 12000000;
+const int	TCPSocket::buffer_size = 120000;
