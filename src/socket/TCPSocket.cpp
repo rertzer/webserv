@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 11:00:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/24 13:26:57 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,7 @@ TCPSocket::TCPSocket(int p):mother_port(p)
 	int	value = 1;
 	setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
 
-	///////////////////////////////////////////////////////////////
-	int optval = 500000;
-	socklen_t optlen = sizeof(optval);
-	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
-		std::cout << "setsockopt error\n";
-	getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
-	std::cout << "SO_RCVBUF is " << optval << std::endl;
+	setParam();
 
 	if (bind(socket_fd, reinterpret_cast<struct sockaddr*>(&socket_addr), sizeof(socket_addr)) == -1)
 		throw(SocketException());
@@ -104,7 +98,18 @@ void	TCPSocket::accept(TCPSocket * csoc)
 	if (csoc->socket_fd == -1)
 		throw(ErrorException(500));
 	csoc->mother_port = getPort();
+	csoc->setParam();
 	std::cout << "New connection " << csoc->socket_fd <<  ":" << csoc->getPort() << " from TCP socket " << socket_fd << " on port " << getPort() << "addr_len " << csoc->socket_addr_length << std::endl;
+}
+
+void	TCPSocket::setParam()
+{
+	int optval = 500000;
+	socklen_t optlen = sizeof(optval);
+	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
+		std::cout << "setsockopt error\n";
+	getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
+	std::cout << "SO_RCVBUF is " << optval << std::endl;
 }
 
 void	TCPSocket::close()
