@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 09:54:11 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 10:15:28 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 14:27:16 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,15 @@ int checkBracket(std::ifstream& conf)
 		if (fullText.find("{") != std::string::npos)
 			bracketOpen.push_back(true);
 		if (fullText.find("}") != std::string::npos)
-			bracketOpen.pop_back();
+		{
+			if (bracketOpen.size() > 0)
+				bracketOpen.pop_back();
+			else
+			{
+				CFNG_BRAC_CLOSE;
+				return (-1);
+			}
+		}
 	}
 	if (bracketOpen.size() == 0)
 	{

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:34:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 14:23:25 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,18 @@ Server::Server(std::vector<std::string> servStrings)
 		else if (it->find("client_max_body_size") != std::string::npos)
 		{
 			std::string maxBodySize = it->substr(it->find("client_max_body_size") + 21, it->find(";") - it->find("client_max_body_size") - 21);
-			if (maxBodySize[maxBodySize.length() - 1] == 'M')
+			if (maxBodySize[maxBodySize.length() - 2] == 'K' && maxBodySize[maxBodySize.length() - 1] == 'b')
 				_maxBodySize = atoi(it->substr(it->find("max_body_size") + 14, it->find(";") - it->find("max_body_size") - 14).c_str());
+			else
+			{
+				std::cout << "client_max_body_size need to be in Kilo Byte \"Kb\"" << std::endl;
+				throw(ServerException());
+			}
+			if (_maxBodySize > 212 || _maxBodySize < 0)
+			{
+				std::cout << "client_max_body_size cannot be bigger than 212kb" << std::endl;
+				throw(ServerException());
+			}
 		}
 		else if (it->find("index ") != std::string::npos)
 		{
@@ -84,6 +94,8 @@ Server::Server(std::vector<std::string> servStrings)
 				if (defaultStock != "")
 					_defaultPage.push_back(defaultStock);
 			}
+			if (_defaultPage.size() == 0)
+				throw(ServerException());
 		}
 		else if (it->find("location ") != std::string::npos)
 			locOpen = true;
