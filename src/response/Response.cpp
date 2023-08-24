@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:35:54 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 11:43:39 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ void Response::feelPart(Request req)
 	{
 		std::string	fileStr;
 		if (req.getQuery().find(".php") != std::string::npos)
+		// ici il faut remplacer le .php par tout les extensions pris en compte dans le serv
 		{
 			fileStr= runFile(_method, req);
 		}
