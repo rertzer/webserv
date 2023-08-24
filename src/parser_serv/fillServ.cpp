@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 10:34:21 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 11:15:48 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,7 @@ int fillServ(std::string av, std::vector<Server>& serv)
 			if (bracketOpen.size() == 0)
 			{
 				servOpen = false;
-				std::cout << "ServString send to the parser" << std::endl;
 				servStrings.pop_back();
-				printVec(servStrings);
 				serv.push_back(Server(servStrings));
 				servStrings.clear();
 			}

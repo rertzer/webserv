@@ -6,25 +6,11 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 10:45:30 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 11:34:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-
-// Server::Server()
-// {
-// }
-
-// Server::Server(std::vector<std::string> servStrings)
-// {
-// 	(void)servStrings;
-// }
-
-// Server::Server(const Server& rhs)
-// {
-// 	(void)rhs;
-// }
 
 void printServ(Server& serv)
 {
@@ -61,7 +47,7 @@ Server::Server(std::vector<std::string> servStrings)
 			_nPort.push_back(atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str()));
 		else if (it->find("server_name") != std::string::npos)
 			_servName = it->substr(it->find("server_name") + 12, it->find(";") - it->find("server_name") - 12);
-		else if (it->find("root") != std::string::npos)
+		else if (it->find("root") != std::string::npos && locOpen == false)
 			_root = it->substr(it->find("root") + 5, it->find(";") - it->find("root") - 5);
 		else if (it->find("error_page") != std::string::npos)
 		{

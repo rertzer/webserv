@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 09:05:48 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 11:33:51 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,6 @@ int checkForRedirection(Location& loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	std::cout << "PPPPPPPPPPPPPPPPPPPPPPPPP" << loc.getLocationPath() << std::endl;
 	while (it != lineLoc.end())
 	{
 		std::cout << "cmd = " << it->getCmd() << std::endl;
@@ -200,12 +199,14 @@ std::pair<std::string, std::string> RedirectTo(Location& loc)
 }
 
 
-int	isThereAspecRoot(Location loc)
+int	isThereAspecRoot(Location& loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	std::cout << "Enter in is there a spec root | size of loc.vec()" << lineLoc.size() << " name of loc" << loc.getLocationPath() << std::endl;
 	while (it != lineLoc.end())
 	{
+		std::cout << " In is there a spec root = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "root")
 			return (1);
 		it++;
@@ -213,7 +214,7 @@ int	isThereAspecRoot(Location loc)
 	return (0);
 }
 
-std::string getSpecRoot(Location loc)
+std::string getSpecRoot(Location& loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 09:04:34 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 11:35:54 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void Response::feelPart(Request req)
 		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
+			std::cout << "file trying to open = " << _root + *it << std::endl;
 			fileStr = readFile(_root + *it);
 			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			{
@@ -288,12 +289,11 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 
 void Response::respWithLoc(Request& req)
 {
-	Location loc;
+	Location loc = getTheLocation(req.getQuery());
 	if (req.getQuery() != "/")
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
-			loc = getTheLocation(req.getQuery());
 			if (checkAutoIndex(loc) == false)
 			{
 				if (getSpecIndex(loc) == "")
@@ -303,6 +303,7 @@ void Response::respWithLoc(Request& req)
 					std::cout << "Spec index = "<< getSpecIndex(loc) << std::endl;
 					req.setQuery(getSpecIndex(loc));
 				}
+				loc = getTheLocation(req.getQuery());
 			}
 			else
 			{
@@ -311,12 +312,13 @@ void Response::respWithLoc(Request& req)
 			}
 		}
 	}
-	else
-		loc = getTheLocation(req.getQuery());
 	int allowMethod = checkAllowMethod(loc);
 	std::cout << "AllowMethod = " << allowMethod << std::endl;
 	if (isThereAspecRoot(loc) == 1)
+	{
+		std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
 		_root = getSpecRoot(loc);
+	}
 	if (checkForRedirection(loc) == 1)
 	{
 		std::cout << "ENter in the redir zone" << std::endl;

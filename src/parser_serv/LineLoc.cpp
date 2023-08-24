@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:08:25 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 10:31:45 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/24 11:28:33 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ LineLoc::LineLoc(std::string line)
 		else if (defaultStock != "")
 		{
 			defaultStock = defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
-			//std::cout << "defaultStock = " << defaultStock << std::endl;
 			if (defaultStock == ";")
 				break;
 			if (defaultStock.find(";") != std::string::npos && defaultStock.find(";") == defaultStock.length() - 1)
 				defaultStock = defaultStock.substr(0, defaultStock.find(";"));
+			std::cout << "defaultStock = " << defaultStock << std::endl;
 			_args.push_back(defaultStock);
 		}
 		i++;
