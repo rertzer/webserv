@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 17:05:15 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/25 11:58:38 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Response
 		std::string _contentLength;
 		std::string _connectionClose;
 		std::string _content;
+		std::pair<std::string, std::string> _extensionAllowed;
 		int 		_readFileAccess;
 		std::string _autoIndex;
 		ContentMap	_contentMap;

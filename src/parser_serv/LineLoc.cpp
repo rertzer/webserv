@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:08:25 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 13:38:36 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/25 11:06:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ LineLoc::LineLoc(std::string line)
 			if (defaultStock.find_first_not_of(" \t") == std::string::npos)
 				throw(ServerException());
 			_cmd = defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
-			if (_cmd != "root" && _cmd != "return" && _cmd != "autoindex" && _cmd != "allow_methods" && _cmd != "index")
+			if (_cmd != "root" && _cmd != "return" && _cmd != "autoindex" && _cmd != "allow_methods" && _cmd != "index" && _cmd != "extension" && _cmd != "cgi_path" && _cmd != "upload_path")
 			{
 				std::cout << "cmd = " << _cmd << std::endl;
 				std::cout << "Here 1 " << std::endl;
@@ -63,6 +63,16 @@ LineLoc::LineLoc(std::string line)
 	{
 		std::cout << "line = " << defaultStock << std::endl;
 		std::cout << "Here 5 " << std::endl;
+		throw(ServerException());
+	}
+	if (_cmd == "extension" && _args.size() != 1)
+	{
+		std::cout << "Here 6 " << std::endl;
+		throw(ServerException());
+	}
+	if (_cmd == "cgi_path" && _args.size() != 1)
+	{
+		std::cout << "Here 7 " << std::endl;
 		throw(ServerException());
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 16:46:49 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/25 12:00:31 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,6 @@ std::string readSpecFile(std::string file)
 		throw (ErrorException(404));
 	}
 }
-
-
 
 std::string intToString(int n)
 {
@@ -244,7 +242,6 @@ std::pair<std::string, std::string> RedirectTo(Location& loc)
 	return (ret);
 }
 
-
 int	isThereAspecRoot(Location& loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
@@ -260,19 +257,18 @@ int	isThereAspecRoot(Location& loc)
 	return (0);
 }
 
-std::string getSpecRoot(Location& loc)
+std::string getArgsLoc(Location& loc, std::string toFind)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end())
 	{
-		if (it->getCmd() == "root")
+		if (it->getCmd() == toFind)
 			return (it->getArgs()[0]);
 		it++;
 	}
 	return ("");
 }
-
 
 void printServ(Server& serv)
 {
@@ -295,4 +291,21 @@ void printServ(Server& serv)
 		it->printLoc();
 	}
 	std::cout << "----------------------------------------" << std::endl;
+}
+
+
+std::pair<std::string, std::string> getExtension(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	std::pair<std::string, std::string > ret;
+	while (it != lineLoc.end())
+	{
+		if (it->getCmd() == "extension")
+			ret.first = it->getArgs()[0];
+		if (it->getCmd() == "cgi_path")
+			ret.second = it->getArgs()[0];
+		it++;
+	}
+	return (ret);
 }

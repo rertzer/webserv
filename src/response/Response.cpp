@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 17:06:06 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/25 11:59:57 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,7 +318,7 @@ int Response::respWithLoc(Request& req)
 	if (isThereAspecRoot(loc) == 1)
 	{
 		std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
-		_root = getSpecRoot(loc);
+		_root = getArgsLoc(loc, "root");
 	}
 	if (checkForRedirection(loc) == 1)
 	{
@@ -328,6 +328,35 @@ int Response::respWithLoc(Request& req)
 		_location = redirection.second;
 		return (0);
 	}
+	std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
+	// if (req.getQuery().find(".php") != std::string::npos || req.getQuery().find(".py") != std::string::npos)
+	// {
+	// 	std::pair<std::string, std::string> extensionAllowed = getExtension(loc);
+	// 	if (req.getQuery().find(".php") != std::string::npos && extensionAllowed.first == ".php")
+	// 	{
+	// 		std::cout << "Enter in the php zone" << std::endl;
+	// 		_method = req.getMethod();
+	// 		_content = runFile(_method, req, extensionAllowed.second);
+	// 		_status = "200 OK";
+	// 		_contentType = extensionAllowed.second;
+	// 		_contentLength = intToString(_content.length());
+	// 		_connectionClose = "keep-alive";
+	// 	}
+	// 	else if (req.getQuery.find(".py") != std::string::npos && extensionAllowed.first == ".py")
+	// 	{
+	// 		std::cout << "Enter in the py zone" << std::endl;
+	// 		_method = req.getMethod();
+	// 		_content = runFile(_method, req, extensionAllowed.second);
+	// 		_status = "200 OK";
+	// 		_contentType = extensionAllowed.second;
+	// 		_contentLength = intToString(_content.length());
+	// 		_connectionClose = "keep-alive";
+	// 	}
+	// 	else
+	// 	{
+	// 		*this = createErrorPage(403, _serv);
+	// 	}
+	// }
 	return (1);
 }
 
