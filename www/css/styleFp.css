@@ -35,6 +35,10 @@ h2{
 	color :blanchedalmond;
 }
 
+#CommentSection a:hover{
+	color :red;
+}
+
 #CgiPHPbutton {
 	position: absolute;
 	text-align: center;
@@ -44,13 +48,14 @@ h2{
 	transform: translate(-50%, -50%);
 }
 
+#CgiPHPbutton a:hover{
+	color :red;
+}
+
 #CgiPHPbutton a{
 	color :blanchedalmond;
 }
 
-#CgiPHPbutton a:hover{
-	color :red;
-}
 
 #DeletePage{
 	position: absolute;
@@ -63,4 +68,8 @@ h2{
 
 #DeletePage a{
 	color :blanchedalmond;
+}
+
+#DeletePage a:hover{
+	color :red;
 }
