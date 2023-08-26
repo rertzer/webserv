@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 13:36:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/26 12:20:07 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,31 +118,51 @@ int	Event::handleEvent()
 
 int	Event::handleIn()
 {
+
+	std::cout << "\n\n";
 	try
 	{
-		Request req(soc);
-		try
+		if (soc->req == NULL)
 		{
-			Response resp(req, findTheServ(req, this->serv, soc->getMotherPort()));
-			soc->setMessageOut(resp.getResponse());
+			std::cout << "create request\n";
+			soc->req = new Request(soc);
 		}
-		catch (const ErrorException & e)
+		else
+		{
+			std::cout << "request already exist, will be completed\n";
+				soc->req->feed();
+			std::cout <<"request fed. Status is :" << soc->req->ready() << std::endl;
+
+		}
+		if (soc->req->ready())
+		{
+			std::cout << "request is ready\n";
+			try
+			{
+				Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+				soc->setMessageOut(resp.getResponse());
+			}
+			catch (const ErrorException & e)
+			{
+				soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
+			}
+		}
+	}
+		catch(const ErrorException & e)
 		{
 			soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
 		}
-	}
-	catch(const ErrorException & e)
-	{
-		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
-	}
 	return 0;
 }
 
 int	Event::handleOut()
 {
 	if (!soc->getMessageOut().empty())
-	{
+	{		
+		std::cout << "\n\n";
 		int len = soc->send();
+		delete soc->req;
+		soc->req = NULL;
 		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
 		return (soc->getFd());
 	}

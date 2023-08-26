@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 13:50:21 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/26 11:25:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void Response::feelPart(Request req)
 		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
-			std::cout << "file trying to open = " << _root + *it << std::endl;
+			//std::cout << "file trying to open = " << _root + *it << std::endl;
 			fileStr = readFile(_root + *it);
 			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			{
@@ -116,7 +116,7 @@ void Response::feelPart(Request req)
 		{
 			if (req.isUpload())
 				req.upload_all();
-			std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
+			//std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
 			fileStr = readFile(_root + req.getQuery());
 			//std::cout << "Content that is not root " << fileStr << std::endl;
 		}
@@ -212,7 +212,7 @@ int Response::checkIfLocation(std::string path)
 {
 	std::vector<Location> loc = _serv.getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
-	std::cout << "Path before tje substr " << path << std::endl;
+	//std::cout << "Path before tje substr " << path << std::endl;
 	if (path != "/")
 		path = path.substr(0, path.rfind("/") );
 	while (it != loc.end())
@@ -236,7 +236,7 @@ Location Response::getTheLocation(std::string path)
 	{
 		if (it->getLocationPath() == path)
 		{
-			std::cout << "Check if good location " << it->getLocationPath() << std::endl;
+			//std::cout << "Check if good location " << it->getLocationPath() << std::endl;
 			return (*it);
 		}
 		it++;
@@ -253,10 +253,10 @@ std::string Response::getSpecIndex(Location loc)
 	{
 		for (std::vector<std::string>::iterator it = index.begin() ; it != index.end(); it++)
 		{
-			std::cout << "In get spec index = " << (_root + *it) << std::endl;
+			//std::cout << "In get spec index = " << (_root + *it) << std::endl;
 			if (access((_root + *it).c_str(), F_OK) != -1 && access((_root + *it).c_str(), R_OK) != -1)
 			{
-				std::cout << "ALL GOOD ??" << std::endl;
+				//std::cout << "ALL GOOD ??" << std::endl;
 				return (*it);
 			}
 		}
@@ -296,7 +296,7 @@ void Response::respWithLoc(Request& req)
 					req.setQuery("/");
 				else
 				{
-					std::cout << "Spec index = "<< getSpecIndex(loc) << std::endl;
+					//std::cout << "Spec index = "<< getSpecIndex(loc) << std::endl;
 					req.setQuery(getSpecIndex(loc));
 				}
 				loc = getTheLocation(req.getQuery());
@@ -309,33 +309,33 @@ void Response::respWithLoc(Request& req)
 		}
 	}
 	int allowMethod = checkAllowMethod(loc);
-	std::cout << "AllowMethod = " << allowMethod << std::endl;
+	//std::cout << "AllowMethod = " << allowMethod << std::endl;
 	if (isThereAspecRoot(loc) == 1)
 	{
-		std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
+		//std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
 		_root = getSpecRoot(loc);
 	}
 	if (checkForRedirection(loc) == 1)
 	{
-		std::cout << "ENter in the redir zone" << std::endl;
+		//std::cout << "ENter in the redir zone" << std::endl;
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
 		_status = Status::getMsg(atoi((redirection.first.c_str())));
 		_location = redirection.second;
 		return ;
 	}
-	std::cout << _root + req.getQuery() << std::endl;
+	//std::cout << _root + req.getQuery() << std::endl;
 	if (req.getMethod() == "GET" && (allowMethod == GET || allowMethod == GETPOST || allowMethod == GETDELETE || allowMethod == GETPOSTDELETE))
 		dealWithGet(req);
 	else if (req.getMethod() == "POST" && (allowMethod == POST || allowMethod == GETPOST || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
 		dealWithPost(req);
 	else if (req.getMethod() == "DELETE" && (allowMethod == DELETE || allowMethod == GETDELETE || allowMethod == POSTDELETE || allowMethod == GETPOSTDELETE))
 	{
-		std::cout <<"in delete meth" << std::endl;
+		//std::cout <<"in delete meth" << std::endl;
 		dealWithDelete(req);
 	}
 	else
 	{
-		std::cout << "Enter here " << std::endl;
+		//std::cout << "Enter here " << std::endl;
 		*this = createErrorPage(405, _serv);
 	}
 }
@@ -346,23 +346,23 @@ void Response::respWithOutLoc(Request& req)
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
-			std::cout << "enter here7" << std::endl;
+			//std::cout << "enter here7" << std::endl;
 			req.setQuery("/");
 		}
 	}
 	if (req.getMethod() == "GET")
 	{
-		std::cout << "IN GET" << std::endl;
+		//std::cout << "IN GET" << std::endl;
 		dealWithGet(req);
 	}
 	else if (req.getMethod() == "POST")
 	{
-		std::cout << "IN POST" << std::endl;
+		//std::cout << "IN POST" << std::endl;
 		dealWithPost(req);
 	}
 	else if (req.getMethod() == "DELETE")
 	{
-		std::cout << "IN DELETE" << std::endl;
+		//std::cout << "IN DELETE" << std::endl;
 		dealWithDelete(req);
 	}
 	else
@@ -378,7 +378,7 @@ Response::Response(Request& req, Server serv)
 	_root = _serv.getRoot();
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
-		std::cout << "EEEEEEEEEEEEEEE" << std::endl;
+		//std::cout << "EEEEEEEEEEEEEEE" << std::endl;
 		respWithLoc(req);
 	}
 	else

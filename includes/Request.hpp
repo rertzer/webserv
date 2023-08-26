@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 14:41:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/26 11:58:56 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@
 # include <fcntl.h>
 
 # include "macroDef.hpp"
-# include "TCPSocket.hpp"
+//# include "TCPSocket.hpp"
 # include "Status.hpp"
 # include "ErrorException.hpp"
 # include "Server.hpp"
+
+
+class TCPSocket;
 
 class Request
 {
@@ -53,6 +56,8 @@ class Request
 		int												getIntField(std::string const & name) const;
 		void											addField(std::string const & field);
 		void										setQuery(std::string const & query);
+		bool										ready() const;
+		void										feed();
 	private:
 		//Request();
 		std::string	getLine(std::string const & sep);
@@ -65,9 +70,9 @@ class Request
 		void	setHeader();
 		void	setContent();
 		void	setContentByChunked();
-		int		readChunk();
+		unsigned int		readChunk();
 		void	setTrailer();
-		void	setContentByLength(int len);
+		void	setContentByLength(unsigned int len);
 		void	checkControlData() const;
 		void	checkHeader() const;
 		bool	contentExist() const;
@@ -90,6 +95,8 @@ class Request
 		std::string							query;
 		std::string							protocol;
 		std::string							content;
+		bool								header_ok;
+		bool								content_ok;
 };
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs);

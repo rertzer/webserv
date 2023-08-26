@@ -6,14 +6,14 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 16:09:44 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/26 09:55:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPSocket.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p):mother_port(p)
+TCPSocket::TCPSocket(int p): req(NULL), mother_port(p)
 {
 	socket_addr_length = sizeof(socket_addr);
 
@@ -40,7 +40,7 @@ TCPSocket::TCPSocket(int p):mother_port(p)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " successfully created\n";
 }
 
-TCPSocket::TCPSocket():socket_fd(0), mother_port(0)
+TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0)
 {
 	std::cout << "Default TCPSocket constructor fd " << getFd() << std::endl;
 
@@ -60,6 +60,11 @@ TCPSocket::~TCPSocket()
 	std::cout << "Default TCPSocket destructor fd " << getFd() << std::endl;
 	if (socket_fd)
 		::close(socket_fd);
+	if (req)
+	{
+		delete req;
+		req = NULL;
+	}
 }
 
 TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
@@ -73,6 +78,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 		socket_addr_length = rhs.socket_addr_length;
 		msg_in = rhs.msg_in;
 		msg_out = rhs.msg_out;
+		req = rhs.req;
 	}
 	return *this;
 }
@@ -194,4 +200,4 @@ int	TCPSocket::send()
 //max length to which the queue of pending connections may grow
 const int	TCPSocket::backlog = 42;
 //read buffer size
-const int	TCPSocket::buffer_size = 120000;
+const int	TCPSocket::buffer_size = 1200000;

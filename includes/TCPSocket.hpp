@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 13:27:37 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/26 10:02:31 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@
 # include <netinet/in.h>
 
 # include <string.h>
+# include "Request.hpp"
 # include "ErrorException.hpp"
+
 
 class TCPSocket
 {
@@ -49,6 +51,7 @@ class TCPSocket
 		void		addRawData(std::string & content, int len);
 		int			send();
 
+		Request *	req;
 
 		class	SocketException: public std::exception
 		{

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/24 11:33:51 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/26 11:26:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 		return (*(serv.begin()));
 	while (it != serv.end())
 	{
-		std::cout << "Enter here = " << req.getField("Host") << "| My serv name is =  "<< it->getServName() + ":" + intToString(req.getPort()) << std::endl;
+//		std::cout << "Enter here = " << req.getField("Host") << "| My serv name is =  "<< it->getServName() + ":" + intToString(req.getPort()) << std::endl;
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort()))
 		{
 			if (it->getListenPort().size() > 1)
@@ -83,7 +83,7 @@ Server findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
 
 Response createErrorPage(int codeErr, Server serv)
 {
-	std::cout << "codeErr = " << codeErr << std::endl;
+//	std::cout << "codeErr = " << codeErr << std::endl;
 	ContentMap contentMap;
 	std::string status = Status::getMsg(codeErr);
 	std::string contentType = contentMap.getContentValue(serv.getErrorPage(intToString(codeErr)).substr(serv.getErrorPage(intToString(codeErr)).rfind(".") + 1, serv.getErrorPage(intToString(codeErr)).length()));
@@ -149,7 +149,7 @@ bool checkAutoIndex(Location loc)
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end())
 	{
-		std::cout << "cmd = " << it->getCmd() << std::endl;
+	//	std::cout << "cmd = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "autoindex")
 		{
 			if (it->checkArgs("on") == 1)
@@ -168,10 +168,10 @@ int checkForRedirection(Location& loc)
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end())
 	{
-		std::cout << "cmd = " << it->getCmd() << std::endl;
+		//std::cout << "cmd = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "return")
 		{
-			std::cout << "return = " << it->getArgs()[0] << std::endl;
+		//	std::cout << "return = " << it->getArgs()[0] << std::endl;
 			if (it->getArgs().size() >= 2)
 				return (1);
 		}
@@ -203,10 +203,10 @@ int	isThereAspecRoot(Location& loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	std::cout << "Enter in is there a spec root | size of loc.vec()" << lineLoc.size() << " name of loc" << loc.getLocationPath() << std::endl;
+	//std::cout << "Enter in is there a spec root | size of loc.vec()" << lineLoc.size() << " name of loc" << loc.getLocationPath() << std::endl;
 	while (it != lineLoc.end())
 	{
-		std::cout << " In is there a spec root = " << it->getCmd() << std::endl;
+	//	std::cout << " In is there a spec root = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "root")
 			return (1);
 		it++;
