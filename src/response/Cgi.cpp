@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:21:56 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 16:05:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "Cgi.hpp"
 
 //public
-Cgi::Cgi(std::string m, std::string p, Request & r):method(m), path(p), buffer(NULL), buffer_size(16000000), req(r)
+Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), req(r), cgi_path(cp)
 {
 	setUrl();
 	setEnv();
@@ -79,13 +79,12 @@ void	Cgi::setUrl()
 		query_string = url.substr(pos + 1, -1);
 		url.erase(pos, -1);
 	}
-	pos = url.rfind(".php");
+	pos = url.rfind(cgi_path.first);
 
 	if (pos != -1)
 	{
-		script = "php";
-		path += url.substr(0, pos + 4);
-		path_info = url.substr(pos + 4, -1);
+		path += url.substr(0, pos + cgi_path.first.size());
+		path_info = url.substr(pos + cgi_path.first.size(), -1);
 	}
 }
 
@@ -154,14 +153,13 @@ int	Cgi::execGetSon(int* fd)
 			exit(-1);
 		char** argv = formatArgv();
 		char** envp = formatEnv();
-		//std::cerr << editCommand().c_str() << std::endl;
 		// int i = 0;
 		// while (argv[i])
 		// 	std::cerr << "Son args: " << argv[i++] << std::endl;
 		// i = 0;
 		// while (envp[i])
 		// 	std::cerr << envp[i++] << std::endl;
-		::execve(editCommand().c_str(), argv, envp);
+		::execve(cgi_path.second.c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
 		exit(-1);
@@ -206,7 +204,7 @@ void	Cgi::execPost()
 char **	Cgi::formatArgv() const
 {
 	char ** argv = new  char *[3];
-	argv[0] = strdup(editCommand().c_str());
+	argv[0] = strdup(cgi_path.second.c_str());
 	argv[1] = strdup(path.c_str());
 	argv[2] = NULL;
 	return argv;
@@ -235,13 +233,4 @@ char**	Cgi::formatEnv() const
 	}
 	env_array[i] = NULL;
 	return env_array;
-}
-
-std::string Cgi::editCommand() const
-{
-	if (script == "php")
-		return ("/usr/bin/php-cgi");
-	if (script == "py")
-		return ("python3");
-	return ("");
 }

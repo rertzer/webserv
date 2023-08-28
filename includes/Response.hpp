@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/25 11:58:38 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 15:59:55 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Response
 		void 		dealWithPost(Request req);
 		void 		dealWithDelete(Request req);
 		std::string	readFile(std::string file);
-		std::string	runFile(std::string, Request & req);
+		std::string	runFile(std::string, Request & req, std::pair<std::string, std::string> cgi_path);
 		std::string	getResponse();
 		std::string	getContentKey(std::string value);
 		std::string	findLocation(std::string path);

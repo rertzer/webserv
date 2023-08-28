@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/17 13:34:20 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 15:57:16 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class	Cgi
 {
 	public:
 		//Cgi();
-		Cgi(std::string m, std::string p, Request & r);
+		Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp);
 		Cgi(Cgi const & rhs);
 		~Cgi();
 
@@ -44,10 +44,8 @@ class	Cgi
 		void		execPost();
 		char **		formatArgv() const;
 		char**		formatEnv() const;
-		std::string	editCommand() const;
 
 		std::string	method;
-		std::string	script;
 		std::string	path;
 		std::string	path_info;
 		std::string	query_string;
@@ -56,6 +54,7 @@ class	Cgi
 		char*	buffer;
 		int		buffer_size;
 		Request & 	req;
+		std::pair<std::string, std::string>	cgi_path;
 
 };
 

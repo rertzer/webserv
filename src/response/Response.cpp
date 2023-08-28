@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 12:48:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 16:14:59 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ std::string Response::readFile(std::string file)
 	}
 }
 
-std::string	Response::runFile(std::string method, Request & req)
+std::string	Response::runFile(std::string method, Request & req, std::pair<std::string, std::string> cgi_path)
 {
-	Cgi	myCgi(method, _root, req);
+	Cgi	myCgi(method, _root, req, cgi_path);
 
 	if (access(myCgi.getPath().c_str(), F_OK) == -1)
 	{
@@ -107,39 +107,17 @@ void Response::feelPart(Request req)
 	else
 	{
 		std::string	fileStr;
-		if (req.getQuery().find(".php") != std::string::npos)
-		// ici il faut remplacer le .php par tout les extensions pris en compte dans le serv
-		{
-			fileStr= runFile(_method, req);
-		}
-		else
-		{
-			if (req.isUpload())
-				req.upload_all();
 			//std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
-			fileStr = readFile(_root + req.getQuery());
-			//std::cout << "Content that is not root " << fileStr << std::endl;
-		}
+		fileStr = readFile(_root + req.getQuery());
+		//std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
 			*this = createErrorPage(404, _serv);
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			*this = createErrorPage(403, _serv);
 		else
 		{
-			_status = "200 OK";
-			if (req.getQuery().find(".php") != std::string::npos)
-			{
-				size_t pos = fileStr.find("\r\n\r\n");
-				if (pos != std::string::npos)
-				{
-					_contentType = fileStr.substr(14, pos);
-					fileStr.erase(0, pos + 4);
-				}
-				else
-					_contentType = "text/html";
-			}
-			else
-				_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
+			_status = "200 OK";	
+			_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
 			_contentLength = intToString(_content.length());
 			_connectionClose = "keep-alive";
@@ -317,7 +295,7 @@ int Response::respWithLoc(Request& req)
 		_allowedMethods = allowMethod;
 	if (isThereAspecRoot(loc) == 1)
 	{
-		std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
+		//std::cout << "got a new Root WQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << std::endl;
 		_root = getArgsLoc(loc, "root");
 	}
 	if (checkForRedirection(loc) == 1)
@@ -328,36 +306,29 @@ int Response::respWithLoc(Request& req)
 		_location = redirection.second;
 		return (0);
 	}
-
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! first: l'extension, second le chemin de lexecuctable!!!!!!!!!!!!1
-	std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
-	// if (req.getQuery().find(".php") != std::string::npos || req.getQuery().find(".py") != std::string::npos)
-	// {
-	// 	std::pair<std::string, std::string> extensionAllowed = getExtension(loc);
-	// 	if (req.getQuery().find(".php") != std::string::npos && extensionAllowed.first == ".php")
-	// 	{
-	// 		std::cout << "Enter in the php zone" << std::endl;
-	// 		_method = req.getMethod();
-	// 		_content = runFile(_method, req, f.second);
-	// 		_status = "200 OK";
-	// 		_contentLength = intToString(_content.length());
-	// 		_connectionClose = "keep-alive";
-	// 	}
-	// 	else if (req.getQuery.find(".py") != std::string::npos && extensionAllowed.first == ".py")
-	// 	{
-	// 		std::cout << "Enter in the py zone" << std::endl;
-	// 		_method = req.getMethod();
-	// 		_content = runFile(_method, req, extensionAllowed.second);
-	// 		_status = "200 OK";
-	// 		_contentType = extensionAllowed.second;
-	// 		_contentLength = intToString(_content.length());
-	// 		_connectionClose = "keep-alive";
-	// 	}
-	// 	else
-	// 	{
-	// 		*this = createErrorPage(403, _serv);
-	// 	}
-	// }
+	//std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
+	if (!getExtension(loc).first.empty() && req.getQuery().find(getExtension(loc).first) != std::string::npos)
+	{
+		_method = req.getMethod();
+		_content = runFile(_method, req, getExtension(loc));
+		size_t pos = _content.find("\r\n\r\n");
+		if (pos != std::string::npos)
+		{
+			_contentType = _content.substr(14, pos);
+			_content.erase(0, pos + 4);
+		}
+		else
+			_contentType = "text/html";
+		_status = "200 OK";
+	 	_contentLength = intToString(_content.length());
+		_connectionClose = "keep-alive";
+		return (0);
+	}
+	else
+	{
+		if (req.isUpload())
+			req.upload_all();
+	}
 	return (1);
 }
 
@@ -381,16 +352,16 @@ int Response::respWithOutLoc(Request& req)
 
 Response::Response(Request& req, Server& serv)
 {
-	std::cout << std::endl << "IN RESPONSE CONSTRUCTOR" << std::endl;
+	//std::cout << std::endl << "IN RESPONSE CONSTRUCTOR" << std::endl;
 	_readFileAccess = OK;
 	_serv = serv;
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
-	std::cout << "bedor Allowed methods = " << _allowedMethods << std::endl;
+	//std::cout << "bedor Allowed methods = " << _allowedMethods << std::endl;
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
-		std::cout << "EEEEEEEEEEEEEEE" << std::endl;
+		//std::cout << "EEEEEEEEEEEEEEE" << std::endl;
 		if (respWithLoc(req) == 0)
 			return ;
 	}
@@ -399,22 +370,22 @@ Response::Response(Request& req, Server& serv)
 		if (respWithOutLoc(req) == 0)
 			return ;
 	}
-	std::cout << "after Allowed methods = " << _allowedMethods << std::endl;
+	//std::cout << "after Allowed methods = " << _allowedMethods << std::endl;
 	if (req.getMethod() == "GET" && (_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE || _allowedMethods == GETPOSTDELETE))
 		dealWithGet(req);
 	else if (req.getMethod() == "POST" && (_allowedMethods == POST || _allowedMethods == GETPOST || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
 		dealWithPost(req);
 	else if (req.getMethod() == "DELETE" && (_allowedMethods == DELETE || _allowedMethods == GETDELETE || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
 	{
-		std::cout <<"in delete meth" << std::endl;
+		//std::cout <<"in delete meth" << std::endl;
 		dealWithDelete(req);
 	}
 	else
 	{
-		std::cout << "Enter here " << std::endl;
+		//std::cout << "Enter here " << std::endl;
 		*this = createErrorPage(405, _serv);
 	}
-	std::cout << "OUT RESPONSE CONSTRUCTOR" << std::endl << std::endl << std::endl;
+	//std::cout << "OUT RESPONSE CONSTRUCTOR" << std::endl << std::endl << std::endl;
 }
 
 Response::Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content)
