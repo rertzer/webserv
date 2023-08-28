@@ -46,7 +46,6 @@
 					{
 						$texte[$i] = cesar_cipher($texte[$i], -1 * $_GET['cipher_key']);
 					}
-					
 				}
 			?>
 
@@ -57,7 +56,7 @@
 	<!--	<figure>
 			<img id="line" src=blue_line.svg>
 		</figure> -->
-		
+
 		</header>
 		<section id ="main">
 			<p>Veuillez entrer le texte et sa clé</p>

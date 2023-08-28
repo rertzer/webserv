@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/19 12:03:17 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 11:13:47 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ std::string Cgi::getContent() const
 
 void	Cgi::exec()
 {
-	std::cout << "method: " << method << "\n script: " << script << "\n path: " << path;
-	std::cout << "\n path_info: " << path_info << "\n query_string: " << query_string << std::endl;
+	// std::cout << "method: " << method << "\n script: " << script << "\n path: " << path;
+	// std::cout << "\n path_info: " << path_info << "\n query_string: " << query_string << std::endl;
 
 	if (method == "GET")
 		execGet();
@@ -111,7 +111,7 @@ void	Cgi::execGet()
 	std::cout << "ExecGet\n";
 	if (::pipe(fd) == -1)
 		throw (ErrorException(500));
-	std::cout << "pipe done\n";
+	// std::cout << "pipe done\n";
 	int	pid = ::fork();
 	if (pid < 0)
 		throw (ErrorException(500));
@@ -131,37 +131,37 @@ int	Cgi::execGetSon(int* fd)
 			std::cerr << "Son post a\n";
 			if (::pipe(fdpost) == -1)
 				exit(-1);
-			std::cerr << "Son post b\n";
-			std::cerr << "content is: $" << req.getContent().c_str() << "$\n";
-			std::cerr << "Length is " << req.getContent().size() << std::endl;
+			// std::cerr << "Son post b\n";
+			// std::cerr << "content is: $" << req.getContent().c_str() << "$\n";
+			// std::cerr << "Length is " << req.getContent().size() << std::endl;
 			int write_size = ::write(fdpost[1], req.getContent().c_str(), req.getContent().size());
 			if (write_size < 1)
 			{
 				perror("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				exit(-1);
 			}
-			
-			std::cerr << "Writen" << write_size << "\nSon post c\n";
+
+			//std::cerr << "Writen" << write_size << "\nSon post c\n";
 			if (::dup2(fdpost[0], 0) == -1  || ::close(fdpost[0]) == -1 || ::close(fdpost[1]) == -1)
 			{
 				perror("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				exit(-1);
 			}
-			std::cerr << "Son post d\n";
+			//std::cerr << "Son post d\n";
 
 		}
-		std::cerr << "son get part\n";
+		//std::cerr << "son get part\n";
 		if (::dup2(fd[1], 1) == -1 || ::close(fd[0]) == -1 || ::close(fd[1]) == -1)
 			exit(-1);
 		char** argv = formatArgv();
 		char** envp = formatEnv();
-		std::cerr << editCommand().c_str() << std::endl;
-		int i = 0;
-		while (argv[i])
-			std::cerr << "Son args: " << argv[i++] << std::endl;
-		i = 0;
-		while (envp[i])
-			std::cerr << envp[i++] << std::endl;
+		//std::cerr << editCommand().c_str() << std::endl;
+		// int i = 0;
+		// while (argv[i])
+		// 	std::cerr << "Son args: " << argv[i++] << std::endl;
+		// i = 0;
+		// while (envp[i])
+		// 	std::cerr << envp[i++] << std::endl;
 		::execve(editCommand().c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;

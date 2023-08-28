@@ -34,3 +34,43 @@ h2{
 #CommentSection a{
 	color :blanchedalmond;
 }
+
+#CommentSection a:hover{
+	color :red;
+}
+
+#CgiPHPbutton {
+	position: absolute;
+	text-align: center;
+	font-size: 80px;
+	left: 85%;
+	margin-right: -50%;
+	transform: translate(-50%, -50%);
+}
+
+#CgiPHPbutton a:hover{
+	color :red;
+}
+
+#CgiPHPbutton a{
+	color :blanchedalmond;
+}
+
+
+#DeletePage{
+	position: absolute;
+	text-align: center;
+	font-size: 80px;
+	left: 15%;
+	margin-right: -50%;
+	transform: translate(-50%, -50%);
+}
+
+#DeletePage a{
+	color :blanchedalmond;
+}
+
+#DeletePage a:hover{
+	color :red;
+}
+
