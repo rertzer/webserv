@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:28:50 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 11:53:18 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -328,6 +328,8 @@ int Response::respWithLoc(Request& req)
 		_location = redirection.second;
 		return (0);
 	}
+
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! first: l'extension, second le chemin de lexecuctable!!!!!!!!!!!!1
 	std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
 	// if (req.getQuery().find(".php") != std::string::npos || req.getQuery().find(".py") != std::string::npos)
 	// {
@@ -338,7 +340,6 @@ int Response::respWithLoc(Request& req)
 	// 		_method = req.getMethod();
 	// 		_content = runFile(_method, req, extensionAllowed.second);
 	// 		_status = "200 OK";
-	// 		_contentType = extensionAllowed.second;
 	// 		_contentLength = intToString(_content.length());
 	// 		_connectionClose = "keep-alive";
 	// 	}
