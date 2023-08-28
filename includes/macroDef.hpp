@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:10:04 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 12:27:54 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,3 +67,4 @@ int										isThereAspecRoot(Location& loc);
 int										getAllowMethodsServer(std::string allowMethod);
 void									printServ(Server& serv);
 std::pair<std::string, std::string>	getExtension(Location Loc);
+int checkIfOnlyDigits(std::string str);

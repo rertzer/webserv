@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:26:01 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 12:28:40 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,4 +308,14 @@ std::pair<std::string, std::string> getExtension(Location loc)
 		it++;
 	}
 	return (ret);
+}
+
+int checkIfOnlyDigits(std::string str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (!isdigit(str[i]))
+			return (-1);
+	}
+	return (0);
 }
