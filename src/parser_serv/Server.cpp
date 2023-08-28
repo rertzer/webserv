@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:13:05 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 12:28:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,18 +71,19 @@ Server::Server(std::vector<std::string> servStrings)
 		else if (it->find("client_max_body_size") != std::string::npos)
 		{
 			std::string maxBodySize = it->substr(it->find("client_max_body_size") + 21, it->find(";") - it->find("client_max_body_size") - 21);
-			if (maxBodySize[maxBodySize.length() - 2] == 'K' && maxBodySize[maxBodySize.length() - 1] == 'b')
+			if (checkIfOnlyDigits(maxBodySize) == 0)
 				_maxBodySize = atoi(it->substr(it->find("max_body_size") + 14, it->find(";") - it->find("max_body_size") - 14).c_str());
 			else
 			{
-				std::cout << "client_max_body_size need to be in Kilo Byte \"Kb\"" << std::endl;
+				std::cout << "maxBodySize[maxBodySize.length() - 1] " << maxBodySize[maxBodySize.length() - 1] << std::endl;
+				std::cout << "client_max_body_size doesn't respect subject rules" << std::endl;
 				throw(ServerException());
 			}
-			if (_maxBodySize > 212 || _maxBodySize < 0)
-			{
-				std::cout << "client_max_body_size cannot be bigger than 212kb" << std::endl;
-				throw(ServerException());
-			}
+			// if (_maxBodySize > 212 || _maxBodySize < 0)
+			// {
+			// 	std::cout << "client_max_body_size cannot be bigger than 212kb" << std::endl;
+			// 	throw(ServerException());
+			// }
 		}
 		else if (it->find("autoindex") != std::string::npos && locOpen == false)
 		{

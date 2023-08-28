@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:53:18 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 12:48:21 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,7 +338,7 @@ int Response::respWithLoc(Request& req)
 	// 	{
 	// 		std::cout << "Enter in the php zone" << std::endl;
 	// 		_method = req.getMethod();
-	// 		_content = runFile(_method, req, extensionAllowed.second);
+	// 		_content = runFile(_method, req, f.second);
 	// 		_status = "200 OK";
 	// 		_contentLength = intToString(_content.length());
 	// 		_connectionClose = "keep-alive";
