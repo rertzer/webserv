@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Polling.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 10:02:29 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 11:19:32 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class	Polling
 		~Polling();
 
 		void	addMotherSocket(int port);
-		void	connect(Event const & ev);
+		void	connect(Event const & ev, Server const & srv);
 		void	removeMotherSocket(int fd);
 		void	removeSocket(int fd);
 		int		wait();
@@ -53,7 +53,7 @@ class	Polling
 					return ("Error: polling error");
 				}
 		};
-		
+
 		int							epoll_fd;
 		int							events_nb;
 		int							next_event;

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:13:47 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 11:21:56 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,6 @@ int	Cgi::execGetSon(int* fd)
 		if (method == "POST")
 		{
 			int fdpost[2];
-			std::cerr << "Son post a\n";
 			if (::pipe(fdpost) == -1)
 				exit(-1);
 			// std::cerr << "Son post b\n";
@@ -137,20 +136,20 @@ int	Cgi::execGetSon(int* fd)
 			int write_size = ::write(fdpost[1], req.getContent().c_str(), req.getContent().size());
 			if (write_size < 1)
 			{
-				perror("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				perror("pipe error");
 				exit(-1);
 			}
 
 			//std::cerr << "Writen" << write_size << "\nSon post c\n";
 			if (::dup2(fdpost[0], 0) == -1  || ::close(fdpost[0]) == -1 || ::close(fdpost[1]) == -1)
 			{
-				perror("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				perror("dup2 error");
 				exit(-1);
 			}
-			//std::cerr << "Son post d\n";
+			// std::cerr << "Son post d\n";
 
 		}
-		//std::cerr << "son get part\n";
+		// std::cerr << "son get part\n";
 		if (::dup2(fd[1], 1) == -1 || ::close(fd[0]) == -1 || ::close(fd[1]) == -1)
 			exit(-1);
 		char** argv = formatArgv();
@@ -170,7 +169,6 @@ int	Cgi::execGetSon(int* fd)
 
 void	Cgi::execGetFather(int* fd, int pid)
 {
-	std::cout << "Father___________________________\n";
 	int	status;
 
 	::close(fd[1]);
@@ -189,7 +187,7 @@ void	Cgi::execGetFather(int* fd, int pid)
 	{
 		delete[] buffer;
 		::close(fd[0]);
-		std::cout << "Status is " << status << " Read size is " << read_size << std::endl;
+		std::cout << "CGI return status is " << status << " Read size is " << read_size << std::endl;
 		throw (ErrorException(500));
 	}
 	buffer[read_size] = '\0';
@@ -208,7 +206,6 @@ void	Cgi::execPost()
 char **	Cgi::formatArgv() const
 {
 	char ** argv = new  char *[3];
-	//const char* argv[0] = new const char[path.size()];
 	argv[0] = strdup(editCommand().c_str());
 	argv[1] = strdup(path.c_str());
 	argv[2] = NULL;

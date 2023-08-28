@@ -6,13 +6,15 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 13:57:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 11:26:57 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include "TCPSocket.hpp"
 
-Request::Request(TCPSocket * s):port(s->getMotherPort()), status(100), soc(s)
+Request::Request(TCPSocket * s): port(s->getMotherPort()), status(100), soc(s), header_ok(false), content_ok(false)
+
 {
 	std::cout << "fd " << soc->getFd() << " is reading\n";
 	int len = soc->readAll();
@@ -44,6 +46,8 @@ Request &	Request::operator=(Request const & rhs)
 		query = rhs.query;
 		method = rhs.method;
 		content = rhs.content;
+		header_ok = rhs.header_ok;
+		content_ok = rhs.content_ok;
 	}
 	return *this;
 }
@@ -103,7 +107,7 @@ bool	Request::checkSubField(std::string const & name, std::string const & value)
 	std::vector<std::string> all_values = splitCsv(field, ";");
 	for (size_t i = 0; i < all_values.size(); i++)
 	{
-		std::cout << "Comparing $" << all_values[i] << "$ with $" << value << "$\n";
+		//std::cout << "Comparing $" << all_values[i] << "$ with $" << value << "$\n";
 		if (ciCompare(all_values[i], value))
 			return true;
 	}
@@ -139,7 +143,7 @@ void	Request::upload(std::string & part)
 		stringTrim(val);
 		stringTrim(key);
 		multipart[key] = val;
-		std::cout << "Multipart: " << key << "\nvalue: " << multipart[key] <<  "$" << std::endl;
+		//std::cout << "Multipart: " << key << "\nvalue: " << multipart[key] <<  "$" << std::endl;
 		line = getLine(part, "\r\n");
 	}
 	std::string filename = getFileName();
@@ -154,7 +158,7 @@ std::string	Request::getFileName()
 	std::vector<std::string> fields = splitCsv(fn, ";");
 	for (std::vector<std::string>::iterator it = fields.begin(); it != fields.end(); it++)
 	{
-		std::cout << "parsing " << *it << std::endl;
+		//std::cout << "parsing " << *it << std::endl;
 		int	k = it->find("=");
 		if (k == -1 || k == 0)
 			continue;
@@ -174,20 +178,21 @@ std::string	Request::getFileName()
 void	Request::uploadFile(std::string const & filename, std::string const & part)
 {
 		checkValidFileName(filename);
-		std::string path = "/mnt/nfs/homes/pjay/Cursus42/cercle5/webserv/www/upload/";
+		std::string path = "/mnt/nfs/homes/rertzer/projets/webserv/webserv_git/www/upload/";
 		path += filename;
 		if (access(path.c_str(), F_OK) == 0)
 			std::cout << "File " << path << " already exist\n";
 		else
 		{
-			int fd = open(path.c_str(), O_WRONLY | O_CREAT, 00664);
-			if (fd == -1)
+			std::ofstream upfile(path.c_str(), std::ofstream::out);
+			if (upfile.fail())
 			{
-				perror("oups");
+				perror("Failed to create file");
+				std::cout << path << std::endl;
 				throw (ErrorException(500));
 			}
-			write(fd, part.c_str(), part.length());
-			close(fd);
+			upfile.write(part.c_str(), part.length());
+			upfile.close();
 		}
 
 
@@ -214,8 +219,31 @@ std::string	Request::getLine(std::string const & sep)
 		line = content.substr(0, pos);
 		content.erase(0, pos + sep.length());
 	}
-	std::cout << "Pos Is At " << pos << std::endl;
+	//std::cout << "Pos Is At " << pos << std::endl;
 	return (line);
+}
+
+
+bool	Request::ready() const
+{
+	return header_ok && ((contentExist() && content_ok) || !contentExist());
+}
+
+
+void	Request::feed()
+{
+	int len = soc->readAll();
+	std::cout << "feed read " << len << " octets\n";
+	if (!header_ok)
+	{
+		std::cout << "feed: setting header\n";
+		setHeader();
+	}
+	if (header_ok && contentExist() && !content_ok)
+	{
+		std::cout << "feed:setting content\n";
+		setContent();
+	}
 }
 
 std::string Request::getLine(std::string & data, std::string const & sep)
@@ -229,7 +257,7 @@ std::string Request::getLine(std::string & data, std::string const & sep)
 		line = data.substr(0, pos);
 		data.erase(0, pos + sep.length());
 	}
-	std::cout << "POS Is AT " << pos << std::endl;
+	//std::cout << "POS Is AT " << pos << std::endl;
 	return (line);
 
 }
@@ -309,11 +337,11 @@ void	Request::setHeader()
 	while (line.length())
 	{
 		if (line.length())
-		{
 			addField(line);
-		}
 		line = soc->getLine();
 	}
+	checkHeader();
+	header_ok = true;
 }
 
 void	Request::setContent()
@@ -331,8 +359,7 @@ void	Request::setContent()
 	{
 		int len = getIntField("Content-Length");
 
-		//max content size a definir dans fichier conf
-		if (len > 0 && len < 16777216)
+		if (len > 0)
 			setContentByLength(len);
 		else
 			throw (ErrorException(400));
@@ -350,14 +377,18 @@ void	Request::setContentByChunked()
 	setTrailer();
 }
 
-int	Request::readChunk()
+unsigned int	Request::readChunk()
 {
 	std::stringstream ss;
 	ss << std::hex << soc->getLine();
-	int	size;
-	ss >> size;
-	soc->addRawData(content, size);
-	soc->getLine();
+	unsigned int	size = 0;
+	if (ss >> size)
+	{
+		soc->addRawData(content, size);
+		soc->getLine();
+		if (size == 0)
+			content_ok = true;
+	}
 	return size;
 }
 
@@ -366,14 +397,22 @@ void	Request::setTrailer()
 	setHeader();
 }
 
-void	Request::setContentByLength(int len)
+void	Request::setContentByLength(unsigned int len)
 {
-	soc->getRawData(content, len);
+	int remain = len - content.size();
+	std::cout << "setContentByLength: " << remain << " to read\n";
+	if (remain > 0)
+	{
+		soc->addRawData(content, remain);
+	}
+	std::cout << "content size is now " << content.size() << std::endl;
+	if (content.size() ==  len)
+		content_ok = true;
 }
 
 void	Request::checkControlData() const
 {
-	std::cout << "protcol is $" << protocol << "$\n";
+	//std::cout << "protcol is $" << protocol << "$\n";
 	if (protocol != "HTTP/1.1")
 		throw (ErrorException(505));
 	std::vector<std::string> allowed_methods;

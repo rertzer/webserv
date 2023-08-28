@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/24 13:27:37 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 11:19:41 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@
 # include <netinet/in.h>
 
 # include <string.h>
+# include "Request.hpp"
 # include "ErrorException.hpp"
+
 
 class TCPSocket
 {
@@ -38,6 +40,7 @@ class TCPSocket
 		int			getMotherPort() const;
 		int			getFd() const;
 		void		accept(TCPSocket * csoc);
+		void		setBodySize(int bs);
 		void		close();
 		int			readAll();
 		std::string	getMessageIn() const;
@@ -49,6 +52,7 @@ class TCPSocket
 		void		addRawData(std::string & content, int len);
 		int			send();
 
+		Request *	req;
 
 		class	SocketException: public std::exception
 		{
@@ -64,6 +68,7 @@ class TCPSocket
 
 		int					socket_fd;
 		int					mother_port;
+		int					body_size;
 		struct sockaddr_in	socket_addr;
 		socklen_t			socket_addr_length;
 		std::string			msg_in;

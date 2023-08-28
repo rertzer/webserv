@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:14:30 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 11:28:50 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void Response::feelPart(Request req)
 		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
-			std::cout << "file trying to open = " << _root + *it << std::endl;
+			//std::cout << "file trying to open = " << _root + *it << std::endl;
 			fileStr = readFile(_root + *it);
 			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			{
@@ -116,7 +116,7 @@ void Response::feelPart(Request req)
 		{
 			if (req.isUpload())
 				req.upload_all();
-			std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
+			//std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
 			fileStr = readFile(_root + req.getQuery());
 			//std::cout << "Content that is not root " << fileStr << std::endl;
 		}
@@ -212,7 +212,7 @@ int Response::checkIfLocation(std::string path)
 {
 	std::vector<Location> loc = _serv.getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
-	std::cout << "Path before tje substr " << path << std::endl;
+	//std::cout << "Path before tje substr " << path << std::endl;
 	if (path != "/")
 		path = path.substr(0, path.rfind("/") );
 	while (it != loc.end())
@@ -236,7 +236,7 @@ Location Response::getTheLocation(std::string path)
 	{
 		if (it->getLocationPath() == path)
 		{
-			std::cout << "Check if good location " << it->getLocationPath() << std::endl;
+			//std::cout << "Check if good location " << it->getLocationPath() << std::endl;
 			return (*it);
 		}
 		it++;
@@ -253,10 +253,10 @@ std::string Response::getSpecIndex(Location loc)
 	{
 		for (std::vector<std::string>::iterator it = index.begin() ; it != index.end(); it++)
 		{
-			std::cout << "In get spec index = " << (_root + *it) << std::endl;
+			//std::cout << "In get spec index = " << (_root + *it) << std::endl;
 			if (access((_root + *it).c_str(), F_OK) != -1 && access((_root + *it).c_str(), R_OK) != -1)
 			{
-				std::cout << "ALL GOOD ??" << std::endl;
+				//std::cout << "ALL GOOD ??" << std::endl;
 				return (*it);
 			}
 		}
@@ -298,7 +298,7 @@ int Response::respWithLoc(Request& req)
 					req.setQuery("/");
 				else
 				{
-					std::cout << "Spec index = "<< getSpecIndex(loc) << std::endl;
+					//std::cout << "Spec index = "<< getSpecIndex(loc) << std::endl;
 					req.setQuery(getSpecIndex(loc));
 				}
 				loc = getTheLocation(req.getQuery());
@@ -322,7 +322,7 @@ int Response::respWithLoc(Request& req)
 	}
 	if (checkForRedirection(loc) == 1)
 	{
-		std::cout << "ENter in the redir zone" << std::endl;
+		//std::cout << "ENter in the redir zone" << std::endl;
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
 		_status = Status::getMsg(atoi((redirection.first.c_str())));
 		_location = redirection.second;
