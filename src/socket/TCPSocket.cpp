@@ -6,14 +6,14 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/26 09:55:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 09:47:29 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPSocket.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p): req(NULL), mother_port(p)
+TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), body_size(1000000)
 {
 	socket_addr_length = sizeof(socket_addr);
 
@@ -40,7 +40,7 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " successfully created\n";
 }
 
-TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0)
+TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), body_size(1000000)
 {
 	std::cout << "Default TCPSocket constructor fd " << getFd() << std::endl;
 
@@ -75,6 +75,8 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
+		mother_port = rhs.mother_port;
+		body_size = rhs.body_size;
 		socket_addr_length = rhs.socket_addr_length;
 		msg_in = rhs.msg_in;
 		msg_out = rhs.msg_out;
@@ -106,6 +108,12 @@ void	TCPSocket::accept(TCPSocket * csoc)
 	csoc->mother_port = getPort();
 	csoc->setParam();
 	std::cout << "New connection " << csoc->socket_fd <<  ":" << csoc->getPort() << " from TCP socket " << socket_fd << " on port " << getPort() << "addr_len " << csoc->socket_addr_length << std::endl;
+}
+
+void	TCPSocket::setBodySize(int bs)
+{
+	if (bs > 0)
+		body_size = bs;
 }
 
 void	TCPSocket::setParam()
