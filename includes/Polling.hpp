@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:19:32 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 12:52:33 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class	Polling
 		~Polling();
 
 		void	addMotherSocket(int port);
-		void	connect(Event const & ev, Server const & srv);
+		void	connect(Event const & ev);
 		void	removeMotherSocket(int fd);
 		void	removeSocket(int fd);
 		int		wait();

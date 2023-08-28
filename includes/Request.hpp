@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:18:54 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 14:28:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class TCPSocket;
 class Request
 {
 	public:
-		Request(TCPSocket * s);
+		Request(TCPSocket * s, std::vector<Server> & serv);
 		Request(Request const & rhs);
 		~Request();
 
@@ -49,15 +49,17 @@ class Request
 		const std::map<std::string, std::string> &		getTrailer() const;
 		const std::string &								getContent() const;
 		std::string										getField(std::string const & name) const;
+		unsigned int									getBodySize() const;
+		void											setBodySize(int bs);
 		bool											checkField(std::string const & name, std::string const & value) const;
 		bool											checkSubField(std::string const & name, std::string const & value) const;
 		bool											isUpload() const;
 		void											upload_all();
-		int												getIntField(std::string const & name) const;
+		unsigned int									getUIntField(std::string const & name) const;
 		void											addField(std::string const & field);
 		void										setQuery(std::string const & query);
 		bool										ready() const;
-		void										feed();
+		void										feed(std::vector<Server> serv);
 	private:
 		//Request();
 		std::string	getLine(std::string const & sep);
@@ -67,7 +69,8 @@ class Request
 		void		uploadFile(std::string const & filename, std::string const & part);
 		void		checkValidFileName(std::string const & filename) const;
 		void	setControlData();
-		void	setHeader();
+		void	setHeader(std::vector<Server> serv);
+		void	setFields();
 		void	setContent();
 		void	setContentByChunked();
 		unsigned int		readChunk();
@@ -87,6 +90,7 @@ class Request
 		};
 		int									port;
 		int									status;
+		unsigned int						body_size;
 		TCPSocket *							soc;
 		std::map<std::string, std::string>	header;
 		std::map<std::string, std::string>	trailer;

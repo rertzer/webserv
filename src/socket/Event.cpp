@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:26:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 14:20:38 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,12 +125,12 @@ int	Event::handleIn()
 		if (soc->req == NULL)
 		{
 			std::cout << "create request\n";
-			soc->req = new Request(soc);
+			soc->req = new Request(soc, serv);
 		}
 		else
 		{
 			std::cout << "request already exist, will be completed\n";
-				soc->req->feed();
+				soc->req->feed(serv);
 			std::cout <<"request fed. Status is :" << soc->req->ready() << std::endl;
 
 		}

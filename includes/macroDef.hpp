@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 12:27:54 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 13:15:25 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool									ciCompare(std::string const & left, std::string const & right);
 std::string								lowString(std::string const & str);
 std::string								envFormat(std::string const & str);
 std::string								intToString(int n);
-Server&									findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
+Server &									findTheServ(Request& req, std::vector<Server> & serv, int motherPort);
 std::string								readFile(std::string file);
 Response								createErrorPage(int codeErr, Server serv);
 int										checkAutoIndex(Location loc);

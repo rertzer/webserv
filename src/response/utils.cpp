@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 12:28:40 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 13:15:13 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ std::string intToString(int n)
 	return (ss.str());
 }
 
-Server& findTheServ(Request& req, std::vector<Server>& serv, int motherPort)
+Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
 	if (req.getField("Host").empty())

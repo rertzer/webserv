@@ -6,22 +6,21 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:45:05 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 14:28:00 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "TCPSocket.hpp"
 
-Request::Request(TCPSocket * s): port(s->getMotherPort()), status(100), soc(s), header_ok(false), content_ok(false)
+Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPort()), status(100), body_size(1000000), soc(s), header_ok(false), content_ok(false)
 
 {
 	std::cout << "fd " << soc->getFd() << " is reading\n";
 	int len = soc->readAll();
 	std::cout << len << " octets read\n";
 	setControlData();
-	std::cout << "D\n";
-	setHeader();
+	setHeader(serv);
 	std::cout << "E\n";
 	if (contentExist())
 		setContent();
@@ -42,6 +41,7 @@ Request &	Request::operator=(Request const & rhs)
 	{
 		port = rhs.port;
 		status = rhs.status;
+		body_size = rhs.body_size;
 		header = rhs.header;
 		trailer = rhs.trailer;
 		multipart = rhs.multipart;
@@ -90,6 +90,18 @@ std::string	Request::getField(std::string const & name) const
 	}
 	return it->second;
 }
+
+unsigned int	Request::getBodySize() const
+{
+	return body_size;
+}
+
+void	Request::setBodySize(int bs)
+{
+	if (bs > 0)
+		body_size = bs * 1000000;
+}
+
 
 bool	Request::checkField(std::string const & name, std::string const & value) const
 {
@@ -232,14 +244,14 @@ bool	Request::ready() const
 }
 
 
-void	Request::feed()
+void	Request::feed(std::vector<Server> serv)
 {
 	int len = soc->readAll();
 	std::cout << "feed read " << len << " octets\n";
 	if (!header_ok)
 	{
 		std::cout << "feed: setting header\n";
-		setHeader();
+		setHeader(serv);
 	}
 	if (header_ok && contentExist() && !content_ok)
 	{
@@ -264,11 +276,11 @@ std::string Request::getLine(std::string & data, std::string const & sep)
 
 }
 
-int	Request::getIntField(std::string const & name) const
+unsigned int	Request::getUIntField(std::string const & name) const
 {
 	std::stringstream ss;
 	ss << getField(name);
-	int val = 0;
+	unsigned int val = 0;
 	ss >> val;
 	return val;
 }
@@ -332,7 +344,16 @@ void	Request::setQuery(std::string const & query)
 	this->query = query;
 }
 
-void	Request::setHeader()
+void	Request::setHeader(std::vector<Server> serv)
+{
+	setFields();
+	Server theserv = findTheServ(*this, serv, soc->getMotherPort());
+	setBodySize(theserv.getBodySize());
+	checkHeader();
+	header_ok = true;
+}
+
+void	Request::setFields()
 {
 	std::string	line = soc->getLine();
 
@@ -342,8 +363,6 @@ void	Request::setHeader()
 			addField(line);
 		line = soc->getLine();
 	}
-	checkHeader();
-	header_ok = true;
 }
 
 void	Request::setContent()
@@ -359,12 +378,8 @@ void	Request::setContent()
 	}
 	else
 	{
-		int len = getIntField("Content-Length");
-
-		if (len > 0)
-			setContentByLength(len);
-		else
-			throw (ErrorException(400));
+		unsigned int len = getUIntField("Content-Length");
+		setContentByLength(len);
 	}
 }
 
@@ -386,6 +401,8 @@ unsigned int	Request::readChunk()
 	unsigned int	size = 0;
 	if (ss >> size)
 	{
+		if (content.size() + size > body_size)
+			throw (ErrorException(413));
 		soc->addRawData(content, size);
 		soc->getLine();
 		if (size == 0)
@@ -396,7 +413,7 @@ unsigned int	Request::readChunk()
 
 void	Request::setTrailer()
 {
-	setHeader();
+	setFields();
 }
 
 void	Request::setContentByLength(unsigned int len)
@@ -435,6 +452,11 @@ void	Request::checkHeader() const
 {
 	if (getField("Host").empty())
 		throw (ErrorException(400));
+	if (getUIntField("Content-Length") > body_size)
+	{
+		std::cerr << "content length: " << getUIntField("Content-Length") << ", body size: " << body_size << std::endl;
+		throw (ErrorException(413));
+	}
 }
 
 bool	Request::contentExist() const
@@ -459,6 +481,7 @@ std::ostream &	operator<<(std::ostream & ost, Request const & rhs)
 	ost << "method: " << rhs.getMethod() << "\n";
 	ost << "query: " << rhs.getQuery() << "\n";
 	ost << "status: " << rhs.getStatus() << "\n";
+	ost << "Body size: " << rhs.getBodySize() << "\n";
 	ost << "Header:\n";
 	for (std::map<std::string, std::string>::const_iterator it = rhs.getHeader().begin(); it != rhs.getHeader().end(); it++)
 		ost << "\t" << it->first << ": " << it->second << "\n";

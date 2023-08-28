@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:26:46 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/28 13:09:48 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,9 @@ void	Polling::addMotherSocket(int port)
 	mother_fds.push_back(soc->getFd());
 }
 
-void	Polling::connect(Event const & ev, Server const & srv)
+void	Polling::connect(Event const & ev)
 {
 	TCPSocket *	soc = new TCPSocket();
-	soc->setBodySize(srv.getBodySize());
 	powerstrip[ev.getSocketFd()]->accept(soc);
 	addSocket(soc, EPOLLIN | EPOLLOUT);
 

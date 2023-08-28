@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 11:43:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 13:08:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,7 @@ int	serverRun(std::vector<Server> serv)
 				{
 					if (ev.isIn())
 					{
-						TCPSocket *	soc = ev.getSocket();
-						std::cout << "A\n";
-						
-						Request req(soc);
-						std::cout << "B\n";
-						Server theserv = findTheServ(req, serv, soc->getMotherPort());
-						std::cout << "C\n";
-						pool.connect(ev, theserv);
-						std::cout << "D\n";
+						pool.connect(ev);
 					}
 
 					std::string	event_msg;
@@ -82,7 +74,7 @@ int	serverRun(std::vector<Server> serv)
 					if (!event_msg.empty())
 					{
 						int port = ev.getSocket()->getPort();
-						std::cerr << event_msg << ".Restarting connection on port " << port << std::endl;
+						std::cerr << event_msg << ". Restarting connection on port " << port << std::endl;
 						pool.removeSocket(ev.getSocketFd());
 						pool.addMotherSocket(port);
 					}
