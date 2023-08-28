@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/09 10:02:29 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 10:52:01 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class	Polling
 		~Polling();
 
 		void	addMotherSocket(int port);
-		void	connect(Event const & ev);
+		void	connect(Event const & ev, Server const & srv);
 		void	removeMotherSocket(int fd);
 		void	removeSocket(int fd);
 		int		wait();

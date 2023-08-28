@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/26 11:32:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/28 10:51:09 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,13 @@ int	serverRun(std::vector<Server> serv)
 				if (pool.isMother(ev))
 				{
 					if (ev.isIn())
-						pool.connect(ev);
+					{
+						TCPSocket *	soc = ev.getSocket();
+						Request req(ev.getSocket());
+						Server theserv = findTheServ(req, serv, soc->getMotherPort());
+						pool.connect(ev, theserv);
+					}
+
 					std::string	event_msg;
 					if (ev.isErr())
 						event_msg += "EPOLLERR ";
