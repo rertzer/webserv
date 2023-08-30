@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 12:28:40 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/30 09:23:04 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,4 +318,18 @@ int checkIfOnlyDigits(std::string str)
 			return (-1);
 	}
 	return (0);
+}
+
+std::string getUploadPath(Location loc)
+{
+	std::vector<LineLoc> lineLoc = loc.getLocationLine();
+	std::vector<LineLoc>::iterator it = lineLoc.begin();
+	std::string ret;
+	while (it != lineLoc.end())
+	{
+		if (it->getCmd() == "upload_path")
+			ret = it->getArgs()[0];
+		it++;
+	}
+	return (ret);
 }

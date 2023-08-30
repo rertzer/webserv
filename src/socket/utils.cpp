@@ -27,7 +27,7 @@ std::vector<std::string>	splitCsv(std::string const & str, std::string const & s
 	int	start = 0;
 	int	end = -1;
 	std::vector<std::string>	splited;
-	
+
 	while (end)
 	{
 		end = str.find(sep, start);
@@ -46,8 +46,8 @@ bool	ciCompare(std::string const & left, std::string const & right)
 	if (ci_left.compare(ci_right))
 		return false;
 	return true;
-}	
-	
+}
+
 std::string	lowString(std::string const & str)
 {
 	std::locale loc;
@@ -77,4 +77,5 @@ std::string	envFormat(std::string const & str)
 	}
 	return ci_string;
 }
+
 

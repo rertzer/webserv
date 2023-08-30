@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 12:20:25 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/30 09:23:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -328,6 +328,7 @@ int Response::respWithLoc(Request& req)
 		_location = redirection.second;
 		return (0);
 	}
+	std::cout << getUploadPath(loc) << std::endl;
 	std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
 	// if (req.getQuery().find(".php") != std::string::npos || req.getQuery().find(".py") != std::string::npos)
 	// {

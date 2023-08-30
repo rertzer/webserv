@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:08:25 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:21:00 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/30 09:25:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ LineLoc::LineLoc(std::string line)
 	if (_cmd == "root" && _args.size() != 1)
 	{
 		//std::cout << "Here 2 " << std::endl;
+		throw(ServerException());
+	}
+	if (_cmd == "upload_path" && _args.size() != 1)
+	{
+		std::cout << "probl server exception" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "return" && _args.size() != 2)
