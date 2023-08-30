@@ -5,7 +5,9 @@ DirListing::DirListing(std::string p):path(p)
 	DIR	*dd;
 	dd = opendir(path.c_str());
 	if (dd == NULL)
+	{
 		throw (ErrorException(500));
+	}
 	setDirContent(dd);
 	closedir(dd);
 }
@@ -42,7 +44,7 @@ DirListing::DirListing()
 void	DirListing::setDirContent(DIR * dd)
 {
 	struct dirent * entry;
-	
+
 	errno = 0;
 	entry = readdir(dd);
 	while (entry)

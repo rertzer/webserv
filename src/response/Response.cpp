@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 16:14:59 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/30 10:09:22 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void Response::feelPart(Request req)
 			*this = createErrorPage(403, _serv);
 		else
 		{
-			_status = "200 OK";	
+			_status = "200 OK";
 			_contentType = _contentMap.getContentValue(req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));;
 			_content = fileStr;
 			_contentLength = intToString(_content.length());
@@ -247,12 +247,14 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 	int allowMethod = checkAllowMethod(loc);
 	if (allowMethod != -1)
 		_allowedMethods = allowMethod;
+	std::cout << "allow methode in create auto index =" << allowMethod << " old allow method = " << _allowedMethods<<  std::endl;
 	if ((req.getMethod() == "GET" && (_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE || _allowedMethods == GETPOSTDELETE)) || \
 		(req.getMethod() == "POST" && (_allowedMethods == POST || _allowedMethods == GETPOST || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE)))
 	{
 		_content = dirContent(_root, req.getQuery());
 		_status = "200";
 		_method = req.getMethod();
+		std::cout << "enmter here " << std::endl;
 		_contentType = "text/html";
 		_contentLength = intToString(_content.length());
 	}
@@ -338,8 +340,10 @@ int Response::respWithOutLoc(Request& req)
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
+			std::cout << "Enter here in resp withou loc }} autouindex = " << _autoIndex << std::endl;
 			if (_autoIndex == "on")
 			{
+				std::cout << "Enter here in resp withou loc" << std::endl;
 				createAutoIndexResp(req, Location());
 				return (0);
 			}

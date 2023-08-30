@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 13:15:25 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/30 09:37:24 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,5 +66,6 @@ std::string								getArgsLoc(Location& loc, std::string toFind);
 int										isThereAspecRoot(Location& loc);
 int										getAllowMethodsServer(std::string allowMethod);
 void									printServ(Server& serv);
-std::pair<std::string, std::string>	getExtension(Location Loc);
-int checkIfOnlyDigits(std::string str);
+std::pair<std::string, std::string>		getExtension(Location Loc);
+int 									checkIfOnlyDigits(std::string str);
+std::string 							getUploadPath(Location loc);
