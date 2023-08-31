@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/30 10:09:22 by pjay             ###   ########.fr       */
+/*   Updated: 2023/08/31 11:20:59 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,6 +313,9 @@ int Response::respWithLoc(Request& req)
 	{
 		_method = req.getMethod();
 		_content = runFile(_method, req, getExtension(loc));
+		std::cout << "------------------------------------------------------\n";
+		std::cout << _content << std::endl;
+		std::cout << "-------------------------------------------------------\n";
 		size_t pos = _content.find("\r\n\r\n");
 		if (pos != std::string::npos)
 		{
@@ -324,6 +327,9 @@ int Response::respWithLoc(Request& req)
 		_status = "200 OK";
 	 	_contentLength = intToString(_content.length());
 		_connectionClose = "keep-alive";
+		std::cout << "===========================================================\n";
+		std::cout << _content << std::endl;
+		std::cout << "============================================================\n";
 		return (0);
 	}
 	else
