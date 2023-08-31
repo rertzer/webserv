@@ -3,7 +3,7 @@
 	<head>
 		<title>Ave Cesar</title>
 		<meta charset="UTF-8">
-		<link href="cesar.css" rel="stylesheet">
+		<link href="/css/cesar.css" rel="stylesheet">
 	</head>
 	<body>
 		<?php
@@ -58,6 +58,15 @@
 		</figure> -->
 		
 		</header>
+		<nav id ="menu">
+			<a href="html/page/indexTest.html">Index</a>
+			<a href="html/page/redirectionPage.html">Redirection</a>
+			<a href="html/page/toDelete.html">Delete</a>
+			<a href="php/cesar_get.php">Ave Cesar (get)</a>
+			<a href="php/cesar_post.php">Ave Cesar (post)</a>
+			<a href="python3/quizz.py">The 42 Quizz</a>
+			<a href="html/kitty/kitty.html">Kitty</a>
+		</nav>
 		<section id ="main">
 			<p>Veuillez entrer le texte et sa clé</p>
 			<form action="cesar_post.php" method="post">
@@ -66,32 +75,32 @@
 				</div>
 				<div id="ck">
 					<select name="cipher_key">
-						<option value="1">A</option>
-						<option value="2">B</option>
-						<option value="3">C</option>
-						<option value="4">D</option>
-						<option value="5">E</option>
-						<option value="6">F</option>
-						<option value="7">G</option>
-						<option value="8">H</option>
-						<option value="9">I</option>
-						<option value="10">J</option>
-						<option value="11">K</option>
-						<option value="12">L</option>
-						<option value="13">M</option>
-						<option value="14">N</option>
-						<option value="15">O</option>
-						<option value="16">P</option>
-						<option value="17">Q</option>
-						<option value="18">R</option>
-						<option value="19">S</option>
-						<option value="20">T</option>
-						<option value="21">U</option>
-						<option value="22">V</option>
-						<option value="23">W</option>
-						<option value="24">X</option>
-						<option value="25">Y</option>
-						<option value="26">Z</option>
+						<option value="0">A</option>
+						<option value="1">B</option>
+						<option value="2">C</option>
+						<option value="3">D</option>
+						<option value="4">E</option>
+						<option value="5">F</option>
+						<option value="6">G</option>
+						<option value="7">H</option>
+						<option value="8">I</option>
+						<option value="9">J</option>
+						<option value="10">K</option>
+						<option value="11">L</option>
+						<option value="12">M</option>
+						<option value="13">N</option>
+						<option value="14">O</option>
+						<option value="15">P</option>
+						<option value="16">Q</option>
+						<option value="17">R</option>
+						<option value="18">S</option>
+						<option value="19">T</option>
+						<option value="20">U</option>
+						<option value="21">V</option>
+						<option value="22">W</option>
+						<option value="23">X</option>
+						<option value="24">Y</option>
+						<option value="25">Z</option>
 					</select>
 				</div>
 				<div>

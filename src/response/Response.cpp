@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/31 11:20:59 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:50:45 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,6 @@ std::string Response::getResponse()
 	return (response);
 }
 
-
 int Response::checkIfLocation(std::string path)
 {
 	std::vector<Location> loc = _serv.getAllLocation();
@@ -313,27 +312,24 @@ int Response::respWithLoc(Request& req)
 	{
 		_method = req.getMethod();
 		_content = runFile(_method, req, getExtension(loc));
-		std::cout << "------------------------------------------------------\n";
-		std::cout << _content << std::endl;
-		std::cout << "-------------------------------------------------------\n";
 		size_t pos = _content.find("\r\n\r\n");
 		if (pos != std::string::npos)
 		{
-			_contentType = _content.substr(14, pos);
+			_contentType = _content.substr(14, pos - 14);
 			_content.erase(0, pos + 4);
 		}
 		else
+		{
 			_contentType = "text/html";
+		}
 		_status = "200 OK";
 	 	_contentLength = intToString(_content.length());
 		_connectionClose = "keep-alive";
-		std::cout << "===========================================================\n";
-		std::cout << _content << std::endl;
-		std::cout << "============================================================\n";
 		return (0);
 	}
 	else
 	{
+		req.setUploadPath(getUploadPath(loc));
 		if (req.isUpload())
 			req.upload_all();
 	}

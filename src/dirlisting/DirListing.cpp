@@ -6,7 +6,12 @@ DirListing::DirListing(std::string p):path(p)
 	dd = opendir(path.c_str());
 	if (dd == NULL)
 	{
-		throw (ErrorException(500));
+		int error = 500;
+		if (errno == ENOTDIR  || errno == ENOENT)
+			error = 404;
+		else if (errno == EACCES)
+			error = 403;
+		throw (ErrorException(error));
 	}
 	setDirContent(dd);
 	closedir(dd);

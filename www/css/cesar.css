@@ -8,12 +8,13 @@ h1 {
 }
 
 header {
-	border: 3px solid blue;
+	border: 3px solid #4302b3;
 	border-radius: 10px;
 	width: 95%;
 	padding: 0% 2%;
 	z-index: 100;
-	background-color:#FFFB88;
+	background-color:#1354BD;
+	color:white;
 }
 
 
@@ -22,30 +23,51 @@ header {
 }
 
 header h1 {
+	color:white;
 	font-family: 'BallparkWeiner'm serif;
+	text-align:center;
 	font-size: 2.5em;
-	font-weight: normal;
+	font-weight:900;
 }
 
 header h2 {
 	font-family: 'Dayrom', serif;
 	font-size: 1.1em;
 	margin-top: 0px;
+	text-align:center;
 	font-weight: normal;
 }
 
-#line {
+#menu {
+	float:left;
+	display:block;
+	color:blue;
 
 }
 
+nav a {
+	font-size: 1.3em;
+	text-decoration: none;
+}
+
+nav a:hover {
+	color:#00008B;
+	border-bottom: 3px solid #760001;
+}
+
 #main {
-	padding: 2% 15%;
+	width:60%;
+	margin-left:auto;
+	margin-right:auto;
+/*	padding: 2% 15%;*/
+}
+#main p {
+	font-weight:bold;
 }
 
 #ck {
 	display: inline-block;
 	vertical-align: top;
-	color:red:
 }
 
 #ta {
@@ -58,29 +80,5 @@ header h2 {
 
 }
 
-nav {
-	display: inline-block;
-	align : right;
-	text-align: right;
-}
 
-nav ul {
-	list-style-type: none;
-}
 
-nav li {
-	display: inline-block;
-	margin-right: 15px;
-}
-
-nav a {
-	font-size: 1.3em;
-	color: #181818;
-	padding-bottom: 3px;
-	text-decoration: none;
-}
-
-nav a:hover {
-	color: #760001;
-	border-bottom: 3px solid #760001;
-}

@@ -3,7 +3,7 @@
 	<head>
 		<title>Ave Cesar</title>
 		<meta charset="UTF-8">
-		<link href="cesar.css" rel="stylesheet">
+		<link href="/css/cesar.css" rel="stylesheet">
 	</head>
 	<body>
 		<?php

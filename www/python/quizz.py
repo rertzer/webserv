@@ -10,7 +10,7 @@ quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug
         ("La Terre a été détruite pour laisser place à", "un casino", "une bretelle d'autoroute", 2),
         ("Un voyageur intergalactique se doit d'emporter", "une serviette", "son chat", 1),
         ("Pour communiquer avec les extraterrestres au langage inconnu, on s'enfonce", "un poisson dans l'oreille", "un chat dans la gorge", 1),
-        ("Le meilleur restaurant de l'Univers se trouve", "au coins de la rue", "à la fin du monde", 1),
+        ("Le meilleur restaurant de l'Univers se trouve", "au coins de la rue", "à la fin du monde", 2),
         ("Le président de la Galaxie s'appelle", "Zaphod Beeblebrox", "Elon Musk", 1),
         ("Slartibartfast est connu pour avoir dessiné", "Les côtes de Norvège", "la Joconde", 1))
 

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 14:28:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:57:19 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Request
 		std::string										getField(std::string const & name) const;
 		unsigned int									getBodySize() const;
 		void											setBodySize(int bs);
+		void											setUploadPath(std::string up);
 		bool											checkField(std::string const & name, std::string const & value) const;
 		bool											checkSubField(std::string const & name, std::string const & value) const;
 		bool											isUpload() const;
@@ -58,6 +59,7 @@ class Request
 		unsigned int									getUIntField(std::string const & name) const;
 		void											addField(std::string const & field);
 		void										setQuery(std::string const & query);
+		void										setKeepAlive();
 		bool										ready() const;
 		void										feed(std::vector<Server> serv);
 	private:
@@ -99,6 +101,7 @@ class Request
 		std::string							query;
 		std::string							protocol;
 		std::string							content;
+		std::string							upload_path;
 		bool								header_ok;
 		bool								content_ok;
 };

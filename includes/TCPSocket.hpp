@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 13:38:42 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:36:15 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ class TCPSocket
 		std::string	getLine();
 		void		getRawData(std::string & content, int len);
 		void		addRawData(std::string & content, int len);
+		bool		getKeepAlive() const;
+		void		setKeepAlive(bool k);
 		int			send();
 
 		Request *	req;
@@ -71,6 +73,7 @@ class TCPSocket
 		socklen_t			socket_addr_length;
 		std::string			msg_in;
 		std::string			msg_out;
+		bool				keep_alive;
 
 		static const int			backlog;
 		static const int			buffer_size;

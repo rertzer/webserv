@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 14:20:38 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:35:34 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,12 +145,14 @@ int	Event::handleIn()
 			catch (const ErrorException & e)
 			{
 				soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
+				soc->setKeepAlive(false);
 			}
 		}
 	}
 		catch(const ErrorException & e)
 		{
 			soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
+			soc->setKeepAlive(false);
 		}
 	return 0;
 }
@@ -160,10 +162,19 @@ int	Event::handleOut()
 	if (!soc->getMessageOut().empty())
 	{
 		std::cout << "\n\n";
+
+		std::cout << "======================================================================\n";
+		std::cout << soc->getMessageOut() << std::endl;
+		std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 		int len = soc->send();
+		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
 		delete soc->req;
 		soc->req = NULL;
-		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
+		if (soc->getKeepAlive())
+		{
+			soc->setKeepAlive(false);
+			return 0;
+		}
 		return (soc->getFd());
 	}
 	//std::cout << "Connection fd " << soc_fd << ": Nothing to send\n";

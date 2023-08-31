@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 14:28:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:59:20 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,10 @@ void	Request::setBodySize(int bs)
 		body_size = bs * 1000000;
 }
 
+void	Request::setUploadPath(std::string up)
+{
+	upload_path = up;
+}
 
 bool	Request::checkField(std::string const & name, std::string const & value) const
 {
@@ -130,7 +134,7 @@ bool	Request::checkSubField(std::string const & name, std::string const & value)
 
 bool	Request::isUpload() const
 {
-	if (getMethod() == "POST" && checkSubField("Content-Type", "multipart/form-data"))
+	if (getMethod() == "POST" && checkSubField("Content-Type", "multipart/form-data") && ! upload_path.empty())
 		return true;
 	return false;
 }
@@ -192,8 +196,7 @@ std::string	Request::getFileName()
 void	Request::uploadFile(std::string const & filename, std::string const & part)
 {
 		checkValidFileName(filename);
-		std::string path = "/mnt/nfs/homes/rertzer/projets/webserv/webserv_git/www/upload/";
-		path += filename;
+		std::string path = upload_path + filename;
 		if (access(path.c_str(), F_OK) == 0)
 			std::cout << "File " << path << " already exist\n";
 		else
@@ -350,7 +353,15 @@ void	Request::setHeader(std::vector<Server> serv)
 	Server theserv = findTheServ(*this, serv, soc->getMotherPort());
 	setBodySize(theserv.getBodySize());
 	checkHeader();
+	setKeepAlive();
 	header_ok = true;
+}
+
+void	Request::setKeepAlive()
+{
+	std::string keep = getField("Connection");
+	if (keep == "keep-alive")
+		soc->setKeepAlive(true);
 }
 
 void	Request::setFields()

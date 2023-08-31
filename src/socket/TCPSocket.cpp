@@ -6,14 +6,14 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 13:46:42 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/08/31 13:56:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TCPSocket.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p): req(NULL), mother_port(p)
+TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
 {
 	socket_addr_length = sizeof(socket_addr);
 
@@ -40,7 +40,7 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " successfully created\n";
 }
 
-TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0)
+TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), keep_alive(false)
 {
 	std::cout << "Default TCPSocket constructor fd " << getFd() << std::endl;
 
@@ -80,6 +80,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 		msg_in = rhs.msg_in;
 		msg_out = rhs.msg_out;
 		req = rhs.req;
+		keep_alive = rhs.keep_alive;
 	}
 	return *this;
 }
@@ -190,6 +191,17 @@ void	TCPSocket::addRawData(std::string & content, int len)
 	content += msg_in.substr(0, len);
 	msg_in.erase(0, len);
 }
+
+bool	TCPSocket::getKeepAlive() const
+{
+	return keep_alive;
+}
+
+void	TCPSocket::setKeepAlive(bool k)
+{
+	keep_alive = k;
+}
+
 int	TCPSocket::send()
 {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
