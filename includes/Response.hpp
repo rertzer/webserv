@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 15:59:55 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/02 12:01:47 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class Response
 		std::string _contentLength;
 		std::string _connectionClose;
 		std::string _content;
+		std::vector<std::string>	_setCookie;
 		std::pair<std::string, std::string> _extensionAllowed;
 		int 		_readFileAccess;
 		std::string _autoIndex;
@@ -42,6 +43,8 @@ class Response
 		std::string _location;
 		std::string _root;
 		int			_allowedMethods;
+
+		std::pair<std::string, std::string>	extractField(size_t pos);
 	public:
 		Response(Request& req, Server& serv);
 		Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content);
@@ -62,4 +65,5 @@ class Response
 		int 		respWithOutLoc(Request& req);
 		std::string	getSpecIndex(Location loc);
 		void 		createAutoIndexResp(Request& req, Location loc);
+		void		setCookie(std::string ck);
 };

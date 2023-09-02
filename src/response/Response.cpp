@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/31 14:50:45 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/02 12:36:48 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,9 +178,13 @@ std::string Response::getResponse()
 	}
 	if (!_connectionClose.empty())
 		response += "Connection: " + _connectionClose + "\r\n";
-	response += "Content-Type: " + _contentType + "\r\n"
-							"Content-Length: " + _contentLength + "\r\n"
-							"\r\n";
+	response += "Content-Type: " + _contentType + "\r\n" + "Content-Length: " + _contentLength + "\r\n";
+	int	cookie_nb = _setCookie.size();
+	for (int i = 0 ; i < cookie_nb; i++)
+	{
+		response += "Set-Cookie: " + _setCookie[i] + "\r\n";	
+	}
+	response += "\r\n";
 	response += _content;
 	return (response);
 }
@@ -264,6 +268,11 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 
 }
 
+void	Response::setCookie(std::string ck)
+{
+	_setCookie.push_back(ck);
+}
+
 int Response::respWithLoc(Request& req)
 {
 	Location loc = getTheLocation(req.getQuery());
@@ -312,15 +321,21 @@ int Response::respWithLoc(Request& req)
 	{
 		_method = req.getMethod();
 		_content = runFile(_method, req, getExtension(loc));
-		size_t pos = _content.find("\r\n\r\n");
-		if (pos != std::string::npos)
+		_contentType = "text/html";
+
+		size_t pos = _content.find("\r\n");
+		while (pos != std::string::npos && pos != 0)
 		{
-			_contentType = _content.substr(14, pos - 14);
-			_content.erase(0, pos + 4);
-		}
-		else
-		{
-			_contentType = "text/html";
+			std::pair<std::string, std::string> field = extractField(pos);
+			if (field.first == "Content-Type")
+			{
+				_contentType = field.second;
+			}
+			else if (field.first == "Set-Cookie")
+			{
+				_setCookie.push_back(field.second);
+			}
+			pos = _content.find("\r\n");
 		}
 		_status = "200 OK";
 	 	_contentLength = intToString(_content.length());
@@ -334,6 +349,27 @@ int Response::respWithLoc(Request& req)
 			req.upload_all();
 	}
 	return (1);
+}
+
+std::pair<std::string, std::string>	Response::extractField(size_t pos)
+{
+	std::string	line;
+	std::pair<std::string, std::string>	field;
+
+	if (pos != std::string::npos)
+	{
+		line = _content.substr(0, pos);
+		_content.erase(0, pos + 2);
+		pos = line.find(":");
+		if (pos != std::string::npos)
+		{
+			field.first = line.substr(0, pos);
+			field.second = line.substr(pos + 1, -1);
+		}
+		stringTrim(field.first);
+		stringTrim(field.second);
+	}
+	return (field);
 }
 
 int Response::respWithOutLoc(Request& req)

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 16:05:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/02 12:12:19 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,8 @@ void	Cgi::setEnv()
 	env_map["PATH_INFO"] = path_info;
 	env_map["PATH_TRANSLATED"] = "";
 	env_map["QUERY_STRING"] = query_string;
-	env_map["REMOTE_ADDR"] = "127.0.0.1";
+	env_map["REMOTE_ADDR"] = "127.0.0.1"; 
+	env_map["HTTP_COOKIE"] = req.getField("Cookie");
 }
 
 void	Cgi::execGet()

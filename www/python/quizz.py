@@ -3,6 +3,7 @@
 import cgi
 import sys
 import os
+from http import cookies
 
 quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug Adams", 2),
         ("Qui n'est pas un personnage du <i>Guide</i> ?", "Marvin", "Norminet", 2),
@@ -14,12 +15,25 @@ quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug
         ("Le président de la Galaxie s'appelle", "Zaphod Beeblebrox", "Elon Musk", 1),
         ("Slartibartfast est connu pour avoir dessiné", "Les côtes de Norvège", "la Joconde", 1))
 
-print("Content-Type: text/html\r\n\r")
+cook = cookies.SimpleCookie()
+cook["quizz"] = "start_0_0"
+print(cook, end="\r\n")
+
+
+print("Content-Type: text/html", end="\r\n")
+print("", end="\r\n")
 
 print("<!DOCTYPE html>")
 print("<html><head><title>The 42 quizz to the Galaxy</title><meta charset=\"UTF-8\"><link href=\"/css/cesar.css\" rel=\"stylesheet\"></head>")
 print("<body><h1>The 42 quizz to the Galaxy</h1>")
-
+#--------------------------------------------------------------
+if 'HTTP_COOKIE' in os.environ:
+    print("cookie found")
+    cookie = cookies.BaseCookie()
+    cookie.load(os.environ["HTTP_COOKIE"])
+    for a, morsel in cookie.items():
+        print(a, ':', morsel.value, '<br>')
+#---------------------------------------------------------------
 form = cgi.FieldStorage()
 q_id = form.getvalue('q_id')
 q_answer = form.getvalue('q_answer')
