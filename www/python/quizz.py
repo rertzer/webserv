@@ -17,7 +17,7 @@ quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug
 print("Content-Type: text/html\r\n\r")
 
 print("<!DOCTYPE html>")
-print("<html><head><title>The 42 quizz to the Galaxy</title><meta charset=\"UTF-8\"><link href=\"cesar.css\" rel=\"stylesheet\"></head>")
+print("<html><head><title>The 42 quizz to the Galaxy</title><meta charset=\"UTF-8\"><link href=\"/css/cesar.css\" rel=\"stylesheet\"></head>")
 print("<body><h1>The 42 quizz to the Galaxy</h1>")
 
 form = cgi.FieldStorage()

@@ -59,13 +59,13 @@
 		
 		</header>
 		<nav id ="menu">
-			<a href="html/page/indexTest.html">Index</a>
-			<a href="html/page/redirectionPage.html">Redirection</a>
-			<a href="html/page/toDelete.html">Delete</a>
-			<a href="php/cesar_get.php">Ave Cesar (get)</a>
-			<a href="php/cesar_post.php">Ave Cesar (post)</a>
-			<a href="python3/quizz.py">The 42 Quizz</a>
-			<a href="html/kitty/kitty.html">Kitty</a>
+			<a href="/html/page/indexTest.html">Index</a>
+			<a href="/html/page/redirectionPage.html">Redirection</a>
+			<a href="/html/page/toDelete.html">Delete</a>
+			<a href="/php/cesar_get.php">Ave Cesar (get)</a>
+			<a href="/php/cesar_post.php">Ave Cesar (post)</a>
+			<a href="/python/quizz.py">The 42 Quizz</a>
+			<a href="/html/kitty/kitty.html">Kitty</a>
 		</nav>
 		<section id ="main">
 			<p>Veuillez entrer le texte et sa clé</p>
