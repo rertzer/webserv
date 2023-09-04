@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/31 14:35:34 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:23:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,12 @@ int	Event::handleEvent()
 	whichfun[EPOLLIN] = &Event::handleIn;
 	whichfun[EPOLLOUT] = &Event::handleOut;
 	whichfun[EPOLLERR] = &Event::handleError;
-	whichfun[EPOLLHUP] = &Event::handleError;
+	whichfun[EPOLLHUP] = &Event::handleHup;
 
 	for (int i = 0 ; i < 4; i++)
 	{
 		if (events & ev[i])
 		{
-			//std::cout << "execute handle fun " << ev[i] << std::endl;
 			handlefun fun = whichfun[ev[i]];
 			close_fd = (this->*fun)();
 			if (close_fd)
@@ -118,42 +117,26 @@ int	Event::handleEvent()
 
 int	Event::handleIn()
 {
-
-	std::cout << "\n\n";
 	try
 	{
 		if (soc->req == NULL)
 		{
-			std::cout << "create request\n";
+			std::cout << "Event In on fd " << soc_fd << std::endl;
 			soc->req = new Request(soc, serv);
 		}
 		else
-		{
-			std::cout << "request already exist, will be completed\n";
-				soc->req->feed(serv);
-			std::cout <<"request fed. Status is :" << soc->req->ready() << std::endl;
-
-		}
+			soc->req->feed(serv);
 		if (soc->req->ready())
 		{
-			std::cout << "request is ready\n";
-			try
-			{
-				Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
-				soc->setMessageOut(resp.getResponse());
-			}
-			catch (const ErrorException & e)
-			{
-				soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
-				soc->setKeepAlive(false);
-			}
+			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+			soc->setMessageOut(resp.getResponse());
 		}
 	}
-		catch(const ErrorException & e)
-		{
-			soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
-			soc->setKeepAlive(false);
-		}
+	catch(const ErrorException & e)
+	{
+		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
+		soc->setKeepAlive(false);
+	}
 	return 0;
 }
 
@@ -161,29 +144,32 @@ int	Event::handleOut()
 {
 	if (!soc->getMessageOut().empty())
 	{
-		std::cout << "\n\n";
-
-		std::cout << "======================================================================\n";
-		std::cout << soc->getMessageOut() << std::endl;
-		std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 		int len = soc->send();
-		std::cout << "Connection fd " << soc_fd << " send " << len << " char\n";
-		delete soc->req;
-		soc->req = NULL;
-		if (soc->getKeepAlive())
+		std::cout << "Event Out on fd " << soc_fd << " " << len << " char sent.\n";
+		if (soc->getMessageOut().empty())
 		{
-			soc->setKeepAlive(false);
-			return 0;
+			delete soc->req;
+			soc->req = NULL;
+			if (soc->getKeepAlive())
+			{
+				soc->setKeepAlive(false);
+				return 0;
+			}
+			return (soc->getFd());
 		}
-		return (soc->getFd());
 	}
-	//std::cout << "Connection fd " << soc_fd << ": Nothing to send\n";
 	return 0;
 }
 
 int	Event::handleError()
 {
-	std::cout << "Handle Error\n";
+	std::cout << "Event Error on fd " << soc_fd << std::endl;
+	return (soc->getFd());
+}
+
+int	Event::handleHup()
+{
+	std::cout << "Event Hup on fd " << soc_fd << std::endl;
 	return (soc->getFd());
 }
 

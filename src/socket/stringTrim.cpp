@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 14:28:11 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/23 11:10:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 16:03:52 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,4 +31,6 @@ void	stringDoubleQuotTrim(std::string & str)
 	pos = str.find_last_not_of("\"");
 	if (pos != -1 && str.length() && static_cast<unsigned int>(pos) != str.length() - 1)
 		str.erase(pos + 1, -1);
+	if (str == "\"\"")
+		str.clear();
 }

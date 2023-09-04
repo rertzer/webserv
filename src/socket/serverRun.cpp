@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 13:08:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:21:26 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ int	serverRun(std::vector<Server> serv)
 		}
 		for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
 			pool.addMotherSocket(it->first);
+		std::cout << "Listening...\n";
 		while (1)
 		{
-			//std::cout << "Listening...\n";
 			int nfds = pool.wait();
 			if (quitok)
 			{
@@ -50,14 +50,10 @@ int	serverRun(std::vector<Server> serv)
 				break;
 			}
 
-			//std::cout << "\n\n\nepoll collected " << nfds << " fd's\n";
-
 			for (int n = 0; n < nfds; n++)
 			{
 				Event 		ev = pool.nextEvent();
 				ev.setServ(serv);
-
-				//std::cout << "\nn is " << n << ", fd is: " << ev.getSocketFd() << " and  events are: " << ev.getEvents() << std::endl;
 
 				if (pool.isMother(ev))
 				{
@@ -74,15 +70,15 @@ int	serverRun(std::vector<Server> serv)
 					if (!event_msg.empty())
 					{
 						int port = ev.getSocket()->getPort();
-						std::cerr << event_msg << ". Restarting connection on port " << port << std::endl;
+						std::cout << event_msg << ". Restarting connection on port " << port << std::endl;
 						pool.removeSocket(ev.getSocketFd());
 						pool.addMotherSocket(port);
 					}
 				}
 				else
 				{
-					//std::cout << "events on " << ev.getSocketFd() << "mport: " << ev.getSocket()->getMotherPort() << std::endl;
-
+					if (ev.isOut())
+						usleep(10000);
 					int	 close_fd = ev.handleEvent();
 					if (close_fd)
 						pool.removeSocket(close_fd);

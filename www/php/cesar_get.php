@@ -112,6 +112,9 @@
 				if (isset($_GET['cipher']) or isset($_GET['decipher']))
 					echo "<div id=\"result\">{$texte}</div>";
 			?>
-					</section>
+			</section>
+			<footer>
+				<p>WebServ by pjay and rertzer. <em>Parce que tu le codes bien.</em></p>
+			</footer>
 	</body>
 </html>

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/31 13:56:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:26:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,27 +37,23 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
 
 	if (listen(socket_fd, backlog) == -1)
 		throw(SocketException());
-	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " successfully created\n";
+	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
 }
 
 TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), keep_alive(false)
 {
-	std::cout << "Default TCPSocket constructor fd " << getFd() << std::endl;
-
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
 }
 
 TCPSocket::TCPSocket(TCPSocket const &rhs)
 {
-	std::cout << "copy constructor fd " << rhs.getFd() << std::endl;
 	*this = rhs;
 }
 
 
 TCPSocket::~TCPSocket()
 {
-	std::cout << "Default TCPSocket destructor fd " << getFd() << std::endl;
 	if (socket_fd)
 		::close(socket_fd);
 	if (req)
@@ -69,7 +65,6 @@ TCPSocket::~TCPSocket()
 
 TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 {
-	std::cout << "assign op fd " << rhs.getFd() << std::endl;
 	if (this != &rhs)
 	{
 
@@ -108,7 +103,7 @@ void	TCPSocket::accept(TCPSocket * csoc)
 		throw(ErrorException(500));
 	csoc->mother_port = getPort();
 	csoc->setParam();
-	std::cout << "New connection " << csoc->socket_fd <<  ":" << csoc->getPort() << " from TCP socket " << socket_fd << " on port " << getPort() << "addr_len " << csoc->socket_addr_length << std::endl;
+	std::cout << "New connection " << csoc->socket_fd <<  ":" << csoc->getPort() << " from TCP socket " << socket_fd << " on port " << getPort() << std::endl;
 }
 
 void	TCPSocket::setParam()
@@ -116,9 +111,7 @@ void	TCPSocket::setParam()
 	int optval = 200000;
 	socklen_t optlen = sizeof(optval);
 	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
-		std::cout << "setsockopt error\n";
 	getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
-	std::cout << "SO_RCVBUF is " << optval << std::endl;
 }
 
 void	TCPSocket::close()
@@ -205,7 +198,7 @@ void	TCPSocket::setKeepAlive(bool k)
 int	TCPSocket::send()
 {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
-	msg_out.clear();
+	msg_out.erase(0, len);
 	return len;
 }
 

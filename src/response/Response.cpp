@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/02 12:36:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:52:47 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,13 @@ std::string Response::readFile(std::string file)
 	fileOp.open(file.c_str());
 	if (access(file.c_str(), F_OK) == -1)
 	{
-			_readFileAccess = FILE_NOT_FOUND;
-			return ("404");
+		_readFileAccess = FILE_NOT_FOUND;
+		return ("404");
 	}
 	if (access(file.c_str(), R_OK) == -1)
 	{
-			_readFileAccess = ACCESS_DENIED;
-			return ("403");
+		_readFileAccess = ACCESS_DENIED;
+		return ("403");
 	}
 	if (fileOp.is_open())
 	{
@@ -80,7 +80,6 @@ void Response::feelPart(Request req)
 		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
-			//std::cout << "file trying to open = " << _root + *it << std::endl;
 			fileStr = readFile(_root + *it);
 			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			{
@@ -107,11 +106,13 @@ void Response::feelPart(Request req)
 	else
 	{
 		std::string	fileStr;
-			//std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
+		//std::cout << "_root + req.getQuery() aaaaa= " << _root + req.getQuery() << std::endl;
 		fileStr = readFile(_root + req.getQuery());
 		//std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
+		{
 			*this = createErrorPage(404, _serv);
+		}
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			*this = createErrorPage(403, _serv);
 		else
@@ -346,7 +347,9 @@ int Response::respWithLoc(Request& req)
 	{
 		req.setUploadPath(getUploadPath(loc));
 		if (req.isUpload())
+		{
 			req.upload_all();
+		}
 	}
 	return (1);
 }

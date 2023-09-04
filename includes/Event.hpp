@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 10:12:44 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:04:50 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class	Event
 		int			handleIn();
 		int			handleOut();
 		int			handleError();
+		int			handleHup();
 
 	private:
 		Event();

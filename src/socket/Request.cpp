@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/31 14:59:20 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:59:41 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,12 @@
 Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPort()), status(100), body_size(1000000), soc(s), header_ok(false), content_ok(false)
 
 {
-	std::cout << "fd " << soc->getFd() << " is reading\n";
 	int len = soc->readAll();
-	std::cout << len << " octets read\n";
+	std::cout << "on fd " << soc->getFd() << ", " <<  len << " octets read\n";
 	setControlData();
 	setHeader(serv);
-	std::cout << "E\n";
 	if (contentExist())
 		setContent();
-	std::cout << "Request created:\n" << *this << std::endl;
 }
 
 Request::Request(Request const & rhs)
@@ -125,7 +122,6 @@ bool	Request::checkSubField(std::string const & name, std::string const & value)
 	std::vector<std::string> all_values = splitCsv(field, ";");
 	for (size_t i = 0; i < all_values.size(); i++)
 	{
-		//std::cout << "Comparing $" << all_values[i] << "$ with $" << value << "$\n";
 		if (ciCompare(all_values[i], value))
 			return true;
 	}
@@ -149,7 +145,6 @@ void	Request::upload_all()
 
 void	Request::upload(std::string & part)
 {
-	std::cout << "Uploading.............................................................\n";
 	std::string line = getLine(part, "\r\n");
 	while (line.length())
 	{
@@ -161,11 +156,9 @@ void	Request::upload(std::string & part)
 		stringTrim(val);
 		stringTrim(key);
 		multipart[key] = val;
-		//std::cout << "Multipart: " << key << "\nvalue: " << multipart[key] <<  "$" << std::endl;
 		line = getLine(part, "\r\n");
 	}
 	std::string filename = getFileName();
-	std::cout << "Filename is $" << filename << "$\n";
 	if (! filename.empty())
 		uploadFile(filename, part);
 }
@@ -176,14 +169,13 @@ std::string	Request::getFileName()
 	std::vector<std::string> fields = splitCsv(fn, ";");
 	for (std::vector<std::string>::iterator it = fields.begin(); it != fields.end(); it++)
 	{
-		//std::cout << "parsing " << *it << std::endl;
 		int	k = it->find("=");
 		if (k == -1 || k == 0)
 			continue;
 		std::string	key = it->substr(0, k);
 		std::string	val = it->substr(k + 1);
 		stringDoubleQuotTrim(val);
-		stringTrim(key);
+		stringDoubleQuotTrim(key);
 		if (key == "filename")
 		{
 			fn = val;
@@ -204,12 +196,13 @@ void	Request::uploadFile(std::string const & filename, std::string const & part)
 			std::ofstream upfile(path.c_str(), std::ofstream::out);
 			if (upfile.fail())
 			{
-				perror("Failed to create file");
-				std::cout << path << std::endl;
+				std::cout << "File " << filename;
+				perror(" creation failed");
 				throw (ErrorException(500));
 			}
 			upfile.write(part.c_str(), part.length());
 			upfile.close();
+			std::cout << "File " << filename << "created\n";
 		}
 
 
@@ -236,7 +229,6 @@ std::string	Request::getLine(std::string const & sep)
 		line = content.substr(0, pos);
 		content.erase(0, pos + sep.length());
 	}
-	//std::cout << "Pos Is At " << pos << std::endl;
 	return (line);
 }
 
@@ -249,18 +241,11 @@ bool	Request::ready() const
 
 void	Request::feed(std::vector<Server> serv)
 {
-	int len = soc->readAll();
-	std::cout << "feed read " << len << " octets\n";
+	soc->readAll();
 	if (!header_ok)
-	{
-		std::cout << "feed: setting header\n";
 		setHeader(serv);
-	}
 	if (header_ok && contentExist() && !content_ok)
-	{
-		std::cout << "feed:setting content\n";
 		setContent();
-	}
 }
 
 std::string Request::getLine(std::string & data, std::string const & sep)
@@ -274,7 +259,6 @@ std::string Request::getLine(std::string & data, std::string const & sep)
 		line = data.substr(0, pos);
 		data.erase(0, pos + sep.length());
 	}
-	//std::cout << "POS Is AT " << pos << std::endl;
 	return (line);
 
 }
@@ -312,7 +296,6 @@ void	Request::addField(std::string const & field)
 	std::string	val = field.substr(k + 1);
 	stringTrim(val);
 	stringTrim(key);
-	// A FAIRE tester pas d'esapce avant le :
 	if (header.find(key) == header.end())
 		header[key] = val;
 	else
@@ -396,7 +379,6 @@ void	Request::setContent()
 
 void	Request::setContentByChunked()
 {
-	std::cout << "setContentByChunked\n";
 	int len = 1;
 	while (len)
 	{
@@ -430,19 +412,16 @@ void	Request::setTrailer()
 void	Request::setContentByLength(unsigned int len)
 {
 	int remain = len - content.size();
-	std::cout << "setContentByLength: " << remain << " to read\n";
 	if (remain > 0)
 	{
 		soc->addRawData(content, remain);
 	}
-	std::cout << "content size is now " << content.size() << std::endl;
 	if (content.size() ==  len)
 		content_ok = true;
 }
 
 void	Request::checkControlData() const
 {
-	//std::cout << "protcol is $" << protocol << "$\n";
 	if (protocol != "HTTP/1.1")
 		throw (ErrorException(505));
 	std::vector<std::string> allowed_methods;
@@ -464,10 +443,7 @@ void	Request::checkHeader() const
 	if (getField("Host").empty())
 		throw (ErrorException(400));
 	if (getUIntField("Content-Length") > body_size)
-	{
-		std::cerr << "content length: " << getUIntField("Content-Length") << ", body size: " << body_size << std::endl;
 		throw (ErrorException(413));
-	}
 }
 
 bool	Request::contentExist() const
@@ -483,7 +459,7 @@ bool	Request::contentExist() const
 		return true;
 	return false;
 }
-//
+//Non member functions
 
 std::ostream &	operator<<(std::ostream & ost, Request const & rhs)
 {

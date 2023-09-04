@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 11:37:17 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:22:05 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/04 14:56:03 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ std::string ContentMap::getContentValue(std::string value)
 		return "image/svg+xml";
 	if (it == _allContentType.end())
 	{
-		throw (ErrorException(404));
+		return "text/plain";
 	}
 	else
 	{
@@ -52,6 +52,7 @@ ContentMap::ContentMap()
 	_allContentType["x-wav"] = "audio";
 	_allContentType["gif"] = "image";
 	_allContentType["jpeg"] = "image";
+	_allContentType["jpg"] = "image";
 	_allContentType["png"] = "image";
 	_allContentType["tiff"] = "image";
 	_allContentType["vnd.microsoft.icon"] = "image";

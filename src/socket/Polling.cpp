@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 13:09:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/04 15:10:13 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	Polling::removeMotherSocket(int fd)
 
 void	Polling::removeSocket(int fd)
 {
-	std::cout << "Removing socket " << fd << std::endl;
+	std::cout << "Removing socket fd " << fd << std::endl;
 	if (::epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL))
 		throw (PollingException());
 	delete (powerstrip[fd]);

@@ -62,9 +62,9 @@ if not "name" in cookie:
     content += "<input type=\"text\" name=\"c_name\" />"
     content += "<input type=\"submit\" name=\"nicky\" value=\"send\" />"
     content += "</form>"
-elif q_id > 8:
-   content += "Le quizz est fini. Merci {} d'avoir participé".format(cookie["name"].value)
-   content += "<p>Tu as {} bonne(s) reponse(s) sur {}</p>".format(cookie["good"].value, cookie["total"].value)
+elif q_id > 7:
+   content += "Le quizz est fini. Merci {} d'avoir participé.".format(cookie["name"].value)
+   content += "<p>Tu as {} bonne(s) reponse(s) sur {}.</p>".format(cookie["good"].value, cookie["total"].value)
 
 else:
     if q_answer:
