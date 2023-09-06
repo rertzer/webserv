@@ -15,31 +15,31 @@ quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug
         ("Le président de la Galaxie s'appelle", "Zaphod Beeblebrox", "Elon Musk", 1),
         ("Slartibartfast est connu pour avoir dessiné", "Les côtes de Norvège", "la Joconde", 1))
 
-#--------------------------------------------------------------
 cookie = cookies.BaseCookie()
 if 'HTTP_COOKIE' in os.environ:
     print("cookie found", file=sys.stderr)
     cookie.load(os.environ["HTTP_COOKIE"])
     for a, morsel in cookie.items():
         print(a, ':', morsel.value, file=sys.stderr)
-#---------------------------------------------------------------
 
-#if not "name" in cookie:
-#    cookie["name"] = "anonymous"
 if not "good" in cookie:
     cookie["good"] = "0"
 if not "total" in cookie:
     cookie["total"] = "0"
 
-#print("name is", cookie["name"].key, cookie["name"].value, file=sys.stderr)
 print("good is", cookie["good"].key, cookie["good"].value, file=sys.stderr)
 print("total is", cookie["total"].key, cookie["total"].value, file=sys.stderr)
 
-
-
 content = "<!DOCTYPE html>"
-content += "<html><head><title>The 42 quizz to the Galaxy</title><meta charset=\"UTF-8\"><link href=\"/css/cesar.css\" rel=\"stylesheet\"></head>"
-content += "<body><h1>The 42 quizz to the Galaxy</h1>"
+content += "<html><head><title>The 42 quizz to the Galaxy</title><meta charset=\"UTF-8\"><link href=\"/css/cesar.css\" rel=\"stylesheet\">"
+content += "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
+content += "<link href=\"https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap\" rel=\"stylesheet\"></head>"
+content += "<body><header><h1>The 42 quizz to the Galaxy</h1></header>"
+content += "<nav id =\"menu\"><a href=\"/html/page/indexTest.html\">Index</a><a href=\"/html/page/redirectionPage.html\">Redirection</a>"
+content += "<a href=\"/html/page/toDelete.html\">Delete</a><a href=\"/php/cesar_get.php\">Ave Cesar (get)</a>"
+content += "<a href=\"/php/cesar_post.php\">Ave Cesar (post)</a><a href=\"/python/quizz.py\">The 42 Quizz</a>"
+content += "<a href=\"/html/kitty/kitty.html\">Kitty</a></nav><section id=\"main\">"
+
 form = cgi.FieldStorage()
 c_name = form.getvalue('c_name')
 q_id = form.getvalue('q_id')
@@ -78,15 +78,18 @@ else:
         else:
             content += "<p>Raté " + cookie["name"].value + " ! " + q_answer + " est la mauvaise réponse.</p>"
         q_id += 1
-
+    else:
+        content += "<p>Attention " + cookie["name"].value + ", Le quizz commence !</p>"
     content +="<p>Question numero " + "{}".format(q_id) + "</p>"
-    content += "<p>" + cookie["name"].value + ", " + quizz[q_id][0] + "</p>"
+    content += "<p>" + quizz[q_id][0] + "</p>"
     content += "<form action=\"quizz.py\" method=\"get\">"
     content += "<input type=\"hidden\" name=\"q_id\" value=\"{}\" />".format(q_id)
     content += "<input type=\"submit\" name=\"q_answer\" value=\"" + quizz[q_id][1] + "\" />"
     content +=  "<input type=\"submit\" name=\"q_answer\" value=\"" + quizz[q_id][2] + "\" />"
     content +=  "</form>"
-    content += "</body>"
+content += "</section><footer><p><span class=\"sign\"><b>WebServ</b> by pjay and rertzer.</span>"
+content += "<span class=\"devise\">Parce que tu le codes bien.</span></p></footer>"
+content += "</body>"
 
 print(cookie, end="\r\n")
 print("Content-Type: text/html", end="\r\n")

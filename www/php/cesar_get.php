@@ -1,14 +1,16 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Ave Cesar</title>
 		<meta charset="UTF-8">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" />
 		<link href="/css/cesar.css" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
 	</head>
 	<body>
+	<div id="container">
 		<?php
 				function cesar_cipher($letter, $key)
 				{
@@ -58,9 +60,6 @@
 			<div id="titre principal">
 			<h1>Ave Cesar</h1>
 			<h2>Chiffreur/Déchiffreur de code Cesar</h2>
-	<!--	<figure>
-			<img id="line" src=blue_line.svg>
-		</figure> -->
 		
 		</header>
 		<nav id ="menu">
@@ -119,7 +118,11 @@
 			?>
 			</section>
 			<footer>
-				<p id="signature">WebServ by pjay and rertzer.</p> <p id="devise"><em>Parce que tu le codes bien.</em></p>
+				<p>
+					<span class="sign"><b>WebServ</b> by pjay and rertzer</span>
+					<span class="devise">Parce que tu le codes bien.</span>
+				</p>
 			</footer>
+		</div>
 	</body>
 </html>

@@ -1,11 +1,15 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Ave Cesar</title>
 		<meta charset="UTF-8">
 		<link href="/css/cesar.css" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
 	</head>
 	<body>
+	<div id="container">
 		<?php
 				function cesar_cipher($letter, $key)
 				{
@@ -31,6 +35,7 @@
 				if (isset($_POST['cipher']))
 				{
 					$texte = $_POST['texte_area'];
+					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
 					$plh = $texte;
 					for ($i = 0; $i < strlen($texte); $i++)
 					{
@@ -40,6 +45,7 @@
 				if (isset($_POST['decipher']))
 				{
 					$texte = $_POST['texte_area'];
+					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
 					$plh = $texte;
 					for ($i = 0; $i < strlen($texte); $i++)
 					{
@@ -112,6 +118,13 @@
 				if (isset($_POST['cipher']) or isset($_POST['decipher']))
 					echo "<div id=\"result\">{$texte}</div>";
 			?>
-					</section>
+			</section>
+			<footer>
+				<p>
+					<span class="sign"><b>WebServ</b> by pjay and rertzer.</span>
+					<span class="devise">Parce que tu le codes bien.</span>
+				</p>
+			</footer>
+	</div>
 	</body>
 </html>

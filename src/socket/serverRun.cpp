@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/04 15:21:26 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/06 15:37:23 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,14 @@ int	serverRun(std::vector<Server> serv)
 	}
 	catch (const TCPSocket::SocketException & e)
 	{
+		std::cout << "Socket exception!!!\n";
 		std::cerr << e.what() << std::endl;
 	}
 	catch (const std::exception &e)
 	{
+		std::cout << "Standard exception!!!\n";
 		std::cerr << e.what() << std::endl;
 	}
-
+	std::cout << "After catch\n";
 	return 0;
 }
