@@ -4,6 +4,9 @@
 		<title>Ave Cesar</title>
 		<meta charset="UTF-8">
 		<link href="/css/cesar.css" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
 	</head>
 	<body>
 		<?php
@@ -31,6 +34,7 @@
 				if (isset($_GET['cipher']))
 				{
 					$texte = $_GET['texte_area'];
+					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
 					$plh = $texte;
 					for ($i = 0; $i < strlen($texte); $i++)
 					{
@@ -40,6 +44,7 @@
 				if (isset($_GET['decipher']))
 				{
 					$texte = $_GET['texte_area'];
+					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
 					$plh = $texte;
 					for ($i = 0; $i < strlen($texte); $i++)
 					{
@@ -114,7 +119,7 @@
 			?>
 			</section>
 			<footer>
-				<p>WebServ by pjay and rertzer. <em>Parce que tu le codes bien.</em></p>
+				<p id="signature">WebServ by pjay and rertzer.</p> <p id="devise"><em>Parce que tu le codes bien.</em></p>
 			</footer>
 	</body>
 </html>
