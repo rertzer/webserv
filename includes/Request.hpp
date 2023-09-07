@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/31 14:57:19 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:38:35 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Request
 
 		int												getPort() const;
 		int												getStatus() const;
+		int												getCgiStatus() const;
 		const std::string &								getProtocol() const;
 		const std::string &								getMethod() const;
 		const std::string &								getQuery() const;
@@ -62,6 +63,16 @@ class Request
 		void										setKeepAlive();
 		bool										ready() const;
 		void										feed(std::vector<Server> serv);
+
+		class	RequestException: public std::exception
+		{
+			public:
+				virtual const char * what() const throw()
+				{
+					return ("Error: request parsing error");
+				}
+		};
+
 	private:
 		//Request();
 		std::string	getLine(std::string const & sep);
@@ -82,18 +93,11 @@ class Request
 		void	checkHeader() const;
 		bool	contentExist() const;
 
-		class	RequestException: public std::exception
-		{
-			public:
-				virtual const char * what() const throw()
-				{
-					return ("Error: request parsing error");
-				}
-		};
 		int									port;
 		int									status;
 		unsigned int						body_size;
 		TCPSocket *							soc;
+		Cgi *								cgi;
 		std::map<std::string, std::string>	header;
 		std::map<std::string, std::string>	trailer;
 		std::map<std::string, std::string>	multipart;

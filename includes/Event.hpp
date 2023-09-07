@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/04 15:04:50 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 14:22:07 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <sstream>
 # include <map>
 # include <vector>
-# include <sys/epoll.h>
+# include <poll.h>
 
 # include "TCPSocket.hpp"
 # include "Request.hpp"
@@ -40,12 +40,8 @@ class	Event
 		void		setServ(std::vector<Server> s);
 		bool		isIn() const;
 		bool		isOut() const;
-		bool		isRdhup() const;
-		bool		isPri() const;
 		bool		isErr() const;
 		bool		isHup() const;
-		bool		isEt() const;
-		bool		isOneshot() const;
 		int			handleEvent();
 		int			handleIn();
 		int			handleOut();
@@ -61,6 +57,6 @@ class	Event
 		std::vector<Server> serv;
 
 		typedef int			(Event::*handlefun)();
-		static const int    ev[4];
+		static const int    ev[5];
 };
 #endif

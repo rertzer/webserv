@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/28 15:57:16 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 17:23:36 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@
 # include <sys/wait.h>
 # include "Request.hpp"
 
+/*Cgi status : 
+ * 0 = not initialized
+ * 1 = waiting to write post_fd
+ * 2 = ready to exec
+ * 3 = waiting to read pipe_fd
+ * 4 = cgi done */
+
 class	Cgi
 {
 	public:
@@ -33,17 +40,21 @@ class	Cgi
 
 		std::string	getPath() const;
 		std::string	getContent() const;
+		int			getStatus() const;
 		void		exec();
 
 	private:
 		void		setUrl();
 		void		setEnv();
-		void		execGet();
-		int			execGetSon(int* fd);
-		void		execGetFather(int* fd, int pid);
-		void		execPost();
+		void		initPipes();
+		void		setPostFd();
+		void		setPipeFd();
+		int			writePostFd();
+		int			readPipeFd();
+		int			execGetSon();
+		void		execGetFather(int pid);
 		char **		formatArgv() const;
-		char**		formatEnv() const;
+		char **		formatEnv() const;
 
 		std::string	method;
 		std::string	path;
@@ -53,6 +64,9 @@ class	Cgi
 		std::map<std::string, std::string> env_map;
 		char*	buffer;
 		int		buffer_size;
+		int		post_fd[2];
+		int		pipe_fd[2];
+		int		status;
 		Request & 	req;
 		std::pair<std::string, std::string>	cgi_path;
 

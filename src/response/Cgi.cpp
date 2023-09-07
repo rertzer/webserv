@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/04 15:34:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 17:29:00 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,15 @@
 #include "Cgi.hpp"
 
 //public
-Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), req(r), cgi_path(cp)
+Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), status(0), req(r), cgi_path(cp)
 {
 	setUrl();
 	setEnv();
+	initPipes();
+	if (method == "POST")
+		status = 1;
+	else
+		status = 2;
 }
 
 Cgi::Cgi(Cgi const & rhs):req(rhs.req)
@@ -58,12 +63,9 @@ std::string Cgi::getContent() const
 	return content;
 }
 
-void	Cgi::exec()
+int	Cgi::getStatus() const
 {
-	if (method == "GET")
-		execGet();
-	else if (method == "POST")
-		execGet();
+	return status;
 }
 
 //private
@@ -101,12 +103,65 @@ void	Cgi::setEnv()
 	env_map["HTTP_COOKIE"] = req.getField("Cookie");
 }
 
-void	Cgi::execGet()
+void	Cgi::initPipes()
 {
-	int	fd[2];
+	if (method == "POST")
+		setPostFd();
+	else
+	{
+		post_fd[0] = -1;
+		post_fd[1] = -1;
+	}
+	setPipeFd();
+}
 
-	if (::pipe(fd) == -1)
+void	Cgi::setPostFd()
+{
+	if (::pipe(post_fd) == -1)
+		throw (errorException(500));
+}
+
+void	Cgi::setPipeFd()
+{
+	if (::pipe(pipe_fd) == -1)
 		throw (ErrorException(500));
+}
+
+int	Cgi::writePostFd()
+{
+	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
+	if (size < 1)
+	{
+		perror("pipe error");
+		throw (ErrorException(500));
+	}
+	status = 2;
+	return size;
+}
+
+int	Cgi::readPipeFd()
+{
+	buffer = new char[buffer_size + 1];
+	int	size = ::read(pipe_fd[0], buffer, buffer_size);
+	if (size <= 0)
+	{
+		delete[] buffer;
+		::close(pipe_fd[0]);
+		throw (ErrorException(500));
+	}
+	buffer[size] = '\0';
+
+	std::stringstream ss;
+	ss.write(buffer, size);
+	delete[] buffer;
+	content = ss.str();
+	std::cerr << content << std::endl;
+	::close(pipe_fd[0]);
+	status = 4;
+}
+
+void	Cgi::exec()
+{
 	int	pid = ::fork();
 	if (pid < 0)
 		throw (ErrorException(500));
@@ -116,28 +171,21 @@ void	Cgi::execGet()
 		execGetFather(fd, pid);
 }
 
-int	Cgi::execGetSon(int* fd)
+int	Cgi::execGetSon()
 {
 		if (method == "POST")
 		{
-			int fdpost[2];
-			if (::pipe(fdpost) == -1)
-				exit(-1);
-			int write_size = ::write(fdpost[1], req.getContent().c_str(), req.getContent().size());
-			if (write_size < 1)
+			if (::dup2(post_fd[0], 0) == -1  || ::close(post_fd[0]) == -1 || ::close(post_fd[1]) == -1)
 			{
-				perror("pipe error");
-				exit(-1);
-			}
-
-			if (::dup2(fdpost[0], 0) == -1  || ::close(fdpost[0]) == -1 || ::close(fdpost[1]) == -1)
-			{
-				perror("dup2 error");
+				perror("dup2 or close error");
 				exit(-1);
 			}
 		}
-		if (::dup2(fd[1], 1) == -1 || ::close(fd[0]) == -1 || ::close(fd[1]) == -1)
+		if (::dup2(pupe_fd[1], 1) == -1 || ::close(pipe_fd[0]) == -1 || ::close(pipe_fd[1]) == -1)
+		{
+			perror("dup2 or close error");
 			exit(-1);
+		}
 		char** argv = formatArgv();
 		char** envp = formatEnv();
 		std::cout << "Executing cgi script " << argv[0] << " " << argv[1] << std::endl;
@@ -147,40 +195,20 @@ int	Cgi::execGetSon(int* fd)
 		exit(-1);
 }
 
-void	Cgi::execGetFather(int* fd, int pid)
+void	Cgi::execGetFather(int pid)
 {
-	int	status;
+	int	ret;
 
-	::close(fd[1]);
-
-	waitpid(pid, &status, 0);
-	if (status == -1)
+	::close(pipe_fd[1]);
+	waitpid(pid, &ret, 0);
+	if (ret == -1)
 	{
-		std::cout << "cgi script error\n";
-		::close(fd[0]);
+		perror("cgi script error");
+		::close(pipe_fd[0]);
 		throw (ErrorException(500));
 	}
-
-	buffer = new char[buffer_size + 1];
-	int	read_size = ::read(fd[0], buffer, buffer_size);
-	if (read_size <= 0)
-	{
-		delete[] buffer;
-		::close(fd[0]);
-		throw (ErrorException(500));
-	}
-	buffer[read_size] = '\0';
-
-	std::stringstream ss;
-	ss.write(buffer, read_size);
-	delete[] buffer;
-	content = ss.str();
-	std::cerr << content << std::endl;
-	::close(fd[0]);
+	status = 3;
 }
-
-void	Cgi::execPost()
-{}
 
 char **	Cgi::formatArgv() const
 {

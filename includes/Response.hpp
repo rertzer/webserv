@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/02 12:01:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:31:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ class Response
 		void 		iniateContentMap();
 		void 		feelPart(Request req);
 		int 		respWithLoc(Request &req);
+		int			initCgi(Request & req, Location & loc);
+		int			respWithCgi(Request & req);
 		int 		respWithOutLoc(Request& req);
 		std::string	getSpecIndex(Location loc);
 		void 		createAutoIndexResp(Request& req, Location loc);

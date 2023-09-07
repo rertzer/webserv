@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 11:55:17 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 13:12:55 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,18 +35,12 @@ class	Polling
 		void		removeMotherSocket(int fd);
 		void		removeSocket(int fd);
 		int			wait();
-		Event		getEvent(int n);
 		Event		nextEvent();
 		TCPSocket *	getSocketByFd(int fd);
 		bool		isMother(Event ev) const;
 		void		setOut(int fd);
 		void		resetOut(int fd);
-
-	private:
-		Polling & operator=(const Polling & rhs);
-		Polling(const Polling & rhs);
-		void	addSocket(TCPSocket * soc);
-		void	compressFds();
+		void		reset(int fd);
 
 		class PollingException: public std::exception
 		{
@@ -56,6 +50,13 @@ class	Polling
 					return ("Error: polling error");
 				}
 		};
+
+	private:
+		Polling & operator=(const Polling & rhs);
+		Polling(const Polling & rhs);
+		void	addSocket(TCPSocket * soc);
+		void	compressFds();
+
 
 		struct pollfd				fds[256];
 		nfds_t						nfds;

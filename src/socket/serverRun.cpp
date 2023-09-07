@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 11:46:18 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 13:40:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,19 @@ int	serverRun(std::vector<Server> serv)
 		for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
 			pool.addMotherSocket(it->first);
 		std::cout << "Listening...\n";
+		int counter = 0;
 		while (1)
 		{
-			int nfds = pool.wait();
+			int rc = pool.wait();
+			counter++;
+			std::cout << "loop " << counter << std::endl;
 			if (quitok)
 			{
 				std::cout << "quitting the loop\n";
 				break;
 			}
 
-			for (int n = 0; n < nfds; n++)
+			for (int n = 0; n < rc; n++)
 			{
 				Event 		ev = pool.nextEvent();
 				ev.setServ(serv);
@@ -77,17 +80,20 @@ int	serverRun(std::vector<Server> serv)
 				}
 				else
 				{
-					if (ev.isOut())
-						usleep(10000);
 					int	 close_fd = ev.handleEvent();
+					std::cout << "close fd is " << close_fd << std::endl;
 					if (close_fd == 1)
-						pool.setOut();
+						pool.setOut(ev.getSocketFd());
 					else if (close_fd == 2)
-						pool.resetOut();
+						pool.resetOut(ev.getSocketFd());
 					else if (close_fd > 2)
 						pool.removeSocket(close_fd);
 				}
+				std::cout << "Resetting " << ev.getSocketFd() << std::endl;
+				pool.reset(ev.getSocketFd());
 			}
+				if (counter > 77)
+					break;
 		}
 	}
 	catch (const TCPSocket::SocketException & e)

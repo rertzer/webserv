@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 11:54:16 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 14:22:36 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,54 +55,35 @@ void	Event::setServ(std::vector<Server> s)
 
 bool	Event::isIn() const
 {
-	return (events & EPOLLIN);
+	return (events & POLLIN);
 }
 
 bool	Event::isOut() const
 {
-	return (events & EPOLLOUT);
-}
-
-bool	Event::isRdhup() const
-{
-	return (events & EPOLLRDHUP);
-}
-
-bool	Event::isPri() const
-{
-	return (events & EPOLLPRI);
+	return (events & POLLOUT);
 }
 
 bool	Event::isErr() const
 {
-	return (events & EPOLLERR);
+	return (events & POLLERR);
 }
 
 bool	Event::isHup() const
 {
-	return (events & EPOLLHUP);
-}
-
-bool	Event::isEt() const
-{
-	return (events & EPOLLET);
-}
-
-bool	Event::isOneshot() const
-{
-	return (events & EPOLLONESHOT);
+	return (events & POLLHUP);
 }
 
 int	Event::handleEvent()
 {
 	int	close_fd = 0;
 	std::map<int, handlefun> whichfun;
-	whichfun[EPOLLIN] = &Event::handleIn;
-	whichfun[EPOLLOUT] = &Event::handleOut;
-	whichfun[EPOLLERR] = &Event::handleError;
-	whichfun[EPOLLHUP] = &Event::handleHup;
+	whichfun[POLLIN] = &Event::handleIn;
+	whichfun[POLLOUT] = &Event::handleOut;
+	whichfun[POLLERR] = &Event::handleError;
+	whichfun[POLLHUP] = &Event::handleHup;
+	whichfun[POLLNVAL] = &Event::handleError;
 
-	for (int i = 0 ; i < 4; i++)
+	for (int i = 0 ; i < 5; i++)
 	{
 		if (events & ev[i])
 		{
@@ -133,6 +114,11 @@ int	Event::handleIn()
 			soc->setMessageOut(resp.getResponse());
 			set_out = 1;
 		}
+	}
+	catch (const Request::RequestException & e)
+	{
+		std::cout << e.what() << std::endl;
+		set_out = soc->getFd();
 	}
 	catch (const ErrorException & e)
 	{
@@ -181,4 +167,4 @@ Event::Event()
 {}
 
 //Static const
-int const 	Event::ev[4] = {EPOLLIN, EPOLLOUT, EPOLLERR, EPOLLHUP};
+int const 	Event::ev[5] = {POLLIN, POLLOUT, POLLERR, POLLHUP, POLLNVAL};

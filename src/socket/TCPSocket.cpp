@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/04 15:26:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 14:10:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ TCPSocket::TCPSocket(TCPSocket const &rhs)
 	*this = rhs;
 }
 
-
 TCPSocket::~TCPSocket()
 {
 	if (socket_fd)
@@ -67,7 +66,6 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 {
 	if (this != &rhs)
 	{
-
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
 		mother_port = rhs.mother_port;

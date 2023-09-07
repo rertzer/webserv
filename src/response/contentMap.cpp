@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 11:37:17 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/04 14:56:03 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 13:19:47 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ std::string ContentMap::getContentValue(std::string value)
 	{
 		return "text/html";
 	}
-		if (value == "ico")
-		return "image/svg+xml";
 	if (it == _allContentType.end())
 	{
 		return "text/plain";
@@ -87,4 +85,5 @@ ContentMap::ContentMap()
 	_allContentType["msword"] = "application";
 	_allContentType["vnd.openxmlformats-officedocument.wordprocessingml.document"] = "application";
 	_allContentType["vnd.mozilla.xul+xml"] = "application";
+	_allContentType["webp"] = "image";
 }

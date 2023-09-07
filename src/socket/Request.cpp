@@ -6,18 +6,20 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/04 15:59:41 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:44:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "TCPSocket.hpp"
 
-Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPort()), status(100), body_size(1000000), soc(s), header_ok(false), content_ok(false)
+Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPort()), status(100), body_size(1000000), soc(s), cgi(NULL), header_ok(false), content_ok(false)
 
 {
 	int len = soc->readAll();
 	std::cout << "on fd " << soc->getFd() << ", " <<  len << " octets read\n";
+	if (len == 0)
+		throw (RequestException());
 	setControlData();
 	setHeader(serv);
 	if (contentExist())
@@ -30,7 +32,13 @@ Request::Request(Request const & rhs)
 }
 
 Request::~Request()
-{}
+{
+	if (cgi != NULL)
+	{
+		delete cgi;
+		cgi = NULL;
+	}
+}
 
 Request &	Request::operator=(Request const & rhs)
 {
@@ -39,6 +47,7 @@ Request &	Request::operator=(Request const & rhs)
 		port = rhs.port;
 		status = rhs.status;
 		body_size = rhs.body_size;
+		soc = rhs.soc;
 		header = rhs.header;
 		trailer = rhs.trailer;
 		multipart = rhs.multipart;
@@ -59,6 +68,14 @@ int	Request::getPort() const
 int	Request::getStatus() const
 {
 	return status;
+}
+
+int	Request::getCgiStatus() const
+{
+	if (cgi != NULL)
+		return cgi->getStatus();
+	else
+		return 0;
 }
 
 const std::string	& Request::getProtocol() const
@@ -241,7 +258,9 @@ bool	Request::ready() const
 
 void	Request::feed(std::vector<Server> serv)
 {
-	soc->readAll();
+	int len = soc->readAll();
+	if (len == 0)
+		throw (RequestException());
 	if (!header_ok)
 		setHeader(serv);
 	if (header_ok && contentExist() && !content_ok)

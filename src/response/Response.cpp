@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/04 15:52:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 16:37:01 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,24 +54,7 @@ std::string Response::readFile(std::string file)
 	}
 }
 
-std::string	Response::runFile(std::string method, Request & req, std::pair<std::string, std::string> cgi_path)
-{
-	Cgi	myCgi(method, _root, req, cgi_path);
 
-	if (access(myCgi.getPath().c_str(), F_OK) == -1)
-	{
-			_readFileAccess = FILE_NOT_FOUND;
-			return ("404");
-	}
-	if (access(myCgi.getPath().c_str(), R_OK) == -1)
-	{
-			_readFileAccess = ACCESS_DENIED;
-			return ("403");
-	}
-	_readFileAccess = OK;
-	myCgi.exec();
-	return (myCgi.getContent());
-}
 
 void Response::feelPart(Request req)
 {
@@ -111,7 +94,8 @@ void Response::feelPart(Request req)
 		//std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
 		{
-			*this = createErrorPage(404, _serv);
+			throw (ErrorException(404));
+			//*this = createErrorPage(404, _serv);
 		}
 		else if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			*this = createErrorPage(403, _serv);
@@ -320,28 +304,7 @@ int Response::respWithLoc(Request& req)
 	//std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
 	if (!getExtension(loc).first.empty() && req.getQuery().find(getExtension(loc).first) != std::string::npos)
 	{
-		_method = req.getMethod();
-		_content = runFile(_method, req, getExtension(loc));
-		_contentType = "text/html";
-
-		size_t pos = _content.find("\r\n");
-		while (pos != std::string::npos && pos != 0)
-		{
-			std::pair<std::string, std::string> field = extractField(pos);
-			if (field.first == "Content-Type")
-			{
-				_contentType = field.second;
-			}
-			else if (field.first == "Set-Cookie")
-			{
-				_setCookie.push_back(field.second);
-			}
-			pos = _content.find("\r\n");
-		}
-		_status = "200 OK";
-	 	_contentLength = intToString(_content.length());
-		_connectionClose = "keep-alive";
-		return (0);
+		return dealWithCgi(reqi, loc);
 	}
 	else
 	{
@@ -352,6 +315,57 @@ int Response::respWithLoc(Request& req)
 		}
 	}
 	return (1);
+}
+
+int	Response::initCgi(Request & req, Location & loc)
+{
+	Cgi	myCgi = new Cgi(req->getMethod(), _root, req, getExtension(loc));
+	req->setCgi(myCgi);
+	return (0);
+}
+
+int	Response::respWithCgi(Request & req)
+{
+	_method = req.getMethod();
+	_content = runFile(_method, req, getExtension(loc));
+	_contentType = "text/html";
+
+	size_t pos = _content.find("\r\n");
+	while (pos != std::string::npos && pos != 0)
+	{
+		std::pair<std::string, std::string> field = extractField(pos);
+		if (field.first == "Content-Type")
+		{
+			_contentType = field.second;
+		}
+		else if (field.first == "Set-Cookie")
+		{
+			_setCookie.push_back(field.second);
+		}
+		pos = _content.find("\r\n");
+	}
+	_status = "200 OK";
+	_contentLength = intToString(_content.length());
+	_connectionClose = "keep-alive";
+	return (0);
+}
+
+std::string	Response::runFile(std::string method, Request & req, std::pair<std::string, std::string> cgi_path)
+{
+
+	if (access(myCgi.getPath().c_str(), F_OK) == -1)
+	{
+		_readFileAccess = FILE_NOT_FOUND;
+		return ("404");
+	}
+	if (access(myCgi.getPath().c_str(), R_OK) == -1)
+	{
+		_readFileAccess = ACCESS_DENIED;
+		return ("403");
+	}
+	_readFileAccess = OK;
+	myCgi.exec();
+	return (myCgi.getContent());
 }
 
 std::pair<std::string, std::string>	Response::extractField(size_t pos)
@@ -404,6 +418,11 @@ Response::Response(Request& req, Server& serv)
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
 	//std::cout << "bedor Allowed methods = " << _allowedMethods << std::endl;
+	if (req->getCgiStatus() == 3)
+	{
+		if (respWithCgi(req) == 0)
+			return;
+	}
 	if (checkIfLocation(req.getQuery()) != -1)
 	{
 		//std::cout << "EEEEEEEEEEEEEEE" << std::endl;

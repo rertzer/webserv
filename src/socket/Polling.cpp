@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 11:42:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 13:14:07 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Polling	&	Polling::operator=(Polling const & rhs)
 	if (this != &rhs)
 	{
 		memset(fds, 0, sizeof(fds));
-		for (i = 0; i < rhs.nfds; i++)
+		for (nfds_t i = 0; i < rhs.nfds; i++)
 			fds[i] = rhs.fds[i];
 		nfds = rhs.nfds;
 		events_nb = rhs.events_nb;
@@ -68,7 +68,7 @@ void	Polling::removeMotherSocket(int fd)
 void	Polling::removeSocket(int fd)
 {
 	std::cout << "Removing socket fd " << fd << std::endl;
-	int	i = 0;
+	nfds_t	i = 0;
 	for (; i < nfds; i++)
 	{
 		if (fds[i].fd == fd)
@@ -82,7 +82,7 @@ void	Polling::removeSocket(int fd)
 		fds[i] = fds[nfds];
 	}
 	fds[nfds].fd = 0;
-	fds[nfsd].events = 0;
+	fds[nfds].events = 0;
 	fds[nfds].revents = 0;
 
 	delete (powerstrip[fd]);
@@ -96,26 +96,16 @@ int	Polling::wait()
 		return 0;
 	if (events_nb == -1)
 		throw (PollingException());
-	next_event = 0;
 	return events_nb;
 }
-
-Event Polling::getEvent(int n)
-{
-	if (n < 0 || n >= events_nb)
-		throw (PollingException());
-
-	return Event(events[n].data.fd, events[n].events, powerstrip[events[n].data.fd]);
-}
-
 Event Polling::nextEvent()
 {
 	if (!events_nb)
 		throw (PollingException());
 
-	for (int i = 0; i < nfds; i++)
+	for (nfds_t i = 0; i < nfds; i++)
 	{
-		if (fds[i] != 0)
+		if (fds[i].revents != 0)
 		{
 			events_nb--;
 			short rev = fds[i].revents;
@@ -141,7 +131,7 @@ bool	Polling::isMother(Event ev) const
 
 void	Polling::setOut(int fd)
 {
-	for (int i = 0; i < nfds; i++)
+	for (nfds_t i = 0; i < nfds; i++)
 	{
 		if (fds[i].fd == fd)
 		{
@@ -153,7 +143,7 @@ void	Polling::setOut(int fd)
 
 void	Polling::resetOut(int fd)
 {
-	for (int i = 0; i < nfds; i++)
+	for (nfds_t i = 0; i < nfds; i++)
 	{
 		if (fds[i].fd == fd)
 		{
@@ -162,6 +152,20 @@ void	Polling::resetOut(int fd)
 		}
 	}
 }
+
+void	Polling::reset(int fd)
+{
+	for (nfds_t i = 0; i < nfds; i++)
+	{
+		if (fds[i].fd == fd)
+		{
+			fds[i].revents = 0;
+			break;
+		}
+	}
+}
+
+
 
 //Private
 Polling::Polling(Polling const & rhs)
