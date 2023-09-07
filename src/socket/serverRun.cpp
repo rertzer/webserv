@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/06 15:37:23 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 11:46:18 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,11 @@ int	serverRun(std::vector<Server> serv)
 					if (ev.isOut())
 						usleep(10000);
 					int	 close_fd = ev.handleEvent();
-					if (close_fd)
+					if (close_fd == 1)
+						pool.setOut();
+					else if (close_fd == 2)
+						pool.resetOut();
+					else if (close_fd > 2)
 						pool.removeSocket(close_fd);
 				}
 			}
@@ -89,6 +93,11 @@ int	serverRun(std::vector<Server> serv)
 	catch (const TCPSocket::SocketException & e)
 	{
 		std::cout << "Socket exception!!!\n";
+		std::cerr << e.what() << std::endl;
+	}
+	catch (const Polling::PollingException & e)
+	{
+		std::cout << "PollingException!!!\n";
 		std::cerr << e.what() << std::endl;
 	}
 	catch (const std::exception &e)

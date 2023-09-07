@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/04 15:23:51 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/07 11:54:16 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ int	Event::handleEvent()
 
 int	Event::handleIn()
 {
+	int	set_out = 0;
 	try
 	{
 		if (soc->req == NULL)
@@ -130,14 +131,16 @@ int	Event::handleIn()
 		{
 			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 			soc->setMessageOut(resp.getResponse());
+			set_out = 1;
 		}
 	}
-	catch(const ErrorException & e)
+	catch (const ErrorException & e)
 	{
 		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
 		soc->setKeepAlive(false);
+		set_out = 1;
 	}
-	return 0;
+	return set_out;
 }
 
 int	Event::handleOut()
@@ -153,7 +156,7 @@ int	Event::handleOut()
 			if (soc->getKeepAlive())
 			{
 				soc->setKeepAlive(false);
-				return 0;
+				return 2;
 			}
 			return (soc->getFd());
 		}
