@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 14:22:36 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 12:00:47 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 
 //Public
-Event::Event(int sfd, int e, TCPSocket* s):soc_fd(sfd), events(e), soc(s)
+Event::Event(int sfd, int e, TCPSocket* s):soc_fd(sfd), events(e), status(0), soc(s)
 {
 }
 
-Event::Event(Event const & rhs):soc_fd(rhs.soc_fd), events(rhs.events), soc(rhs.soc)
+Event::Event(Event const & rhs):soc_fd(rhs.soc_fd), events(rhs.events), status(rhs.status), soc(rhs.soc)
 {
 }
 
@@ -28,6 +28,7 @@ Event::~Event() {} Event & Event::operator=(Event const & rhs)
 	{
 		soc_fd = rhs.soc_fd;
 		events = rhs.events;
+		status = rhs.status;
 		soc = rhs.soc;
 	}
 	return *this;
@@ -46,6 +47,11 @@ TCPSocket *	Event::getSocket() const
 int	Event::getEvents() const
 {
 	return events;
+}
+
+int	Event::getStatus() const
+{
+	return status;
 }
 
 void	Event::setServ(std::vector<Server> s)
@@ -73,9 +79,8 @@ bool	Event::isHup() const
 	return (events & POLLHUP);
 }
 
-int	Event::handleEvent()
+void	Event::handleEvent()
 {
-	int	close_fd = 0;
 	std::map<int, handlefun> whichfun;
 	whichfun[POLLIN] = &Event::handleIn;
 	whichfun[POLLOUT] = &Event::handleOut;
@@ -88,78 +93,107 @@ int	Event::handleEvent()
 		if (events & ev[i])
 		{
 			handlefun fun = whichfun[ev[i]];
-			close_fd = (this->*fun)();
-			if (close_fd)
-				return close_fd;
+			(this->*fun)();
+			if (status) // ????????????????????????????????????????
+				return;
 		}
 	}
-	return close_fd;
 }
 
-int	Event::handleIn()
+void	Event::handleIn()
 {
-	int	set_out = 0;
 	try
 	{
-		if (soc->req == NULL)
-		{
-			std::cout << "Event In on fd " << soc_fd << std::endl;
-			soc->req = new Request(soc, serv);
-		}
+		if (status)
+			handleCgiIn();
 		else
-			soc->req->feed(serv);
-		if (soc->req->ready())
 		{
-			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
-			soc->setMessageOut(resp.getResponse());
-			set_out = 1;
+			if (soc->req == NULL)
+			{
+				std::cout << "Event In on fd " << soc_fd << std::endl;
+				soc->req = new Request(soc, serv);
+			}
+			else
+				soc->req->feed(serv);
+			if (soc->req->ready())
+			{
+				Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+				if (soc->req->getCgiStatus())
+				{
+					status = 4;
+				}
+				else
+				{
+					soc->setMessageOut(resp.getResponse());
+					status = 1;
+				}
+			}
 		}
 	}
 	catch (const Request::RequestException & e)
 	{
 		std::cout << e.what() << std::endl;
-		set_out = soc->getFd();
+		status = 3;
 	}
 	catch (const ErrorException & e)
 	{
 		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
 		soc->setKeepAlive(false);
-		set_out = 1;
+		status = 1;
 	}
-	return set_out;
 }
 
-int	Event::handleOut()
+void	Event::handleCgiIn()
 {
-	if (!soc->getMessageOut().empty())
+	soc->req->getCgi().readPipeFd();
+	status = 6;
+}
+
+void	Event::handleOut()
+{
+	if (status)
 	{
-		int len = soc->send();
-		std::cout << "Event Out on fd " << soc_fd << " " << len << " char sent.\n";
-		if (soc->getMessageOut().empty())
+		handleCgiOut();
+	}
+	else
+	{
+		if (!soc->getMessageOut().empty())
 		{
-			delete soc->req;
-			soc->req = NULL;
-			if (soc->getKeepAlive())
+			int len = soc->send();
+			std::cout << "Event Out on fd " << soc_fd << " " << len << " char sent.\n";
+			if (soc->getMessageOut().empty())
 			{
-				soc->setKeepAlive(false);
-				return 2;
+				delete soc->req;
+				soc->req = NULL;
+				if (soc->getKeepAlive())
+				{
+					soc->setKeepAlive(false);
+					status =  2;
+				}
+				status = 3;
 			}
-			return (soc->getFd());
 		}
 	}
-	return 0;
 }
 
-int	Event::handleError()
+void	Event::handleCgiOut()
+{
+
+	soc->req->getCgi().writePostFd();
+	status = 7;
+
+}
+
+void	Event::handleError()
 {
 	std::cout << "Event Error on fd " << soc_fd << std::endl;
-	return (soc->getFd());
+	status = 3;
 }
 
-int	Event::handleHup()
+void	Event::handleHup()
 {
 	std::cout << "Event Hup on fd " << soc_fd << std::endl;
-	return (soc->getFd());
+	status = 3;
 }
 
 //Private

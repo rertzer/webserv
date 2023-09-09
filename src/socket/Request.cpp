@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 16:44:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 10:49:30 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,11 @@ std::string	Request::getField(std::string const & name) const
 unsigned int	Request::getBodySize() const
 {
 	return body_size;
+}
+
+Cgi *	Request::getCgi() const
+{
+	return cgi;
 }
 
 void	Request::setBodySize(int bs)

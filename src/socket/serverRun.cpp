@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 13:40:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 11:00:48 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,20 +80,20 @@ int	serverRun(std::vector<Server> serv)
 				}
 				else
 				{
-					int	 close_fd = ev.handleEvent();
-					std::cout << "close fd is " << close_fd << std::endl;
-					if (close_fd == 1)
+					ev.handleEvent();
+					std::cout << "event status is " << ev.getStatus() << std::endl;
+					if (ev.status == 1)
 						pool.setOut(ev.getSocketFd());
-					else if (close_fd == 2)
+					else if (ev.status == 2)
 						pool.resetOut(ev.getSocketFd());
-					else if (close_fd > 2)
-						pool.removeSocket(close_fd);
+					else if (ev.satus == 3)
+						pool.removeSocket(ev.getSocketFd());
+					else if (ev.status == 4)
+						pool.addCgiFds(ev.getSocket().req.getCgi().getFds());
 				}
 				std::cout << "Resetting " << ev.getSocketFd() << std::endl;
 				pool.reset(ev.getSocketFd());
 			}
-				if (counter > 77)
-					break;
 		}
 	}
 	catch (const TCPSocket::SocketException & e)

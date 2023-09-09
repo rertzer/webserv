@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 13:12:55 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 11:40:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class	Polling
 		~Polling();
 
 		void		addMotherSocket(int port);
+		void		addCgiFds(std::vector<int> fds);
 		void		connect(Event const & ev);
 		void		removeMotherSocket(int fd);
 		void		removeSocket(int fd);
@@ -60,11 +61,10 @@ class	Polling
 
 		struct pollfd				fds[256];
 		nfds_t						nfds;
-		//int							epoll_fd;
 		int							events_nb;
-		//struct epoll_event 			events[42];
 		std::list<int>				mother_fds;
 		std::map<int, TCPSocket *>	powerstrip;
+		std::map<int, TCPSocket *>	powerstripCgi;
 
 };
 

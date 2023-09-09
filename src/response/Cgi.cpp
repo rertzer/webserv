@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 17:29:00 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 10:56:28 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,17 @@ int	Cgi::getStatus() const
 {
 	return status;
 }
+
+std::vector<int>	Cgi::getFds() const
+{
+	std::vector<int>	fds;
+	fds.push_back(post_fd[0]);
+	fds.push_back(post_fd[1]);
+	fds.push_back(pipe_fd[0]);
+	fds.push_back(pipe_fd[1]);
+	return fds;
+}
+
 
 //private
 void	Cgi::setUrl()

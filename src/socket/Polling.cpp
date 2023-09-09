@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 13:14:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 12:00:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ Polling	&	Polling::operator=(Polling const & rhs)
 		events_nb = rhs.events_nb;
 		mother_fds = rhs.mother_fds;
 		powerstrip = rhs.powerstrip;
+		powerstripCgi = rhs.powerstripCgi;
 	}
 	return *this;
 }
@@ -98,6 +99,7 @@ int	Polling::wait()
 		throw (PollingException());
 	return events_nb;
 }
+
 Event Polling::nextEvent()
 {
 	if (!events_nb)
@@ -110,7 +112,16 @@ Event Polling::nextEvent()
 			events_nb--;
 			short rev = fds[i].revents;
 			fds[i].revents = 0;
-			return Event(fds[i].fd, rev, powerstrip[fds[i].fd]);
+			int	status = 0;
+			TCPSocket * soc = getSocketByFd(fds[i].fd);
+			if (soc == NULL)
+			{
+				soc = getSocketByCgiFd(fds[i].fd);
+				status = 4;
+			}
+			Event ev(fds[i].fd, rev, soc);
+			ev.setStatus(status);
+			return ev;
 		}
 	}
 	throw (PollingException());
@@ -118,8 +129,20 @@ Event Polling::nextEvent()
 
 TCPSocket *	Polling::getSocketByFd(int fd)
 {
-	return powerstrip[fd];
+	std::map<int, TCPSocket *>::const_iterator mi = powerstrip.find(fd);
+	if (mi != powerstrip.end())
+		return *mi;
+	return NULL;
 }
+
+TCPSocket * Polling::getSocketByCgiFd(int fd)
+{
+	std::map<int, TCPSocket *>::const_iterator mi = powerstripCgi.find(fd);
+	if (mi != powerstripCgi.end())
+		return *mi;
+	return NULL;
+}
+
 
 bool	Polling::isMother(Event ev) const
 {

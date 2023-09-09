@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/07 17:23:36 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 10:54:05 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <iostream>
 # include <string>
 # include <map>
+# include <vector>
 # include <cstdlib>
 # include <unistd.h>
 # include <sys/wait.h>
@@ -38,10 +39,11 @@ class	Cgi
 
 		Cgi &	operator=(Cgi const & rhs);
 
-		std::string	getPath() const;
-		std::string	getContent() const;
-		int			getStatus() const;
-		void		exec();
+		std::string			getPath() const;
+		std::string			getContent() const;
+		int					getStatus() const;
+		std::vector<int>	getFds() const;
+		void				exec();
 
 	private:
 		void		setUrl();
