@@ -6,12 +6,13 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 10:56:28 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 17:15:55 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "Cgi.hpp"
+#include "Request.hpp"
 
 //public
 Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), status(0), req(r), cgi_path(cp)
@@ -78,7 +79,6 @@ std::vector<int>	Cgi::getFds() const
 	return fds;
 }
 
-
 //private
 void	Cgi::setUrl()
 {
@@ -129,7 +129,7 @@ void	Cgi::initPipes()
 void	Cgi::setPostFd()
 {
 	if (::pipe(post_fd) == -1)
-		throw (errorException(500));
+		throw (ErrorException(500));
 }
 
 void	Cgi::setPipeFd()
@@ -141,6 +141,7 @@ void	Cgi::setPipeFd()
 int	Cgi::writePostFd()
 {
 	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
+	std::cerr << "writen to post : " << size << std::endl;
 	if (size < 1)
 	{
 		perror("pipe error");
@@ -166,9 +167,11 @@ int	Cgi::readPipeFd()
 	ss.write(buffer, size);
 	delete[] buffer;
 	content = ss.str();
-	std::cerr << content << std::endl;
+	//std::cerr << content << std::endl;
+	std::cerr << "read " << size << "from pipe " << pipe_fd[0] << std::endl;
 	::close(pipe_fd[0]);
 	status = 4;
+	return size;
 }
 
 void	Cgi::exec()
@@ -177,12 +180,12 @@ void	Cgi::exec()
 	if (pid < 0)
 		throw (ErrorException(500));
 	if (pid == 0)
-		execGetSon(fd);
+		execSon();
 	if (pid)
-		execGetFather(fd, pid);
+		execFather(pid);
 }
 
-int	Cgi::execGetSon()
+int	Cgi::execSon()
 {
 		if (method == "POST")
 		{
@@ -192,21 +195,21 @@ int	Cgi::execGetSon()
 				exit(-1);
 			}
 		}
-		if (::dup2(pupe_fd[1], 1) == -1 || ::close(pipe_fd[0]) == -1 || ::close(pipe_fd[1]) == -1)
+		if (::dup2(pipe_fd[1], 1) == -1 || ::close(pipe_fd[0]) == -1 || ::close(pipe_fd[1]) == -1)
 		{
 			perror("dup2 or close error");
 			exit(-1);
 		}
 		char** argv = formatArgv();
 		char** envp = formatEnv();
-		std::cout << "Executing cgi script " << argv[0] << " " << argv[1] << std::endl;
+		std::cerr << "Executing cgi script " << argv[0] << " " << argv[1] << std::endl;
 		::execve(cgi_path.second.c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
 		exit(-1);
 }
 
-void	Cgi::execGetFather(int pid)
+void	Cgi::execFather(int pid)
 {
 	int	ret;
 
@@ -218,6 +221,7 @@ void	Cgi::execGetFather(int pid)
 		::close(pipe_fd[0]);
 		throw (ErrorException(500));
 	}
+	std::cout << "Father is happy, status 3\n";
 	status = 3;
 }
 

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 12:00:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 16:42:40 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 
 //Public
-Event::Event(int sfd, int e, TCPSocket* s):soc_fd(sfd), events(e), status(0), soc(s)
+Event::Event(int f, int e, TCPSocket* s):fd(f), events(e), status(0), soc(s)
 {
 }
 
-Event::Event(Event const & rhs):soc_fd(rhs.soc_fd), events(rhs.events), status(rhs.status), soc(rhs.soc)
+Event::Event(Event const & rhs):fd(rhs.fd), events(rhs.events), status(rhs.status), soc(rhs.soc)
 {
 }
 
@@ -26,7 +26,7 @@ Event::~Event() {} Event & Event::operator=(Event const & rhs)
 {
 	if (this != &rhs)
 	{
-		soc_fd = rhs.soc_fd;
+		fd = rhs.fd;
 		events = rhs.events;
 		status = rhs.status;
 		soc = rhs.soc;
@@ -34,9 +34,9 @@ Event::~Event() {} Event & Event::operator=(Event const & rhs)
 	return *this;
 }
 
-int	Event::getSocketFd() const
+int	Event::getFd() const
 {
-	return soc_fd;
+	return fd;
 }
 
 TCPSocket *	Event::getSocket() const
@@ -104,29 +104,38 @@ void	Event::handleIn()
 {
 	try
 	{
-		if (status)
-			handleCgiIn();
+		std::cout << "Event In on fd " << fd << std::endl;
+		if (soc->req == NULL)
+		{
+			soc->req = new Request(soc, serv);
+		}
 		else
 		{
-			if (soc->req == NULL)
+			if (soc->req->getCgiStatus() == 3)
 			{
-				std::cout << "Event In on fd " << soc_fd << std::endl;
-				soc->req = new Request(soc, serv);
+				std::cout << "Handling CgiIn()\n";
+				handleCgiIn();
+				return;
+			}
+			else if (soc->req->getCgiStatus() == 0)
+				soc->req->feed(serv);
+		}
+		if (soc->req->ready())
+		{
+			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+			if (soc->req->getCgiStatus() == 1)
+			{
+				status = 4;
+			}
+			else if (soc->req->getCgiStatus() == 2)
+			{
+				status = 8;
 			}
 			else
-				soc->req->feed(serv);
-			if (soc->req->ready())
 			{
-				Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
-				if (soc->req->getCgiStatus())
-				{
-					status = 4;
-				}
-				else
-				{
-					soc->setMessageOut(resp.getResponse());
-					status = 1;
-				}
+				std::cout << "setting message out\n";
+				soc->setMessageOut(resp.getResponse());
+				status = 1;
 			}
 		}
 	}
@@ -145,13 +154,17 @@ void	Event::handleIn()
 
 void	Event::handleCgiIn()
 {
-	soc->req->getCgi().readPipeFd();
+	std::cout << "HandleCgiIn\n";
+	soc->req->getCgi()->readPipeFd();
+	Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+	soc->setMessageOut(resp.getResponse());
 	status = 6;
 }
 
 void	Event::handleOut()
 {
-	if (status)
+	std::cout << "Event Out on fd " << fd << "\n";
+	if (soc->req->getCgiStatus() == 1)
 	{
 		handleCgiOut();
 	}
@@ -160,7 +173,7 @@ void	Event::handleOut()
 		if (!soc->getMessageOut().empty())
 		{
 			int len = soc->send();
-			std::cout << "Event Out on fd " << soc_fd << " " << len << " char sent.\n";
+			std::cout << "Event Out on fd " << fd << " " << len << " char sent.\n";
 			if (soc->getMessageOut().empty())
 			{
 				delete soc->req;
@@ -178,22 +191,25 @@ void	Event::handleOut()
 
 void	Event::handleCgiOut()
 {
-
-	soc->req->getCgi().writePostFd();
+	soc->req->getCgi()->writePostFd();
 	status = 7;
-
 }
 
 void	Event::handleError()
 {
-	std::cout << "Event Error on fd " << soc_fd << std::endl;
+	std::cout << "Event Error on fd " << fd << std::endl;
 	status = 3;
 }
 
 void	Event::handleHup()
 {
-	std::cout << "Event Hup on fd " << soc_fd << std::endl;
+	std::cout << "Event Hup on fd " << fd << std::endl;
 	status = 3;
+}
+
+void	Event::cgiExec()
+{
+	soc->req->getCgi()->exec();
 }
 
 //Private

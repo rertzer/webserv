@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 10:54:05 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 14:41:19 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ class	Cgi
 		std::string			getContent() const;
 		int					getStatus() const;
 		std::vector<int>	getFds() const;
+		int					writePostFd();
+		int					readPipeFd();
 		void				exec();
 
 	private:
@@ -51,10 +53,8 @@ class	Cgi
 		void		initPipes();
 		void		setPostFd();
 		void		setPipeFd();
-		int			writePostFd();
-		int			readPipeFd();
-		int			execGetSon();
-		void		execGetFather(int pid);
+		int			execSon();
+		void		execFather(int pid);
 		char **		formatArgv() const;
 		char **		formatEnv() const;
 

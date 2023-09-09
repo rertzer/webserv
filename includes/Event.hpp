@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 11:57:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 15:33:09 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,23 +33,22 @@
  * 4 = cgi init : add Cgi fds
  * 5 = cgi fd
  * 6 = close Cgi fd
- * 7 = switch Cgi In/Out*/
+ * 7 = switch Cgi In*/
 
 class	Event
 {
 	public:
-		Event(int sfd, int e, TCPSocket* soc);
+		Event(int f, int e, TCPSocket* soc);
 		Event(Event const & rhs);
 		~Event();
 
 		Event &	operator=(Event const & rhs);
 
-		int			getSocketFd() const;
+		int			getFd() const;
 		TCPSocket *	getSocket() const;
 		int			getEvents() const;
 		int			getStatus() const;
 		void		setServ(std::vector<Server> s);
-		void		setStatus(int);
 		bool		isIn() const;
 		bool		isOut() const;
 		bool		isErr() const;
@@ -59,17 +58,20 @@ class	Event
 		void		handleOut();
 		void		handleError();
 		void		handleHup();
+		void		cgiExec();
 
 	private:
 		Event();
+		void		handleCgiIn();
+		void		handleCgiOut();
 
-		int			soc_fd;
+		int			fd;
 		int			events;
 		int			status;
 		TCPSocket *	soc;
 		std::vector<Server> serv;
 
-		typedef int			(Event::*handlefun)();
+		typedef void		(Event::*handlefun)();
 		static const int    ev[5];
 };
 #endif

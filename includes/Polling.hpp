@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 11:40:51 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 15:01:23 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,17 @@ class	Polling
 		void		connect(Event const & ev);
 		void		removeMotherSocket(int fd);
 		void		removeSocket(int fd);
+		void		removeCgiFd(int fd);
 		int			wait();
 		Event		nextEvent();
 		TCPSocket *	getSocketByFd(int fd);
+		TCPSocket *	getSocketByCgiFd(int fd);
 		bool		isMother(Event ev) const;
 		void		setOut(int fd);
 		void		resetOut(int fd);
 		void		reset(int fd);
+		void		setCgiIn(TCPSocket * soc);
+		void		addCgiFds(TCPSocket * soc);
 
 		class PollingException: public std::exception
 		{
@@ -56,8 +60,8 @@ class	Polling
 		Polling & operator=(const Polling & rhs);
 		Polling(const Polling & rhs);
 		void	addSocket(TCPSocket * soc);
-		void	compressFds();
-
+		void	addCgiFd(int fd, int events, TCPSocket * soc);
+		void	removeFd(int fd);
 
 		struct pollfd				fds[256];
 		nfds_t						nfds;

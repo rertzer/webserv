@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 11:00:48 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 17:11:07 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	serverRun(std::vector<Server> serv)
 					{
 						int port = ev.getSocket()->getPort();
 						std::cout << event_msg << ". Restarting connection on port " << port << std::endl;
-						pool.removeSocket(ev.getSocketFd());
+						pool.removeSocket(ev.getFd());
 						pool.addMotherSocket(port);
 					}
 				}
@@ -82,18 +82,37 @@ int	serverRun(std::vector<Server> serv)
 				{
 					ev.handleEvent();
 					std::cout << "event status is " << ev.getStatus() << std::endl;
-					if (ev.status == 1)
-						pool.setOut(ev.getSocketFd());
-					else if (ev.status == 2)
-						pool.resetOut(ev.getSocketFd());
-					else if (ev.satus == 3)
-						pool.removeSocket(ev.getSocketFd());
-					else if (ev.status == 4)
-						pool.addCgiFds(ev.getSocket().req.getCgi().getFds());
+					if (ev.getStatus() == 1)
+						pool.setOut(ev.getFd());
+					else if (ev.getStatus() == 2)
+						pool.resetOut(ev.getFd());
+					else if (ev.getStatus() == 3)
+						pool.removeSocket(ev.getFd());
+					else if (ev.getStatus() == 4)
+						pool.addCgiFds(ev.getSocket());
+					else if (ev.getStatus() == 6)
+					{
+						pool.removeCgiFd(ev.getFd());
+						pool.setOut(ev.getSocket()->getFd());
+					}
+					else if (ev.getStatus() == 7)
+					{
+						pool.setCgiIn(ev.getSocket());
+						pool.removeCgiFd(ev.getFd());
+						ev.cgiExec();
+					}
+					else if (ev.getStatus() == 8)
+					{
+						std::cout << "serverRun 102\n";
+						pool.addCgiFds(ev.getSocket());
+						ev.cgiExec();
+					}
 				}
-				std::cout << "Resetting " << ev.getSocketFd() << std::endl;
-				pool.reset(ev.getSocketFd());
+				std::cout << "Resetting " << ev.getFd() << std::endl;
+				pool.reset(ev.getFd());
 			}
+				if (counter > 24)
+					break;
 		}
 	}
 	catch (const TCPSocket::SocketException & e)

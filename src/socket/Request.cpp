@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 10:49:30 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 15:42:12 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ Request &	Request::operator=(Request const & rhs)
 		status = rhs.status;
 		body_size = rhs.body_size;
 		soc = rhs.soc;
+		cgi = rhs.cgi;
 		header = rhs.header;
 		trailer = rhs.trailer;
 		multipart = rhs.multipart;
@@ -369,6 +370,11 @@ void	Request::setKeepAlive()
 	std::string keep = getField("Connection");
 	if (keep == "keep-alive")
 		soc->setKeepAlive(true);
+}
+
+void	Request::setCgi(Cgi * c)
+{
+	cgi = c;
 }
 
 void	Request::setFields()

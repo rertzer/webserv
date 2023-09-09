@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 10:48:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/09 15:24:49 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,11 @@
 # include "Status.hpp"
 # include "ErrorException.hpp"
 # include "Server.hpp"
+# include "Cgi.hpp"
 
 
 class TCPSocket;
+class Cgi;
 
 class Request
 {
@@ -62,6 +64,7 @@ class Request
 		void											addField(std::string const & field);
 		void										setQuery(std::string const & query);
 		void										setKeepAlive();
+		void										setCgi(Cgi * c);
 		bool										ready() const;
 		void										feed(std::vector<Server> serv);
 
