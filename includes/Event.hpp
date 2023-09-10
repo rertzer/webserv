@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 15:33:09 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 13:51:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,13 @@
  * 0 = do nothing
  * 1 = set Out on fd
  * 2 = reset Out on fd
- * 3 = close fd
- * 4 = cgi init : add Cgi fds
+ * 3 = close socket fd
+ * 4 = cgi init : add Cgi fds (POST)
  * 5 = cgi fd
  * 6 = close Cgi fd
- * 7 = switch Cgi In*/
+ * 7 = switch Cgi In
+ * 8 = add cgi fds and exec (GET)
+ * 9 = close cgi fd*/
 
 class	Event
 {
@@ -53,11 +55,13 @@ class	Event
 		bool		isOut() const;
 		bool		isErr() const;
 		bool		isHup() const;
+		bool		isCgiFd() const;
 		void		handleEvent();
 		void		handleIn();
 		void		handleOut();
 		void		handleError();
 		void		handleHup();
+		void		handleNval();
 		void		cgiExec();
 
 	private:

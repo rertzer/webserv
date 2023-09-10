@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 09:34:13 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 14:36:49 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,26 @@ void	Polling::removeMotherSocket(int fd)
 
 void	Polling::removeSocket(int fd)
 {
-	removeFd(fd);
-	delete (powerstrip[fd]);
-	powerstrip.erase(fd);
+	std::map<int, TCPSocket *>::iterator mi = powerstrip.find(fd);
+	if (mi != powerstrip.end())
+	{
+		std::cout << "Removing socket fd " << fd << std::endl;
+		removeFd(fd);
+		delete (powerstrip[fd]);
+		powerstrip.erase(fd);
+	}
 }
 
 void	Polling::removeCgiFd(int fd)
 {
-	removeFd(fd);
-	powerstripCgi.erase(fd);
+	std::map<int, TCPSocket *>::iterator mi = powerstripCgi.find(fd);
+	if (mi != powerstripCgi.end())
+	{
+		std::cout << "Removing Cgi fd " << fd << std::endl;
+		removeFd(fd);
+		powerstripCgi.erase(fd);
+	}
 }
-
 
 int	Polling::wait()
 {
@@ -228,7 +237,7 @@ void	Polling::addCgiFd(int fd, int events, TCPSocket *soc)
 
 void	Polling::removeFd(int fd)
 {
-	std::cout << "Removing fd from polling list " << fd << std::endl;
+	std::cout << "Removing fd " << fd << " from polling list " << std::endl;
 	nfds_t	i = 0;
 	for (; i < nfds; i++)
 	{
@@ -246,4 +255,3 @@ void	Polling::removeFd(int fd)
 	fds[nfds].events = 0;
 	fds[nfds].revents = 0;
 }
-

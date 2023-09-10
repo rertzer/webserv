@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 17:15:55 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 14:59:17 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,10 +155,12 @@ int	Cgi::readPipeFd()
 {
 	buffer = new char[buffer_size + 1];
 	int	size = ::read(pipe_fd[0], buffer, buffer_size);
+	std::cerr << "read " << size << "from pipe " << pipe_fd[0] << std::endl;
 	if (size <= 0)
 	{
 		delete[] buffer;
 		::close(pipe_fd[0]);
+		status = 4;
 		throw (ErrorException(500));
 	}
 	buffer[size] = '\0';
@@ -168,7 +170,6 @@ int	Cgi::readPipeFd()
 	delete[] buffer;
 	content = ss.str();
 	//std::cerr << content << std::endl;
-	std::cerr << "read " << size << "from pipe " << pipe_fd[0] << std::endl;
 	::close(pipe_fd[0]);
 	status = 4;
 	return size;

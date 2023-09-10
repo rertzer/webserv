@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 09:38:28 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 15:28:28 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ int	serverRun(std::vector<Server> serv)
 				}
 				else
 				{
+					std::cout << "EVENT on " << ev.getFd() << " socket " << ev.getSocket()->getFd() << std::endl;
 					ev.handleEvent();
 					std::cout << "event status is " << ev.getStatus() << std::endl;
 					if (ev.getStatus() == 1)
@@ -103,9 +104,12 @@ int	serverRun(std::vector<Server> serv)
 					}
 					else if (ev.getStatus() == 8)
 					{
-						std::cout << "serverRun 102\n";
 						pool.addCgiFds(ev.getSocket());
 						ev.cgiExec();
+					}
+					else if (ev.getStatus() == 9)
+					{
+						pool.removeCgiFd(ev.getFd());
 					}
 				}
 				std::cout << "Resetting " << ev.getFd() << std::endl;

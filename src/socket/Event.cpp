@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 16:42:40 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 15:30:15 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,13 @@ bool	Event::isHup() const
 	return (events & POLLHUP);
 }
 
+bool	Event::isCgiFd() const
+{
+	if (fd == getSocket()->getFd())
+		return false;
+	return true;
+}
+
 void	Event::handleEvent()
 {
 	std::map<int, handlefun> whichfun;
@@ -86,24 +93,40 @@ void	Event::handleEvent()
 	whichfun[POLLOUT] = &Event::handleOut;
 	whichfun[POLLERR] = &Event::handleError;
 	whichfun[POLLHUP] = &Event::handleHup;
-	whichfun[POLLNVAL] = &Event::handleError;
+	whichfun[POLLNVAL] = &Event::handleNval;
 
-	for (int i = 0 ; i < 5; i++)
+	try
 	{
-		if (events & ev[i])
+		for (int i = 0 ; i < 5; i++)
 		{
-			handlefun fun = whichfun[ev[i]];
-			(this->*fun)();
-			if (status) // ????????????????????????????????????????
-				return;
+			if (events & ev[i])
+			{
+				handlefun fun = whichfun[ev[i]];
+				(this->*fun)();
+				if (status) // ????????????????????????????????????????
+					return;
+			}
 		}
+	}
+	catch (const Request::RequestException & e)
+	{
+		std::cout << e.what() << std::endl;
+		status = 3;
+	}
+	catch (const ErrorException & e)
+	{
+		std::cout << "a\n";
+		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
+		std::cout << "b\n";
+		soc->setKeepAlive(false);
+		std::cout << "c\n";
+		if (! status)
+			status = 1;
 	}
 }
 
 void	Event::handleIn()
 {
-	try
-	{
 		std::cout << "Event In on fd " << fd << std::endl;
 		if (soc->req == NULL)
 		{
@@ -138,18 +161,7 @@ void	Event::handleIn()
 				status = 1;
 			}
 		}
-	}
-	catch (const Request::RequestException & e)
-	{
-		std::cout << e.what() << std::endl;
-		status = 3;
-	}
-	catch (const ErrorException & e)
-	{
-		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
-		soc->setKeepAlive(false);
-		status = 1;
-	}
+	
 }
 
 void	Event::handleCgiIn()
@@ -183,7 +195,8 @@ void	Event::handleOut()
 					soc->setKeepAlive(false);
 					status =  2;
 				}
-				status = 3;
+				else
+					status = 3;
 			}
 		}
 	}
@@ -198,13 +211,39 @@ void	Event::handleCgiOut()
 void	Event::handleError()
 {
 	std::cout << "Event Error on fd " << fd << std::endl;
-	status = 3;
+	if (isCgiFd())
+	{
+		status = 6;
+		throw (ErrorException(500));
+	}
+	else
+		status = 3;
 }
 
 void	Event::handleHup()
 {
 	std::cout << "Event Hup on fd " << fd << std::endl;
-	status = 3;
+	if (isCgiFd())
+	{	
+		status = 6;
+		std::cout << "d\n";
+		throw (ErrorException(500));
+	}
+	else
+		status = 3;
+}
+
+void	Event::handleNval()
+{
+	std::cout << "Event Nval on fd " << fd << std::endl;
+	std::cout << "fd : " << fd << ", socket fd : " << soc->getFd() << " events: " << events << std::endl;
+	if (isCgiFd())
+	{
+		status = 6;
+		throw (ErrorException(500));
+	}
+	else
+		status = 3;
 }
 
 void	Event::cgiExec()
