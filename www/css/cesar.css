@@ -36,12 +36,23 @@ header h2 {
 	font-weight:normal;
 }
 
+#session_reset {
+}
+
+#session_reset input{
+	float:right;
+}
+
 #menu {
 	float:left;
 	padding:2%;
 	display:block;
 	color:blue;
 
+}
+
+input[type=submit] {
+	margin:10px;
 }
 
 nav a {

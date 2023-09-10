@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 17:25:16 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 09:34:13 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,7 @@ void	Polling::addCgiFd(int fd, int events, TCPSocket *soc)
 
 void	Polling::removeFd(int fd)
 {
-	std::cout << "Removing fd from polling list" << fd << std::endl;
+	std::cout << "Removing fd from polling list " << fd << std::endl;
 	nfds_t	i = 0;
 	for (; i < nfds; i++)
 	{

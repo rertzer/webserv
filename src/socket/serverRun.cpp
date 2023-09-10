@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 17:11:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/10 09:38:28 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,6 @@ int	serverRun(std::vector<Server> serv)
 				std::cout << "Resetting " << ev.getFd() << std::endl;
 				pool.reset(ev.getFd());
 			}
-				if (counter > 24)
-					break;
 		}
 	}
 	catch (const TCPSocket::SocketException & e)
