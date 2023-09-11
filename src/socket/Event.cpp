@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 15:30:15 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 10:16:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,8 @@ void	Event::handleEvent()
 	}
 	catch (const ErrorException & e)
 	{
-		std::cout << "a\n";
 		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
-		std::cout << "b\n";
 		soc->setKeepAlive(false);
-		std::cout << "c\n";
 		if (! status)
 			status = 1;
 	}
@@ -226,7 +223,6 @@ void	Event::handleHup()
 	if (isCgiFd())
 	{	
 		status = 6;
-		std::cout << "d\n";
 		throw (ErrorException(500));
 	}
 	else
