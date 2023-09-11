@@ -18,6 +18,7 @@
 #include "ContentMap.hpp"
 #include "Cgi.hpp"
 
+class TCPSocket;
 enum codeProb{
 	OK = 200,
 	FILE_NOT_FOUND = 404,

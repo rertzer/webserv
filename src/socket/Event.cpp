@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/11 10:16:58 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 14:52:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,11 +154,12 @@ void	Event::handleIn()
 			else
 			{
 				std::cout << "setting message out\n";
+				// std::cout << "message out : " << resp.getResponse() << std::endl;
 				soc->setMessageOut(resp.getResponse());
 				status = 1;
 			}
 		}
-	
+
 }
 
 void	Event::handleCgiIn()
@@ -221,7 +222,7 @@ void	Event::handleHup()
 {
 	std::cout << "Event Hup on fd " << fd << std::endl;
 	if (isCgiFd())
-	{	
+	{
 		status = 6;
 		throw (ErrorException(500));
 	}

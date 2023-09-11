@@ -6,16 +6,18 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/09 16:44:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 16:19:38 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
+#include "TCPSocket.hpp"
 
 void checkExec(std::string filePath)
 {
 	if (access(filePath.c_str(), F_OK) == -1)
 	{
+		std::cout << "throwed here" << std::endl;
 		throw (ErrorException(404));
 	}
 	if (access(filePath.c_str(), R_OK) == -1)
@@ -63,6 +65,7 @@ void Response::feelPart(Request req)
 		std::string fileStr;
 		for (std::vector<std::string>::iterator it = _serv.getDefaultPage().begin(); it != _serv.getDefaultPage().end(); it++)
 		{
+			std::cout << "root + *it = " << _root + *it << std::endl;
 			fileStr = readFile(_root + *it);
 			if (fileStr == "403" && _readFileAccess == ACCESS_DENIED)
 			{
@@ -94,6 +97,7 @@ void Response::feelPart(Request req)
 		//std::cout << "Content that is not root " << fileStr << std::endl;
 		if (fileStr == "404" && _readFileAccess == FILE_NOT_FOUND)
 		{
+			std::cout << "throwed here 2" << std::endl;
 			throw (ErrorException(404));
 			//*this = createErrorPage(404, _serv);
 		}
@@ -167,7 +171,7 @@ std::string Response::getResponse()
 	int	cookie_nb = _setCookie.size();
 	for (int i = 0 ; i < cookie_nb; i++)
 	{
-		response += "Set-Cookie: " + _setCookie[i] + "\r\n";	
+		response += "Set-Cookie: " + _setCookie[i] + "\r\n";
 	}
 	response += "\r\n";
 	response += _content;
@@ -298,7 +302,9 @@ int Response::respWithLoc(Request& req)
 		//std::cout << "ENter in the redir zone" << std::endl;
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
 		_status = Status::getMsg(atoi((redirection.first.c_str())));
-		_location = redirection.second;
+		_location = redirection.second.substr(0, redirection.second.length() - 2);
+		std::cout << "location = " << _location << std::endl;
+		req.getSocket()->setKeepAlive(false);
 		return (0);
 	}
 	//std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
@@ -415,6 +421,7 @@ Response::Response(Request& req, Server& serv)
 	//std::cout << std::endl << "IN RESPONSE CONSTRUCTOR" << std::endl;
 	_readFileAccess = OK;
 	_serv = serv;
+	std::cout << serv.getDefaultPage()[0] << std::endl;
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
