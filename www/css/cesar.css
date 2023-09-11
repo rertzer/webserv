@@ -50,6 +50,13 @@ header h2 {
 	color:blue;
 
 }
+#who {
+	float:right;
+	padding:2%;
+	display:block;
+	color:blue;
+
+}
 
 input[type=submit] {
 	margin:10px;
@@ -80,6 +87,7 @@ nav a:hover {
 }
 
 #main {
+	float:left;
 	width:60%;
 	margin-left:auto;
 	margin-right:auto;

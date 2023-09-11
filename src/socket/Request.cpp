@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 15:42:12 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 14:27:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,21 @@ std::string	Request::getFileName()
 		}
 	}
 	return fn;
+}
+
+std::string	Request::getExtension() const
+{
+	std::string	ext;
+	int	begin = query.find(".");
+	if (begin == -1)
+		return ext;
+	ext = query.substr(begin);
+	int end = ext.find("?");
+	if (end == -1)
+		end = ext.find("/");
+	if (end != -1)
+		ext.erase(end, -1);
+	return ext;
 }
 
 void	Request::uploadFile(std::string const & filename, std::string const & part)

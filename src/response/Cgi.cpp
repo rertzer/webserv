@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 14:59:17 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 15:55:17 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,8 @@ void	Cgi::setUrl()
 	if (pos != -1)
 	{
 		path += url.substr(0, pos + cgi_path.first.size());
-		path_info = url.substr(pos + cgi_path.first.size(), -1);
+		if (pos + cgi_path.first.size() + 1 < url.size())
+			path_info = url.substr(pos + cgi_path.first.size() + 1, -1);
 	}
 }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Who's who</title>
+		<title>Who's Who</title>
 		<meta charset="UTF-8">
 		<link rel="icon" type="image/png" href="/favicon-32x32.png" />
 		<link href="/css/cesar.css" rel="stylesheet">
@@ -10,86 +10,66 @@
 		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
 	</head>
 	<body>
-	<div id="container">
 		<?php
-				if (isset($_GET['cipher']))
-				{
-					$texte = $_GET['texte_area'];
-					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
-					$plh = $texte;
-					for ($i = 0; $i < strlen($texte); $i++)
-					{
-						$texte[$i] = cesar_cipher($texte[$i], $_GET['cipher_key']);
-					}
-				}
+			$whois = array(
+				"Arthur Dent" => "Anglais moyen voyageant en peignoir &agrave travers la Galaxie.",
+				"Ford Prefect" => "Gamme de voitures britanniques produites entre 1938 et 1961. Accessoirement &eacutegalement le nom d'un extraterrestre travaillant pour le <i>Guide InterGalactique.</i>",
+				"Zaphod Beeblebrox" => "Pr&eacutesident bic&eacutephale de la Galaxie.",
+				"Marvin the Paranoid Android" => "Trop intelligent pour &ecirctre heureux.",
+				"Trillian" => "Brillante astrophysicienne. Arthur avait des vues sur elles, mais elle pr&ef&egrave sortir avec Zaphod.",
+				"Slartibartfast" => "Magrath&eacuteen. Se passionne pour le dessin des lignes de cotes.",
+				"Agrajag" => "Running gag. Ses r&eacuteincarnations successives sont syst&eacutematiquement tu&eacutees par Arthur Dent.",
+				"Deep Thought" => "Ordinateur. Il trouva la r&eacuteponse 42. Ce qui lui pris sept millions et demi d'ann&eacutees.",
+				"Dish of the Day" => "Une vache. Elle adhore &ecirctre mang&eacutee.",
+				"Elvis Presley" => "Et non, il n'est pas mort, mais continue sa carri&egravere dans la Galaxie.",
+				"Grunthos the Flatulent" => "Po&egravete vogon."
+			);
 		?>
-
-		<header id="myHeader">
-			<div id="titre principal">
-			<h1>Who's who</h1>
-			<h2>The Ultimate Galaxie's Who's Who</h2>
-		
-		</header>
-		<nav id ="menu">
-			<a href="/html/page/indexTest.html">Index</a>
-			<a href="/html/page/redirectionPage.html">Redirection</a>
-			<a href="/html/page/toDelete.html">Delete</a>
-			<a href="/php/cesar_get.php">Ave Cesar (get)</a>
-			<a href="/php/cesar_post.php">Ave Cesar (post)</a>
-			<a href="/python/quizz.py">The 42 Quizz</a>
-			<a href="/php/whoswho.php">Who's who</a>
-			<a href="/html/kitty/kitty.html">Kitty</a>
-		</nav>
-		<section id ="main">
-			<p></p>
-			<form action="cesar_get.php" method="get">
-				<div id="ta">
-				<textarea type="text" name="texte_area" rows="18" cols="70" maxlength="10000" placeholder='<?php echo $plh ?>'></textarea>
-				</div>
-				<div id="ck">
-					<select name="cipher_key">
-						<option value="0">A</option>
-						<option value="1">B</option>
-						<option value="2">C</option>
-						<option value="3">D</option>
-						<option value="4">E</option>
-						<option value="5">F</option>
-						<option value="6">G</option>
-						<option value="7">H</option>
-						<option value="8">I</option>
-						<option value="9">J</option>
-						<option value="10">K</option>
-						<option value="11">L</option>
-						<option value="12">M</option>
-						<option value="13">N</option>
-						<option value="14">O</option>
-						<option value="15">P</option>
-						<option value="16">Q</option>
-						<option value="17">R</option>
-						<option value="18">S</option>
-						<option value="19">T</option>
-						<option value="20">U</option>
-						<option value="21">V</option>
-						<option value="22">W</option>
-						<option value="23">X</option>
-						<option value="24">Y</option>
-						<option value="25">Z</option>
-					</select>
-				</div>
-				<div>
-					<input type="submit" name="cipher" value="chiffrer" />
-					<input type="submit" name="decipher" value="déchiffrer" />
-				</div>
-			</form>
-			<?php
-				if (isset($_GET['cipher']) or isset($_GET['decipher']))
-					echo "<div id=\"result\">{$texte}</div>";
-			?>
+		<div id="container">
+			
+			<header id="myHeader">
+				<div id="titre principal">
+				<h1>Who's Who</h1>
+				<h2>The Ultimate Galaxie's Who's Who</h2>
+			</header>
+			<nav id ="menu">
+				<a href="/html/page/indexTest.html">Index</a>
+				<a href="/html/page/redirectionPage.html">Redirection</a>
+				<a href="/html/page/toDelete.html">Delete</a>
+				<a href="/php/cesar_get.php">Ave Cesar (get)</a>
+				<a href="/php/cesar_post.php">Ave Cesar (post)</a>
+				<a href="/python/quizz.py">The 42 Quizz</a>
+				<a href="/php/whoswho.php">Who's who</a>
+				<a href="/html/kitty/kitty.html">Kitty</a>
+			</nav>
+			<section id ="main">
+				<?php
+					if (isset($_SERVER['PATH_INFO']))
+					{
+						$texte = $_SERVER['PATH_INFO'];
+						$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
+						$texte = str_replace("_", " ", $texte);
+						echo '<p>', $texte, '</p><p>', $whois[$texte], '</p>';
+					}
+				?>
 			</section>
+			<nav id="who">
+				<a href="/php/whoswho.php/Arthur_Dent">Arthur Dent</a>
+				<a href="/php/whoswho.php/Ford_Prefect">Ford Prefect</a>
+				<a href="/php/whoswho.php/Zaphod_Beeblebrox">Zaphod Beeblebrox</a>
+				<a href="/php/whoswho.php/Marvin_the_Paranoid_Android">Marvin the Paranoid Android</a>
+				<a href="/php/whoswho.php/Trillian">Trillian</a>
+				<a href="/php/whoswho.php/Slartibartfast">Slartibartfast</a>
+				<a href="/php/whoswho.php/Agrajag">Agrajag</a>
+				<a href="/php/whoswho.php/Deep_Thought">Deep Thought</a>
+				<a href="/php/whoswho.php/Dish_of_The_Day">Dish of the Day</a>
+				<a href="/php/whoswho.php/Elvis_Presley">Elvis Presley</a>
+				<a href="/php/whoswho.php/Grunthos_the_Flatulent">Grunthos the Flatulent</a>
+			</nav>
 			<footer>
 				<p>
 					<span class="sign"><b>WebServ</b> by pjay and rertzer</span>
-					<span class="devise">Parce que tu le codes bien.</span>
+					<span class="devise">Parce que je le code bien.</span>
 				</p>
 			</footer>
 		</div>

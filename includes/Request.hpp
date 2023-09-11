@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 15:24:49 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 11:57:47 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ class Request
 		std::string										getField(std::string const & name) const;
 		unsigned int									getBodySize() const;
 		Cgi *											getCgi() const;
+		std::string										getExtension() const;
 		void											setBodySize(int bs);
 		void											setUploadPath(std::string up);
 		bool											checkField(std::string const & name, std::string const & value) const;

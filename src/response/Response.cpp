@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/09 16:44:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/11 15:19:40 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,11 +180,15 @@ int Response::checkIfLocation(std::string path)
 	std::vector<Location>::iterator it = loc.begin();
 	//std::cout << "Path before tje substr " << path << std::endl;
 	if (path != "/")
+	{
+		path = path.substr(0, path.rfind(".") );
 		path = path.substr(0, path.rfind("/") );
+	}
 	while (it != loc.end())
 	{
 		if (it->getLocationPath() == path)
 		{
+			std::cout << "FOUND LOC" << path << std::endl;
 			return (0);
 		}
 		it++;
@@ -197,7 +201,10 @@ Location Response::getTheLocation(std::string path)
 	std::vector<Location> loc = _serv.getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
 	if (path != "/")
+	{
+		path = path.substr(0, path.rfind(".") );
 		path = path.substr(0, path.rfind("/") );
+	}
 	while (it != loc.end())
 	{
 		if (it->getLocationPath() == path)
@@ -260,8 +267,9 @@ void	Response::setCookie(std::string ck)
 
 int Response::respWithLoc(Request& req)
 {
+	std::cout << "respWithLoc\n";
 	Location loc = getTheLocation(req.getQuery());
-		if (req.getQuery() != "/")
+	if (req.getQuery() != "/")
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
 		{
@@ -301,8 +309,8 @@ int Response::respWithLoc(Request& req)
 		_location = redirection.second;
 		return (0);
 	}
-	//std::cout << "extension = " << getExtension(loc).first << " | Exec with " << getExtension(loc).second << std::endl;
-	if (!getExtension(loc).first.empty() && req.getQuery().find(getExtension(loc).first) != std::string::npos)
+	std::cout << "extension = " << req.getExtension() << " | Exec with " << getExtension(loc).second << std::endl;
+	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
 	{
 		return initCgi(req, loc);
 	}
@@ -326,7 +334,6 @@ int	Response::initCgi(Request & req, Location & loc)
 
 int	Response::respWithCgi(Request & req)
 {
-	std::cout << "RespWithCgi==========================================================================\n";
 	_method = req.getMethod();
 	_content = req.getCgi()->getContent();
 	_contentType = "text/html";
