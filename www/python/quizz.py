@@ -36,10 +36,11 @@ content += "<link rel=\"icon\" type=\"image/png\" href=\"/favicon-32x32.png\" />
 content += "<link href=\"/css/cesar.css\" rel=\"stylesheet\">"
 content += "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
 content += "<link href=\"https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap\" rel=\"stylesheet\"></head>"
-content += "<body><header><h1>The 42 quizz to the Galaxy</h1></header>"
+content += "<body><div id=\"container\"><header><h1>The 42 quizz to the Galaxy</h1></header>"
 content += "<nav id =\"menu\"><a href=\"/html/page/indexTest.html\">Index</a><a href=\"/html/page/redirectionPage.html\">Redirection</a>"
 content += "<a href=\"/html/page/toDelete.html\">Delete</a><a href=\"/php/cesar_get.php\">Ave Cesar (get)</a>"
 content += "<a href=\"/php/cesar_post.php\">Ave Cesar (post)</a><a href=\"/python/quizz.py\">The 42 Quizz</a>"
+content += "<a href=\"/php/whoswho.php\">Who's who</a>"
 content += "<a href=\"/html/kitty/kitty.html\">Kitty</a></nav>"
 content += "<section><form id=\"session_reset\" action=\"goodbye.py\" method=\"get\"><input type=\"submit\" name=\"r_reset\" value=\"The End\" /></form></section><section id=\"main\">"
 
@@ -92,8 +93,8 @@ else:
         content +=  "<input type=\"submit\" name=\"q_answer\" value=\"" + quizz[q_id][2] + "\" />"
         content +=  "</form>"
 content += "</section><footer><p><span class=\"sign\"><b>WebServ</b> by pjay and rertzer.</span>"
-content += "<span class=\"devise\">Parce que tu le codes bien.</span></p></footer>"
-content += "</body>"
+content += "<span class=\"devise\">Parce que je le code bien.</span></p></footer>"
+content += "</div></body>"
 
 if "total" in cookie:
     cookie["total"]["samesite"] = "Strict"

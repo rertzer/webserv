@@ -4,7 +4,7 @@
 		<title>Who's Who</title>
 		<meta charset="UTF-8">
 		<link rel="icon" type="image/png" href="/favicon-32x32.png" />
-		<link href="/css/cesar.css" rel="stylesheet">
+		<link href="/css/who.css" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
@@ -13,11 +13,11 @@
 		<?php
 			$whois = array(
 				"Arthur Dent" => "Anglais moyen voyageant en peignoir &agrave travers la Galaxie.",
-				"Ford Prefect" => "Gamme de voitures britanniques produites entre 1938 et 1961. Accessoirement &eacutegalement le nom d'un extraterrestre travaillant pour le <i>Guide InterGalactique.</i>",
+				"Ford Prefect" => "Voiture britannique (produites entre 1938 et 1961). Accessoirement un extraterrestre travaillant pour le <i>Guide InterGalactique.</i>",
 				"Zaphod Beeblebrox" => "Pr&eacutesident bic&eacutephale de la Galaxie.",
 				"Marvin the Paranoid Android" => "Trop intelligent pour &ecirctre heureux.",
-				"Trillian" => "Brillante astrophysicienne. Arthur avait des vues sur elles, mais elle pr&ef&egrave sortir avec Zaphod.",
-				"Slartibartfast" => "Magrath&eacuteen. Se passionne pour le dessin des lignes de cotes.",
+				"Trillian" => "Brillante astrophysicienne. Arthur a des vues sur elles, mais elle sur Zaphod.",
+				"Slartibartfast" => "Magrath&eacuteen. Se passionne pour le dessin des lignes de c&ocircte.",
 				"Agrajag" => "Running gag. Ses r&eacuteincarnations successives sont syst&eacutematiquement tu&eacutees par Arthur Dent.",
 				"Deep Thought" => "Ordinateur. Il trouva la r&eacuteponse 42. Ce qui lui pris sept millions et demi d'ann&eacutees.",
 				"Dish of the Day" => "Une vache. Elle adhore &ecirctre mang&eacutee.",
@@ -49,7 +49,7 @@
 						$texte = $_SERVER['PATH_INFO'];
 						$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
 						$texte = str_replace("_", " ", $texte);
-						echo '<p>', $texte, '</p><p>', $whois[$texte], '</p>';
+						echo '<h1>', $texte, '</h1><p>', $whois[$texte], '</p>';
 					}
 				?>
 			</section>
@@ -62,7 +62,7 @@
 				<a href="/php/whoswho.php/Slartibartfast">Slartibartfast</a>
 				<a href="/php/whoswho.php/Agrajag">Agrajag</a>
 				<a href="/php/whoswho.php/Deep_Thought">Deep Thought</a>
-				<a href="/php/whoswho.php/Dish_of_The_Day">Dish of the Day</a>
+				<a href="/php/whoswho.php/Dish_of_the_Day">Dish of the Day</a>
 				<a href="/php/whoswho.php/Elvis_Presley">Elvis Presley</a>
 				<a href="/php/whoswho.php/Grunthos_the_Flatulent">Grunthos the Flatulent</a>
 			</nav>

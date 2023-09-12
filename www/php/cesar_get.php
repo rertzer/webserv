@@ -121,7 +121,7 @@
 			<footer>
 				<p>
 					<span class="sign"><b>WebServ</b> by pjay and rertzer</span>
-					<span class="devise">Parce que tu le codes bien.</span>
+					<span class="devise">Parce que je le code bien.</span>
 				</p>
 			</footer>
 		</div>
