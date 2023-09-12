@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 11:04:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 13:08:46 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,7 @@ int	serverRun(std::vector<Server> serv)
 				break;
 
 			for (int n = 0; n < rc; n++)
-			{
-				Event 	ev = pool.nextEvent();
-				ev.setServ(serv);
-
-				if (pool.isMother(ev))
-					eventOnMother(ev, pool);
-				else
-					eventOnOther(ev, pool);			
-				std::cout << "Resetting " << ev.getFd() << std::endl;
-				pool.reset(ev.getFd());
-			}
+				handleEvent(pool, serv);
 		}
 	}
 	catch (const TCPSocket::SocketException & e)
@@ -58,6 +48,19 @@ int	serverRun(std::vector<Server> serv)
 		std::cerr << e.what() << std::endl;
 	}
 	return 0;
+}
+
+void	handleEvent(Polling & pool, std::vector<Server> & serv)
+{
+	Event 	ev = pool.nextEvent();
+	ev.setServ(serv);
+
+	if (pool.isMother(ev))
+		eventOnMother(ev, pool);
+	else
+		eventOnOther(ev, pool);			
+	std::cout << "Resetting " << ev.getFd() << std::endl;
+	pool.reset(ev.getFd());
 }
 
 void	loadMotherSocket(Polling & pool, std::vector<Server> serv)

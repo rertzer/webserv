@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 09:39:40 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 11:00:54 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 13:09:05 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 
 typedef void	(*handlestatus)(Event &ev, Polling & pool);
 
+void	handleEvent(Polling & pool, std::vector<Server> & serv);
 void	loadMotherSocket(Polling & pool, std::vector<Server> serv);
 void	eventOnMother(Event & ev, Polling & pool);
 void	eventOnOther(Event & ev, Polling & pool);
