@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 14:30:21 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 14:51:29 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ Response::Response(Request& req, Server& serv)
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
+	std::cout << "cgi status = " << req.getCgiStatus() << " for the request = " << req.getQuery() <<  std::endl;
 	if (req.getCgiStatus() == 4)
 	{
 		if (respWithCgi(req, *this) == 0)
@@ -50,7 +51,6 @@ Response::Response(Request& req, Server& serv)
 	}
 	if (checkIfLocation(req.getQuery(), *this) != -1)
 	{
-		//std::cout << "EEEEEEEEEEEEEEE" << std::endl;
 		if (respWithLoc(req, *this) == 0)
 			return ;
 	}

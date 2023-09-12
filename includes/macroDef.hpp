@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 13:55:57 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 15:10:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ void 									dealWithGet(Request req, Response& rep);
 void 									dealWithPost(Request req, Response& rep);
 void 									dealWithDelete(Request req, Response& rep);
 std::string								readFile(std::string file, Response& rep);
-std::string								runFile(Request & req, Response& rep);
 std::string								getContentKey(std::string value, Response& rep);
 std::string								findLocation(std::string path, Response& rep);
 int 									checkIfLocation(std::string path, Response& rep);

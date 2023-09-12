@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:36:36 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 13:50:47 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 15:09:32 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ int respWithLoc(Request& req, Response &rep)
 		req.getSocket()->setKeepAlive(false);
 		return (0);
 	}
-	if (!getExtension(loc).first.empty() && req.getQuery().find(getExtension(loc).first) != std::string::npos)
+	std::cout << "extension = " << req.getExtension() << " | Exec with " << getExtension(loc).second << std::endl;
+	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
 	{
 		return initCgi(req, loc, rep);
 	}

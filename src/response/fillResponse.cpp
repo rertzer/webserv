@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 10:40:13 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 13:55:05 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 15:04:58 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	setCookie(std::string ck, Response &rep)
 
 int	initCgi(Request & req, Location & loc, Response &rep)
 {
-	Cgi *	myCgi = new Cgi(req.getMethod(), rep.getRoot() , req, getExtension(loc));
+	Cgi *	myCgi = new Cgi(req.getMethod(), rep.getRoot(), req, getExtension(loc));
 	req.setCgi(myCgi);
 	return (0);
 }
