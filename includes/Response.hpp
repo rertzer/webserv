@@ -44,30 +44,13 @@ class Response
 		std::string _location;
 		std::string _root;
 		int			_allowedMethods;
-
 		std::pair<std::string, std::string>	extractField(size_t pos);
 	public:
 		Response(Request& req, Server& serv);
 		Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content);
 		Response&	operator=(Response const & rhs);
-		void 		dealWithGet(Request req);
-		void 		dealWithPost(Request req);
-		void 		dealWithDelete(Request req);
-		std::string	readFile(std::string file);
-		std::string	runFile(Request & req);
-		std::string	getResponse();
-		std::string	getContentKey(std::string value);
-		std::string	findLocation(std::string path);
-		int 		checkIfLocation(std::string path);
-		Location 	getTheLocation(std::string path);
-		void 		iniateContentMap();
-		void 		feelPart(Request req);
-		int 		respWithLoc(Request &req);
-		int			initCgi(Request & req, Location & loc);
-		int			respWithCgi(Request & req);
-		int 		respWithOutLoc(Request& req);
-		std::string	getSpecIndex(Location loc);
-		void 		createAutoIndexResp(Request& req, Location loc);
+		std::string getResponse();
+		//setter
 		void								setCookie(std::string ck);
 		void								Setserv(Server);
 		void								setMethod(std::string);
@@ -84,19 +67,19 @@ class Response
 		void								setContentMap(ContentMap);
 		void								setAllowedMethods(int);
 		//getter
-		Server								getServ(void);
-		std::string 						getMethod(void);
-		std::string 						getStatus(void);
-		std::string 						getContentType(void);
-		std::string 						getContentLength(void);
-		std::string 						getConnectionClose(void);
-		std::string 						getContent(void);
-		std::string 						getLocation(void);
-		std::string 						getRoot(void);
-		std::string 						getAutoIndex(void);
-		std::vector<std::string>			getSetCookie(void);
-		std::pair<std::string, std::string> getExtensionAllowed(void);
-		int 								getReadFileAccess(void);
-		ContentMap							getContentMap(void);
-		int									getAllowedMethods(void);
-}
+		Server								getServ(void) const ;
+		std::string 						getMethod(void) const;
+		std::string 						getStatus(void) const;
+		std::string 						getContentType(void) const;
+		std::string 						getContentLength(void) const;
+		std::string 						getConnectionClose(void) const;
+		std::string 						getContent(void) const;
+		std::string 						getLocation(void) const;
+		std::string 						getRoot(void) const;
+		std::string 						getAutoIndex(void) const;
+		std::pair<std::string, std::string> getExtensionAllowed(void) const;
+		int 								getReadFileAccess(void) const;
+		ContentMap							getContentMap(void) const;
+		int									getAllowedMethods(void) const;
+		std::vector<std::string> 			getCookie(void) const;
+};
