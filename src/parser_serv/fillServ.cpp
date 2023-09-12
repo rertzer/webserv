@@ -41,7 +41,7 @@ int fillServ(std::string av, std::vector<Server>& serv)
 		countLine++;
 		if (lineString.find("#") != std::string::npos)
 			lineString = lineString.substr(0, lineString.find("#"));
-		if (lineString.find_first_not_of(" \t") == std::string::npos)
+		if (lineString.find_first_not_of(" \t\r") == std::string::npos)
 			continue;
 		if (lineString.find("server {") != std::string::npos) // I want it to skip the server line
 		{
