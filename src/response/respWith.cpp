@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:36:36 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 15:09:32 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 16:50:36 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,31 +67,33 @@ int respWithLoc(Request& req, Response &rep)
 	return (1);
 }
 
-int	respWithCgi(Request & req, Response &rep)
-{
-	rep.setMethod(req.getMethod());
-	rep.setContent(req.getCgi()->getContent());
-	rep.setContentType("text/html");
+// int	respWithCgi(Request & req, Response &rep)
+// {
+// 	rep.setMethod(req.getMethod());
+// 	rep.setContent(req.getCgi()->getContent());
+// 	rep.setContentType("text/html");
 
-	size_t pos = rep.getContent().find("\r\n");
-	while (pos != std::string::npos && pos != 0)
-	{
-		std::pair<std::string, std::string> field = extractField(pos, rep);
-		if (field.first == "Content-Type")
-		{
-			rep.setContentType(field.second);
-		}
-		else if (field.first == "Set-Cookie")
-		{
-			rep.getCookie().push_back(field.second);
-		}
-		pos = rep.getContent().find("\r\n");
-	}
-	rep.setStatus("200 OK");
-	rep.setContentLength(intToString(rep.getContent().length()));
-	rep.setConnectionClose("keep-alive");
-	return (0);
-}
+// 	size_t pos = rep.getContent().find("\r\n");
+// 	std::cout << "in resp with cgi" << std::endl;
+// 	while (pos != std::string::npos && pos != 0)
+// 	{
+// 		std::cout << "pos = " << pos << std::endl;
+// 		std::pair<std::string, std::string> field = extractField(pos, rep);
+// 		if (field.first == "Content-Type")
+// 		{
+// 			rep.setContentType(field.second);
+// 		}
+// 		else if (field.first == "Set-Cookie")
+// 		{
+// 			rep.getCookie().push_back(field.second);
+// 		}
+// 		pos = rep.getContent().find("\r\n");
+// 	}
+// 	rep.setStatus("200 OK");
+// 	rep.setContentLength(intToString(rep.getContent().length()));
+// 	rep.setConnectionClose("keep-alive");
+// 	return (0);
+// }
 
 int respWithOutLoc(Request& req, Response &rep)
 {

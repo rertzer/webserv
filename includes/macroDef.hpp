@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 15:10:52 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 17:02:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,5 @@ std::string								getSpecIndex(Location loc, Response& rep);
 void 									createAutoIndexResp(Request& req, Location loc, Response& rep);
 void									checkExec(std::string filePath);
 int										respWithLoc(Request& req, Response &rep);
-int										respWithCgi(Request & req, Response &rep);
+//int										respWithCgi(Request & req, Response &rep);
 int										respWithOutLoc(Request& req, Response &rep);
-std::pair<std::string, std::string>		extractField(size_t pos, Response &rep);

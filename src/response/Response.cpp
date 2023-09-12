@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 14:51:29 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 17:03:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ Response::Response(Request& req, Server& serv)
 	std::cout << "cgi status = " << req.getCgiStatus() << " for the request = " << req.getQuery() <<  std::endl;
 	if (req.getCgiStatus() == 4)
 	{
-		if (respWithCgi(req, *this) == 0)
+		std::cout << "enter here" << std::endl;
+		if (respWithCgi(req) == 0)
 			return;
 	}
 	if (checkIfLocation(req.getQuery(), *this) != -1)
@@ -132,6 +133,55 @@ void Response::setContentLength(std::string contentLength)
 {
 	_contentLength = contentLength;
 }
+
+std::pair<std::string, std::string>	Response::extractField(size_t pos)
+{
+	std::string	line;
+	std::pair<std::string, std::string>	field;
+
+	if (pos != std::string::npos)
+	{
+		line = _content.substr(0, pos);
+		_content.erase(0, pos + 2);
+		pos = line.find(":");
+		if (pos != std::string::npos)
+		{
+			field.first = line.substr(0, pos);
+			field.second = line.substr(pos + 1, -1);
+		}
+		stringTrim(field.first);
+		stringTrim(field.second);
+	}
+	return (field);
+}
+
+
+int	Response::respWithCgi(Request & req)
+{
+	_method = req.getMethod();
+	_content = req.getCgi()->getContent();
+	_contentType = "text/html";
+
+	size_t pos = _content.find("\r\n");
+	while (pos != std::string::npos && pos != 0)
+	{
+		std::pair<std::string, std::string> field = extractField(pos);
+		if (field.first == "Content-Type")
+		{
+			_contentType = field.second;
+		}
+		else if (field.first == "Set-Cookie")
+		{
+			_setCookie.push_back(field.second);
+		}
+		pos = _content.find("\r\n");
+	}
+	_status = "200 OK";
+	_contentLength = intToString(_content.length());
+	_connectionClose = "keep-alive";
+	return (0);
+}
+
 
 void Response::setConnectionClose(std::string connectionClose)
 {
@@ -232,8 +282,3 @@ ContentMap Response::getContentMap(void) const
 {
 	return (_contentMap);
 }
-
-
-
-
-

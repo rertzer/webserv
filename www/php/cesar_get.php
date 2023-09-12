@@ -7,7 +7,7 @@
 		<link href="/css/cesar.css" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
 	</head>
 	<body>
 	<div id="container">
@@ -52,7 +52,7 @@
 					{
 						$texte[$i] = cesar_cipher($texte[$i], -1 * $_GET['cipher_key']);
 					}
-					
+
 				}
 			?>
 
@@ -60,7 +60,7 @@
 			<div id="titre principal">
 			<h1>Ave Cesar</h1>
 			<h2>Chiffreur/Déchiffreur de code Cesar</h2>
-		
+
 		</header>
 		<nav id ="menu">
 			<a href="/html/page/indexTest.html">Index</a>

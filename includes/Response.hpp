@@ -50,6 +50,7 @@ class Response
 		Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content);
 		Response&	operator=(Response const & rhs);
 		std::string getResponse();
+		int	respWithCgi(Request & req); // to re;ove
 		//setter
 		void								setCookie(std::string ck);
 		void								Setserv(Server);
