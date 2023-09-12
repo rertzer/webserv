@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/11 11:57:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 14:16:34 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ class Request
 		int												getCgiStatus() const;
 		const std::string &								getProtocol() const;
 		const std::string &								getMethod() const;
+		TCPSocket *										getSocket() const;
 		const std::string &								getQuery() const;
 		const std::map<std::string, std::string> &		getHeader() const;
 		const std::map<std::string, std::string> &		getTrailer() const;

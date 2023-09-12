@@ -7,64 +7,9 @@
 		<link href="/css/cesar.css" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
 	</head>
 	<body>
-	<div id="container">
-		<?php
-				function cesar_cipher($letter, $key)
-				{
-					$charmin = 'abcdefghijklmnopqrstuvwxyz';
-					$charmaj = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-					if (($pos = strpos($charmin, $letter)) !== FALSE)
-					{
-						$newpos = ($pos + $key) % 26;
-						return $charmin[$newpos];
-					}
-					elseif (($pos = strpos($charmaj, $letter)) !== FALSE)
-					{
-						$newpos = ($pos + $key) % 26;
-						return $charmaj[$newpos];
-					}
-					else
-					{
-						return $letter;
-					}
-
-				}
-				$plh = "Votre texte ici";
-				if (isset($_POST['cipher']))
-				{
-					$texte = $_POST['texte_area'];
-					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
-					$plh = $texte;
-					for ($i = 0; $i < strlen($texte); $i++)
-					{
-						$texte[$i] = cesar_cipher($texte[$i], $_POST['cipher_key']);
-					}
-				}
-				if (isset($_POST['decipher']))
-				{
-					$texte = $_POST['texte_area'];
-					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
-					$plh = $texte;
-					for ($i = 0; $i < strlen($texte); $i++)
-					{
-						$texte[$i] = cesar_cipher($texte[$i], -1 * $_POST['cipher_key']);
-					}
-					
-				}
-			?>
-
-		<header id="myHeader">
-			<div id="titre principal">
-			<h1>Ave Cesar</h1>
-			<h2>Chiffreur/Déchiffreur de code Cesar</h2>
-	<!--	<figure>
-			<img id="line" src=blue_line.svg>
-		</figure> -->
-		
-		</header>
 		<nav id ="menu">
 			<a href="/html/page/indexTest.html">Index</a>
 			<a href="/html/page/redirectionPage.html">Redirection</a>
@@ -124,7 +69,7 @@
 			<footer>
 				<p>
 					<span class="sign"><b>WebServ</b> by pjay and rertzer.</span>
-					<span class="devise">Parce que je le code bien.</span>
+					<span class="devise">Parce que tu le codes bien.</span>
 				</p>
 			</footer>
 	</div>

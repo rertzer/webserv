@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:12:22 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/11 16:29:41 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int fillServ(std::string av, std::vector<Server>& serv)
 			lineString = lineString.substr(0, lineString.find("#"));
 		if (lineString.find_first_not_of(" \t\r") == std::string::npos)
 			continue;
+		//std::cout << "lineString = " << lineString << std::endl;
 		if (lineString.find("server {") != std::string::npos) // I want it to skip the server line
 		{
 			//std::cout << "enter here" << std::endl;
@@ -53,8 +54,12 @@ int fillServ(std::string av, std::vector<Server>& serv)
 		}
 		if (servOpen == true)
 		{
-			//std::cout << "line String = " << lineString << std::endl;
-			servStrings.push_back(lineString);
+			if (lineString.find_first_not_of(" \t\n\r") != std::string::npos)
+			{
+				std::cout << "lineString len = " << lineString.length() << std::endl;
+				//std::cout << "line String = " << +lineString[0] << std::endl;
+				servStrings.push_back(lineString);
+			}
 			if (lineString.find("{") != std::string::npos)
 				bracketOpen.push_back(true);
 			if (lineString.find("}") != std::string::npos)
@@ -66,6 +71,7 @@ int fillServ(std::string av, std::vector<Server>& serv)
 				servStrings.pop_back();
 				serv.push_back(Server(servStrings));
 				servStrings.clear();
+				std::cout << "END FIRST SERVVV" << std::endl << "\n";
 				i++;
 			}
 		}
