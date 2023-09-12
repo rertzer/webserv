@@ -68,5 +68,35 @@ class Response
 		int 		respWithOutLoc(Request& req);
 		std::string	getSpecIndex(Location loc);
 		void 		createAutoIndexResp(Request& req, Location loc);
-		void		setCookie(std::string ck);
-};
+		void								setCookie(std::string ck);
+		void								Setserv(Server);
+		void								setMethod(std::string);
+		void								setStatus(std::string);
+		void								setContentType(std::string);
+		void								setContentLength(std::string);
+		void								setConnectionClose(std::string);
+		void								setContent(std::string);
+		void								setLocation(std::string);
+		void								setRoot(std::string);
+		void								setAutoIndex(std::string);
+		void								setExtensionAllowed(std::pair<std::string, std::string>);
+		void								setReadFileAccess(int);
+		void								setContentMap(ContentMap);
+		void								setAllowedMethods(int);
+		//getter
+		Server								getServ(void);
+		std::string 						getMethod(void);
+		std::string 						getStatus(void);
+		std::string 						getContentType(void);
+		std::string 						getContentLength(void);
+		std::string 						getConnectionClose(void);
+		std::string 						getContent(void);
+		std::string 						getLocation(void);
+		std::string 						getRoot(void);
+		std::string 						getAutoIndex(void);
+		std::vector<std::string>			getSetCookie(void);
+		std::pair<std::string, std::string> getExtensionAllowed(void);
+		int 								getReadFileAccess(void);
+		ContentMap							getContentMap(void);
+		int									getAllowedMethods(void);
+}

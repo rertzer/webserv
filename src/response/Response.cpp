@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/11 16:19:38 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 10:37:53 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -479,3 +479,144 @@ Response& Response::operator=(Response const & rhs)
 	_content = rhs._content;
 	return *this;
 }
+
+void Response::Setserv(Server serv)
+{
+	_serv = serv;
+}
+
+void Response::setRoot(std::string root)
+{
+	_root = root;
+}
+
+void Response::setAutoIndex(std::string autoIndex)
+{
+	_autoIndex = autoIndex;
+}
+
+void Response::setAllowedMethods(int allowedMethods)
+{
+	_allowedMethods = allowedMethods;
+}
+
+void Response::setLocation(std::string location)
+{
+	_location = location;
+}
+
+void Response::setStatus(std::string status)
+{
+	_status = status;
+}
+
+void Response::setMethod(std::string method)
+{
+	_method = method;
+}
+
+void Response::setContentType(std::string contentType)
+{
+	_contentType = contentType;
+}
+
+void Response::setContentLength(std::string contentLength)
+{
+	_contentLength = contentLength;
+}
+
+void Response::setConnectionClose(std::string connectionClose)
+{
+	_connectionClose = connectionClose;
+}
+
+void Response::setContent(std::string content)
+{
+	_content = content;
+}
+
+void Response::setExtensionAllowed(std::pair<std::string, std::string> extensionAllowed)
+{
+	_extensionAllowed = extensionAllowed;
+}
+
+void Response::setReadFileAccess(int readFileAccess)
+{
+	_readFileAccess = readFileAccess;
+}
+
+void Response::setContentMap(ContentMap contentMap)
+{
+	_contentMap = contentMap;
+}
+
+Server Response::getServ(void)
+{
+	return (_serv);
+}
+
+std::string Response::getContentType(void)
+{
+	return (_contentType);
+}
+
+std::string Response::getContentLength(void)
+{
+	return (_contentLength);
+}
+
+std::string Response::getStatus(void)
+{
+	return (_status);
+}
+
+std::string Response::getMethod(void)
+{
+	return (_method);
+}
+
+std::string Response::getConnectionClose(void)
+{
+	return (_connectionClose);
+}
+
+std::string Response::getContent(void)
+{
+	return (_content);
+}
+
+std::string Response::getLocation(void)
+{
+	return (_location);
+}
+
+std::string Response::getRoot(void)
+{
+	return (_root);
+}
+
+std::string Response::getAutoIndex(void)
+{
+	return (_autoIndex);
+}
+
+std::pair<std::string, std::string> Response::getExtensionAllowed(void)
+{
+	return (_extensionAllowed);
+}
+
+int Response::getReadFileAccess(void)
+{
+	return (_readFileAccess);
+}
+
+int Response::getAllowedMethods(void)
+{
+	return (_allowedMethods);
+}
+
+
+
+
+
+
