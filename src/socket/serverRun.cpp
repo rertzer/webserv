@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 13:08:46 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 14:00:38 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,17 @@ int	serverRun(std::vector<Server> serv)
 	catch (const TCPSocket::SocketException & e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 2;
 	}
 	catch (const Polling::PollingException & e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 3;
 	}
 	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 4;
 	}
 	return 0;
 }
@@ -112,7 +115,7 @@ void	handleEventStatus(Event & ev, Polling & pool)
 	whichandle[1] = &handleInOk;
 	whichandle[2] = &handleOutOk;
 	whichandle[3] = &handleClose;
-	whichandle[4] = &handleCgiStart;
+	whichandle[4] = &handleCgiPostStart;
 	whichandle[6] = &handleCgiEnd;
 	whichandle[7] = &handleCgiPostExec;
 	whichandle[8] = &handleCgiGetExec;
@@ -138,7 +141,7 @@ void	handleClose(Event & ev, Polling & pool)
 	pool.removeSocket(ev.getFd());
 }
 
-void	handleCgiStart(Event & ev, Polling & pool)
+void	handleCgiPostStart(Event & ev, Polling & pool)
 {
 	pool.addCgiFds(ev.getSocket());
 }
