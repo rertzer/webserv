@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 11:38:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 15:18:08 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,11 @@ int	Cgi::writePostFd()
 		perror("pipe error");
 		throw (ErrorException(500));
 	}
+	std::cout << static_cast<unsigned int>(size) << " " << req.getContent().size() <<std::endl;
 	if (static_cast<unsigned int>(size) == req.getContent().size())
-		status = 2;
+		status = 3;
+	else
+		status = 5;
 	req.eraseContent(size);
 
 	return size;
@@ -165,8 +168,8 @@ int	Cgi::readPipeFd()
 {
 	buffer = new char[buffer_size + 1];
 	int	size = ::read(pipe_fd[0], buffer, buffer_size);
-	std::cerr << "read " << size << "from pipe " << pipe_fd[0] << std::endl;
-	if (size < 0)
+	std::cerr << "read " << size << " from pipe " << pipe_fd[0] << std::endl;
+	if (size <= 0)
 	{
 		delete[] buffer;
 		::close(pipe_fd[0]);
@@ -179,13 +182,11 @@ int	Cgi::readPipeFd()
 	ss.write(buffer, size);
 	delete[] buffer;
 	content = ss.str();
-	if (size == 0)
+	if (size != 65536)
 	{
 		::close(pipe_fd[0]);
 		status = 4;
 	}
-	else
-		status = 5;
 	return size;
 }
 
@@ -226,18 +227,19 @@ int	Cgi::execSon()
 
 void	Cgi::execFather(int pid)
 {
-	int	ret;
+	//int	ret;
 
 	::close(pipe_fd[1]);
-	waitpid(pid, &ret, 0);
+	/*waitpid(pid, &ret, 0);
 	if (ret == -1)
 	{
 		perror("cgi script error");
 		::close(pipe_fd[0]);
 		throw (ErrorException(500));
-	}
-	std::cout << "Father is happy, status 3\n";
-	status = 3;
+	}*/
+	if (status == 2)
+		status = 3;
+	std::cout << "Son is " << pid << "> Father is happy, status is " << status << "\n";
 }
 
 char **	Cgi::formatArgv() const

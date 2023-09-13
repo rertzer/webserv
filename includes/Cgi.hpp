@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/09 14:41:19 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 14:02:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
  * 1 = waiting to write post_fd
  * 2 = ready to exec
  * 3 = waiting to read pipe_fd
- * 4 = cgi done */
+ * 4 = cgi done
+ * 5 = post to read*/
 
 class	Cgi
 {

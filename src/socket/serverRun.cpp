@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 11:45:59 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 14:53:20 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,12 +146,13 @@ void	handleClose(Event & ev, Polling & pool)
 void	handleCgiPostStart(Event & ev, Polling & pool)
 {
 	pool.addCgiFds(ev.getSocket());
+	ev.cgiExec();
 }
 
 void	handleCgiContinue(Event & ev, Polling & pool)
 {
-	(void)ev;
 	(void)pool;
+	(void)ev;
 }
 
 void	handleCgiEnd(Event & ev, Polling & pool)
@@ -164,9 +165,8 @@ void	handleCgiPostExec(Event & ev, Polling & pool)
 {
 	pool.setCgiIn(ev.getSocket());
 	pool.removeCgiFd(ev.getFd());
-	ev.cgiExec();
 }
-
+//cgi status 2, ready to exec
 void	handleCgiGetExec(Event & ev, Polling & pool)
 {
 	pool.addCgiFds(ev.getSocket());
