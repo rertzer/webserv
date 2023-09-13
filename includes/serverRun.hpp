@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 09:39:40 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 13:09:05 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 13:56:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	handleEventStatus(Event & ev, Polling & pool);
 void	handleInOk(Event & ev, Polling & pool);
 void	handleOutOk(Event & ev, Polling & pool);
 void	handleClose(Event & ev, Polling & pool);
-void	handleCgiStart(Event & ev, Polling & pool);
+void	handleCgiPostStart(Event & ev, Polling & pool);
 void	handleCgiEnd(Event & ev, Polling & pool);
 void	handleCgiPostExec(Event & ev, Polling & pool);
 void	handleCgiGetExec(Event & ev, Polling & pool);

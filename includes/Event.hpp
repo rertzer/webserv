@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:04:25 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 13:51:04 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 13:58:16 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ class	Event
 		void		handleError();
 		void		handleHup();
 		void		handleNval();
+		void		internalError();
 		void		cgiExec();
 
 	private:

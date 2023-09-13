@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:43:09 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 13:52:13 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 10:12:49 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ Location getTheLocation(std::string path, Response &rep)
 	std::vector<Location> loc = rep.getServ().getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
 	if (path != "/")
-		path = path.substr(0, path.rfind("/") );
+	{
+		path = path.substr(0, path.rfind("."));
+		path = path.substr(0, path.rfind("/"));
+	}
 	while (it != loc.end())
 	{
 		if (it->getLocationPath() == path)
@@ -74,7 +77,10 @@ int checkIfLocation(std::string path, Response &rep)
 	std::vector<Location> loc = rep.getServ().getAllLocation();
 	std::vector<Location>::iterator it = loc.begin();
 	if (path != "/")
-		path = path.substr(0, path.rfind("/") );
+	{
+		path = path.substr(0, path.rfind("."));
+		path = path.substr(0, path.rfind("/"));
+	}
 	while (it != loc.end())
 	{
 		if (it->getLocationPath() == path)

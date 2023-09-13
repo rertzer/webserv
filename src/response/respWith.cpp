@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:36:36 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 16:50:36 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 10:11:19 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 int respWithLoc(Request& req, Response &rep)
 {
+	std::cout << "in resp with loc" << std::endl;
 	Location loc = getTheLocation(req.getQuery(), rep);
 	if (req.getQuery() != "/")
 	{
@@ -54,6 +55,7 @@ int respWithLoc(Request& req, Response &rep)
 	std::cout << "extension = " << req.getExtension() << " | Exec with " << getExtension(loc).second << std::endl;
 	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
 	{
+	std::cout << "EXTENSION FOUND\n";
 		return initCgi(req, loc, rep);
 	}
 	else

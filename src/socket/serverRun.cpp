@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 13:08:46 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 10:02:30 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	serverRun(std::vector<Server> serv)
 		loadMotherSocket(pool, serv);
 		std::cout << "Listening...\n";
 		int counter = 0;
-		
+
 		while (1)
 		{
 			int rc = pool.wait();
@@ -38,14 +38,17 @@ int	serverRun(std::vector<Server> serv)
 	catch (const TCPSocket::SocketException & e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 2;
 	}
 	catch (const Polling::PollingException & e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 3;
 	}
 	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return 4;
 	}
 	return 0;
 }
@@ -58,7 +61,7 @@ void	handleEvent(Polling & pool, std::vector<Server> & serv)
 	if (pool.isMother(ev))
 		eventOnMother(ev, pool);
 	else
-		eventOnOther(ev, pool);			
+		eventOnOther(ev, pool);
 	std::cout << "Resetting " << ev.getFd() << std::endl;
 	pool.reset(ev.getFd());
 }
@@ -76,7 +79,7 @@ void	loadMotherSocket(Polling & pool, std::vector<Server> serv)
 		pool.addMotherSocket(it->first);
 }
 
-void	eventOnMother(Event & ev, Polling & pool) 
+void	eventOnMother(Event & ev, Polling & pool)
 {
 	if (ev.isIn())
 		pool.connect(ev);
@@ -103,7 +106,8 @@ void	eventOnOther(Event & ev, Polling & pool)
 {
 	std::cout << "EVENT on " << ev.getFd() << " socket " << ev.getSocket()->getFd() << std::endl;
 	ev.handleEvent();
-	handleEventStatus(ev, pool);
+	if (ev.getStatus())
+		handleEventStatus(ev, pool);
 }
 
 void	handleEventStatus(Event & ev, Polling & pool)
@@ -112,7 +116,7 @@ void	handleEventStatus(Event & ev, Polling & pool)
 	whichandle[1] = &handleInOk;
 	whichandle[2] = &handleOutOk;
 	whichandle[3] = &handleClose;
-	whichandle[4] = &handleCgiStart;
+	whichandle[4] = &handleCgiPostStart;
 	whichandle[6] = &handleCgiEnd;
 	whichandle[7] = &handleCgiPostExec;
 	whichandle[8] = &handleCgiGetExec;
@@ -138,7 +142,7 @@ void	handleClose(Event & ev, Polling & pool)
 	pool.removeSocket(ev.getFd());
 }
 
-void	handleCgiStart(Event & ev, Polling & pool)
+void	handleCgiPostStart(Event & ev, Polling & pool)
 {
 	pool.addCgiFds(ev.getSocket());
 }

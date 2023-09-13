@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/11 14:52:09 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 09:45:46 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	Event::handleEvent()
 			{
 				handlefun fun = whichfun[ev[i]];
 				(this->*fun)();
-				if (status) // ????????????????????????????????????????
+				if (status)
 					return;
 			}
 		}
@@ -144,17 +144,11 @@ void	Event::handleIn()
 		{
 			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 			if (soc->req->getCgiStatus() == 1)
-			{
 				status = 4;
-			}
 			else if (soc->req->getCgiStatus() == 2)
-			{
 				status = 8;
-			}
 			else
 			{
-				std::cout << "setting message out\n";
-				// std::cout << "message out : " << resp.getResponse() << std::endl;
 				soc->setMessageOut(resp.getResponse());
 				status = 1;
 			}
@@ -164,7 +158,6 @@ void	Event::handleIn()
 
 void	Event::handleCgiIn()
 {
-	std::cout << "HandleCgiIn\n";
 	soc->req->getCgi()->readPipeFd();
 	Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 	soc->setMessageOut(resp.getResponse());
@@ -173,11 +166,8 @@ void	Event::handleCgiIn()
 
 void	Event::handleOut()
 {
-	std::cout << "Event Out on fd " << fd << "\n";
 	if (soc->req->getCgiStatus() == 1)
-	{
 		handleCgiOut();
-	}
 	else
 	{
 		if (!soc->getMessageOut().empty())
@@ -209,13 +199,7 @@ void	Event::handleCgiOut()
 void	Event::handleError()
 {
 	std::cout << "Event Error on fd " << fd << std::endl;
-	if (isCgiFd())
-	{
-		status = 6;
-		throw (ErrorException(500));
-	}
-	else
-		status = 3;
+	internalError();
 }
 
 void	Event::handleHup()
@@ -233,7 +217,11 @@ void	Event::handleHup()
 void	Event::handleNval()
 {
 	std::cout << "Event Nval on fd " << fd << std::endl;
-	std::cout << "fd : " << fd << ", socket fd : " << soc->getFd() << " events: " << events << std::endl;
+	internalError();
+}
+
+void	Event::internalError()
+{
 	if (isCgiFd())
 	{
 		status = 6;

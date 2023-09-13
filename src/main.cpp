@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:12:05 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 13:41:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,6 @@ int main(int ac, char **av)
 		return (1);
 	}
 	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
-	serverRun(serv);
+	return serverRun(serv);
 }
 
