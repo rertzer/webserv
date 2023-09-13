@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 14:00:38 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 10:01:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,8 @@ void	eventOnOther(Event & ev, Polling & pool)
 {
 	std::cout << "EVENT on " << ev.getFd() << " socket " << ev.getSocket()->getFd() << std::endl;
 	ev.handleEvent();
-	handleEventStatus(ev, pool);
+	if (ev.getStatus())
+		handleEventStatus(ev, pool);
 }
 
 void	handleEventStatus(Event & ev, Polling & pool)
