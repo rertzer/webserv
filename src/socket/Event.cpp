@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 13:59:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 09:45:46 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ void	Event::handleIn()
 				status = 1;
 			}
 		}
-	
+
 }
 
 void	Event::handleCgiIn()
@@ -205,7 +205,13 @@ void	Event::handleError()
 void	Event::handleHup()
 {
 	std::cout << "Event Hup on fd " << fd << std::endl;
-	internalError();
+	if (isCgiFd())
+	{
+		status = 6;
+		throw (ErrorException(500));
+	}
+	else
+		status = 3;
 }
 
 void	Event::handleNval()

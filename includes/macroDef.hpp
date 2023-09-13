@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/30 09:37:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/12 17:02:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool									ciCompare(std::string const & left, std::string const & right);
 std::string								lowString(std::string const & str);
 std::string								envFormat(std::string const & str);
 std::string								intToString(int n);
-Server &									findTheServ(Request& req, std::vector<Server> & serv, int motherPort);
+Server &								findTheServ(Request& req, std::vector<Server> & serv, int motherPort);
 std::string								readFile(std::string file);
 Response								createErrorPage(int codeErr, Server serv);
 int										checkAutoIndex(Location loc);
@@ -69,3 +69,22 @@ void									printServ(Server& serv);
 std::pair<std::string, std::string>		getExtension(Location Loc);
 int 									checkIfOnlyDigits(std::string str);
 std::string 							getUploadPath(Location loc);
+void 									dealWithGet(Request req, Response& rep);
+void 									dealWithPost(Request req, Response& rep);
+void 									dealWithDelete(Request req, Response& rep);
+std::string								readFile(std::string file, Response& rep);
+std::string								getContentKey(std::string value, Response& rep);
+std::string								findLocation(std::string path, Response& rep);
+int 									checkIfLocation(std::string path, Response& rep);
+Location 								getTheLocation(std::string path, Response& rep);
+void 									feelPart(Request req, Response& rep);
+int 									respWithLoc(Request &req, Response& rep);
+int										initCgi(Request & req, Location & loc, Response& rep);
+int										respWithCgi(Request & req, Response& rep);
+int 									respWithOutLoc(Request& req, Response& rep);
+std::string								getSpecIndex(Location loc, Response& rep);
+void 									createAutoIndexResp(Request& req, Location loc, Response& rep);
+void									checkExec(std::string filePath);
+int										respWithLoc(Request& req, Response &rep);
+//int										respWithCgi(Request & req, Response &rep);
+int										respWithOutLoc(Request& req, Response &rep);

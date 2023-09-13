@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 12:28:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/11 16:28:07 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ Server::Server(std::vector<std::string> servStrings)
 		else if (it->find("index ") != std::string::npos && locOpen == false)
 		{
 			std::string defaultPage = it->substr(it->find("index") + 6, it->find(";") - it->find("index ") - 6);
+			std::cout << "\n\n\n" << defaultPage  << "\n\n\n";
+			std::cout << defaultPage << std::endl;
 			std::stringstream ss(defaultPage);
 			std::string defaultStock;
 			while (getline(ss, defaultStock, ' '))

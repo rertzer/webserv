@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/30 09:37:32 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/11 16:10:42 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,21 +56,31 @@ Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 		return (*(serv.begin()));
 	while (it != serv.end())
 	{
-//		std::cout << "Enter here = " << req.getField("Host") << "| My serv name is =  "<< it->getServName() + ":" + intToString(req.getPort()) << std::endl;
+		// std::cout << "Enter here = " << req.getField("Host") << "| My serv name is =  "<< it->getServName() + ":" + intToString(req.getPort()) << std::endl;
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort()))
 		{
+			// std::cout << "Enter after" << std::endl;
 			if (it->getListenPort().size() > 1)
 			{
+				// std::cout << "enter 3" << std::endl;
 				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
 				{
+					// std::cout << "mother port = " << motherPort << "| it2 = " << *it2 << std::endl;
 					if (motherPort == *it2)
+					{
+						// std::cout << "enter 4" << std::endl;
 						return (*it);
+					}
 				}
 			}
 			else
 			{
+				// std::cout << "mother port = " << motherPort << "| it2 = " << *it->getListenPort().begin() << std::endl;
 				if (motherPort == *it->getListenPort().begin())
+				{
+						// std::cout << "ekqqw" << std::endl;
 						return (*it);
+				}
 			}
 
 		}

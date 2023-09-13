@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/11 14:27:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/12 14:31:24 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,6 +286,11 @@ void	Request::feed(std::vector<Server> serv)
 		setHeader(serv);
 	if (header_ok && contentExist() && !content_ok)
 		setContent();
+}
+
+TCPSocket * Request::getSocket() const
+{
+	return soc;
 }
 
 std::string Request::getLine(std::string & data, std::string const & sep)

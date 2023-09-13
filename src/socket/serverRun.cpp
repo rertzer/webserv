@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 10:01:10 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 10:20:11 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	serverRun(std::vector<Server> serv)
 		loadMotherSocket(pool, serv);
 		std::cout << "Listening...\n";
 		int counter = 0;
-		
+
 		while (1)
 		{
 			int rc = pool.wait();
@@ -61,7 +61,7 @@ void	handleEvent(Polling & pool, std::vector<Server> & serv)
 	if (pool.isMother(ev))
 		eventOnMother(ev, pool);
 	else
-		eventOnOther(ev, pool);			
+		eventOnOther(ev, pool);
 	std::cout << "Resetting " << ev.getFd() << std::endl;
 	pool.reset(ev.getFd());
 }
@@ -79,7 +79,7 @@ void	loadMotherSocket(Polling & pool, std::vector<Server> serv)
 		pool.addMotherSocket(it->first);
 }
 
-void	eventOnMother(Event & ev, Polling & pool) 
+void	eventOnMother(Event & ev, Polling & pool)
 {
 	if (ev.isIn())
 		pool.connect(ev);

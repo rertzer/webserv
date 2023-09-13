@@ -18,6 +18,7 @@
 #include "ContentMap.hpp"
 #include "Cgi.hpp"
 
+class TCPSocket;
 enum codeProb{
 	OK = 200,
 	FILE_NOT_FOUND = 404,
@@ -43,29 +44,43 @@ class Response
 		std::string _location;
 		std::string _root;
 		int			_allowedMethods;
-
 		std::pair<std::string, std::string>	extractField(size_t pos);
 	public:
 		Response(Request& req, Server& serv);
 		Response(std::string status, std::string contentType, std::string contentLength, std::string connectionClose, std::string content);
 		Response&	operator=(Response const & rhs);
-		void 		dealWithGet(Request req);
-		void 		dealWithPost(Request req);
-		void 		dealWithDelete(Request req);
-		std::string	readFile(std::string file);
-		std::string	runFile(Request & req);
-		std::string	getResponse();
-		std::string	getContentKey(std::string value);
-		std::string	findLocation(std::string path);
-		int 		checkIfLocation(std::string path);
-		Location 	getTheLocation(std::string path);
-		void 		iniateContentMap();
-		void 		feelPart(Request req);
-		int 		respWithLoc(Request &req);
-		int			initCgi(Request & req, Location & loc);
-		int			respWithCgi(Request & req);
-		int 		respWithOutLoc(Request& req);
-		std::string	getSpecIndex(Location loc);
-		void 		createAutoIndexResp(Request& req, Location loc);
-		void		setCookie(std::string ck);
+		std::string getResponse();
+		int	respWithCgi(Request & req); // to re;ove
+		//setter
+		void								setCookie(std::string ck);
+		void								Setserv(Server);
+		void								setMethod(std::string);
+		void								setStatus(std::string);
+		void								setContentType(std::string);
+		void								setContentLength(std::string);
+		void								setConnectionClose(std::string);
+		void								setContent(std::string);
+		void								setLocation(std::string);
+		void								setRoot(std::string);
+		void								setAutoIndex(std::string);
+		void								setExtensionAllowed(std::pair<std::string, std::string>);
+		void								setReadFileAccess(int);
+		void								setContentMap(ContentMap);
+		void								setAllowedMethods(int);
+		//getter
+		Server								getServ(void) const ;
+		std::string 						getMethod(void) const;
+		std::string 						getStatus(void) const;
+		std::string 						getContentType(void) const;
+		std::string 						getContentLength(void) const;
+		std::string 						getConnectionClose(void) const;
+		std::string 						getContent(void) const;
+		std::string 						getLocation(void) const;
+		std::string 						getRoot(void) const;
+		std::string 						getAutoIndex(void) const;
+		std::pair<std::string, std::string> getExtensionAllowed(void) const;
+		int 								getReadFileAccess(void) const;
+		ContentMap							getContentMap(void) const;
+		int									getAllowedMethods(void) const;
+		std::vector<std::string> 			getCookie(void) const;
 };
