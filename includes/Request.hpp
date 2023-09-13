@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:06:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 14:30:10 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 11:32:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,13 @@ class Request
 		bool											isUpload() const;
 		void											upload_all();
 		unsigned int									getUIntField(std::string const & name) const;
-		void											addField(std::string const & field);
+		void										addField(std::string const & field);
 		void										setQuery(std::string const & query);
 		void										setKeepAlive();
 		void										setCgi(Cgi * c);
 		bool										ready() const;
 		void										feed(std::vector<Server> serv);
+		void										eraseContent(int size);
 
 		class	RequestException: public std::exception
 		{

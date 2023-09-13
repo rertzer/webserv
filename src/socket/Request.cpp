@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 14:31:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 11:33:29 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,6 +287,12 @@ void	Request::feed(std::vector<Server> serv)
 	if (header_ok && contentExist() && !content_ok)
 		setContent();
 }
+
+void	Request::eraseContent(int size)
+{
+	content.erase(0, size);
+}
+
 
 TCPSocket * Request::getSocket() const
 {
