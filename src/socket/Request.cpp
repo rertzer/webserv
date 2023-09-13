@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/12 14:31:24 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 11:02:58 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPort()), status(100), body_size(1000000), soc(s), cgi(NULL), header_ok(false), content_ok(false)
 
 {
+	std::cout << " ------------------------------ " << std::endl << "\n";
 	int len = soc->readAll();
 	std::cout << "on fd " << soc->getFd() << ", " <<  len << " octets read\n";
 	if (len == 0)
