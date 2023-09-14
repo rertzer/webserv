@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 11:22:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 14:16:05 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,6 +268,8 @@ std::string	Request::getLine(std::string const & sep)
 	std::string	line;
 
 	pos = content.find(sep);
+	if (pos > 20000)
+		throw ErrorException(400);
 	if (pos != -1)
 	{
 		line = content.substr(0, pos);
@@ -437,6 +439,7 @@ void	Request::setContent()
 		unsigned int len = getUIntField("Content-Length");
 		setContentByLength(len);
 	}
+	std::cout << "FINAL CONTENT IS $" << content << "$\n";
 }
 
 void	Request::setContentByChunked()
@@ -446,19 +449,28 @@ void	Request::setContentByChunked()
 	{
 		len = readChunk();
 	}
+	std::stringstream ss;
+	ss << content.size();
+	header.erase(header.find("Transfer-Encoding"));
+	header["Content-Length"] = ss.str().c_str();
+	std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << content << std::endl;
 	setTrailer();
 }
 
 unsigned int	Request::readChunk()
 {
+	std::cout << "Reading chunked\n";
 	std::stringstream ss;
 	ss << std::hex << soc->getLine();
 	unsigned int	size = 0;
+	std::cout << "line is " << ss.str() << std::endl;
 	if (ss >> size)
 	{
+		std::cout << "the size is " << size <<std::endl;
 		if (content.size() + size > body_size)
 			throw (ErrorException(413));
 		soc->addRawData(content, size);
+		std::cout << "content is " << content << std::endl;
 		soc->getLine();
 		if (size == 0)
 			content_ok = true;

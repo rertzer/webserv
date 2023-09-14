@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 09:39:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 14:17:11 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,11 +256,13 @@ char**	Cgi::formatEnv() const
 	int env_size = req.getHeader().size() + env_map.size() + 1;
 	char** env_array = new char*[env_size];
 	int	i = 0;
+	//std::cout << "FORMATENVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv\n";
 	for (std::map<std::string, std::string>::const_iterator it = req.getHeader().begin(); it != req.getHeader().end(); it++)
 	{
 		std::string tmp;
 		tmp.append(envFormat(it->first) + "=" + it->second);
 		env_array[i] = strdup(tmp.c_str());
+		//std::cout << env_array[i] << std::endl;
 		i++;
 	}
 	for (std::map<std::string, std::string>::const_iterator it = env_map.begin(); it != env_map.end(); it++)
@@ -268,6 +270,7 @@ char**	Cgi::formatEnv() const
 		std::string	tmp;
 		tmp.append(it->first + "=" + it->second);
 		env_array[i] = strdup(tmp.c_str());
+		//std::cout << env_array[i] << std::endl;
 		i++;
 	}
 	env_array[i] = NULL;
