@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/13 11:17:47 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:58:01 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,25 @@ std::string Response::getResponse()
 	{
 		response += "Set-Cookie: " + _setCookie[i] + "\r\n";
 	}
+	if (_status == "200 OK")
+		std::cout << GREEN "\nReponse send:\n" << response << RESET << std::endl;
+	else
+		std::cout << RED "\nReponse send:\n" << response << RESET << std::endl;
 	response += "\r\n";
 	response += _content;
 	return (response);
+
 }
 
 Response::Response(Request& req, Server& serv)
 {
-	//std::cout << std::endl << "IN RESPONSE CONSTRUCTOR" << std::endl;
 	_readFileAccess = OK;
 	_serv = serv;
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
-	//std::cout << "cgi status = " << req.getCgiStatus() << " for the request = " << req.getQuery() <<  std::endl;
-	std::cout << "Requested file = " << req.getQuery() << " for the port " << req.getPort() << std::endl;
-	std::cout << "Serv port = " << serv.getListenPort()[0] << std::endl;
 	if (req.getCgiStatus() == 4)
 	{
-		std::cout << "enter here" << std::endl;
 		if (respWithCgi(req) == 0)
 			return;
 	}
@@ -61,7 +61,6 @@ Response::Response(Request& req, Server& serv)
 		if (respWithOutLoc(req, *this) == 0)
 			return ;
 	}
-	std::cout << "Serv port 2 = " << serv.getListenPort()[0] << std::endl;
 	if (req.getMethod() == "GET" && (_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE || _allowedMethods == GETPOSTDELETE))
 		dealWithGet(req, *this);
 	else if (req.getMethod() == "POST" && (_allowedMethods == POST || _allowedMethods == GETPOST || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))

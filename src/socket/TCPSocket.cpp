@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/11 14:00:39 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:21:46 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ void	TCPSocket::accept(TCPSocket * csoc)
 		throw(ErrorException(500));
 	csoc->mother_port = getPort();
 	csoc->setParam();
-	std::cout << "New connection " << csoc->socket_fd <<  ":" << csoc->getPort() << " from TCP socket " << socket_fd << " on port " << getPort() << std::endl;
 }
 
 void	TCPSocket::setParam()

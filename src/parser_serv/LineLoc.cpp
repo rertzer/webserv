@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 11:08:25 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/30 09:25:52 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:30:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ LineLoc::LineLoc(std::string line)
 			_cmd = defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
 			if (_cmd != "root" && _cmd != "return" && _cmd != "autoindex" && _cmd != "allow_methods" && _cmd != "index" && _cmd != "extension" && _cmd != "cgi_path" && _cmd != "upload_path")
 			{
-				//std::cout << "cmd = " << _cmd << std::endl;
-				//std::cout << "Here 1 " << std::endl;
+				std::cout << "Not a valid command" << std::endl;
 				throw(ServerException());
 			}
 		}
@@ -43,41 +42,43 @@ LineLoc::LineLoc(std::string line)
 		i++;
 	}
 	if (_cmd == "index" && _args.size() != 1)
+	{
+		std::cout << "Only one item after an index keyword in a location" << std::endl;
 		throw(ServerException());
+	}
 	if (_cmd == "root" && _args.size() != 1)
 	{
-		//std::cout << "Here 2 " << std::endl;
+		std::cout << "Only one item after a root keyword in a location" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "upload_path" && _args.size() != 1)
 	{
-		std::cout << "probl server exception" << std::endl;
+		std::cout << "Only one item after a upload_path keyword in a location" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "return" && _args.size() != 2)
 	{
-		//std::cout << "Here 3 " << std::endl;
+		std::cout << "Only one number and one file after a retur keyword" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "autoindex" && _args.size() != 1)
 	{
-		//std::cout << "Here 4" << std::endl;
+		std::cout << "Only one item after an autoindex keyword in a location" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "allow_methods" && _args.size() == 0)
 	{
-		std::cout << "line = " << defaultStock << std::endl;
-		std::cout << "Here 5 " << std::endl;
+		std::cout << "At least one item after an allow_methods keyword in a location" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "extension" && _args.size() != 1)
 	{
-		std::cout << "Here 6 " << std::endl;
+		std::cout << "Only one item after an extension keyword in a location" << std::endl;
 		throw(ServerException());
 	}
 	if (_cmd == "cgi_path" && _args.size() != 1)
 	{
-		std::cout << "Here 7 " << std::endl;
+		std::cout << "Only one item after an cgi_path keyword in a location" << std::endl;
 		throw(ServerException());
 	}
 }
@@ -94,10 +95,8 @@ std::vector <std::string>& LineLoc::getArgs()
 
 int LineLoc::checkArgs(std::string toFind)
 {
-	//std::cout << "toFind = " << toFind << std::endl;
 	for (size_t i = 0; i < _args.size(); i++)
 	{
-	//	std::cout << "args = " << _args[i] << std::endl;
 		if (_args[i] == toFind)
 			return (1);
 	}

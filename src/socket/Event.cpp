@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 11:00:30 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:20:08 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,6 @@ void	Event::handleEvent()
 
 void	Event::handleIn()
 {
-		std::cout << "Event In on fd " << fd << std::endl;
 		if (soc->req == NULL)
 		{
 			soc->req = new Request(soc, serv);
@@ -141,6 +140,7 @@ void	Event::handleIn()
 			else if (soc->req->getCgiStatus() == 0)
 				soc->req->feed(serv);
 		}
+		printCleanRequest(*soc->req);
 		if (soc->req->ready())
 		{
 			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
@@ -173,16 +173,13 @@ void	Event::handleCgiIn()
 
 void	Event::handleOut()
 {
-
-	std::cout << "Handle out request is " << soc->req << std::endl;
 	if (soc->req && (soc->req->getCgiStatus() == 1 || soc->req->getCgiStatus() == 5))
 		handleCgiOut();
 	else
 	{
 		if (!soc->getMessageOut().empty())
 		{
-			int len = soc->send();
-			std::cout << "Event Out on fd " << fd << " " << len << " char sent.\n";
+			soc->send();
 			if (soc->getMessageOut().empty())
 			{
 				if (soc->req != NULL)
@@ -213,13 +210,11 @@ void	Event::handleCgiOut()
 
 void	Event::handleError()
 {
-	std::cout << "Event Error on fd " << fd << std::endl;
 	internalError();
 }
 
 void	Event::handleHup()
 {
-	std::cout << "Event Hup on fd " << fd << std::endl;
 	if (isCgiFd())
 	{
 		status = 6;
@@ -231,7 +226,6 @@ void	Event::handleHup()
 
 void	Event::handleNval()
 {
-	std::cout << "Event Nval on fd " << fd << std::endl;
 	internalError();
 }
 

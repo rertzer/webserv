@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 14:53:20 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 14:22:06 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int	serverRun(std::vector<Server> serv)
 		{
 			int rc = pool.wait();
 			counter++;
-			std::cout << "loop " << counter << std::endl;
 			if (quitok)
 				break;
 
@@ -62,7 +61,6 @@ void	handleEvent(Polling & pool, std::vector<Server> & serv)
 		eventOnMother(ev, pool);
 	else
 		eventOnOther(ev, pool);
-	std::cout << "Resetting " << ev.getFd() << std::endl;
 	pool.reset(ev.getFd());
 }
 
@@ -104,7 +102,6 @@ void	checkBadEventOnMother(Event & ev, Polling & pool)
 
 void	eventOnOther(Event & ev, Polling & pool)
 {
-	std::cout << "EVENT on " << ev.getFd() << " socket " << ev.getSocket()->getFd() << std::endl;
 	ev.handleEvent();
 	if (ev.getStatus())
 		handleEventStatus(ev, pool);
@@ -123,7 +120,6 @@ void	handleEventStatus(Event & ev, Polling & pool)
 	whichandle[8] = &handleCgiGetExec;
 	whichandle[9] = &handleCgiError;
 
-	std::cout << "event status is " << ev.getStatus() << std::endl;
 	handlestatus hs = whichandle[ev.getStatus()];
 	(hs)(ev, pool);
 }

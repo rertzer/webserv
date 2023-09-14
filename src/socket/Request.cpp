@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 10:42:50 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:45:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,6 @@ Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPo
 {
 	std::cout << " ------------------------------ " << std::endl << "\n";
 	int len = soc->readAll();
-	std::cout << "on fd " << soc->getFd() << ", " <<  len << " octets read\n";
-	std::cout <<"cgi is " << cgi << std::endl;
-	std::cout <<"cgi is " << getCgiStatus() << std::endl;
 	if (len == 0)
 		throw (RequestException());
 	setControlData();
@@ -78,7 +75,6 @@ int	Request::getStatus() const
 
 int	Request::getCgiStatus() const
 {
-	std::cout << "CGI: " << cgi << std::endl;
 	if (cgi != NULL)
 		return cgi->getStatus();
 	else

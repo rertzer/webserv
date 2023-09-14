@@ -22,7 +22,7 @@
 # include <sys/wait.h>
 # include "Request.hpp"
 
-/*Cgi status : 
+/*Cgi status :
  * 0 = not initialized
  * 1 = waiting to write post_fd
  * 2 = ready to exec
@@ -55,7 +55,7 @@ class	Cgi
 		void		setPostFd();
 		void		setPipeFd();
 		int			execSon();
-		void		execFather(int pid);
+		void		execFather();
 		char **		formatArgv() const;
 		char **		formatEnv() const;
 

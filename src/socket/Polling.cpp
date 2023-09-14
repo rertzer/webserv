@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 14:56:52 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:22:55 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ void	Polling::connect(Event const & ev)
 	TCPSocket *	soc = new TCPSocket();
 	powerstrip[ev.getFd()]->accept(soc);
 	addSocket(soc);
-
-	std::cout << "New connection fd: " << soc->getFd() << std::endl;
 }
 
 void	Polling::removeMotherSocket(int fd)
@@ -71,7 +69,6 @@ void	Polling::removeSocket(int fd)
 	std::map<int, TCPSocket *>::iterator mi = powerstrip.find(fd);
 	if (mi != powerstrip.end())
 	{
-		std::cout << "Removing socket fd " << fd << std::endl;
 		removeFd(fd);
 		delete (powerstrip[fd]);
 		powerstrip.erase(fd);
@@ -112,14 +109,8 @@ Event Polling::nextEvent()
 			short rev = fds[i].revents;
 			fds[i].revents = 0;
 			TCPSocket * soc = getSocketByFd(fds[i].fd);
-			std::cout << "dqlplqpw" << std::endl;
 			if (soc == NULL)
-			{
-				std::cout << "qwoekweoekqwe" << std::endl;
 				soc = getSocketByCgiFd(fds[i].fd);
-				if (soc == NULL)
-					std::cout << "soc failed" << std::endl;
-			}
 			return Event(fds[i].fd, rev, soc);
 		}
 	}
@@ -241,7 +232,6 @@ void	Polling::addCgiFd(int fd, int events, TCPSocket *soc)
 
 void	Polling::removeFd(int fd)
 {
-	std::cout << "Removing fd " << fd << " from polling list " << std::endl;
 	nfds_t	i = 0;
 	for (; i < nfds; i++)
 	{

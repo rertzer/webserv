@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 13:41:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 13:58:58 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int main(int ac, char **av)
 		confFileName = av[1];
 	else
 	{
-		confFileName = "webserv_2.conf";
+		confFileName = "webserv_3.conf";
 	}
 	try {
 		if (checkConfFile(confFileName) == -1)

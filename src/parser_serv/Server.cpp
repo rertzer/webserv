@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/13 11:05:09 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:32:03 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,8 @@ Server::Server(std::vector<std::string> servStrings)
 	std::vector<bool> bracOpen;
 	_allowedMethod = GETPOSTDELETE;
 	_maxBodySize = -1;
-	//std::cout << "size of servString vector = " << servStrings.size() << std::endl;
 	for (std::vector<std::string>::iterator it = servStrings.begin(); it != servStrings.end(); it++)
 	{
-		//std::cout << *it << std::endl;
 		if (it->find("allow_methods") != std::string::npos && locOpen == false)
 		{
 			_allowedMethod = getAllowMethodsServer(it->substr(it->find("allow_methods") + 14, it->find(";") - it->find("allow_methods") - 14));
@@ -46,7 +44,6 @@ Server::Server(std::vector<std::string> servStrings)
 			_root = it->substr(it->find("root") + 5, it->find(";") - it->find("root") - 5);
 		else if (it->find("error_page") != std::string::npos)
 		{
-			// need 2 thing behind error_page
 			std::string errorPage;
 			std::string errorNb;
 			if (it->length() > 11 + 3)
@@ -54,7 +51,7 @@ Server::Server(std::vector<std::string> servStrings)
 				errorNb = it->substr(it->find("error_page") + 11, 3);
 				if (atoi(errorNb.c_str()) < 300 || atoi(errorNb.c_str()) > 599)
 				{
-					std::cout << "Error nb have to be lower than 599 and upper than 300" << std::endl;
+					std::cout << "Error nb page have to be lower than 599 and upper than 300" << std::endl;
 					throw(ServerException());
 				}
 			}
@@ -77,16 +74,10 @@ Server::Server(std::vector<std::string> servStrings)
 				std::cout << "client_max_body_size doesn't respect subject rules" << std::endl;
 				throw(ServerException());
 			}
-			// if (_maxBodySize > 212 || _maxBodySize < 0)
-			// {
-			// 	std::cout << "client_max_body_size cannot be bigger than 212kb" << std::endl;
-			// 	throw(ServerException());
-			// }
 		}
 		else if (it->find("autoindex") != std::string::npos && locOpen == false)
 		{
 			*it = it->substr(it->find("autoindex") + 10, it->find(";") - it->find("autoindex") - 10);
-			std::cout << "autoindex found = " << *it << std::endl;
 			if (*it == "on")
 				_autoIndex = "on";
 			else if (*it == "off")
@@ -100,8 +91,6 @@ Server::Server(std::vector<std::string> servStrings)
 		else if (it->find("index ") != std::string::npos && locOpen == false)
 		{
 			std::string defaultPage = it->substr(it->find("index") + 6, it->find(";") - it->find("index ") - 6);
-			// std::cout << "\n\n\n" << defaultPage  << "\n\n\n";
-			// std::cout << defaultPage << std::endl;
 			std::stringstream ss(defaultPage);
 			std::string defaultStock;
 			while (getline(ss, defaultStock, ' '))
@@ -118,8 +107,7 @@ Server::Server(std::vector<std::string> servStrings)
 		{
 			if (locOpen == false)
 			{
-				std::cout << *it << std::endl;
-				std::cout << "line not know"	<< std::endl;
+				std::cout << "line not know -> "<< *it << " <- End of line not know" << std::endl;
 				throw(ServerException());
 			}
 		}
@@ -140,9 +128,6 @@ Server::Server(std::vector<std::string> servStrings)
 	}
 	if (_autoIndex.length() == 0)
 		_autoIndex = "off";
-	// std::cout << _allowedMethod<< std::endl;
-	// std::cout << "body size of " << _servName << " = " << _maxBodySize << std::endl;
-	//printServ(*this);
 }
 
 Server::~Server()

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 17:02:52 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:36:49 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,8 @@
 #include <cstddef>
 #include <bits/stdc++.h>
 #include <sys/wait.h>
+#include "color.hpp"
 
-
-//CFNG stand for Conf File No Good
 #define CONF_FILE_NO_GOOD std::cout << "The conf file doesn't respect subject requirement" << std::endl;
 #define CFNG_SMI_COLON std::cout << "A line in the conf File isn't ending with a semicolon" << std::endl;
 #define CFNG_BRAC_OPEN std::cout << "A close bracket appear that isn't open anywhere" << std::endl;
@@ -86,5 +85,5 @@ std::string								getSpecIndex(Location loc, Response& rep);
 void 									createAutoIndexResp(Request& req, Location loc, Response& rep);
 void									checkExec(std::string filePath);
 int										respWithLoc(Request& req, Response &rep);
-//int										respWithCgi(Request & req, Response &rep);
 int										respWithOutLoc(Request& req, Response &rep);
+void									printCleanRequest(Request req);

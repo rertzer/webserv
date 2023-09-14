@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 09:39:39 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 13:39:13 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void	Cgi::setEnv()
 	env_map["PATH_INFO"] = path_info;
 	env_map["PATH_TRANSLATED"] = "";
 	env_map["QUERY_STRING"] = query_string;
-	env_map["REMOTE_ADDR"] = "127.0.0.1"; 
+	env_map["REMOTE_ADDR"] = "127.0.0.1";
 	env_map["HTTP_COOKIE"] = req.getField("Cookie");
 }
 
@@ -147,7 +147,6 @@ void	Cgi::setPipeFd()
 int	Cgi::writePostFd()
 {
 	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
-	std::cerr << "writen to post : " << size << std::endl;
 	if (size < 0)
 	{
 		perror("pipe error");
@@ -167,7 +166,6 @@ int	Cgi::readPipeFd()
 {
 	buffer = new char[buffer_size + 1];
 	int	size = ::read(pipe_fd[0], buffer, buffer_size);
-	std::cerr << "read " << size << " from pipe " << pipe_fd[0] << std::endl;
 	if (size <= 0)
 	{
 		delete[] buffer;
@@ -176,7 +174,7 @@ int	Cgi::readPipeFd()
 		throw (ErrorException(500));
 	}
 	buffer[size] = '\0';
-	
+
 	std::stringstream ss;
 	ss.write(buffer, size);
 	delete[] buffer;
@@ -197,7 +195,7 @@ void	Cgi::exec()
 	if (pid == 0)
 		execSon();
 	if (pid)
-		execFather(pid);
+		execFather();
 }
 
 int	Cgi::execSon()
@@ -224,21 +222,11 @@ int	Cgi::execSon()
 		exit(-1);
 }
 
-void	Cgi::execFather(int pid)
+void	Cgi::execFather()
 {
-	//int	ret;
-
 	::close(pipe_fd[1]);
-	/*waitpid(pid, &ret, 0);
-	if (ret == -1)
-	{
-		perror("cgi script error");
-		::close(pipe_fd[0]);
-		throw (ErrorException(500));
-	}*/
 	if (status == 2)
 		status = 3;
-	std::cout << "Son is " << pid << "> Father is happy, status is " << status << "\n";
 }
 
 char **	Cgi::formatArgv() const

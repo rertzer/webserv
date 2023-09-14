@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 10:56:13 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:41:08 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,37 +53,23 @@ Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
 	if (req.getField("Host").empty())
-	{
-		std::cout << "Enter here in host empty" << std::endl;
 		return (*(serv.begin()));
-	}
 	while (it != serv.end())
 	{
-		std::cout << "Enter here = " << req.getField("Host") << "| My serv name is =  "<< it->getServName() + ":" + intToString(req.getPort()) << std::endl;
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort()))
 		{
-			std::cout << "Enter after" << std::endl;
 			if (it->getListenPort().size() > 1)
 			{
-				std::cout << "enter 3" << std::endl;
 				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
 				{
-					std::cout << "mother port = " << motherPort << "| it2 = " << *it2 << std::endl;
 					if (motherPort == *it2)
-					{
-						std::cout << "enter 4" << std::endl;
 						return (*it);
-					}
 				}
 			}
 			else
 			{
-				std::cout << "mother port = " << motherPort << "| it = " << *it->getListenPort().begin() << std::endl;
 				if (motherPort == *it->getListenPort().begin())
-				{
-						std::cout << "ekqqw" << std::endl;
 						return (*it);
-				}
 			}
 
 		}
@@ -94,11 +80,9 @@ Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 
 Response createErrorPage(int codeErr, Server serv)
 {
-//	std::cout << "codeErr = " << codeErr << std::endl;
 	ContentMap contentMap;
 	std::string status = Status::getMsg(codeErr);
 	std::string contentType = contentMap.getContentValue(serv.getErrorPage(intToString(codeErr)).substr(serv.getErrorPage(intToString(codeErr)).rfind(".") + 1, serv.getErrorPage(intToString(codeErr)).length()));
-	std::cout << "serv name on err page = " << serv.getServName() << ":" << serv.getListenPort()[0] << std::endl;
 	std::string content;
 	try
 	{
@@ -124,7 +108,6 @@ int checkAllowMethod(Location loc)
 	bool found = false;
 	while (it != lineLoc.end())
 	{
-		std::cout << "cmd = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "allow_methods")
 		{
 			if (it->checkArgs("GET") == 1)
@@ -225,10 +208,8 @@ int checkForRedirection(Location& loc)
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end())
 	{
-		//std::cout << "cmd = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "return")
 		{
-			std::cout << "return = " << it->getArgs()[0] << std::endl;
 			if (it->getArgs().size() >= 2)
 				return (1);
 		}
@@ -259,10 +240,8 @@ int	isThereAspecRoot(Location& loc)
 {
 	std::vector<LineLoc> lineLoc = loc.getLocationLine();
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	//std::cout << "Enter in is there a spec root | size of loc.vec()" << lineLoc.size() << " name of loc" << loc.getLocationPath() << std::endl;
 	while (it != lineLoc.end())
 	{
-	//	std::cout << " In is there a spec root = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "root")
 			return (1);
 		it++;

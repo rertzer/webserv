@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 16:42:14 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:26:21 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,10 @@ int fillServ(std::string av, std::vector<Server>& serv)
 			lineString = lineString.substr(0, lineString.find("#"));
 		if (lineString.find_first_not_of(" \t\r") == std::string::npos)
 			continue;
-		//std::cout << "lineString = " << lineString << std::endl;
 		if (lineString.find("server {") != std::string::npos) // I want it to skip the server line
 		{
-			//std::cout << "enter here" << std::endl;
 			servOpen = true;
 			bracketOpen.push_back(true);
-			//std::cout << "countLine = " << countLine << std::endl;
 			continue;
 		}
 		if (servOpen == true)

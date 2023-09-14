@@ -15,6 +15,7 @@
 #include <locale>
 
 #include "macroDef.hpp"
+#include "Request.hpp"
 
 std::vector<std::string>	splitCsv(std::string const & str)
 {
@@ -78,4 +79,13 @@ std::string	envFormat(std::string const & str)
 	return ci_string;
 }
 
+void printCleanRequest(Request req)
+{
+	std::cout << "\n" << BLUE"Request = {";
+	std::cout << "[Method: " << req.getMethod() << "]" ;
+	std::cout << "[File: " << req.getQuery()	<< "]" ;
+	std::cout << "[Port: " << req.getPort() << "]" ;
+	std::cout << "[Host: " << req.getField("Host") << "]" ;
+	std::cout << "}" RESET << std::endl;
 
+}

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 09:54:11 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:13:27 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 13:32:30 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@ int checkConfFile(std::string av)
 	}
 }
 
-//uggly function to check the parsing of the config file
-// need to be cleaner
 int checkBracket(std::ifstream& conf)
 {
 	std::vector<bool> bracketOpen;
@@ -87,10 +85,7 @@ int checkBracket(std::ifstream& conf)
 		}
 	}
 	if (bracketOpen.size() == 0)
-	{
-		//std::cout << "Brackets are well closed" << std::endl;
 		return (0);
-	}
 	else
 	{
 		CFNG_BRAC_OPEN;
