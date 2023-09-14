@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:27:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 15:28:49 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void	Cgi::setPipeFd()
 int	Cgi::writePostFd()
 {
 	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
-	if (size < 0)
+	if (size <= 0)
 	{
 		perror("pipe error");
 		throw (ErrorException(500));

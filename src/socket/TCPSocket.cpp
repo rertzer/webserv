@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:21:46 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 15:35:19 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,8 @@ void	TCPSocket::setKeepAlive(bool k)
 int	TCPSocket::send()
 {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
+	if (len <= 0)
+		throw (SocketException());
 	msg_out.erase(0, len);
 	return len;
 }

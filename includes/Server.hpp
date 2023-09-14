@@ -55,4 +55,5 @@ class Server
 		std::vector<int>& 					getListenPort();
 		int 								getAllowMethods();
 		std::string 						getAutoIndex();
+		void								checkIfHaveNeccessary();
 };

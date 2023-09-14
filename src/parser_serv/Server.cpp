@@ -126,8 +126,21 @@ Server::Server(std::vector<std::string> servStrings)
 			}
 		}
 	}
+	checkIfHaveNeccessary();
 	if (_autoIndex.length() == 0)
 		_autoIndex = "off";
+}
+
+void Server::checkIfHaveNeccessary()
+{
+	int polo[] = {401, 403, 404, 405, 413, 500, 501, 505};
+	if (_root.empty() || _nPort.size() != 1)
+		throw (ServerException());
+	for (int i = 0; i < 8; i++)
+	{
+  		if (_errorPage.find(intToString(polo[i])) == _errorPage.end())
+			throw(ServerException());
+	}
 }
 
 Server::~Server()
@@ -153,7 +166,7 @@ std::string& Server::getRoot()
 std::string Server::getErrorPage(std::string errorNb)
 {
 	if (_errorPage.find(errorNb) == _errorPage.end())
-		return (_errorPage.find("404")->second);
+		throw (ServerException());
 	return (_errorPage.find(errorNb)->second);
 }
 
