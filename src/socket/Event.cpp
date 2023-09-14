@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 11:15:28 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 11:22:06 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	Event::handleEvent()
 	whichfun[POLLERR] = &Event::handleError;
 	whichfun[POLLHUP] = &Event::handleHup;
 	whichfun[POLLNVAL] = &Event::handleNval;
-	
+
 
 	try
 	{
@@ -116,10 +116,10 @@ void	Event::handleEvent()
 	}
 	catch (const ErrorException & e)
 	{
-		soc->setMessageOut((createErrorPage(e.getCode(), this->serv[0])).getResponse());
-		soc->setKeepAlive(false);
-		if (! status)
-			status = 1;
+			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->req->getPort()))).getResponse());
+			soc->setKeepAlive(false);
+			if (! status)
+				status = 1;
 	}
 }
 
@@ -162,6 +162,7 @@ void	Event::handleCgiIn()
 	soc->req->getCgi()->readPipeFd();
 	if (soc->req->getCgiStatus() == 4)
 	{
+		std::cout << "query asked = " << soc->req->getQuery() << std::endl;
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = 6;

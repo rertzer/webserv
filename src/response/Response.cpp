@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 17:03:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 11:17:47 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,12 @@ Response::Response(Request& req, Server& serv)
 	//std::cout << std::endl << "IN RESPONSE CONSTRUCTOR" << std::endl;
 	_readFileAccess = OK;
 	_serv = serv;
-	std::cout << serv.getDefaultPage()[0] << std::endl;
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
-	std::cout << "cgi status = " << req.getCgiStatus() << " for the request = " << req.getQuery() <<  std::endl;
+	//std::cout << "cgi status = " << req.getCgiStatus() << " for the request = " << req.getQuery() <<  std::endl;
+	std::cout << "Requested file = " << req.getQuery() << " for the port " << req.getPort() << std::endl;
+	std::cout << "Serv port = " << serv.getListenPort()[0] << std::endl;
 	if (req.getCgiStatus() == 4)
 	{
 		std::cout << "enter here" << std::endl;
@@ -60,6 +61,7 @@ Response::Response(Request& req, Server& serv)
 		if (respWithOutLoc(req, *this) == 0)
 			return ;
 	}
+	std::cout << "Serv port 2 = " << serv.getListenPort()[0] << std::endl;
 	if (req.getMethod() == "GET" && (_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE || _allowedMethods == GETPOSTDELETE))
 		dealWithGet(req, *this);
 	else if (req.getMethod() == "POST" && (_allowedMethods == POST || _allowedMethods == GETPOST || _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
