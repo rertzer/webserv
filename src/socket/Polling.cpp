@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 14:36:49 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/13 14:56:52 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,9 +112,13 @@ Event Polling::nextEvent()
 			short rev = fds[i].revents;
 			fds[i].revents = 0;
 			TCPSocket * soc = getSocketByFd(fds[i].fd);
+			std::cout << "dqlplqpw" << std::endl;
 			if (soc == NULL)
 			{
+				std::cout << "qwoekweoekqwe" << std::endl;
 				soc = getSocketByCgiFd(fds[i].fd);
+				if (soc == NULL)
+					std::cout << "soc failed" << std::endl;
 			}
 			return Event(fds[i].fd, rev, soc);
 		}

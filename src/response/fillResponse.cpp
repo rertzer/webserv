@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 10:40:13 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/12 15:04:58 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 11:19:06 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,12 @@ void feelPart(Request req, Response &rep)
 	}
 	else
 	{
+		std::cout << "Serv port = " << rep.getServ().getListenPort()[0] << std::endl;
 		std::string	fileStr;
 		fileStr = readFile(rep.getRoot() + req.getQuery(), rep);
 		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND)
 		{
-
+			std::cout << "Serv port = " << rep.getServ().getListenPort()[0] << std::endl;
 			throw (ErrorException(404));
 		}
 		else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)

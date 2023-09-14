@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/11 16:28:07 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 11:05:09 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,7 @@ Server::Server(std::vector<std::string> servStrings)
 		//std::cout << *it << std::endl;
 		if (it->find("allow_methods") != std::string::npos && locOpen == false)
 		{
-			std::cout << "enter allow methods" << std::endl;
 			_allowedMethod = getAllowMethodsServer(it->substr(it->find("allow_methods") + 14, it->find(";") - it->find("allow_methods") - 14));
-			std::cout << "allowed method = " << _allowedMethod << std::endl;
 		}
 		else if (it->find("listen") != std::string::npos && locOpen == false)
 			_nPort.push_back(atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str()));
@@ -102,8 +100,8 @@ Server::Server(std::vector<std::string> servStrings)
 		else if (it->find("index ") != std::string::npos && locOpen == false)
 		{
 			std::string defaultPage = it->substr(it->find("index") + 6, it->find(";") - it->find("index ") - 6);
-			std::cout << "\n\n\n" << defaultPage  << "\n\n\n";
-			std::cout << defaultPage << std::endl;
+			// std::cout << "\n\n\n" << defaultPage  << "\n\n\n";
+			// std::cout << defaultPage << std::endl;
 			std::stringstream ss(defaultPage);
 			std::string defaultStock;
 			while (getline(ss, defaultStock, ' '))
@@ -142,8 +140,8 @@ Server::Server(std::vector<std::string> servStrings)
 	}
 	if (_autoIndex.length() == 0)
 		_autoIndex = "off";
-	std::cout << _allowedMethod<< std::endl;
-	std::cout << "body size of " << _servName << " = " << _maxBodySize << std::endl;
+	// std::cout << _allowedMethod<< std::endl;
+	// std::cout << "body size of " << _servName << " = " << _maxBodySize << std::endl;
 	//printServ(*this);
 }
 
