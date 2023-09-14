@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 14:33:29 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 10:42:50 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,16 @@ Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPo
 	std::cout << " ------------------------------ " << std::endl << "\n";
 	int len = soc->readAll();
 	std::cout << "on fd " << soc->getFd() << ", " <<  len << " octets read\n";
+	std::cout <<"cgi is " << cgi << std::endl;
+	std::cout <<"cgi is " << getCgiStatus() << std::endl;
 	if (len == 0)
 		throw (RequestException());
 	setControlData();
 	setHeader(serv);
 	if (contentExist())
 		setContent();
-	std::cout << "wqewqeqe;;ewq;e;wq"<<port << std::endl;
+	else
+		status = 5;
 }
 
 Request::Request(Request const & rhs)
@@ -75,6 +78,7 @@ int	Request::getStatus() const
 
 int	Request::getCgiStatus() const
 {
+	std::cout << "CGI: " << cgi << std::endl;
 	if (cgi != NULL)
 		return cgi->getStatus();
 	else
@@ -290,6 +294,12 @@ void	Request::feed(std::vector<Server> serv)
 		setContent();
 }
 
+void	Request::eraseContent(int size)
+{
+	content.erase(0, size);
+}
+
+
 TCPSocket * Request::getSocket() const
 {
 	return soc;
@@ -487,6 +497,7 @@ void	Request::checkControlData() const
 		if (method == allowed_methods[i])
 			return;
 	}
+	getCgiStatus();
 	throw (ErrorException(501));
 }
 

@@ -30,14 +30,13 @@
 					{
 						return $letter;
 					}
-
 				}
 				$plh = "Votre texte ici";
 				if (isset($_POST['cipher']))
 				{
+					//echo $_SERVER['CONTENT_LENGTH'];
 					$texte = $_POST['texte_area'];
 					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
-					$plh = $texte;
 					for ($i = 0; $i < strlen($texte); $i++)
 					{
 						$texte[$i] = cesar_cipher($texte[$i], $_POST['cipher_key']);
@@ -60,10 +59,6 @@
 			<div id="titre principal">
 			<h1>Ave Cesar</h1>
 			<h2>Chiffreur/Déchiffreur de code Cesar</h2>
-	<!--	<figure>
-			<img id="line" src=blue_line.svg>
-		</figure> -->
-
 		</header>
 		<nav id ="menu">
 			<a href="/html/page/indexTest.html">Index</a>
@@ -79,7 +74,7 @@
 			<p>Veuillez entrer le texte et sa clé</p>
 			<form action="cesar_post.php" method="post">
 				<div id="ta">
-				<textarea type="text" name="texte_area" rows="18" cols="70" maxlength="10000" placeholder='<?php echo $plh ?>'></textarea>
+				<textarea type="text" name="texte_area" rows="18" cols="70" placeholder='<?php echo $plh ?>'></textarea>
 				</div>
 				<div id="ck">
 					<select name="cipher_key">

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 10:36:35 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 11:00:30 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ void	Event::handleEvent()
 	whichfun[POLLHUP] = &Event::handleHup;
 	whichfun[POLLNVAL] = &Event::handleNval;
 
+
 	try
 	{
 		for (int i = 0 ; i < 5; i++)
@@ -146,7 +147,7 @@ void	Event::handleIn()
 			if (soc->req->getCgiStatus() == 1)
 				status = 4;
 			else if (soc->req->getCgiStatus() == 2)
-				status = 8;
+				status = 4;
 			else
 			{
 				soc->setMessageOut(resp.getResponse());
@@ -159,14 +160,22 @@ void	Event::handleIn()
 void	Event::handleCgiIn()
 {
 	soc->req->getCgi()->readPipeFd();
-	Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
-	soc->setMessageOut(resp.getResponse());
-	status = 6;
+	if (soc->req->getCgiStatus() == 4)
+	{
+		std::cout << "query asked = " << soc->req->getQuery() << std::endl;
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		soc->setMessageOut(resp.getResponse());
+		status = 6;
+	}
+	else
+		status = 0;
 }
 
 void	Event::handleOut()
 {
-	if (soc->req->getCgiStatus() == 1)
+
+	std::cout << "Handle out request is " << soc->req << std::endl;
+	if (soc->req && (soc->req->getCgiStatus() == 1 || soc->req->getCgiStatus() == 5))
 		handleCgiOut();
 	else
 	{
@@ -176,8 +185,11 @@ void	Event::handleOut()
 			std::cout << "Event Out on fd " << fd << " " << len << " char sent.\n";
 			if (soc->getMessageOut().empty())
 			{
-				delete soc->req;
-				soc->req = NULL;
+				if (soc->req != NULL)
+				{
+					delete soc->req;
+					soc->req = NULL;
+				}
 				if (soc->getKeepAlive())
 				{
 					soc->setKeepAlive(false);
@@ -193,7 +205,10 @@ void	Event::handleOut()
 void	Event::handleCgiOut()
 {
 	soc->req->getCgi()->writePostFd();
-	status = 7;
+	if (soc->req->getCgiStatus() == 3)
+		status = 7;
+	else
+		status = 5;
 }
 
 void	Event::handleError()

@@ -6,11 +6,12 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/11 15:55:17 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 09:39:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <fcntl.h>
 #include "Cgi.hpp"
 #include "Request.hpp"
 
@@ -131,24 +132,34 @@ void	Cgi::setPostFd()
 {
 	if (::pipe(post_fd) == -1)
 		throw (ErrorException(500));
+//	int r = fcntl(post_fd[0], F_SETFL, fcntl(post_fd[0], F_GETFL) | O_NONBLOCK);
+//	std::cout << "fcntl: " << r << std::endl;
+	fcntl(post_fd[1], F_SETFL, fcntl(post_fd[1], F_GETFL) | O_NONBLOCK);
 }
 
 void	Cgi::setPipeFd()
 {
 	if (::pipe(pipe_fd) == -1)
 		throw (ErrorException(500));
+	fcntl(pipe_fd[0], F_SETFL, fcntl(pipe_fd[0], F_GETFL) | O_NONBLOCK);
 }
 
 int	Cgi::writePostFd()
 {
 	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
 	std::cerr << "writen to post : " << size << std::endl;
-	if (size < 1)
+	if (size < 0)
 	{
 		perror("pipe error");
 		throw (ErrorException(500));
 	}
-	status = 2;
+	std::cout << static_cast<unsigned int>(size) << " " << req.getContent().size() <<std::endl;
+	if (static_cast<unsigned int>(size) == req.getContent().size())
+		status = 3;
+	else
+		status = 5;
+	req.eraseContent(size);
+
 	return size;
 }
 
@@ -156,7 +167,7 @@ int	Cgi::readPipeFd()
 {
 	buffer = new char[buffer_size + 1];
 	int	size = ::read(pipe_fd[0], buffer, buffer_size);
-	std::cerr << "read " << size << "from pipe " << pipe_fd[0] << std::endl;
+	std::cerr << "read " << size << " from pipe " << pipe_fd[0] << std::endl;
 	if (size <= 0)
 	{
 		delete[] buffer;
@@ -165,14 +176,16 @@ int	Cgi::readPipeFd()
 		throw (ErrorException(500));
 	}
 	buffer[size] = '\0';
-
+	
 	std::stringstream ss;
 	ss.write(buffer, size);
 	delete[] buffer;
 	content = ss.str();
-	//std::cerr << content << std::endl;
-	::close(pipe_fd[0]);
-	status = 4;
+	if (size != 65536)
+	{
+		::close(pipe_fd[0]);
+		status = 4;
+	}
 	return size;
 }
 
@@ -213,18 +226,19 @@ int	Cgi::execSon()
 
 void	Cgi::execFather(int pid)
 {
-	int	ret;
+	//int	ret;
 
 	::close(pipe_fd[1]);
-	waitpid(pid, &ret, 0);
+	/*waitpid(pid, &ret, 0);
 	if (ret == -1)
 	{
 		perror("cgi script error");
 		::close(pipe_fd[0]);
 		throw (ErrorException(500));
-	}
-	std::cout << "Father is happy, status 3\n";
-	status = 3;
+	}*/
+	if (status == 2)
+		status = 3;
+	std::cout << "Son is " << pid << "> Father is happy, status is " << status << "\n";
 }
 
 char **	Cgi::formatArgv() const
