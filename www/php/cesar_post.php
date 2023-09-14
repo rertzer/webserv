@@ -30,11 +30,11 @@
 					{
 						return $letter;
 					}
-
 				}
 				$plh = "Votre texte ici";
 				if (isset($_POST['cipher']))
 				{
+					//echo $_SERVER['CONTENT_LENGTH'];
 					$texte = $_POST['texte_area'];
 					$texte = htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
 					for ($i = 0; $i < strlen($texte); $i++)

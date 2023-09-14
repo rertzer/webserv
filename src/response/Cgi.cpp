@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 15:18:08 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 09:39:39 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,10 +132,9 @@ void	Cgi::setPostFd()
 {
 	if (::pipe(post_fd) == -1)
 		throw (ErrorException(500));
-	int r = fcntl(post_fd[0], F_SETFL, fcntl(post_fd[0], F_GETFL) | O_NONBLOCK);
-	std::cout << "fcntl: " << r << std::endl;
+//	int r = fcntl(post_fd[0], F_SETFL, fcntl(post_fd[0], F_GETFL) | O_NONBLOCK);
+//	std::cout << "fcntl: " << r << std::endl;
 	fcntl(post_fd[1], F_SETFL, fcntl(post_fd[1], F_GETFL) | O_NONBLOCK);
-	std::cout << "fcntl: " << r << std::endl;
 }
 
 void	Cgi::setPipeFd()
