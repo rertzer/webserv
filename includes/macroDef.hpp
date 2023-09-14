@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 13:36:49 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:26:03 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,3 +87,4 @@ void									checkExec(std::string filePath);
 int										respWithLoc(Request& req, Response &rep);
 int										respWithOutLoc(Request& req, Response &rep);
 void									printCleanRequest(Request req);
+Server &                                findTheDefaultServ(std::vector<Server>& serv, int motherPort);

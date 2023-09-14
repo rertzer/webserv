@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 13:41:08 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:28:43 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,21 @@ std::string intToString(int n)
 	return (ss.str());
 }
 
+Server & findTheDefaultServ(std::vector<Server>& serv, int motherPort)
+{
+	std::vector<Server>::iterator it = serv.begin();
+
+	while (it != serv.end())
+	{
+		if (it->getListenPort()[0] == motherPort)
+		{
+			return (*it);
+		}
+	}
+	throw (ServerException());
+	return (*(serv.begin()));
+}
+
 Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
@@ -80,6 +95,7 @@ Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 
 Response createErrorPage(int codeErr, Server serv)
 {
+
 	ContentMap contentMap;
 	std::string status = Status::getMsg(codeErr);
 	std::string contentType = contentMap.getContentValue(serv.getErrorPage(intToString(codeErr)).substr(serv.getErrorPage(intToString(codeErr)).rfind(".") + 1, serv.getErrorPage(intToString(codeErr)).length()));
@@ -189,7 +205,6 @@ int checkAutoIndex(Location loc)
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end())
 	{
-	//	std::cout << "cmd = " << it->getCmd() << std::endl;
 		if (it->getCmd() == "autoindex")
 		{
 			if (it->getArgs()[0] == "on")

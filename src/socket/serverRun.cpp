@@ -44,10 +44,15 @@ int	serverRun(std::vector<Server> serv)
 		std::cerr << e.what() << std::endl;
 		return 3;
 	}
-	catch (const std::exception &e)
+	catch (const ServerException & e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 4;
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 5;
 	}
 	return 0;
 }

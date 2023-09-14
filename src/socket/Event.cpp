@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:20:08 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:49:05 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,12 +111,19 @@ void	Event::handleEvent()
 	}
 	catch (const Request::RequestException & e)
 	{
-		std::cout << e.what() << std::endl;
 		status = 3;
+
 	}
 	catch (const ErrorException & e)
 	{
-			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->req->getPort()))).getResponse());
+		if (soc->req == NULL)
+		{
+			soc->setMessageOut((createErrorPage(e.getCode(), findTheDefaultServ(serv, soc->getMotherPort())).getResponse()));
+		}
+		else
+		{
+			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->getMotherPort()))).getResponse());
+		}
 			soc->setKeepAlive(false);
 			if (! status)
 				status = 1;
@@ -133,7 +140,6 @@ void	Event::handleIn()
 		{
 			if (soc->req->getCgiStatus() == 3)
 			{
-				std::cout << "Handling CgiIn()\n";
 				handleCgiIn();
 				return;
 			}
@@ -162,7 +168,6 @@ void	Event::handleCgiIn()
 	soc->req->getCgi()->readPipeFd();
 	if (soc->req->getCgiStatus() == 4)
 	{
-		std::cout << "query asked = " << soc->req->getQuery() << std::endl;
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = 6;

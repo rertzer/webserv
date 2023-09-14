@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 13:45:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:31:31 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,13 +236,11 @@ void	Request::uploadFile(std::string const & filename, std::string const & part)
 			std::ofstream upfile(path.c_str(), std::ofstream::out);
 			if (upfile.fail())
 			{
-				std::cout << "File " << filename;
 				perror(" creation failed");
 				throw (ErrorException(500));
 			}
 			upfile.write(part.c_str(), part.length());
 			upfile.close();
-			std::cout << "File " << filename << "created\n";
 		}
 
 
@@ -264,6 +262,8 @@ std::string	Request::getLine(std::string const & sep)
 	std::string	line;
 
 	pos = content.find(sep);
+	if (pos > 20000)
+		throw ErrorException(400);
 	if (pos != -1)
 	{
 		line = content.substr(0, pos);
@@ -433,6 +433,7 @@ void	Request::setContent()
 		unsigned int len = getUIntField("Content-Length");
 		setContentByLength(len);
 	}
+	std::cout << "FINAL CONTENT IS $" << content << "$\n";
 }
 
 void	Request::setContentByChunked()
@@ -442,6 +443,10 @@ void	Request::setContentByChunked()
 	{
 		len = readChunk();
 	}
+	std::stringstream ss;
+	ss << content.size();
+	header.erase(header.find("Transfer-Encoding"));
+	header["Content-Length"] = ss.str().c_str();
 	setTrailer();
 }
 
@@ -493,8 +498,9 @@ void	Request::checkControlData() const
 		if (method == allowed_methods[i])
 			return;
 	}
-	getCgiStatus();
-	throw (ErrorException(501));
+	if (method == "PUT" || method == "HEAD")
+		throw (ErrorException(501));
+	throw (ErrorException(400));
 }
 
 void	Request::checkHeader() const

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 13:39:13 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 14:27:18 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,8 +132,6 @@ void	Cgi::setPostFd()
 {
 	if (::pipe(post_fd) == -1)
 		throw (ErrorException(500));
-//	int r = fcntl(post_fd[0], F_SETFL, fcntl(post_fd[0], F_GETFL) | O_NONBLOCK);
-//	std::cout << "fcntl: " << r << std::endl;
 	fcntl(post_fd[1], F_SETFL, fcntl(post_fd[1], F_GETFL) | O_NONBLOCK);
 }
 
@@ -215,7 +213,6 @@ int	Cgi::execSon()
 		}
 		char** argv = formatArgv();
 		char** envp = formatEnv();
-		std::cerr << "Executing cgi script " << argv[0] << " " << argv[1] << std::endl;
 		::execve(cgi_path.second.c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
