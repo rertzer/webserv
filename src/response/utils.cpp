@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/11 16:10:42 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/14 11:15:51 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 
 Response createErrorPage(int codeErr, Server serv)
 {
-//	std::cout << "codeErr = " << codeErr << std::endl;
+	std::cout << "codeErr = " << codeErr << std::endl;
 	ContentMap contentMap;
 	std::string status = Status::getMsg(codeErr);
 	std::string contentType = contentMap.getContentValue(serv.getErrorPage(intToString(codeErr)).substr(serv.getErrorPage(intToString(codeErr)).rfind(".") + 1, serv.getErrorPage(intToString(codeErr)).length()));

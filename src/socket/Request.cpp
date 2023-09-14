@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 16:53:28 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/14 11:13:11 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -496,8 +496,9 @@ void	Request::checkControlData() const
 		if (method == allowed_methods[i])
 			return;
 	}
-	getCgiStatus();
-	throw (ErrorException(501));
+	if (method == "PUT" || method == "HEAD")
+		throw (ErrorException(501));
+	throw (ErrorException(400));
 }
 
 void	Request::checkHeader() const
