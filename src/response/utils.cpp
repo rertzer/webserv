@@ -49,6 +49,21 @@ std::string intToString(int n)
 	return (ss.str());
 }
 
+Server & findTheDefaultServ(std::vector<Server>& serv, int motherPort)
+{
+	std::vector<Server>::iterator it = serv.begin();
+
+	while (it != serv.end())
+	{
+		if (it->getListenPort()[0] == motherPort)
+		{
+			return (*it);
+		}
+	}
+	throw (ServerException());
+	return (*(serv.begin()));
+}
+
 Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();

@@ -88,3 +88,4 @@ void									checkExec(std::string filePath);
 int										respWithLoc(Request& req, Response &rep);
 //int										respWithCgi(Request & req, Response &rep);
 int										respWithOutLoc(Request& req, Response &rep);
+Server &                                findTheDefaultServ(std::vector<Server>& serv, int motherPort);
