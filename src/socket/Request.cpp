@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 11:02:58 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 14:33:29 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPo
 	setHeader(serv);
 	if (contentExist())
 		setContent();
+	std::cout << "wqewqeqe;;ewq;e;wq"<<port << std::endl;
 }
 
 Request::Request(Request const & rhs)

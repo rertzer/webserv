@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 11:25:05 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/13 14:58:26 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,10 @@ void	Event::handleEvent()
 	}
 	catch (const ErrorException & e)
 	{
-		soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->req->getPort()))).getResponse());
-		soc->setKeepAlive(false);
-		if (! status)
-			status = 1;
+			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->req->getPort()))).getResponse());
+			soc->setKeepAlive(false);
+			if (! status)
+				status = 1;
 	}
 }
 
