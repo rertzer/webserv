@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/15 15:38:48 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/15 16:17:32 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,5 @@ class Server
 		int & 					getListenPort();
 		int 								getAllowMethods();
 		std::string 						getAutoIndex();
+		void 								checkIfHaveNeccessary();
 };
