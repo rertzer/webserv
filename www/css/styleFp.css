@@ -31,17 +31,17 @@ h2{
     height: 8vh;
 }
 
-#ForbidenPage, #DeletePage, #autoIndex, #autoIndexOff {
+#ForbidenPage, #DeletePage, #autoIndex, #autoIndexOff ,#ChangeRoot, #RedirRequest, #NewIndex{
     font-size: 25px;
     color: chocolate;
 }
 
-#ForbidenPage a, #DeletePage a, #autoIndex a, #autoIndexOff a{
+#ForbidenPage a, #DeletePage a, #autoIndex a, #autoIndexOff a,#ChangeRoot a, #RedirRequest a, #NewIndex a{
     font-size: 35px;
     color: blanchedalmond;
 }
 
-#ForbidenPage a:hover, #DeletePage a:hover, #autoIndex a:hover, #autoIndexOff a:hover {
+#ForbidenPage a:hover, #DeletePage a:hover, #autoIndex a:hover, #autoIndexOff a:hover,#ChangeRoot a:hover, #RedirRequest a:hover, #NewIndex a:hover {
     color: red;
 }
 

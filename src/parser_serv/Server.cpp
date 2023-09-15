@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/15 16:17:45 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/15 16:22:17 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ Server::Server(std::vector<std::string> servStrings)
 
 void Server::checkIfHaveNeccessary()
 {
-	int polo[] = {401, 403, 404, 405, 413, 500, 501, 505};
+	int polo[] = {400, 403, 404, 405, 413, 500, 501, 505};
 	if (_root.empty())
 		throw (ServerException());
 	for (int i = 0; i < 8; i++)

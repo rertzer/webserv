@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/15 15:47:52 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/15 16:29:07 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ Server & findTheDefaultServ(std::vector<Server>& serv, int motherPort)
 		{
 			return (*it);
 		}
+		it++;
+
 	}
 	throw (ServerException());
 	return (*(serv.begin()));
@@ -67,8 +69,6 @@ Server & findTheDefaultServ(std::vector<Server>& serv, int motherPort)
 Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
-	if (req.getField("Host").empty())
-		return (*(serv.begin()));
 	while (it != serv.end())
 	{
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort()))
@@ -78,8 +78,8 @@ Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 		}
 		it++;
 	}
-	findTheDefaultServ(serv, motherPort);
-	return (*(serv.begin()));
+	;
+	return (findTheDefaultServ(serv, motherPort));
 }
 
 Response createErrorPage(int codeErr, Server serv)
