@@ -1,9 +1,7 @@
 ================================================================================
 Pjay:
-checker le new root
-changer les index pour quils affichent les bonnes choses Dispo
-creer des liens vers des pages non autorisees pour display les bonne erreurs
 
+definir des serveurs par default par port
 
 change this part to create errPage.
 ===============================================================================

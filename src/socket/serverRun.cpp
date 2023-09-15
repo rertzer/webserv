@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:22:06 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/15 15:39:30 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,11 @@ void	loadMotherSocket(Polling & pool, std::vector<Server> serv)
 	std::map<int, int>	unique_port;
 	for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++)
 	{
-		std::vector<int>	vp = it->getListenPort();
-		for (std::vector<int>::iterator jt = vp.begin(); jt != vp.end(); jt++)
-			unique_port[*jt] = 1;
+		// std::vector<int>	vp = it->getListenPort();
+		// for (std::vector<int>::iterator jt = vp.begin(); jt != vp.end(); jt++)
+		// 	unique_port[*jt] = 1;
+		int vp = it->getListenPort();
+		unique_port[vp] = 1;
 	}
 	for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
 		pool.addMotherSocket(it->first);
