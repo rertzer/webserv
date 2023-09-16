@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/16 09:43:24 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 09:53:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,18 +136,6 @@ void Server::checkIfHaveNeccessary()
 {
 	int polo[] = {400, 403, 404, 405, 413, 500, 501, 505};
 	if (_root.empty())
-		throw (ServerException());
-	for (int i = 0; i < 8; i++)
-	{
-  		if (_errorPage.find(intToString(polo[i])) == _errorPage.end())
-			throw(ServerException());
-	}
-}
-
-void Server::checkIfHaveNeccessary()
-{
-	int polo[] = {401, 403, 404, 405, 413, 500, 501, 505};
-	if (_root.empty() || _nPort.size() != 1)
 		throw (ServerException());
 	for (int i = 0; i < 8; i++)
 	{
