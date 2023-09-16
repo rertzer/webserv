@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:22:55 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 14:21:11 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void	Polling::removeCgiFd(int fd)
 	std::map<int, TCPSocket *>::iterator mi = powerstripCgi.find(fd);
 	if (mi != powerstripCgi.end())
 	{
-		std::cout << "Removing Cgi fd " << fd << std::endl;
 		removeFd(fd);
 		powerstripCgi.erase(fd);
 	}

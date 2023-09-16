@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 11:03:02 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 13:54:18 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "Request.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
+TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(true), error(false)
 {
 	socket_addr_length = sizeof(socket_addr);
 
@@ -39,7 +39,7 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
 }
 
-TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), keep_alive(false)
+TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), keep_alive(false), error(false)
 {
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
@@ -73,6 +73,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 		msg_out = rhs.msg_out;
 		req = rhs.req;
 		keep_alive = rhs.keep_alive;
+		error = rhs.error;
 	}
 	return *this;
 }
@@ -92,6 +93,15 @@ int	TCPSocket::getFd() const
 	return socket_fd;
 }
 
+bool	TCPSocket::getError() const
+{
+	return error;
+}
+
+void	TCPSocket::setError(bool er)
+{
+	error = er;
+}
 
 void	TCPSocket::accept(TCPSocket * csoc)
 {

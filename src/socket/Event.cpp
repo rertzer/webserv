@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 11:33:43 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 13:56:03 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,42 +124,48 @@ void	Event::handleEvent()
 		{
 			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->getMotherPort()))).getResponse());
 		}
-			soc->setKeepAlive(false);
-			if (! status)
-				status = 1;
+		soc->setKeepAlive(false);
+		soc->setError(true);
+		if (! status)
+			status = 1;
 	}
 }
 
 void	Event::handleIn()
 {
-		if (soc->req == NULL)
+	if (soc->getError())
+	{
+		soc->readAll();
+		return;
+	}
+	if (soc->req == NULL)
+	{
+		soc->req = new Request(soc, serv);
+	}
+	else
+	{
+		if (soc->req->getCgiStatus() == 3)
 		{
-			soc->req = new Request(soc, serv);
+			handleCgiIn();
+			return;
 		}
+		else if (soc->req->getCgiStatus() == 0)
+			soc->req->feed(serv);
+	}
+	printCleanRequest(*soc->req);
+	if (soc->req->ready())
+	{
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		if (soc->req->getCgiStatus() == 1)
+			status = 4;
+		else if (soc->req->getCgiStatus() == 2)
+			status = 4;
 		else
 		{
-			if (soc->req->getCgiStatus() == 3)
-			{
-				handleCgiIn();
-				return;
-			}
-			else if (soc->req->getCgiStatus() == 0)
-				soc->req->feed(serv);
+			soc->setMessageOut(resp.getResponse());
+			status = 1;
 		}
-		printCleanRequest(*soc->req);
-		if (soc->req->ready())
-		{
-			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
-			if (soc->req->getCgiStatus() == 1)
-				status = 4;
-			else if (soc->req->getCgiStatus() == 2)
-				status = 4;
-			else
-			{
-				soc->setMessageOut(resp.getResponse());
-				status = 1;
-			}
-		}
+	}
 
 }
 
@@ -257,4 +263,4 @@ Event::Event()
 {}
 
 //Static const
-int const 	Event::ev[5] = {POLLIN, POLLOUT, POLLERR, POLLHUP, POLLNVAL};
+int const 	Event::ev[5] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};

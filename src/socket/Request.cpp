@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 10:53:58 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 14:25:27 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ Cgi *	Request::getCgi() const
 void	Request::setBodySize(int bs)
 {
 	if (bs > 0)
-		body_size = bs * 1000000;
+		body_size = bs * 1000;
 }
 
 void	Request::setUploadPath(std::string up)
@@ -431,7 +431,6 @@ void	Request::setContent()
 		unsigned int len = getUIntField("Content-Length");
 		setContentByLength(len);
 	}
-	std::cout << "FINAL CONTENT IS $" << content << "$\n";
 }
 
 void	Request::setContentByChunked()

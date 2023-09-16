@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 12:11:21 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 13:00:32 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,14 +175,12 @@ int	Cgi::readPipeFd()
 	if (size < 0)
 	{
 		delete[] buffer;
-		::close(pipe_fd[0]);
-		status = 4;
+		closePipe();
 		throw (ErrorException(500));
 	}
 	else if (size == 0)
 	{
-		::close(pipe_fd[0]);
-		status = 4;
+		closePipe();
 	}
 	else
 	{
@@ -196,6 +194,8 @@ int	Cgi::readPipeFd()
 void	Cgi::closePipe()
 {
 	::close(pipe_fd[0]);
+	int	ret;
+	::waitpid(-1, &ret, 0);
 	status = 4;
 }
 
