@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/15 16:27:50 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 11:33:43 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,8 +222,10 @@ void	Event::handleHup()
 {
 	if (isCgiFd())
 	{
+		soc->req->getCgi()->closePipe();
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		soc->setMessageOut(resp.getResponse());
 		status = 6;
-		throw (ErrorException(500));
 	}
 	else
 		status = 3;

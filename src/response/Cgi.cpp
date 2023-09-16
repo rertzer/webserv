@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 15:28:49 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 12:11:21 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ Cgi::Cgi(Cgi const & rhs):req(rhs.req)
 	path = rhs.path;
 	path_info = rhs.path_info;
 	query_string = rhs.query_string;
+	working_dir = rhs.working_dir;
 	content = rhs.content;
 	env_map = rhs.env_map;
 }
@@ -48,6 +49,7 @@ Cgi &	Cgi::operator=(Cgi const & rhs)
 		path = rhs.path;
 		path_info = rhs.path_info;
 		query_string = rhs.query_string;
+		working_dir = rhs.working_dir;
 		req = rhs.req;
 		content = rhs.content;
 		env_map = rhs.env_map;
@@ -97,6 +99,9 @@ void	Cgi::setUrl()
 		path += url.substr(0, pos + cgi_path.first.size());
 		if (pos + cgi_path.first.size() + 1 < url.size())
 			path_info = url.substr(pos + cgi_path.first.size() + 1, -1);
+		pos = path.rfind("/");
+		if (pos != -1)
+			working_dir = path.substr(0, pos);
 	}
 }
 
@@ -148,11 +153,14 @@ int	Cgi::writePostFd()
 	if (size <= 0)
 	{
 		perror("pipe error");
+		::close(post_fd[1]);
 		throw (ErrorException(500));
 	}
-	std::cout << static_cast<unsigned int>(size) << " " << req.getContent().size() <<std::endl;
 	if (static_cast<unsigned int>(size) == req.getContent().size())
+	{
 		status = 3;
+		::close(post_fd[1]);
+	}
 	else
 		status = 5;
 	req.eraseContent(size);
@@ -164,25 +172,31 @@ int	Cgi::readPipeFd()
 {
 	buffer = new char[buffer_size + 1];
 	int	size = ::read(pipe_fd[0], buffer, buffer_size);
-	if (size <= 0)
+	if (size < 0)
 	{
 		delete[] buffer;
 		::close(pipe_fd[0]);
 		status = 4;
 		throw (ErrorException(500));
 	}
-	buffer[size] = '\0';
-
-	std::stringstream ss;
-	ss.write(buffer, size);
-	delete[] buffer;
-	content = ss.str();
-	if (size != 65536)
+	else if (size == 0)
 	{
 		::close(pipe_fd[0]);
 		status = 4;
 	}
+	else
+	{
+		buffer[size] = '\0';
+		content.insert(0, buffer, size);
+	}
+	delete[] buffer;
 	return size;
+}
+
+void	Cgi::closePipe()
+{
+	::close(pipe_fd[0]);
+	status = 4;
 }
 
 void	Cgi::exec()
@@ -213,6 +227,11 @@ int	Cgi::execSon()
 		}
 		char** argv = formatArgv();
 		char** envp = formatEnv();
+		if (::chdir(working_dir.c_str()) != 0)
+		{
+			perror("chdir");
+			exit(-1);
+		}
 		::execve(cgi_path.second.c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
@@ -222,6 +241,7 @@ int	Cgi::execSon()
 void	Cgi::execFather()
 {
 	::close(pipe_fd[1]);
+	::close(post_fd[0]);
 	if (status == 2)
 		status = 3;
 }

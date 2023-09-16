@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 14:02:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 11:58:30 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class	Cgi
 		std::vector<int>	getFds() const;
 		int					writePostFd();
 		int					readPipeFd();
+		void				closePipe();
 		void				exec();
 
 	private:
@@ -61,6 +62,7 @@ class	Cgi
 
 		std::string	method;
 		std::string	path;
+		std::string working_dir;
 		std::string	path_info;
 		std::string	query_string;
 		std::string	content;

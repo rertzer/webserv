@@ -12,7 +12,6 @@
 	<body>
 	<div id="container">
 		<?php
-					echo "COUCOU", $_SERVER['CONTENT_LENGTH'];
 				function cesar_cipher($letter, $key)
 				{
 					$charmin = 'abcdefghijklmnopqrstuvwxyz';

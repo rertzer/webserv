@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 09:58:54 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/31 14:36:15 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 10:38:44 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ class TCPSocket
 		};
 
 	private:
-		void	setParam();
 
 		int					socket_fd;
 		int					mother_port;

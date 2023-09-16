@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 09:58:07 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 11:03:02 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
 
 	int	value = 1;
 	setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
-
-	setParam();
 
 	if (bind(socket_fd, reinterpret_cast<struct sockaddr*>(&socket_addr), sizeof(socket_addr)) == -1)
 		throw(SocketException());
@@ -101,16 +99,6 @@ void	TCPSocket::accept(TCPSocket * csoc)
 	if (csoc->socket_fd == -1)
 		throw(ErrorException(500));
 	csoc->mother_port = getPort();
-	csoc->setParam();
-}
-
-void	TCPSocket::setParam()
-{
-	int optval = 200000;
-	socklen_t optlen = sizeof(optval);
-	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
-		throw (SocketException());
-	getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
 }
 
 void	TCPSocket::close()
@@ -130,13 +118,11 @@ int	TCPSocket::readAll()
 		buffer[read_size] = '\0';
 	else
 		throw (SocketException());
-	std::stringstream	ss;
-	ss.write(buffer, read_size);
+
+	msg_in.insert(0, buffer, static_cast<size_t>(read_size));
 	delete[] buffer;
-	msg_in = ss.str();
 	return read_size;
 }
-
 
 std::string	TCPSocket::getMessageIn() const
 {
@@ -164,6 +150,8 @@ std::string	TCPSocket::getLine()
 	std::string	line;
 
 	pos = msg_in.find("\r\n");
+	if (pos > 20000)
+		throw ErrorException(400);
 	if (pos != -1)
 	{
 		line = msg_in.substr(0, pos);

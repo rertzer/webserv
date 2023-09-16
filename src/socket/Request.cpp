@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:31:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 10:53:58 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,7 +239,7 @@ void	Request::uploadFile(std::string const & filename, std::string const & part)
 				perror(" creation failed");
 				throw (ErrorException(500));
 			}
-			upfile.write(part.c_str(), part.length());
+			upfile << part;
 			upfile.close();
 		}
 
@@ -262,8 +262,6 @@ std::string	Request::getLine(std::string const & sep)
 	std::string	line;
 
 	pos = content.find(sep);
-	if (pos > 20000)
-		throw ErrorException(400);
 	if (pos != -1)
 	{
 		line = content.substr(0, pos);
