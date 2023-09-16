@@ -1,10 +1,6 @@
 ================================================================================
 Pjay:
-checker le new root
-changer les index pour quils affichent les bonnes choses Dispo
-creer des liens vers des pages non autorisees pour display les bonne erreurs
-Serveur par defaut POUR CHAQUE PORT.
-Enlever le truc qui permet davoir plusieurs port dans le meme serv
+Definir des serveurs par default par port
 
 change this part to create errPage.
 ===============================================================================

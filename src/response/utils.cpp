@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/11 15:05:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 14:28:43 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/15 16:29:07 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,12 @@ Server & findTheDefaultServ(std::vector<Server>& serv, int motherPort)
 
 	while (it != serv.end())
 	{
-		if (it->getListenPort()[0] == motherPort)
+		if (it->getListenPort() == motherPort)
 		{
 			return (*it);
 		}
+		it++;
+
 	}
 	throw (ServerException());
 	return (*(serv.begin()));
@@ -67,30 +69,17 @@ Server & findTheDefaultServ(std::vector<Server>& serv, int motherPort)
 Server & findTheServ(Request& req, std::vector<Server> & serv, int motherPort)
 {
 	std::vector<Server>::iterator it = serv.begin();
-	if (req.getField("Host").empty())
-		return (*(serv.begin()));
 	while (it != serv.end())
 	{
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort()))
 		{
-			if (it->getListenPort().size() > 1)
-			{
-				for (std::vector<int>::iterator it2 = it->getListenPort().begin(); it2 != it->getListenPort().end(); it2++)
-				{
-					if (motherPort == *it2)
-						return (*it);
-				}
-			}
-			else
-			{
-				if (motherPort == *it->getListenPort().begin())
-						return (*it);
-			}
-
+			if (motherPort == it->getListenPort())
+					return (*it);
 		}
 		it++;
 	}
-	return (*(serv.begin()));
+	;
+	return (findTheDefaultServ(serv, motherPort));
 }
 
 Response createErrorPage(int codeErr, Server serv)
@@ -283,8 +272,7 @@ void printServ(Server& serv)
 	std::cout << "Server root : " << serv.getRoot() << std::endl;
 	std::cout << "Server Auto index : " << serv.getAutoIndex() << std::endl;
 	std::cout << "Server allowed method : " << serv.getAllowMethods() << std::endl;
-	for (std::vector<int>::iterator it = serv.getListenPort().begin(); it < serv.getListenPort().end(); it++)
-		std::cout << "Listening on port : " << *it  << std::endl;
+	std::cout << "Listening on port : " << serv.getListenPort()  << std::endl;
 	for (std::map<std::string, std::string>::iterator it = serv.getAllErrorPage().begin(); it != serv.getAllErrorPage().end(); it++)
 		std::cout << it->first << " : " << it->second << std::endl;
 

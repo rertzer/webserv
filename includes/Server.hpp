@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:13:19 by pjay              #+#    #+#             */
-/*   Updated: 2023/08/28 11:10:33 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 09:42:20 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Server
 		std::string _servName;
 		int _allowedMethod;
 		std::string _autoIndex;
-		std::vector<int> _nPort;
+		int _nPort;
 		std::vector<std::string> _defaultPage;
 		std::string _root;
 		std::map<std::string, std::string> _errorPage;
@@ -52,8 +52,8 @@ class Server
 		std::string 						getErrorPage(std::string errorNb);
 		std::map<std::string, std::string>& getAllErrorPage();
 		std::vector<Location>& 				getAllLocation();
-		std::vector<int>& 					getListenPort();
+		int & 					getListenPort();
 		int 								getAllowMethods();
 		std::string 						getAutoIndex();
-		void								checkIfHaveNeccessary();
+		void 								checkIfHaveNeccessary();
 };

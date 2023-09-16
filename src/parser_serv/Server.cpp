@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 13:32:03 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 09:43:24 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Server::Server(std::vector<std::string> servStrings)
 			_allowedMethod = getAllowMethodsServer(it->substr(it->find("allow_methods") + 14, it->find(";") - it->find("allow_methods") - 14));
 		}
 		else if (it->find("listen") != std::string::npos && locOpen == false)
-			_nPort.push_back(atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str()));
+			_nPort = atoi(it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str());
 		else if (it->find("server_name") != std::string::npos)
 			_servName = it->substr(it->find("server_name") + 12, it->find(";") - it->find("server_name") - 12);
 		else if (it->find("root") != std::string::npos && locOpen == false)
@@ -129,6 +129,19 @@ Server::Server(std::vector<std::string> servStrings)
 	checkIfHaveNeccessary();
 	if (_autoIndex.length() == 0)
 		_autoIndex = "off";
+	checkIfHaveNeccessary();
+}
+
+void Server::checkIfHaveNeccessary()
+{
+	int polo[] = {400, 403, 404, 405, 413, 500, 501, 505};
+	if (_root.empty())
+		throw (ServerException());
+	for (int i = 0; i < 8; i++)
+	{
+  		if (_errorPage.find(intToString(polo[i])) == _errorPage.end())
+			throw(ServerException());
+	}
 }
 
 void Server::checkIfHaveNeccessary()
@@ -180,7 +193,7 @@ std::vector<Location>& Server::getAllLocation()
 	return (_location);
 }
 
-std::vector<int>& Server::getListenPort()
+int & Server::getListenPort()
 {
 	return (_nPort);
 }
@@ -225,4 +238,3 @@ Server::Server()
 	#endif
 
 }
-

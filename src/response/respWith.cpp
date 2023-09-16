@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:36:36 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 11:03:46 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/15 15:26:07 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,9 @@ int respWithLoc(Request& req, Response &rep)
 	if (allowMethod != -1)
 		rep.setAllowedMethods(allowMethod);
 	if (isThereAspecRoot(loc) == 1)
-		rep.setRoot(getArgsLoc(loc, "root"));
+	{
+		rep.setRoot(getArgsLoc(loc, "root").substr(0, getArgsLoc(loc, "root").length() - loc.getLocationPath().length()));
+	}
 	if (checkForRedirection(loc) == 1)
 	{
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
