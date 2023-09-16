@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 15:35:19 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/16 09:40:25 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,11 @@ void	TCPSocket::accept(TCPSocket * csoc)
 
 void	TCPSocket::setParam()
 {
-	int optval = 200000;
-	socklen_t optlen = sizeof(optval);
-	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
-	getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
+	//int optval = 200000;
+	//socklen_t optlen = sizeof(optval);
+	//if (setsockopt(socket_fd, SOL_SOCKET,  &optval, optlen) == -1)
+	//	throw (SocketException());
+	//getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
 }
 
 void	TCPSocket::close()
