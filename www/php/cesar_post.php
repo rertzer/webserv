@@ -61,9 +61,7 @@
 			<h2>Chiffreur/Déchiffreur de code Cesar</h2>
 		</header>
 		<nav id ="menu">
-			<a href="/html/page/indexTest.html">Index</a>
-			<a href="/html/page/redirectionPage.html">Redirection</a>
-			<a href="/html/page/toDelete.html">Delete</a>
+			<a href="/html/page/index2.html">Index</a>
 			<a href="/php/cesar_get.php">Ave Cesar (get)</a>
 			<a href="/php/cesar_post.php">Ave Cesar (post)</a>
 			<a href="/python/quizz.py">The 42 Quizz</a>

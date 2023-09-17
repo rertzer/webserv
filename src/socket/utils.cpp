@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 15:43:07 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/21 16:07:56 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/17 13:51:10 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ std::string	envFormat(std::string const & str)
 
 void printCleanRequest(Request req)
 {
-	std::cout << "\n" << BLUE"Request = {";
+	std::cout << "\n" << CYAN"Request = {";
 	std::cout << "[Method: " << req.getMethod() << "]" ;
 	std::cout << "[File: " << req.getQuery()	<< "]" ;
 	std::cout << "[Port: " << req.getPort() << "]" ;

@@ -11,15 +11,18 @@ if 'HTTP_COOKIE' in os.environ:
 
 cookies = False
 if "name" in cookie:
-    cookie["name"]["expires"] = "Mon, 15 Jul 2013 07:42 42 GMT"
+    #cookie["name"]["expires"] = "Mon, 15 Jul 2013 07:42 42 GMT"
+    cookie["name"]["max-age"] = -1
     cookie["name"]["samesite"] = "Strict"
     cookies = True
 if "good" in cookie:
-    cookie["good"]["expires"] = "Mon, 15 Jul 2013 07:42 42 GMT"
+    #cookie["good"]["expires"] = "Mon, 15 Jul 2013 07:42 42 GMT"
+    cookie["good"]["max-age"] = -1
     cookie["good"]["samesite"] = "Strict"
     cookies = True
 if "total" in cookie:
-    cookie["total"]["expires"] = "Mon, 15 Jul 2013 07:42 42 GMT"
+    #cookie["total"]["expires"] = "Mon, 15 Jul 2013 07:42 42 GMT"
+    cookie["total"]["max-age"] = -1
     cookie["total"]["samesite"] = "Strict"
     cookies = True
 
@@ -30,8 +33,8 @@ content += "<link href=\"/css/cesar.css\" rel=\"stylesheet\">"
 content += "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
 content += "<link href=\"https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap\" rel=\"stylesheet\"></head>"
 content += "<body><header><h1>The 42 quizz to the Galaxy</h1></header>"
-content += "<nav id =\"menu\"><a href=\"/html/page/indexTest.html\">Index</a><a href=\"/html/page/redirectionPage.html\">Redirection</a>"
-content += "<a href=\"/html/page/toDelete.html\">Delete</a><a href=\"/php/cesar_get.php\">Ave Cesar (get)</a>"
+content += "<nav id =\"menu\"><a href=\"/html/page/index2.html\">Index</a>"
+content += "<a href=\"/php/cesar_get.php\">Ave Cesar (get)</a>"
 content += "<a href=\"/php/cesar_post.php\">Ave Cesar (post)</a><a href=\"/python/quizz.py\">The 42 Quizz</a>"
 content += "<a href=\"/php/whoswho.php\">Who's who</a>"
 content += "<a href=\"/html/kitty/kitty.html\">Kitty</a></nav>"

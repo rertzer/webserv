@@ -13,15 +13,15 @@
 		<?php
 			$whois = array(
 				"Arthur Dent" => "Anglais moyen voyageant en peignoir &agrave travers la Galaxie.",
-				"Ford Prefect" => "Voiture britannique (produites entre 1938 et 1961). Accessoirement un extraterrestre travaillant pour le <i>Guide InterGalactique.</i>",
+				"Ford Prefect" => "Voiture britannique (produite entre 1938 et 1961). Accessoirement un extraterrestre travaillant pour le <i>Guide InterGalactique.</i>",
 				"Zaphod Beeblebrox" => "Pr&eacutesident bic&eacutephale de la Galaxie.",
 				"Marvin the Paranoid Android" => "Trop intelligent pour &ecirctre heureux.",
-				"Trillian" => "Brillante astrophysicienne. Arthur a des vues sur elles, mais elle sur Zaphod.",
+				"Trillian" => "Brillante astrophysicienne. Arthur a des vues sur elles, mais elle sort avec Zaphod.",
 				"Slartibartfast" => "Magrath&eacuteen. Se passionne pour le dessin des lignes de c&ocircte.",
 				"Agrajag" => "Running gag. Ses r&eacuteincarnations successives sont syst&eacutematiquement tu&eacutees par Arthur Dent.",
-				"Deep Thought" => "Ordinateur. Il trouva la r&eacuteponse 42. Ce qui lui pris sept millions et demi d'ann&eacutees.",
+				"Deep Thought" => "Ordinateur. Il trouva la r&eacuteponse 42. Ce qui lui prit sept millions et demi d'ann&eacutees.",
 				"Dish of the Day" => "Une vache. Elle adhore &ecirctre mang&eacutee.",
-				"Elvis Presley" => "Et non, il n'est pas mort, mais continue sa carri&egravere dans la Galaxie.",
+				"Elvis Presley" => "Eh non, il n'est pas mort, mais continue sa carri&egravere dans la Galaxie.",
 				"Grunthos the Flatulent" => "Po&egravete vogon."
 			);
 		?>
@@ -33,9 +33,7 @@
 				<h2>The Ultimate Galaxie's Who's Who</h2>
 			</header>
 			<nav id ="menu">
-				<a href="/html/page/indexTest.html">Index</a>
-				<a href="/html/page/redirectionPage.html">Redirection</a>
-				<a href="/html/page/toDelete.html">Delete</a>
+				<a href="/html/page/index2.html">Index</a>
 				<a href="/php/cesar_get.php">Ave Cesar (get)</a>
 				<a href="/php/cesar_post.php">Ave Cesar (post)</a>
 				<a href="/python/quizz.py">The 42 Quizz</a>

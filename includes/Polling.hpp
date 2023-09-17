@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 10:31:16 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/10 13:37:56 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/17 16:54:25 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ class	Polling
 		void	addSocket(TCPSocket * soc);
 		void	addCgiFd(int fd, int events, TCPSocket * soc);
 		void	removeFd(int fd);
+		TCPSocket * getSocketFromStrip(int fd, std::map<int, TCPSocket *> & strip) const;
+		Event	extractEvent(nfds_t i);
 
 		struct pollfd				fds[256];
 		nfds_t						nfds;

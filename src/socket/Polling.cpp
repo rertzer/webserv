@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 10:06:08 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 14:21:11 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/17 17:02:47 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,13 +104,7 @@ Event Polling::nextEvent()
 	{
 		if (fds[i].revents != 0)
 		{
-			events_nb--;
-			short rev = fds[i].revents;
-			fds[i].revents = 0;
-			TCPSocket * soc = getSocketByFd(fds[i].fd);
-			if (soc == NULL)
-				soc = getSocketByCgiFd(fds[i].fd);
-			return Event(fds[i].fd, rev, soc);
+			return extractEvent(i);
 		}
 	}
 	throw (PollingException());
@@ -118,18 +112,12 @@ Event Polling::nextEvent()
 
 TCPSocket *	Polling::getSocketByFd(int fd)
 {
-	std::map<int, TCPSocket *>::const_iterator mi = powerstrip.find(fd);
-	if (mi != powerstrip.end())
-		return mi->second;
-	return NULL;
+	return getSocketFromStrip(fd, powerstrip);
 }
 
 TCPSocket * Polling::getSocketByCgiFd(int fd)
 {
-	std::map<int, TCPSocket *>::const_iterator mi = powerstripCgi.find(fd);
-	if (mi != powerstripCgi.end())
-		return mi->second;
-	return NULL;
+	return getSocketFromStrip(fd, powerstripCgi);
 }
 
 
@@ -247,4 +235,23 @@ void	Polling::removeFd(int fd)
 	fds[nfds].fd = 0;
 	fds[nfds].events = 0;
 	fds[nfds].revents = 0;
+}
+
+TCPSocket * Polling::getSocketFromStrip(int fd, std::map<int, TCPSocket *> & strip) const
+{
+	std::map<int, TCPSocket *>::const_iterator mi = strip.find(fd);
+	if (mi != strip.end())
+		return mi->second;
+	return NULL;
+}
+
+Event	Polling::extractEvent(nfds_t i)
+{
+	events_nb--;
+	short rev = fds[i].revents;
+	fds[i].revents = 0;
+	TCPSocket * soc = getSocketByFd(fds[i].fd);
+	if (soc == NULL)
+		soc = getSocketByCgiFd(fds[i].fd);
+	return Event(fds[i].fd, rev, soc);
 }

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 13:56:03 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/17 13:29:11 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ void	Event::handleEvent()
 	whichfun[POLLHUP] = &Event::handleHup;
 	whichfun[POLLNVAL] = &Event::handleNval;
 
-
 	try
 	{
 		for (int i = 0 ; i < 5; i++)
@@ -122,6 +121,8 @@ void	Event::handleEvent()
 		}
 		else
 		{
+			if (soc->req->getCgiStatus())
+				status = 4;
 			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->getMotherPort()))).getResponse());
 		}
 		soc->setKeepAlive(false);
@@ -150,7 +151,9 @@ void	Event::handleIn()
 			return;
 		}
 		else if (soc->req->getCgiStatus() == 0)
+		{
 			soc->req->feed(serv);
+		}
 	}
 	printCleanRequest(*soc->req);
 	if (soc->req->ready())
@@ -166,12 +169,18 @@ void	Event::handleIn()
 			status = 1;
 		}
 	}
-
 }
 
 void	Event::handleCgiIn()
 {
-	soc->req->getCgi()->readPipeFd();
+	if (!isCgiFd())
+	{
+		soc->req->getCgi()->closePipe();
+		status = 9;
+		return;
+	}
+	else
+		soc->req->getCgi()->readPipeFd();
 	if (soc->req->getCgiStatus() == 4)
 	{
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
@@ -226,6 +235,7 @@ void	Event::handleError()
 
 void	Event::handleHup()
 {
+	status = 3;
 	if (isCgiFd())
 	{
 		soc->req->getCgi()->closePipe();
@@ -233,13 +243,20 @@ void	Event::handleHup()
 		soc->setMessageOut(resp.getResponse());
 		status = 6;
 	}
-	else
-		status = 3;
+	else if (cgiIsPending())
+		soc->req->getCgi()->stop();
 }
 
 void	Event::handleNval()
 {
-	internalError();
+	status = 3;
+}
+
+bool	Event::cgiIsPending()
+{
+	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid())
+		return true;
+	return false;
 }
 
 void	Event::internalError()

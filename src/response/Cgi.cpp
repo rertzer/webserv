@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/16 13:00:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/17 13:42:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "Request.hpp"
 
 //public
-Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), status(0), req(r), cgi_path(cp)
+Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), pid(0), status(0), req(r), cgi_path(cp)
 {
 	setUrl();
 	setEnv();
@@ -29,13 +29,7 @@ Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::
 
 Cgi::Cgi(Cgi const & rhs):req(rhs.req)
 {
-	method = rhs.method;
-	path = rhs.path;
-	path_info = rhs.path_info;
-	query_string = rhs.query_string;
-	working_dir = rhs.working_dir;
-	content = rhs.content;
-	env_map = rhs.env_map;
+	*this = rhs;
 }
 
 Cgi::~Cgi()
@@ -47,12 +41,18 @@ Cgi &	Cgi::operator=(Cgi const & rhs)
 	{
 		method = rhs.method;
 		path = rhs.path;
+		working_dir = rhs.working_dir;
 		path_info = rhs.path_info;
 		query_string = rhs.query_string;
-		working_dir = rhs.working_dir;
-		req = rhs.req;
 		content = rhs.content;
 		env_map = rhs.env_map;
+		buffer_size = rhs.buffer_size;
+		post_fd[0] = rhs.post_fd[0];
+		post_fd[1] = rhs.post_fd[1];
+		pipe_fd[0] = rhs.pipe_fd[1];
+		pid = rhs.pid;
+		status = rhs.status;
+		req = rhs.req;
 	}
 	return *this;
 }
@@ -80,6 +80,20 @@ std::vector<int>	Cgi::getFds() const
 	fds.push_back(pipe_fd[0]);
 	fds.push_back(pipe_fd[1]);
 	return fds;
+}
+
+int	Cgi::getPid() const
+{
+	return pid;
+}
+
+void	Cgi::stop()
+{
+	if (kill(pid, SIGKILL) == -1)
+	{
+		perror("cgi kill TERM");
+		throw (CgiException());
+	}
 }
 
 //private
@@ -193,15 +207,18 @@ int	Cgi::readPipeFd()
 
 void	Cgi::closePipe()
 {
-	::close(pipe_fd[0]);
+	if (pid)
+		stop();
 	int	ret;
-	::waitpid(-1, &ret, 0);
+	::waitpid(pid, &ret, 0);
+	::close(pipe_fd[0]);
+	pid = 0;
 	status = 4;
 }
 
 void	Cgi::exec()
 {
-	int	pid = ::fork();
+	pid = ::fork();
 	if (pid < 0)
 		throw (ErrorException(500));
 	if (pid == 0)
@@ -241,7 +258,8 @@ int	Cgi::execSon()
 void	Cgi::execFather()
 {
 	::close(pipe_fd[1]);
-	::close(post_fd[0]);
+	if (method == "POST")
+		::close(post_fd[0]);
 	if (status == 2)
 		status = 3;
 }

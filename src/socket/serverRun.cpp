@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 10:30:59 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/15 15:39:30 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/17 14:28:06 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,10 @@ int	serverRun(std::vector<Server> serv)
 		Polling pool;
 		loadMotherSocket(pool, serv);
 		std::cout << "Listening...\n";
-		int counter = 0;
 
 		while (1)
 		{
 			int rc = pool.wait();
-			counter++;
 			if (quitok)
 				break;
 
@@ -39,22 +37,40 @@ int	serverRun(std::vector<Server> serv)
 		std::cerr << e.what() << std::endl;
 		return 2;
 	}
-	catch (const Polling::PollingException & e)
+	catch (const Cgi::CgiException & e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 3;
 	}
-	catch (const ServerException & e)
+	catch (const Polling::PollingException & e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 4;
 	}
-	catch (const std::exception &e)
+	catch (const ServerException & e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 5;
 	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 6;
+	}
+	std::cout << GREEN "Good bye!" << WHITE << std::endl;
 	return 0;
+}
+
+void	loadMotherSocket(Polling & pool, std::vector<Server> serv)
+{
+	std::map<int, int>	unique_port;
+	for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++)
+	{
+		int vp = it->getListenPort();
+		unique_port[vp] = 1;
+	}
+	for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
+		pool.addMotherSocket(it->first);
 }
 
 void	handleEvent(Polling & pool, std::vector<Server> & serv)
@@ -67,21 +83,6 @@ void	handleEvent(Polling & pool, std::vector<Server> & serv)
 	else
 		eventOnOther(ev, pool);
 	pool.reset(ev.getFd());
-}
-
-void	loadMotherSocket(Polling & pool, std::vector<Server> serv)
-{
-	std::map<int, int>	unique_port;
-	for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++)
-	{
-		// std::vector<int>	vp = it->getListenPort();
-		// for (std::vector<int>::iterator jt = vp.begin(); jt != vp.end(); jt++)
-		// 	unique_port[*jt] = 1;
-		int vp = it->getListenPort();
-		unique_port[vp] = 1;
-	}
-	for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
-		pool.addMotherSocket(it->first);
 }
 
 void	eventOnMother(Event & ev, Polling & pool)
@@ -101,9 +102,8 @@ void	checkBadEventOnMother(Event & ev, Polling & pool)
 	if (!event_msg.empty())
 	{
 		int port = ev.getSocket()->getPort();
-		std::cout << event_msg << ". Restarting connection on port " << port << std::endl;
+		std::cout << event_msg << ". Stopping connection on port " << port << std::endl;
 		pool.removeSocket(ev.getFd());
-		pool.addMotherSocket(port);
 	}
 }
 
@@ -169,7 +169,7 @@ void	handleCgiPostExec(Event & ev, Polling & pool)
 	pool.setCgiIn(ev.getSocket());
 	pool.removeCgiFd(ev.getFd());
 }
-//cgi status 2, ready to exec
+
 void	handleCgiGetExec(Event & ev, Polling & pool)
 {
 	pool.addCgiFds(ev.getSocket());
@@ -178,5 +178,7 @@ void	handleCgiGetExec(Event & ev, Polling & pool)
 
 void	handleCgiError(Event & ev, Polling & pool)
 {
-	pool.removeCgiFd(ev.getFd());
+	std::cout << RED "Cgi Error. Stopping connection.\n";
+	pool.removeCgiFd(ev.getSocket()->req->getCgi()->getFds()[2]);
+	pool.removeSocket(ev.getFd());
 }
