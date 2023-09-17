@@ -6,7 +6,7 @@
 /*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 14:51:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/13 14:02:32 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/17 10:01:40 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <vector>
 # include <cstdlib>
 # include <unistd.h>
+# include <signal.h>
 # include <sys/wait.h>
 # include "Request.hpp"
 
@@ -44,9 +45,21 @@ class	Cgi
 		std::string			getContent() const;
 		int					getStatus() const;
 		std::vector<int>	getFds() const;
+		int					getPid() const;
 		int					writePostFd();
 		int					readPipeFd();
+		void				closePipe();
+		void				stop();
 		void				exec();
+
+		class	CgiException: public std::exception
+		{
+			public:
+				virtual const char * what() const throw()
+				{
+					return ("Error: cgi problem");
+				}
+		};
 
 	private:
 		void		setUrl();
@@ -61,6 +74,7 @@ class	Cgi
 
 		std::string	method;
 		std::string	path;
+		std::string working_dir;
 		std::string	path_info;
 		std::string	query_string;
 		std::string	content;
@@ -69,6 +83,7 @@ class	Cgi
 		int		buffer_size;
 		int		post_fd[2];
 		int		pipe_fd[2];
+		int		pid;
 		int		status;
 		Request & 	req;
 		std::pair<std::string, std::string>	cgi_path;

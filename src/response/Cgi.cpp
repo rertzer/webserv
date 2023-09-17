@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:27:18 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/17 13:42:14 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "Request.hpp"
 
 //public
-Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), status(0), req(r), cgi_path(cp)
+Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::string> cp):method(m), path(p), buffer(NULL), buffer_size(1600000), pid(0), status(0), req(r), cgi_path(cp)
 {
 	setUrl();
 	setEnv();
@@ -29,12 +29,7 @@ Cgi::Cgi(std::string m, std::string p, Request & r, std::pair<std::string, std::
 
 Cgi::Cgi(Cgi const & rhs):req(rhs.req)
 {
-	method = rhs.method;
-	path = rhs.path;
-	path_info = rhs.path_info;
-	query_string = rhs.query_string;
-	content = rhs.content;
-	env_map = rhs.env_map;
+	*this = rhs;
 }
 
 Cgi::~Cgi()
@@ -46,11 +41,18 @@ Cgi &	Cgi::operator=(Cgi const & rhs)
 	{
 		method = rhs.method;
 		path = rhs.path;
+		working_dir = rhs.working_dir;
 		path_info = rhs.path_info;
 		query_string = rhs.query_string;
-		req = rhs.req;
 		content = rhs.content;
 		env_map = rhs.env_map;
+		buffer_size = rhs.buffer_size;
+		post_fd[0] = rhs.post_fd[0];
+		post_fd[1] = rhs.post_fd[1];
+		pipe_fd[0] = rhs.pipe_fd[1];
+		pid = rhs.pid;
+		status = rhs.status;
+		req = rhs.req;
 	}
 	return *this;
 }
@@ -80,6 +82,20 @@ std::vector<int>	Cgi::getFds() const
 	return fds;
 }
 
+int	Cgi::getPid() const
+{
+	return pid;
+}
+
+void	Cgi::stop()
+{
+	if (kill(pid, SIGKILL) == -1)
+	{
+		perror("cgi kill TERM");
+		throw (CgiException());
+	}
+}
+
 //private
 void	Cgi::setUrl()
 {
@@ -97,6 +113,9 @@ void	Cgi::setUrl()
 		path += url.substr(0, pos + cgi_path.first.size());
 		if (pos + cgi_path.first.size() + 1 < url.size())
 			path_info = url.substr(pos + cgi_path.first.size() + 1, -1);
+		pos = path.rfind("/");
+		if (pos != -1)
+			working_dir = path.substr(0, pos);
 	}
 }
 
@@ -145,14 +164,17 @@ void	Cgi::setPipeFd()
 int	Cgi::writePostFd()
 {
 	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
-	if (size < 0)
+	if (size <= 0)
 	{
 		perror("pipe error");
+		::close(post_fd[1]);
 		throw (ErrorException(500));
 	}
-	std::cout << static_cast<unsigned int>(size) << " " << req.getContent().size() <<std::endl;
 	if (static_cast<unsigned int>(size) == req.getContent().size())
+	{
 		status = 3;
+		::close(post_fd[1]);
+	}
 	else
 		status = 5;
 	req.eraseContent(size);
@@ -164,30 +186,39 @@ int	Cgi::readPipeFd()
 {
 	buffer = new char[buffer_size + 1];
 	int	size = ::read(pipe_fd[0], buffer, buffer_size);
-	if (size <= 0)
+	if (size < 0)
 	{
 		delete[] buffer;
-		::close(pipe_fd[0]);
-		status = 4;
+		closePipe();
 		throw (ErrorException(500));
 	}
-	buffer[size] = '\0';
-
-	std::stringstream ss;
-	ss.write(buffer, size);
-	delete[] buffer;
-	content = ss.str();
-	if (size != 65536)
+	else if (size == 0)
 	{
-		::close(pipe_fd[0]);
-		status = 4;
+		closePipe();
 	}
+	else
+	{
+		buffer[size] = '\0';
+		content.insert(0, buffer, size);
+	}
+	delete[] buffer;
 	return size;
+}
+
+void	Cgi::closePipe()
+{
+	if (pid)
+		stop();
+	int	ret;
+	::waitpid(pid, &ret, 0);
+	::close(pipe_fd[0]);
+	pid = 0;
+	status = 4;
 }
 
 void	Cgi::exec()
 {
-	int	pid = ::fork();
+	pid = ::fork();
 	if (pid < 0)
 		throw (ErrorException(500));
 	if (pid == 0)
@@ -213,6 +244,11 @@ int	Cgi::execSon()
 		}
 		char** argv = formatArgv();
 		char** envp = formatEnv();
+		if (::chdir(working_dir.c_str()) != 0)
+		{
+			perror("chdir");
+			exit(-1);
+		}
 		::execve(cgi_path.second.c_str(), argv, envp);
 		delete[] argv;
 		delete[] envp;
@@ -222,6 +258,8 @@ int	Cgi::execSon()
 void	Cgi::execFather()
 {
 	::close(pipe_fd[1]);
+	if (method == "POST")
+		::close(post_fd[0]);
 	if (status == 2)
 		status = 3;
 }

@@ -17,18 +17,12 @@ quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug
 
 cookie = cookies.BaseCookie()
 if 'HTTP_COOKIE' in os.environ:
-    print("cookie found", file=sys.stderr)
     cookie.load(os.environ["HTTP_COOKIE"])
-    for a, morsel in cookie.items():
-        print(a, ':', morsel.value, file=sys.stderr)
 
 if not "good" in cookie:
     cookie["good"] = "0"
 if not "total" in cookie:
     cookie["total"] = "0"
-
-print("good is", cookie["good"].key, cookie["good"].value, file=sys.stderr)
-print("total is", cookie["total"].key, cookie["total"].value, file=sys.stderr)
 
 content = "<!DOCTYPE html>"
 content += "<html><head><title>The 42 quizz to the Galaxy</title><meta charset=\"UTF-8\">"
@@ -37,8 +31,8 @@ content += "<link href=\"/css/cesar.css\" rel=\"stylesheet\">"
 content += "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
 content += "<link href=\"https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap\" rel=\"stylesheet\"></head>"
 content += "<body><div id=\"container\"><header><h1>The 42 quizz to the Galaxy</h1></header>"
-content += "<nav id =\"menu\"><a href=\"/html/page/indexTest.html\">Index</a><a href=\"/html/page/redirectionPage.html\">Redirection</a>"
-content += "<a href=\"/html/page/toDelete.html\">Delete</a><a href=\"/php/cesar_get.php\">Ave Cesar (get)</a>"
+content += "<nav id =\"menu\"><a href=\"/html/page/index2.html\">Index</a>"
+content += "<a href=\"/php/cesar_get.php\">Ave Cesar (get)</a>"
 content += "<a href=\"/php/cesar_post.php\">Ave Cesar (post)</a><a href=\"/python/quizz.py\">The 42 Quizz</a>"
 content += "<a href=\"/php/whoswho.php\">Who's who</a>"
 content += "<a href=\"/html/kitty/kitty.html\">Kitty</a></nav>"

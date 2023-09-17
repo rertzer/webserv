@@ -6,12 +6,12 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:34:55 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 13:58:58 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/17 15:16:41 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstdio>
-#include <signal.h>
+#include <csignal>
 #include "Server.hpp"
 #include "macroDef.hpp"
 
@@ -19,14 +19,12 @@ volatile sig_atomic_t quitok = false;
 
 void	handleBreak(int a)
 {
-	std::cout << "Breaking bad " << a << " " << SIGINT <<"\n";
 	if (a == SIGINT)
 		quitok = true;
 }
 
 int main(int ac, char **av)
 {
-	// sigaction for SINGINT
 	struct sigaction	sigbreak;
 	sigbreak.sa_handler = &handleBreak;
 	sigemptyset(&sigbreak.sa_mask);
@@ -76,4 +74,3 @@ int main(int ac, char **av)
 	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
 	return serverRun(serv);
 }
-

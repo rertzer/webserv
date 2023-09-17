@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 11:53:30 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/15 16:22:17 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 09:53:04 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ Server::Server(std::vector<std::string> servStrings)
 			}
 		}
 	}
+	checkIfHaveNeccessary();
 	if (_autoIndex.length() == 0)
 		_autoIndex = "off";
 	checkIfHaveNeccessary();
@@ -166,7 +167,7 @@ std::string& Server::getRoot()
 std::string Server::getErrorPage(std::string errorNb)
 {
 	if (_errorPage.find(errorNb) == _errorPage.end())
-		return (_errorPage.find("404")->second);
+		throw (ServerException());
 	return (_errorPage.find(errorNb)->second);
 }
 
@@ -225,4 +226,3 @@ Server::Server()
 	#endif
 
 }
-

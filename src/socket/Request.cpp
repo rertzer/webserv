@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:31:31 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/17 13:56:29 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@ Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPo
 	setControlData();
 	setHeader(serv);
 	if (contentExist())
+	{
 		setContent();
+		std::cout << "content length is " << content.size() << std::endl;
+	}
 	else
 		status = 5;
 }
@@ -121,7 +124,7 @@ Cgi *	Request::getCgi() const
 void	Request::setBodySize(int bs)
 {
 	if (bs > 0)
-		body_size = bs * 1000000;
+		body_size = bs * 1000;
 }
 
 void	Request::setUploadPath(std::string up)
@@ -239,7 +242,7 @@ void	Request::uploadFile(std::string const & filename, std::string const & part)
 				perror(" creation failed");
 				throw (ErrorException(500));
 			}
-			upfile.write(part.c_str(), part.length());
+			upfile << part;
 			upfile.close();
 		}
 
@@ -262,8 +265,6 @@ std::string	Request::getLine(std::string const & sep)
 	std::string	line;
 
 	pos = content.find(sep);
-	if (pos > 20000)
-		throw ErrorException(400);
 	if (pos != -1)
 	{
 		line = content.substr(0, pos);
@@ -433,7 +434,6 @@ void	Request::setContent()
 		unsigned int len = getUIntField("Content-Length");
 		setContentByLength(len);
 	}
-	std::cout << "FINAL CONTENT IS $" << content << "$\n";
 }
 
 void	Request::setContentByChunked()

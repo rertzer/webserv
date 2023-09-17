@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/15 16:27:50 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/17 13:29:11 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ void	Event::handleEvent()
 	whichfun[POLLHUP] = &Event::handleHup;
 	whichfun[POLLNVAL] = &Event::handleNval;
 
-
 	try
 	{
 		for (int i = 0 ; i < 5; i++)
@@ -122,50 +121,66 @@ void	Event::handleEvent()
 		}
 		else
 		{
+			if (soc->req->getCgiStatus())
+				status = 4;
 			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->getMotherPort()))).getResponse());
 		}
-			soc->setKeepAlive(false);
-			if (! status)
-				status = 1;
+		soc->setKeepAlive(false);
+		soc->setError(true);
+		if (! status)
+			status = 1;
 	}
 }
 
 void	Event::handleIn()
 {
-		if (soc->req == NULL)
+	if (soc->getError())
+	{
+		soc->readAll();
+		return;
+	}
+	if (soc->req == NULL)
+	{
+		soc->req = new Request(soc, serv);
+	}
+	else
+	{
+		if (soc->req->getCgiStatus() == 3)
 		{
-			soc->req = new Request(soc, serv);
+			handleCgiIn();
+			return;
 		}
+		else if (soc->req->getCgiStatus() == 0)
+		{
+			soc->req->feed(serv);
+		}
+	}
+	printCleanRequest(*soc->req);
+	if (soc->req->ready())
+	{
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		if (soc->req->getCgiStatus() == 1)
+			status = 4;
+		else if (soc->req->getCgiStatus() == 2)
+			status = 4;
 		else
 		{
-			if (soc->req->getCgiStatus() == 3)
-			{
-				handleCgiIn();
-				return;
-			}
-			else if (soc->req->getCgiStatus() == 0)
-				soc->req->feed(serv);
+			soc->setMessageOut(resp.getResponse());
+			status = 1;
 		}
-		printCleanRequest(*soc->req);
-		if (soc->req->ready())
-		{
-			Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
-			if (soc->req->getCgiStatus() == 1)
-				status = 4;
-			else if (soc->req->getCgiStatus() == 2)
-				status = 4;
-			else
-			{
-				soc->setMessageOut(resp.getResponse());
-				status = 1;
-			}
-		}
-
+	}
 }
 
 void	Event::handleCgiIn()
 {
-	soc->req->getCgi()->readPipeFd();
+	if (!isCgiFd())
+	{
+		soc->req->getCgi()->closePipe();
+		status = 9;
+		return;
+	}
+	else
+		soc->req->getCgi()->readPipeFd();
 	if (soc->req->getCgiStatus() == 4)
 	{
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
@@ -220,18 +235,28 @@ void	Event::handleError()
 
 void	Event::handleHup()
 {
+	status = 3;
 	if (isCgiFd())
 	{
+		soc->req->getCgi()->closePipe();
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		soc->setMessageOut(resp.getResponse());
 		status = 6;
-		throw (ErrorException(500));
 	}
-	else
-		status = 3;
+	else if (cgiIsPending())
+		soc->req->getCgi()->stop();
 }
 
 void	Event::handleNval()
 {
-	internalError();
+	status = 3;
+}
+
+bool	Event::cgiIsPending()
+{
+	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid())
+		return true;
+	return false;
 }
 
 void	Event::internalError()
@@ -255,4 +280,4 @@ Event::Event()
 {}
 
 //Static const
-int const 	Event::ev[5] = {POLLIN, POLLOUT, POLLERR, POLLHUP, POLLNVAL};
+int const 	Event::ev[5] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};

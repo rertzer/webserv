@@ -1,7 +1,6 @@
 ================================================================================
 Pjay:
-
-definir des serveurs par default par port
+Definir des serveurs par default par port
 
 change this part to create errPage.
 ===============================================================================

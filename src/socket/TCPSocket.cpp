@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/29 11:28:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/14 14:21:46 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/16 13:54:18 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "Request.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
+TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(true), error(false)
 {
 	socket_addr_length = sizeof(socket_addr);
 
@@ -31,8 +31,6 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
 	int	value = 1;
 	setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
 
-	setParam();
-
 	if (bind(socket_fd, reinterpret_cast<struct sockaddr*>(&socket_addr), sizeof(socket_addr)) == -1)
 		throw(SocketException());
 
@@ -41,7 +39,7 @@ TCPSocket::TCPSocket(int p): req(NULL), mother_port(p), keep_alive(false)
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
 }
 
-TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), keep_alive(false)
+TCPSocket::TCPSocket(): req(NULL), socket_fd(0), mother_port(0), keep_alive(false), error(false)
 {
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
@@ -75,6 +73,7 @@ TCPSocket & TCPSocket::operator=(TCPSocket const & rhs)
 		msg_out = rhs.msg_out;
 		req = rhs.req;
 		keep_alive = rhs.keep_alive;
+		error = rhs.error;
 	}
 	return *this;
 }
@@ -94,6 +93,15 @@ int	TCPSocket::getFd() const
 	return socket_fd;
 }
 
+bool	TCPSocket::getError() const
+{
+	return error;
+}
+
+void	TCPSocket::setError(bool er)
+{
+	error = er;
+}
 
 void	TCPSocket::accept(TCPSocket * csoc)
 {
@@ -101,15 +109,6 @@ void	TCPSocket::accept(TCPSocket * csoc)
 	if (csoc->socket_fd == -1)
 		throw(ErrorException(500));
 	csoc->mother_port = getPort();
-	csoc->setParam();
-}
-
-void	TCPSocket::setParam()
-{
-	int optval = 200000;
-	socklen_t optlen = sizeof(optval);
-	if (setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, optlen) == -1)
-	getsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &optval, &optlen);
 }
 
 void	TCPSocket::close()
@@ -129,13 +128,11 @@ int	TCPSocket::readAll()
 		buffer[read_size] = '\0';
 	else
 		throw (SocketException());
-	std::stringstream	ss;
-	ss.write(buffer, read_size);
+
+	msg_in.insert(0, buffer, static_cast<size_t>(read_size));
 	delete[] buffer;
-	msg_in = ss.str();
 	return read_size;
 }
-
 
 std::string	TCPSocket::getMessageIn() const
 {
@@ -163,6 +160,8 @@ std::string	TCPSocket::getLine()
 	std::string	line;
 
 	pos = msg_in.find("\r\n");
+	if (pos > 20000)
+		throw ErrorException(400);
 	if (pos != -1)
 	{
 		line = msg_in.substr(0, pos);
@@ -196,6 +195,8 @@ void	TCPSocket::setKeepAlive(bool k)
 int	TCPSocket::send()
 {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
+	if (len <= 0)
+		throw (SocketException());
 	msg_out.erase(0, len);
 	return len;
 }
