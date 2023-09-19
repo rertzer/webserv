@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:43:09 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 14:00:47 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 15:54:36 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ std::string getSpecIndex(Location loc, Response &rep)
 Location getTheLocation(std::string path, Response &rep)
 {
 	std::vector<Location> loc = rep.getServ().getAllLocation();
+	bool enter = false;
 	if (path != "/")
 	{
 		path = path.substr(0, path.rfind("."));
@@ -73,7 +74,13 @@ Location getTheLocation(std::string path, Response &rep)
 		}
 		if (path.rfind("/") == 0)
 		{
-			path = "/";
+			if (enter == false)
+			{
+				path = "/";
+				enter = true;
+			}
+			else
+				return (Location());
 		}
 		else
 		{
@@ -87,7 +94,8 @@ Location getTheLocation(std::string path, Response &rep)
 int checkIfLocation(std::string path, Response &rep)
 {
 	std::vector<Location> loc = rep.getServ().getAllLocation();
-
+	bool enter = false;
+	std::cout <<"arrive here" << std::endl;
 	if (path != "/")
 	{
 		path = path.substr(0, path.rfind("."));
@@ -103,13 +111,19 @@ int checkIfLocation(std::string path, Response &rep)
 		}
 		if (path.rfind("/") == 0)
 		{
-			path = "/";
+			if (enter == false)
+			{
+				path = "/";
+				enter = true;
+			}
+			else
+				return (-1);
 		}
 		else
 		{
 			path = path.substr(0, path.rfind("/"));
-
 		}
+		std::cout << "boucled here" << std::endl;
  	}
 	return (-1);
 }
