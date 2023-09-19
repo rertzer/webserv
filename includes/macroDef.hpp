@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/26 11:29:20 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 14:26:03 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 10:11:34 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
 #include <bits/stdc++.h>
 #include <sys/wait.h>
 #include "color.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define CONF_FILE_NO_GOOD std::cout << "The conf file doesn't respect subject requirement" << std::endl;
 #define CFNG_SMI_COLON std::cout << "A line in the conf File isn't ending with a semicolon" << std::endl;

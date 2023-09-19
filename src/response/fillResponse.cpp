@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 10:40:13 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/15 15:25:49 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 10:12:45 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,24 @@
 #include "TCPSocket.hpp"
 #include "macroDef.hpp"
 
+int isDir(std::string fileName)
+{
+	struct stat path;
+
+	stat(fileName.c_str(), &path);
+
+	return S_ISREG(path.st_mode);
+}
+
+
 std::string readFile(std::string file, Response &rep)
 {
 	std::ifstream fileOp;
 	fileOp.open(file.c_str());
+	if (isDir(file) == 0)
+	{
+		throw(ErrorException(404));
+	}
 	if (access(file.c_str(), F_OK) == -1)
 	{
 		rep.setReadFileAccess(FILE_NOT_FOUND);
