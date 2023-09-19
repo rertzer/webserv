@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:02:29 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/17 13:42:14 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/19 11:43:52 by rertzer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,12 +163,16 @@ void	Cgi::setPipeFd()
 
 int	Cgi::writePostFd()
 {
-	int size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
-	if (size <= 0)
+	int size = 0;
+	if (req.getContent().size())
 	{
-		perror("pipe error");
-		::close(post_fd[1]);
-		throw (ErrorException(500));
+		size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
+		if (size <= 0)
+		{
+			perror("pipe error");
+			::close(post_fd[1]);
+			throw (ErrorException(500));
+		}
 	}
 	if (static_cast<unsigned int>(size) == req.getContent().size())
 	{
@@ -233,7 +237,7 @@ int	Cgi::execSon()
 		{
 			if (::dup2(post_fd[0], 0) == -1  || ::close(post_fd[0]) == -1 || ::close(post_fd[1]) == -1)
 			{
-				perror("dup2 or close error");
+				perror("POST: dup2 or close error");
 				exit(-1);
 			}
 		}
