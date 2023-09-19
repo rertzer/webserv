@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:43:09 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/13 10:12:49 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 11:29:59 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,37 +57,51 @@ std::string getSpecIndex(Location loc, Response &rep)
 Location getTheLocation(std::string path, Response &rep)
 {
 	std::vector<Location> loc = rep.getServ().getAllLocation();
-	std::vector<Location>::iterator it = loc.begin();
 	if (path != "/")
 	{
 		path = path.substr(0, path.rfind("."));
 		path = path.substr(0, path.rfind("/"));
 	}
-	while (it != loc.end())
+	while (path.find("/") != std::string::npos && path != "/")
 	{
-		if (it->getLocationPath() == path)
-			return (*it);
-		it++;
-	}
+		for(std::vector<Location>::iterator it = loc.begin();it != loc.end(); it++)
+		{
+			if (it->getLocationPath() == path)
+			{
+				std::cout << "found a path " << std::endl;
+				return (*it);
+			}
+		}
+		path = path.substr(0, path.rfind("/"));
+		std::cout << "Path = " << path << std::endl;
+ 	}
 	return (Location());
 }
 
 int checkIfLocation(std::string path, Response &rep)
 {
 	std::vector<Location> loc = rep.getServ().getAllLocation();
-	std::vector<Location>::iterator it = loc.begin();
+
 	if (path != "/")
 	{
 		path = path.substr(0, path.rfind("."));
-		path = path.substr(0, path.rfind("/"));
+
 	}
-	while (it != loc.end())
+	std::cout << path << "  path " << std::endl;
+	while (path.find("/") != std::string::npos && path != "/")
 	{
-		if (it->getLocationPath() == path)
+		for(std::vector<Location>::iterator it = loc.begin();it != loc.end(); it++)
 		{
-			return (0);
+			if (it->getLocationPath() == path)
+			{
+				std::cout << "found a path " << std::endl;
+				return (0);
+			}
 		}
-		it++;
-	}
+		path = path.substr(0, path.rfind("/"));
+		std::cout << "Path = " << path << std::endl;
+ 	}
 	return (-1);
 }
+
+

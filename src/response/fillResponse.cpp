@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 10:40:13 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 10:12:45 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 10:36:03 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,6 @@ void feelPart(Request req, Response &rep)
 	}
 }
 
-
-
-
 void createAutoIndexResp(Request& req, Location loc, Response &rep) {
 
 	int allowMethod = checkAllowMethod(loc);
@@ -120,7 +117,7 @@ void createAutoIndexResp(Request& req, Location loc, Response &rep) {
 		(req.getMethod() == "POST" && (rep.getAllowedMethods() == POST || rep.getAllowedMethods() == GETPOST || rep.getAllowedMethods() == POSTDELETE || rep.getAllowedMethods() == GETPOSTDELETE)))
 	{
 		rep.setContent(dirContent(rep.getRoot(), req.getQuery()));
-		rep.setStatus("200");
+		rep.setStatus("200 OK");
 		rep.setMethod(req.getMethod());
 		rep.setContentType("text/html");
 		rep.setContentLength(intToString(rep.getContent().length()));

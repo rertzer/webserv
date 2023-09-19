@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 13:58:01 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 11:25:19 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ Response::Response(Request& req, Server& serv)
 	}
 	if (checkIfLocation(req.getQuery(), *this) != -1)
 	{
+		std::cout << "passed loc " << std::endl;
 		if (respWithLoc(req, *this) == 0)
 			return ;
 	}

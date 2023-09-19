@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:36:36 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/15 15:26:07 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 11:24:00 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 int respWithLoc(Request& req, Response &rep)
 {
 	Location loc = getTheLocation(req.getQuery(), rep);
+	std::cout << "loc found = " << loc.getLocationPath() << " query = " << req.getQuery() << std::endl;
 	if (req.getQuery() != "/")
 	{
 		if (req.getQuery()[req.getQuery().length() - 1] == '/')
@@ -38,18 +39,22 @@ int respWithLoc(Request& req, Response &rep)
 				req.setQuery("/");
 		}
 	}
+	std::cout << "in resp with loc" << std::endl;
 	int allowMethod = checkAllowMethod(loc);
 	if (allowMethod != -1)
 		rep.setAllowedMethods(allowMethod);
 	if (isThereAspecRoot(loc) == 1)
 	{
+		std::cout << "Spec root" << std::endl;
 		rep.setRoot(getArgsLoc(loc, "root").substr(0, getArgsLoc(loc, "root").length() - loc.getLocationPath().length()));
+
 	}
 	if (checkForRedirection(loc) == 1)
 	{
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
 		rep.setStatus(Status::getMsg(atoi((redirection.first.c_str()))));
 		rep.setLocation(redirection.second.substr(0, redirection.second.length()));
+		std::cout << GREEN"Redir = {[Status :" << rep.getStatus() << "][New Location: " << rep.getLocation() << "]"RESET << std::endl;
 		req.getSocket()->setKeepAlive(false);
 		return (0);
 	}
