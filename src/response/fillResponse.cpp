@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 10:40:13 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 12:11:10 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 14:58:03 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ int isDir(std::string fileName)
 std::string readFile(std::string file, Response &rep)
 {
 	std::ifstream fileOp;
-	std::cout << file << std::endl;
 	if (isDir(file) == 0)
 	{
 		throw(ErrorException(404));

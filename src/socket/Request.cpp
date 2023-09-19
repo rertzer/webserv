@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/19 13:03:54 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 14:58:35 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ Request::Request(TCPSocket * s, std::vector<Server> & serv): port(s->getMotherPo
 	if (contentExist())
 	{
 		setContent();
-		std::cout << "content length is " << content.size() << std::endl;
 	}
 	else
 		status = 5;

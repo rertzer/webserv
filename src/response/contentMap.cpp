@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 11:37:17 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/07 13:19:47 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/19 14:54:27 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 std::string ContentMap::getContentValue(std::string value)
 {
 	std::map<std::string, std::string>::iterator it = _allContentType.find(value);
-	if (value == "py" || value == "php")
-	{
-		return "text/html";
-	}
+	// if (value == "py" || value == "php")
+	// {
+	// 	return "text/html";
+	// }
 	if (it == _allContentType.end())
 	{
 		return "text/plain";
@@ -31,6 +31,8 @@ std::string ContentMap::getContentValue(std::string value)
 
 ContentMap::ContentMap()
 {
+	_allContentType["php"] = "application";
+	_allContentType["py"] = "application";
 	_allContentType["EDI-X12"] = "application";
 	_allContentType["EDIFACT"] = "application";
 	_allContentType["javascript"] = "application";
