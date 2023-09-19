@@ -44,32 +44,3 @@ h2{
 #ForbiddenPage a:hover, #DeletePage a:hover, #autoIndex a:hover, #autoIndexOff a:hover,#ChangeRoot a:hover, #RedirRequest a:hover, #NewIndex a:hover {
     color: red;
 }
-
-/* #ForbidenPage a{
-	font-size: 35px;
-	color :blanchedalmond;
-}
-
-#ForbidenPage a:hover{
-	color :red;
-}
-
-#DeletePage{
-	position: absolute;
-	text-align: center;
-	font-size: 25px;
-	left: 15%;
-	color: chocolate;
-	margin-right: -50%;
-	transform: translate(-50%, -50%);
-}
-
-#DeletePage a{
-	font-size: 35px;
-	color :blanchedalmond;
-}
-
-#DeletePage a:hover{
-	color :red;
-} */
-

@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 17:15:31 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/19 09:23:18 by rertzer          ###   ########.fr       */
+/*   Updated: 2023/09/19 13:03:54 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ Cgi *	Request::getCgi() const
 void	Request::setBodySize(int bs)
 {
 	if (bs > 0)
-		body_size = bs * 1000;
+		body_size = bs;
 }
 
 void	Request::setUploadPath(std::string up)

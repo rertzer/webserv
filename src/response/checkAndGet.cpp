@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 13:43:09 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 11:49:20 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 14:00:47 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,18 +62,24 @@ Location getTheLocation(std::string path, Response &rep)
 		path = path.substr(0, path.rfind("."));
 		path = path.substr(0, path.rfind("/"));
 	}
-	while (path.find("/") != std::string::npos && path != "/")
+	while (path.find("/") != std::string::npos)
 	{
 		for(std::vector<Location>::iterator it = loc.begin();it != loc.end(); it++)
 		{
 			if (it->getLocationPath() == path)
 			{
-				std::cout << "found a path " << std::endl;
 				return (*it);
 			}
 		}
-		path = path.substr(0, path.rfind("/"));
-		std::cout << "Path = " << path << std::endl;
+		if (path.rfind("/") == 0)
+		{
+			path = "/";
+		}
+		else
+		{
+			path = path.substr(0, path.rfind("/"));
+
+		}
  	}
 	return (Location());
 }
@@ -85,21 +91,25 @@ int checkIfLocation(std::string path, Response &rep)
 	if (path != "/")
 	{
 		path = path.substr(0, path.rfind("."));
-
 	}
-	std::cout << path << "  path " << std::endl;
-	while (path.find("/") != std::string::npos && path != "/")
+	while (path.find("/") != std::string::npos)
 	{
 		for(std::vector<Location>::iterator it = loc.begin();it != loc.end(); it++)
 		{
 			if (it->getLocationPath() == path)
 			{
-				std::cout << "found a path " << std::endl;
 				return (0);
 			}
 		}
-		path = path.substr(0, path.rfind("/"));
-		std::cout << "Path = " << path << std::endl;
+		if (path.rfind("/") == 0)
+		{
+			path = "/";
+		}
+		else
+		{
+			path = path.substr(0, path.rfind("/"));
+
+		}
  	}
 	return (-1);
 }

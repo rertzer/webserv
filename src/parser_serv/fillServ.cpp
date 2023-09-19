@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 09:44:50 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/14 13:26:21 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 12:58:45 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,28 @@ void printVec(std::vector<std::string> vec)
 {
 	for (std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); it++)
 		std::cout << *it << std::endl;
+}
+
+int checkPort(std::vector<Server>& serv)
+{
+	for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++)
+	{
+		for (std::vector<Server>::iterator it2 = serv.begin(); it2 != serv.end(); it2++)
+		{
+			if (it != it2)
+			{
+				if (it2->getListenPort() == it->getListenPort())
+				{
+					if (it2->getServName() == it->getServName())
+					{
+						std::cout << "If serv have the same port they have to have a different name" << std::endl;
+						return (-1);
+					}
+				}
+			}
+		}
+	}
+	return (0);
 }
 
 int fillServ(std::string av, std::vector<Server>& serv)
@@ -68,6 +90,9 @@ int fillServ(std::string av, std::vector<Server>& serv)
 			}
 		}
 	}
+	if (checkPort(serv) == -1)
+		return (-1);
+
 	return (0);
 }
 

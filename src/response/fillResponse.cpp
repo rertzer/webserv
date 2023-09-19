@@ -6,7 +6,7 @@
 /*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 10:40:13 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 10:36:03 by pjay             ###   ########.fr       */
+/*   Updated: 2023/09/19 12:11:10 by pjay             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int isDir(std::string fileName)
 {
 	struct stat path;
 
+	memset(&path, 0, sizeof(path));
 	stat(fileName.c_str(), &path);
 
 	return S_ISREG(path.st_mode);
@@ -27,7 +28,7 @@ int isDir(std::string fileName)
 std::string readFile(std::string file, Response &rep)
 {
 	std::ifstream fileOp;
-	fileOp.open(file.c_str());
+	std::cout << file << std::endl;
 	if (isDir(file) == 0)
 	{
 		throw(ErrorException(404));
@@ -42,6 +43,7 @@ std::string readFile(std::string file, Response &rep)
 		rep.setReadFileAccess(ACCESS_DENIED);
 		return ("403");
 	}
+	fileOp.open(file.c_str());
 	if (fileOp.is_open())
 	{
 		std::stringstream fileStr;
