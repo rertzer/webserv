@@ -97,7 +97,6 @@ if "good" in cookie:
 if "name" in cookie:
     cookie["name"]["samesite"] = "Strict"
 
-
 print(cookie, end="\r\n")
 print("Content-Type: text/html", end="\r\n")
 print("", end="\r\n")
