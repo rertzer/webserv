@@ -10,64 +10,56 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <cstdio>
 #include <csignal>
+#include <cstdio>
 #include "Server.hpp"
 #include "macroDef.hpp"
 
 volatile sig_atomic_t quitok = false;
 
-void	handleBreak(int a)
-{
+void handleBreak(int a) {
 	if (a == SIGINT)
 		quitok = true;
 }
 
-int main(int ac, char **av)
-{
-	struct sigaction	sigbreak;
+int main(int ac, char** av) {
+	struct sigaction sigbreak;
 	sigbreak.sa_handler = &handleBreak;
 	sigemptyset(&sigbreak.sa_mask);
 	sigaddset(&sigbreak.sa_mask, SIGTERM);
 	sigbreak.sa_flags = 0;
-	if (sigaction(SIGINT, &sigbreak, NULL) != 0)
-	{
+	if (sigaction(SIGINT, &sigbreak, NULL) != 0) {
 		std::perror("sigaction");
 		return 1;
 	}
 
 	// Quand pas de param il faut fournir un fichier par defaut
-	if (ac > 2)
-	{
+	if (ac > 2) {
 		std::cout << "The program can have 1 parameter not more" << std::endl;
 		return (1);
 	}
-	if (av[1])
-	{
+	if (av[1]) {
 		std::string arg(av[1]);
 		std::string confExtension = ".conf";
-		size_t extensionPos = arg.length() - confExtension.length();
-		if (arg.compare(extensionPos, confExtension.length(), confExtension) != 0)
-		{
+		size_t		extensionPos = arg.length() - confExtension.length();
+		if (arg.compare(extensionPos, confExtension.length(), confExtension) != 0) {
 			std::cout << "The program needs a .conf parameter" << std::endl;
 			return 1;
 		}
 	}
 	std::vector<Server> serv;
-	std::string confFileName;
-	if (av[1])
+	std::string			confFileName;
+	if (av[1]) {
 		confFileName = av[1];
-	else
-	{
-		confFileName = "webserv_3.conf";
+	} else {
+		confFileName = "conf/webserv_3rertzer.conf";
 	}
 	try {
 		if (checkConfFile(confFileName) == -1)
-				return (1);
+			return (1);
 		if (fillServ(confFileName, serv) == -1)
 			return (1);
-	}
-	catch (std::exception& e) {
+	} catch (std::exception& e) {
 		std::cout << e.what() << std::endl;
 		return (1);
 	}

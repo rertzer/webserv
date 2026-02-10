@@ -1,3 +1,0 @@
-POST /php/norminet.html HTTP/1.1
-Host:localhost
-

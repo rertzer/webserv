@@ -23,7 +23,6 @@ SOCKET_SOURCES := TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp
 EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
 LISTING_SOURCES := dirContent.cpp DirListing.cpp FileDesc.cpp
 PARS_SOURCES := validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp ServerException.cpp
-
 RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp fillResponse.cpp dealWith.cpp checkAndGet.cpp respWith.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
