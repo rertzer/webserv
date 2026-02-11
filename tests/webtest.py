@@ -3,62 +3,48 @@
 Test module for webserv
 """
 
-import os
-import selectors
-import subprocess
-import time
+from colors import Color
+from webserver import WebServer
+from webtest_cmdline_parsing import *
 
 
-def start_server(confile):
+def okko(val):
     """
-    start webserv with confile as first argument
+    return OK or KO string according to the boolean value received as argument
     """
-    proc = subprocess.Popen(
-        ["stdbuf", "-oL", "./webserv", confile],
-        cwd="../",
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    os.set_blocking(proc.stdout.fileno(), False)
-    os.set_blocking(proc.stderr.fileno(), False)
-    return proc
+
+    return Color.GREEN + "OK" + Color.ENDC if val else Color.RED + "KO" + Color.ENDC
+
+
+def tester(fun):
+    """
+    run the fun test, prints infos and return 1 on success, 0 else.
+    """
+    ret = fun()
+    print(fun.__name__, okko(ret))
+    return int(ret)
 
 
 def main():
     """
     Tests for Webserv main function.
     """
-    proc = start_server("conf/webserv_3rertzer.conf")
-    startat = time.monotonic()
-    print("polling")
-    sel = selectors.DefaultSelector()
-    sel.register(proc.stdout, selectors.EVENT_READ)
-    sel.register(proc.stderr, selectors.EVENT_READ)
-    while proc.poll() is None:
-        print("looping")
-        events = sel.select(timeout=1)
-        for key, _ in events:
-            pipe = key.fileobj
-            line = pipe.readline()
-            if not line:
-                sel.unregister(pipe)
-                continue
-
-            if pipe is proc.stdout:
-                print("stdout: ", line.rstrip())
-            elif pipe is proc.stderr:
-                print("stderr: ", line.rstrip())
-        elapsed = time.monotonic() - startat
-        if elapsed > 42.0:
-            break
-    print("loop ended")
-    proc.terminate()
     try:
-        proc.wait(timeout=4)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-    print("returned value, ", proc.args, proc.returncode)
+        server = WebServer("conf/webserv_3rertzer.conf")
+    except RuntimeError as e:
+        print({e})
+        return 1
+    total = 3
+    total_ok = 0
+    total_ok += tester(test_cmd_parsing_1)
+    total_ok += tester(test_cmd_parsing_2)
+    total_ok += tester(test_cmd_parsing_3)
+    print(f"{total_ok}/{total} tests passed")
+
+    # server.run_for(8.0)
+    # server.finish()
+    # print("returned value, ", server.proc.args, server.proc.returncode)
+    return 0
 
 
 if __name__ == "__main__":
