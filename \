@@ -1,0 +1,64 @@
+"""
+Webserv tests: test command line arguments parsing.
+"""
+
+from testutils import test_cmd
+from webserver import WebServer
+
+
+def test_conf_parsing_1():
+    """
+    Test a missing closing } in conf file.
+    Notice that the error message isn't the right one.
+    """
+    server = test_cmd("tests/conf_test/test_ko_1.conf")
+    assert isinstance(server, WebServer)
+    output = server.proc.stdout.read()
+    ret = server.proc.returncode
+    print(f"|{output}|")
+    return ret == 1 and output == "A close bracket appear that isn't open anywhere\n"
+
+
+def test_conf_parsing_2():
+    """
+    Test a missing opening { in conf file.
+    Notice that the error message isn't the right one.
+    """
+    server = test_cmd("tests/conf_test/test_ko_2.conf")
+    assert isinstance(server, WebServer)
+    output = server.proc.stdout.read()
+    ret = server.proc.returncode
+    print(f"|{output}|")
+    return (
+        ret == 1
+        and output
+        == "Line where ';' is missing: server  line = 1\nA line in the conf File isn't ending with a semicolon\n"
+    )
+
+
+def test_conf_parsing_3():
+    """
+    Test a missing ending ; in conf file.
+    """
+    server = test_cmd("tests/conf_test/test_ko_3.conf")
+    assert isinstance(server, WebServer)
+    output = server.proc.stdout.read()
+    ret = server.proc.returncode
+    print(f"|{output}|")
+    return (
+        ret == 1
+        and output
+        == "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\nA line in the conf File isn't ending with a semicolon\n"
+    )
+
+
+def test_conf_parsing_4():
+    """
+    test a missing listen instruction
+    """
+    server = test_cmd("tests/conf_test/test_ko_4.conf")
+    assert isinstance(server, WebServer)
+    output = server.proc.stdout.read()
+    ret = server.proc.returncode
+    print(f"|{ret}|{output}|")
+    return ret == 1 and output == "-------------TEST SOCKET------------------\n\n"
