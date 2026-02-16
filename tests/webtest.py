@@ -7,6 +7,7 @@ from colors import Color
 from webserver import WebServer
 from webtest_cmdline_parsing import *
 from webtest_conf_parsing import *
+from webtest_request import *
 
 
 def okko(val):
@@ -35,7 +36,7 @@ def main():
     # except RuntimeError as e:
     #     print({e})
     #     return 1
-    total = 18
+    total = 19
     total_ok = 0
     total_ok += tester(test_cmd_parsing_1)
     total_ok += tester(test_cmd_parsing_2)
@@ -55,6 +56,7 @@ def main():
     total_ok += tester(test_conf_parsing_13)
     total_ok += tester(test_conf_parsing_14)
     total_ok += tester(test_conf_parsing_15)
+    total_ok += tester(test_request_1)
     print(f"{total_ok}/{total} tests passed")
 
     # server.run_for(8.0)

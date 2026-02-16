@@ -1,5 +1,8 @@
 .env
 .swp
+.o
+.d
+webserv
 #.txt
 .vscode
 **/.vscode
