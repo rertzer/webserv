@@ -3,28 +3,11 @@
 Test module for webserv
 """
 
-from colors import Color
+from testutils import *
 from webserver import WebServer
 from webtest_cmdline_parsing import *
 from webtest_conf_parsing import *
 from webtest_request import *
-
-
-def okko(val):
-    """
-    return OK or KO string according to the boolean value received as argument
-    """
-
-    return Color.GREEN + "OK" + Color.ENDC if val else Color.RED + "KO" + Color.ENDC
-
-
-def tester(fun):
-    """
-    run the fun test, prints infos and return 1 on success, 0 else.
-    """
-    ret = fun()
-    print(fun.__name__, okko(ret))
-    return int(ret)
 
 
 def main():
@@ -36,7 +19,7 @@ def main():
     # except RuntimeError as e:
     #     print({e})
     #     return 1
-    total = 19
+    total = 23
     total_ok = 0
     total_ok += tester(test_cmd_parsing_1)
     total_ok += tester(test_cmd_parsing_2)
@@ -56,7 +39,7 @@ def main():
     total_ok += tester(test_conf_parsing_13)
     total_ok += tester(test_conf_parsing_14)
     total_ok += tester(test_conf_parsing_15)
-    total_ok += tester(test_request_1)
+    total_ok += tester(test_request_1, 5)
     print(f"{total_ok}/{total} tests passed")
 
     # server.run_for(8.0)
