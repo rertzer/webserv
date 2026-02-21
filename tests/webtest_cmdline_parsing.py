@@ -15,7 +15,8 @@ def test_cmd_parsing_1():
     output = server.proc.stdout.read()
     ret = server.proc.returncode
 
-    return ret == 1 and output == "The program can have 1 parameter not more\n"
+    ret = ret == 1 and output == "The program can have 1 parameter not more\n"
+    return (ret, 1)
 
 
 def test_cmd_parsing_2():
@@ -27,7 +28,8 @@ def test_cmd_parsing_2():
     output = server.proc.stdout.read()
     ret = server.proc.returncode
 
-    return ret == 1 and output == "The program needs a .conf parameter\n"
+    ret = ret == 1 and output == "The program needs a .conf parameter\n"
+    return (ret, 1)
 
 
 def test_cmd_parsing_3():
@@ -39,4 +41,5 @@ def test_cmd_parsing_3():
     output = server.proc.stdout.read()
     ret = server.proc.returncode
 
-    return ret == 1 and output == "The file youwillneverfindme.conf doesn't exist\n"
+    ret = ret == 1 and output == "The file youwillneverfindme.conf doesn't exist\n"
+    return (ret, 1)

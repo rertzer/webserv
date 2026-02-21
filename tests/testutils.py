@@ -19,13 +19,13 @@ def okko(val):
     return Color.GREEN + "OK" + Color.ENDC if val else Color.RED + "KO" + Color.ENDC
 
 
-def tester(fun, nb=1):
+def tester(fun):
     """
     run the fun test, prints infos and return 1 on success, 0 else.
     """
-    ret = fun()
-    print(fun.__name__, okko(ret == nb))
-    return int(ret)
+    passed, total = fun()
+    print(fun.__name__, okko(passed == total))
+    return (passed, total)
 
 
 def test_cmd(params):

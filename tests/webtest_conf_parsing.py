@@ -15,7 +15,8 @@ def test_conf_parsing_1():
     assert isinstance(server, WebServer)
     output = server.proc.stdout.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "A close bracket appear that isn't open anywhere\n"
+    ret = ret == 1 and output == "A close bracket appear that isn't open anywhere\n"
+    return (ret, 1)
 
 
 def test_conf_parsing_2():
@@ -27,11 +28,12 @@ def test_conf_parsing_2():
     assert isinstance(server, WebServer)
     output = server.proc.stdout.read()
     ret = server.proc.returncode
-    return (
+    ret = (
         ret == 1
         and output
         == "Line where ';' is missing: server  line = 1\nA line in the conf File isn't ending with a semicolon\n"
     )
+    return (ret, 1)
 
 
 def test_conf_parsing_3():
@@ -42,11 +44,12 @@ def test_conf_parsing_3():
     assert isinstance(server, WebServer)
     output = server.proc.stdout.read()
     ret = server.proc.returncode
-    return (
+    ret = (
         ret == 1
         and output
         == "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\nA line in the conf File isn't ending with a semicolon\n"
     )
+    return (ret, 1)
 
 
 def test_conf_parsing_4():
@@ -58,11 +61,13 @@ def test_conf_parsing_4():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return (
+    ret = (
         ret == 2
         and output == "-------------TEST SOCKET------------------\n\n"
         and error == "Error: socket failed\n"
     )
+
+    return (ret, 1)
 
 
 def test_conf_parsing_5():
@@ -74,7 +79,9 @@ def test_conf_parsing_5():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_6():
@@ -86,7 +93,9 @@ def test_conf_parsing_6():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_7():
@@ -98,7 +107,9 @@ def test_conf_parsing_7():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_8():
@@ -110,7 +121,9 @@ def test_conf_parsing_8():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_9():
@@ -122,7 +135,9 @@ def test_conf_parsing_9():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_10():
@@ -134,7 +149,9 @@ def test_conf_parsing_10():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_11():
@@ -146,7 +163,9 @@ def test_conf_parsing_11():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_12():
@@ -158,7 +177,9 @@ def test_conf_parsing_12():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_13():
@@ -170,7 +191,9 @@ def test_conf_parsing_13():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return ret == 1 and output == "Error: Server parsing error\n" and error == ""
+    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
+
+    return (ret, 1)
 
 
 def test_conf_parsing_14():
@@ -182,12 +205,14 @@ def test_conf_parsing_14():
     output = server.proc.stdout.read()
     error = server.proc.stderr.read()
     ret = server.proc.returncode
-    return (
+    ret = (
         ret == 1
         and output
         == "line not know -> 	this line shouldn't be here; <- End of line not know\nError: Server parsing error\n"
         and error == ""
     )
+
+    return (ret, 1)
 
 
 def test_conf_parsing_15():
@@ -200,9 +225,10 @@ def test_conf_parsing_15():
     error = server.proc.stderr.read()
     ret = server.proc.returncode
     # print(f"|{ret}|{output}|{error}|")
-    return (
+    ret = (
         ret == 1
         and output
         == "maxBodySize[maxBodySize.length() - 1] N\nclient_max_body_size doesn't respect subject rules\nError: Server parsing error\n"
         and error == ""
     )
+    return (ret, 1)

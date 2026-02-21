@@ -39,4 +39,4 @@ def test_request_1():
     outerror = server.proc.stderr.read()
     ret = server.proc.returncode
     print(f"RETURN|{ret}|{output}|{outerror}|\n")
-    return passed
+    return (passed, 5)
