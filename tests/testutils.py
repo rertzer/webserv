@@ -3,6 +3,7 @@ Functions for webserv testing
 """
 
 import http.client
+import io
 import subprocess
 import time
 from http.client import HTTPResponse
@@ -81,6 +82,7 @@ def send_request(host, port, method, path, head):
         return conn.getresponse()
     except ConnectionRefusedError as e:
         print({e})
+    return None
 
 
 def check_res(version, res, status, length):
@@ -98,6 +100,15 @@ def check_res(version, res, status, length):
         ok = True
     print(f"test_request_{version}", okko(ok))
     return ok
+
+
+def test_request(index, host, port, test):
+    """
+    Tests a properly formed HTTP request
+    """
+
+    res = send_request(host, port, test[0], test[1], {"Host": test[4]})
+    return check_res(f"1.{index}", res, test[2], test[3])
 
 
 class FakeSocket(BytesIO):
@@ -120,3 +131,16 @@ def raw_to_http_response(raw: bytes) -> HTTPResponse:
     response = HTTPResponse(sock)
     response.begin()
     return response
+
+
+def check_server_output(server):
+    """
+    handle server stdout, stderr, status
+    """
+    assert isinstance(server, WebServer)
+    assert isinstance(server.proc.stdout, io.TextIOWrapper)
+    assert isinstance(server.proc.stderr, io.TextIOWrapper)
+    output = server.proc.stdout.read()
+    outerror = server.proc.stderr.read()
+    ret = server.proc.returncode
+    print(f"RETURN|{ret}|{output}|{outerror}|\n")
