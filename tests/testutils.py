@@ -6,6 +6,7 @@ import http.client
 import subprocess
 import time
 from http.client import HTTPResponse
+from io import BytesIO
 
 from colors import Color
 from webserver import WebServer
@@ -97,3 +98,25 @@ def check_res(version, res, status, length):
         ok = True
     print(f"test_request_{version}", okko(ok))
     return ok
+
+
+class FakeSocket(BytesIO):
+    """
+    file like object
+    """
+
+    def makefile(self, *args, **kwargs):
+        """
+        Magic
+        """
+        return self
+
+
+def raw_to_http_response(raw: bytes) -> HTTPResponse:
+    """
+    Converts the response from raw socket to an HTTPResponse object
+    """
+    sock = FakeSocket(raw)
+    response = HTTPResponse(sock)
+    response.begin()
+    return response

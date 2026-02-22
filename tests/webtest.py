@@ -4,7 +4,6 @@ Test module for webserv
 """
 
 from testutils import *
-from webserver import WebServer
 from webtest_cmdline_parsing import *
 from webtest_conf_parsing import *
 from webtest_request import *
@@ -35,6 +34,7 @@ def main():
         test_conf_parsing_14,
         test_conf_parsing_15,
         test_request_1,
+        test_request_2,
     )
 
     passed, total = map(sum, zip(*(tester(f) for f in test_fun)))
