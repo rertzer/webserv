@@ -5,16 +5,16 @@ Webserv tests: test command line arguments parsing.
 import socket
 from urllib.parse import urlencode
 
-from testutils import *
+import testutils as tu
 from webserver import WebServer
 
 
-def test_request_1():
+def test_1():
     """
     Test GET requests.
     ! server behavior in subtest 7 isn't satisfactory
     """
-    server = test_request_start("")
+    server = tu.test_request_start("")
     assert isinstance(server, WebServer)
     host = "localhost"
     port = 8080
@@ -40,15 +40,15 @@ def test_request_1():
             host,
         ),
     )
-    passed = sum(test_request(i + 1, host, port, t) for i, t in enumerate(tests))
+    passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
 
-    test_request_end(server)
-    check_server_output(server)
+    tu.test_request_end(server)
+    tu.check_server_output(server)
 
     return (passed, len(tests))
 
 
-def test_request_2():
+def test_2():
     """
     Test invalid http requests.
     use socket
@@ -61,13 +61,13 @@ def test_request_2():
         (b"Thisisnotavalidrequest HTTP/1.1\r\nHost: localhost\r\n\r\n", 400, 847),
         (b"POST /php/norminet.html HTTP/1.1\r\nHost: localhost\r\n\r\n", 404, 851),
     )
-    server = test_request_start("")
+    server = tu.test_request_start("")
     assert isinstance(server, WebServer)
 
     passed = sum(test_raw(i + 1, t) for i, t in enumerate(tests))
 
-    test_request_end(server)
-    check_server_output(server)
+    tu.test_request_end(server)
+    tu.check_server_output(server)
 
     return (passed, len(tests))
 
@@ -82,14 +82,14 @@ def test_raw(index, t):
         sock.sendall(t[0])
         raw_res = sock.recv(4096)
     # print(raw_res.decode(errors="replace"))
-    return check_res(f"2.{index}", raw_to_http_response(raw_res), t[1], t[2])
+    return tu.check_res(f"2.{index}", tu.raw_to_http_response(raw_res), t[1], t[2])
 
 
-def test_request_3():
+def test_3():
     """
     Test POST requests on cesar_post.php.
     """
-    server = test_request_start("")
+    server = tu.test_request_start("")
     assert isinstance(server, WebServer)
     host = "localhost"
     port = 8080
@@ -141,11 +141,11 @@ def test_request_3():
         ),
     )
     passed = sum(
-        test_post_request(i + 1, host, port, "/php/cesar_post.php", t)
+        tu.test_post_request(i + 1, host, port, "/php/cesar_post.php", t)
         for i, t in enumerate(tests)
     )
 
-    test_request_end(server)
-    check_server_output(server)
+    tu.test_request_end(server)
+    tu.check_server_output(server)
 
     return (passed, len(tests))

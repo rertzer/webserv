@@ -6,7 +6,7 @@ from testutils import test_cmd
 from webserver import WebServer
 
 
-def test_conf_parsing_1():
+def test_1():
     """
     Test a missing closing } in conf file.
     Notice that the error message isn't the right one.
@@ -19,7 +19,7 @@ def test_conf_parsing_1():
     return (ret, 1)
 
 
-def test_conf_parsing_2():
+def test_2():
     """
     Test a missing opening { in conf file.
     Notice that the error message isn't the right one.
@@ -36,7 +36,7 @@ def test_conf_parsing_2():
     return (ret, 1)
 
 
-def test_conf_parsing_3():
+def test_3():
     """
     Test a missing ending ; in conf file.
     """
@@ -52,7 +52,7 @@ def test_conf_parsing_3():
     return (ret, 1)
 
 
-def test_conf_parsing_4():
+def test_4():
     """
     test a missing listen instruction
     """
@@ -70,7 +70,7 @@ def test_conf_parsing_4():
     return (ret, 1)
 
 
-def test_conf_parsing_5():
+def test_5():
     """
     test  missing root instruction
     """
@@ -84,7 +84,7 @@ def test_conf_parsing_5():
     return (ret, 1)
 
 
-def test_conf_parsing_6():
+def test_6():
     """
     test error_page 400 missing
     """
@@ -98,7 +98,7 @@ def test_conf_parsing_6():
     return (ret, 1)
 
 
-def test_conf_parsing_7():
+def test_7():
     """
     test error_page 403 missing
     """
@@ -112,7 +112,7 @@ def test_conf_parsing_7():
     return (ret, 1)
 
 
-def test_conf_parsing_8():
+def test_8():
     """
     test error_page 404 missing
     """
@@ -126,7 +126,7 @@ def test_conf_parsing_8():
     return (ret, 1)
 
 
-def test_conf_parsing_9():
+def test_9():
     """
     test error_page 405 missing
     """
@@ -140,7 +140,7 @@ def test_conf_parsing_9():
     return (ret, 1)
 
 
-def test_conf_parsing_10():
+def test_10():
     """
     test error_page 413 missing
     """
@@ -154,7 +154,7 @@ def test_conf_parsing_10():
     return (ret, 1)
 
 
-def test_conf_parsing_11():
+def test_11():
     """
     test error_page 500 missing
     """
@@ -168,7 +168,7 @@ def test_conf_parsing_11():
     return (ret, 1)
 
 
-def test_conf_parsing_12():
+def test_12():
     """
     test error_page 501 missing
     """
@@ -182,7 +182,7 @@ def test_conf_parsing_12():
     return (ret, 1)
 
 
-def test_conf_parsing_13():
+def test_13():
     """
     test error_page 505 missing
     """
@@ -196,7 +196,7 @@ def test_conf_parsing_13():
     return (ret, 1)
 
 
-def test_conf_parsing_14():
+def test_14():
     """
     extra line
     """
@@ -215,7 +215,7 @@ def test_conf_parsing_14():
     return (ret, 1)
 
 
-def test_conf_parsing_15():
+def test_15():
     """
     Max body size argument in NAN
     """

@@ -6,7 +6,7 @@ from testutils import test_cmd
 from webserver import WebServer
 
 
-def test_cmd_parsing_1():
+def test_1():
     """
     Test error message if to many args.
     """
@@ -19,7 +19,7 @@ def test_cmd_parsing_1():
     return (ret, 1)
 
 
-def test_cmd_parsing_2():
+def test_2():
     """
     Test error message if arg is not .conf file.
     """
@@ -32,7 +32,7 @@ def test_cmd_parsing_2():
     return (ret, 1)
 
 
-def test_cmd_parsing_3():
+def test_3():
     """
     Test error message if .conf file do not exists.
     """

@@ -2,11 +2,10 @@
 """
 Test module for webserv
 """
-
-from testutils import *
-from webtest_cmdline_parsing import *
-from webtest_conf_parsing import *
-from webtest_request import *
+import webtest_cmdline_parsing as cmd_parsing
+import webtest_conf_parsing as conf_parsing
+import webtest_request as request
+from testutils import tester
 
 
 def main():
@@ -15,27 +14,27 @@ def main():
     """
 
     test_fun = (
-        test_cmd_parsing_1,
-        test_cmd_parsing_2,
-        test_cmd_parsing_3,
-        test_conf_parsing_1,
-        test_conf_parsing_2,
-        test_conf_parsing_3,
-        test_conf_parsing_4,
-        test_conf_parsing_5,
-        test_conf_parsing_6,
-        test_conf_parsing_7,
-        test_conf_parsing_8,
-        test_conf_parsing_9,
-        test_conf_parsing_10,
-        test_conf_parsing_11,
-        test_conf_parsing_12,
-        test_conf_parsing_13,
-        test_conf_parsing_14,
-        test_conf_parsing_15,
-        test_request_1,
-        test_request_2,
-        test_request_3,
+        cmd_parsing.test_1,
+        cmd_parsing.test_2,
+        cmd_parsing.test_3,
+        conf_parsing.test_1,
+        conf_parsing.test_2,
+        conf_parsing.test_3,
+        conf_parsing.test_4,
+        conf_parsing.test_5,
+        conf_parsing.test_6,
+        conf_parsing.test_7,
+        conf_parsing.test_8,
+        conf_parsing.test_9,
+        conf_parsing.test_10,
+        conf_parsing.test_11,
+        conf_parsing.test_12,
+        conf_parsing.test_13,
+        conf_parsing.test_14,
+        conf_parsing.test_15,
+        request.test_1,
+        request.test_2,
+        request.test_3,
     )
 
     passed, total = map(sum, zip(*(tester(f) for f in test_fun)))
