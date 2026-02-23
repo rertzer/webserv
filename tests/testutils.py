@@ -85,6 +85,20 @@ def send_request(host, port, method, path, head):
     return None
 
 
+def send_post_request(host, port, path, params, headers):
+    """
+    send a postrequest to the specified host.
+    returns the response.
+    """
+    try:
+        conn = http.client.HTTPConnection(host, port)
+        conn.request("POST", path, params, headers)
+        return conn.getresponse()
+    except ConnectionRefusedError as e:
+        print({e})
+    return None
+
+
 def check_res(version, res, status, length):
     """
     Takes a string, an HTTPRespnse, and two int as arguments.
@@ -109,6 +123,15 @@ def test_request(index, host, port, test):
 
     res = send_request(host, port, test[0], test[1], {"Host": test[4]})
     return check_res(f"1.{index}", res, test[2], test[3])
+
+
+def test_post_request(index, host, port, path, test):
+    """
+    Tests a properly formed HTTP request
+    """
+
+    res = send_post_request(host, port, path, test[1], test[0])
+    return check_res(f"3.{index}", res, test[2], test[3])
 
 
 class FakeSocket(BytesIO):

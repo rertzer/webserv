@@ -3,6 +3,7 @@ Webserv tests: test command line arguments parsing.
 """
 
 import socket
+from urllib.parse import urlencode
 
 from testutils import *
 from webserver import WebServer
@@ -82,3 +83,69 @@ def test_raw(index, t):
         raw_res = sock.recv(4096)
     # print(raw_res.decode(errors="replace"))
     return check_res(f"2.{index}", raw_to_http_response(raw_res), t[1], t[2])
+
+
+def test_request_3():
+    """
+    Test POST requests on cesar_post.php.
+    """
+    server = test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8080
+
+    tests = (
+        (
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
+            200,
+            2664,
+        ),
+        (
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            urlencode(
+                {
+                    "cipher_key": "23",
+                    "texte_area": "Ave Ceasar morituri te salutant",
+                    "cipher": "on",
+                }
+            ),
+            200,
+            2684,
+        ),
+        (
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            urlencode(
+                {"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}
+            ),
+            200,
+            487,
+        ),
+        (
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            urlencode({"texte_area": "hello world"}),
+            200,
+            2630,
+        ),
+        (
+            {"Content-Type": "application/x-www-form-urlencoded"},
+            urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}),
+            200,
+            2664,
+        ),
+        (
+            {"Content-Type": "text/html"},
+            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
+            200,
+            2630,
+        ),
+    )
+    passed = sum(
+        test_post_request(i + 1, host, port, "/php/cesar_post.php", t)
+        for i, t in enumerate(tests)
+    )
+
+    test_request_end(server)
+    check_server_output(server)
+
+    return (passed, len(tests))

@@ -35,6 +35,7 @@ def main():
         test_conf_parsing_15,
         test_request_1,
         test_request_2,
+        test_request_3,
     )
 
     passed, total = map(sum, zip(*(tester(f) for f in test_fun)))
