@@ -2,7 +2,6 @@
 Webserv tests: test command line arguments parsing.
 """
 
-import socket
 from urllib.parse import urlencode
 
 import testutils as tu
@@ -64,25 +63,14 @@ def test_2():
     server = tu.test_request_start("")
     assert isinstance(server, WebServer)
 
-    passed = sum(test_raw(i + 1, t) for i, t in enumerate(tests))
+    passed = sum(
+        tu.test_raw(f"2.{i + 1}", "localhost", 8080, t) for i, t in enumerate(tests)
+    )
 
     tu.test_request_end(server)
     tu.check_server_output(server)
 
     return (passed, len(tests))
-
-
-def test_raw(index, t):
-    """
-    Sends raw request req on socket sock and checks the
-    response for status stat and content-length length.
-    returns 1 or 0.
-    """
-    with socket.create_connection(("localhost", 8080)) as sock:
-        sock.sendall(t[0])
-        raw_res = sock.recv(4096)
-    # print(raw_res.decode(errors="replace"))
-    return tu.check_res(f"2.{index}", tu.raw_to_http_response(raw_res), t[1], t[2])
 
 
 def test_3():
@@ -144,6 +132,52 @@ def test_3():
         tu.test_post_request(i + 1, host, port, "/php/cesar_post.php", t)
         for i, t in enumerate(tests)
     )
+
+    tu.test_request_end(server)
+    tu.check_server_output(server)
+
+    return (passed, len(tests))
+
+
+def test_4():
+    """
+    Test POST requests on cesar_post.php.
+    Testing invalid POST requests.
+    """
+    server = tu.test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8080
+
+    tests = (
+        (
+            (
+                "POST /php/cesar_post.php HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Content-Type: not-appropriate\r\n"
+                + "Content-Length: 45\r\n\r\n"
+                + urlencode(
+                    {"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}
+                )
+            ).encode(),
+            200,
+            2630,
+        ),
+        (
+            (
+                "POST /php/cesar_post.php HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Content-Type: application/x-www-form-urlencoded\r\n"
+                + "Content-Length: 12\r\n\r\n"
+                + urlencode(
+                    {"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}
+                )
+            ).encode(),
+            200,
+            2630,
+        ),
+    )
+    passed = sum(tu.test_raw(f"4.{i + 1}", host, port, t) for i, t in enumerate(tests))
 
     tu.test_request_end(server)
     tu.check_server_output(server)

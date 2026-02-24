@@ -35,6 +35,7 @@ def main():
         request.test_1,
         request.test_2,
         request.test_3,
+        request.test_4,
     )
 
     passed, total = map(sum, zip(*(tester(f) for f in test_fun)))

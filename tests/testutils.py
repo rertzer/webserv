@@ -4,6 +4,7 @@ Functions for webserv testing
 
 import http.client
 import io
+import socket
 import subprocess
 import time
 from http.client import HTTPResponse
@@ -127,11 +128,32 @@ def test_request(index, host, port, test):
 
 def test_post_request(index, host, port, path, test):
     """
-    Tests a properly formed HTTP request
+    Tests a properly formed HTTP  POST request
     """
 
     res = send_post_request(host, port, path, test[1], test[0])
     return check_res(f"3.{index}", res, test[2], test[3])
+
+
+def test_raw(index, host, port, t):
+    """
+    Sends raw request req on socket sock and checks the
+    response for status stat and content-length length.
+    returns 1 or 0.
+    """
+    raw_res = send_raw(host, port, t[0])
+    # print(raw_res.decode(errors="replace"))
+    return check_res(f"{index}", raw_to_http_response(raw_res), t[1], t[2])
+
+
+def send_raw(host, port, raw):
+    """
+    Sends raw request via a socket
+    """
+    with socket.create_connection((host, port)) as sock:
+        sock.sendall(raw)
+        raw_res = sock.recv(4096)
+    return raw_res
 
 
 class FakeSocket(BytesIO):
