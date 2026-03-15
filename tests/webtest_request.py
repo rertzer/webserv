@@ -183,3 +183,133 @@ def test_4():
     tu.check_server_output(server)
 
     return (passed, len(tests))
+
+
+def test_5():
+    """
+    Test GET python CGI requests on quizz.py.
+    Testing cookies.
+    """
+    server = tu.test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8080
+
+    tests = (
+        (
+            ("GET /python/quizz.py HTTP/1.1\r\n" + "Host: localhost\r\n").encode(),
+            200,
+            1299,
+            (
+                ["good", "0", {"SameSite": "Strict"}],
+                ["total", "0", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=0&q_answer=Xavier+Niel HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Cookie: good=0; total=0; name=Droopy\r\n"
+            ).encode(),
+            200,
+            1451,
+            (
+                ["good", "0", {"SameSite": "Strict"}],
+                ["total", "1", {"SameSite": "Strict"}],
+                ["name", "Droopy", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=4&q_answer=son+chat HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Cookie: good=3; total=4; name=Droopy\r\n"
+            ).encode(),
+            200,
+            1509,
+            (
+                ["good", "3", {"SameSite": "Strict"}],
+                ["total", "5", {"SameSite": "Strict"}],
+                ["name", "Droopy", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Cookie: good=3; total=4; name=Droopy\r\n"
+            ).encode(),
+            200,
+            1519,
+            (
+                ["good", "3", {"SameSite": "Strict"}],
+                ["total", "5", {"SameSite": "Strict"}],
+                ["name", "Droopy", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Cookie: bad=3; total=4; name=Droopy\r\n"
+            ).encode(),
+            200,
+            1519,
+            (
+                ["bad", "3", {}],
+                ["good", "0", {"SameSite": "Strict"}],
+                ["total", "5", {"SameSite": "Strict"}],
+                ["name", "Droopy", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Cookie: total=4; name=Droopy\r\n"
+            ).encode(),
+            200,
+            1519,
+            (
+                ["good", "0", {"SameSite": "Strict"}],
+                ["total", "5", {"SameSite": "Strict"}],
+                ["name", "Droopy", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + "Cookie: good=3 total=4;name=Droopy\r\n"
+            ).encode(),
+            200,
+            1519,
+            (
+                ["good", "3", {"SameSite": "Strict"}],
+                ["total", "5", {"SameSite": "Strict"}],
+                ["name", "Droopy", {"SameSite": "Strict"}],
+            ),
+        ),
+        (
+            (
+                "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
+                + "Host: localhost\r\r"
+                + "Cookie: good=3; total=4; name=Droopy\r\n"
+            ).encode(),
+            200,
+            1299,
+            (
+                ["good", "0", {"SameSite": "Strict"}],
+                ["total", "0", {"SameSite": "Strict"}],
+            ),
+        ),
+    )
+    passed = sum(
+        tu.test_raw_with_cookies(f"5.{i + 1}", host, port, t)
+        for i, t in enumerate(tests)
+    )
+
+    tu.test_request_end(server)
+    tu.check_server_output(server)
+
+    return (passed, len(tests))

@@ -8,6 +8,7 @@ import socket
 import subprocess
 import time
 from http.client import HTTPResponse
+from http.cookies import SimpleCookie
 from io import BytesIO
 
 from colors import Color
@@ -117,6 +118,66 @@ def check_res(version, res, status, length):
     return ok
 
 
+def check_res_with_cookies(version, res, status, length, cookies):
+    """
+    Takes a string, an HTTPRespnse, and two int as arguments.
+    check that response has the right status and content length
+    return True or False
+    """
+    ok = False
+    if (
+        isinstance(res, HTTPResponse)
+        and res.status == status
+        and res.getheader("Content-Length") == str(length)
+        and test_cookies(res, cookies)
+    ):
+        ok = True
+    print(f"test_request_{version}", okko(ok))
+    return ok
+
+
+def test_cookies(resp, cookies):
+    """
+    Test the receiced cookies
+    """
+    ok = True
+    resp_cookies = get_cookies(resp)
+    if len(resp_cookies) != len(cookies):
+        return False
+    for cookie in cookies:
+        print("cool coookiecool", cookie)
+        if cookie[0] not in resp_cookies.keys():
+            ok = False
+            break
+        if resp_cookies[cookie[0]].value != cookie[1]:
+            ok = False
+            break
+        for k, v in cookie[2].items():
+            print("k:", k)
+            print("keys:", resp_cookies[cookie[0]].keys())
+            if k.lower() not in resp_cookies[cookie[0]].keys():
+                ok = False
+                break
+            if v != resp_cookies[cookie[0]][k.lower()]:
+                ok = False
+                break
+        if ok is False:
+            break
+
+    return ok
+
+
+def get_cookies(resp):
+    """
+    Retrieve cookies from the server response.
+    """
+    cookies = SimpleCookie()
+    for header, value in resp.getheaders():
+        if header.lower() == "set-cookie":
+            cookies.load(value)
+    return cookies
+
+
 def test_request(index, host, port, test):
     """
     Tests a properly formed HTTP request
@@ -144,6 +205,19 @@ def test_raw(index, host, port, t):
     raw_res = send_raw(host, port, t[0])
     # print(raw_res.decode(errors="replace"))
     return check_res(f"{index}", raw_to_http_response(raw_res), t[1], t[2])
+
+
+def test_raw_with_cookies(index, host, port, t):
+    """
+    Sends raw request req on socket sock and checks the
+    response for status stat and content-length length and cookies.
+    returns 1 or 0.
+    """
+    raw_res = send_raw(host, port, t[0])
+    # print(raw_res.decode(errors="replace"))
+    return check_res_with_cookies(
+        f"{index}", raw_to_http_response(raw_res), t[1], t[2], t[3]
+    )
 
 
 def send_raw(host, port, raw):
