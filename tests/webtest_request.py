@@ -2,6 +2,8 @@
 Webserv tests: test command line arguments parsing.
 """
 
+import subprocess
+import sys
 from urllib.parse import urlencode
 
 import testutils as tu
@@ -325,12 +327,29 @@ def test_6():
     port = 8081
 
     tests = (
-        ("GET", "/html/page/", 200, 1874, host),
         ("GET", "/html/", 200, 1457, host),
+        ("GET", "/html/page/", 200, 1988, host),
+        ("DELETE", "/html/page/notToDelete.html", 405, 285, host),
+        ("GET", "/html/page/delete/", 200, 1257, host),
+        ("GET", "/html/page/delete/toDelete.html", 200, 478, host),
+        ("DELETE", "/html/page/delete/toDelete.html", 200, 38, host),
+        ("DELETE", "/html/page/delete/toDelete.html", 404, 281, host),
+        ("GET", "/html/page/delete/", 200, 1131, host),
+        ("GET", "/html/page/", 200, 1988, host),
+        ("DELETE", "/html/page/delete/toDelete.html", 404, 281, host),
     )
     passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
 
     tu.test_request_end(server)
     tu.check_server_output(server)
+    try:
+        subprocess.run(
+            ["cp", "toDelete.html.bak", "toDelete.html"],
+            cwd="../www/html/page/delete/",
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("Restoring the toDelelte file failed:", e.returncode, file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
 
     return (passed, len(tests))
