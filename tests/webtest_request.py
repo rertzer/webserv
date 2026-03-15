@@ -313,3 +313,24 @@ def test_5():
     tu.check_server_output(server)
 
     return (passed, len(tests))
+
+
+def test_6():
+    """
+    Test  GET index.
+    """
+    server = tu.test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8081
+
+    tests = (
+        ("GET", "/html/page/", 200, 1874, host),
+        ("GET", "/html/", 200, 1457, host),
+    )
+    passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
+
+    tu.test_request_end(server)
+    tu.check_server_output(server)
+
+    return (passed, len(tests))

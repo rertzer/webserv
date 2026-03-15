@@ -112,6 +112,7 @@ def check_res(version, res, status, length):
         isinstance(res, HTTPResponse)
         and res.status == status
         and res.getheader("Content-Length") == str(length)
+        and len(res.read()) == length
     ):
         ok = True
     print(f"test_request_{version}", okko(ok))
@@ -130,6 +131,7 @@ def check_res_with_cookies(version, res, status, length, cookies):
         and res.status == status
         and res.getheader("Content-Length") == str(length)
         and test_cookies(res, cookies)
+        and len(res.read()) == length
     ):
         ok = True
     print(f"test_request_{version}", okko(ok))
