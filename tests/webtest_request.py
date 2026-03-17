@@ -319,7 +319,7 @@ def test_5():
 
 def test_6():
     """
-    Test  GET index.
+    Test  GET index and DELETE.
     """
     server = tu.test_request_start("")
     assert isinstance(server, WebServer)
@@ -350,6 +350,152 @@ def test_6():
         )
     except subprocess.CalledProcessError as e:
         print("Restoring the toDelelte file failed:", e.returncode, file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
+
+    return (passed, len(tests))
+
+
+def test_7():
+    """
+    Test GET redirection, new root, new index, ERROR 403.
+    """
+    server = tu.test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8081
+
+    tests = (
+        ("GET", "/redir/anything", 301, 0, host),
+        ("GET", "/newRoot/newRoot.html", 200, 379, host),
+        ("GET", "/newIndex/", 200, 370, host),
+        ("GET", "/html/page/forbidden.html", 403, 304, host),
+    )
+    try:
+        subprocess.run(
+            ["chmod", "000", "forbidden.html"],
+            cwd="../www/html/page/",
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("Unable to change forbidden.html rights:", e.returncode, file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
+    passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
+
+    tu.test_request_end(server)
+    # tu.check_server_output(server)
+    try:
+        subprocess.run(
+            ["chmod", "644", "forbidden.html"],
+            cwd="../www/html/page/",
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("Unable to change forbidden.html rights:", e.returncode, file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
+
+    return (passed, len(tests))
+
+
+def test_8():
+    """
+    Test POST file upload and error 413 (Request Entity To Large).
+    """
+    server = tu.test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8080
+
+    kitty_1_content, boundary_1 = tu.get_kitty_content("../www/img/kitty1.jpeg")
+    length_1 = len(kitty_1_content)
+
+    kitty_2_content, boundary_2 = tu.get_kitty_content("../www/img/kitty2.jpg")
+    length_2 = len(kitty_2_content)
+
+    tests = (
+        (
+            (
+                "POST /html/kitty/success.html HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + f"Content-Type: multipart/form-data; boundary={boundary_1}\r\n"
+                + f"Content-Length: {length_1}\r\n\r\n"
+            ).encode()
+            + kitty_1_content,
+            200,
+            1284,
+        ),
+        (
+            (
+                "POST /html/kitty/success.html HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + f"Content-Type: multipart/form-data; boundary={boundary_2}\r\n"
+                + f"Content-Length: {length_2}\r\n\r\n"
+            ).encode()
+            + kitty_2_content,
+            413,
+            877,
+        ),
+    )
+    passed = sum(tu.test_raw(f"8.{i + 1}", host, port, t) for i, t in enumerate(tests))
+
+    tu.test_request_end(server)
+    tu.check_server_output(server)
+    try:
+        subprocess.run(
+            ["rm", "-f", "kitty1.jpeg"],
+            cwd="../www/upload/",
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("Deleting kitty failed:", e.returncode, file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
+
+    return (passed, len(tests))
+
+
+def test_9():
+    """
+    Test file large upload and download.
+    ! ResetError needs to be investigated
+    """
+    server = tu.test_request_start("")
+    assert isinstance(server, WebServer)
+    host = "localhost"
+    port = 8081
+
+    kitty_2_content, boundary_2 = tu.get_kitty_content("../www/img/kitty2.jpg")
+    length_2 = len(kitty_2_content)
+
+    tests = (
+        (
+            (
+                "POST /html/kitty/success.html HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + f"Content-Type: multipart/form-data; boundary={boundary_2}\r\n"
+                + f"Content-Length: {length_2}\r\n\r\n"
+            ).encode()
+            + kitty_2_content,
+            200,
+            1284,
+        ),
+        (("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(), 200, 1321),
+        (
+            ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
+            200,
+            178976,
+        ),
+    )
+    passed = sum(tu.test_raw(f"9.{i + 1}", host, port, t) for i, t in enumerate(tests))
+
+    tu.test_request_end(server)
+    tu.check_server_output(server)
+    try:
+        subprocess.run(
+            ["rm", "-f", "kitty2.jpg"],
+            cwd="../www/upload/",
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("Deleting kitty failed:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
 
     return (passed, len(tests))

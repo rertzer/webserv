@@ -4,8 +4,10 @@ Functions for webserv testing
 
 import http.client
 import io
+import os
 import socket
 import subprocess
+import sys
 import time
 from http.client import HTTPResponse
 from http.cookies import SimpleCookie
@@ -101,6 +103,17 @@ def send_post_request(host, port, path, params, headers):
     return None
 
 
+def read_content(resp):
+    content = b""
+    while True:
+        chunk = resp.read(4096)
+        if not chunk:
+            break
+        content += chunk
+
+    return content
+
+
 def check_res(version, res, status, length):
     """
     Takes a string, an HTTPRespnse, and two int as arguments.
@@ -108,13 +121,31 @@ def check_res(version, res, status, length):
     return True or False
     """
     ok = False
-    if (
-        isinstance(res, HTTPResponse)
-        and res.status == status
-        and res.getheader("Content-Length") == str(length)
-        and len(res.read()) == length
-    ):
-        ok = True
+    if length != 0:
+        content = read_content(res)
+        # print(
+        #     "RESPONSE",
+        #     len(content),
+        #     content[:24],
+        #     res.getheader("Content-Length"),
+        #     str(length),
+        # )
+        if (
+            isinstance(res, HTTPResponse)
+            and res.status == status
+            and res.getheader("Content-Length") == str(length)
+            and len(content) == length
+        ):
+            ok = True
+    else:
+        if (
+            isinstance(res, HTTPResponse)
+            and res.status == status
+            and res.getheader("Content-Length") is None
+            and res.getheader("Location") is not None
+        ):
+            ok = True
+
     print(f"test_request_{version}", okko(ok))
     return ok
 
@@ -147,7 +178,6 @@ def test_cookies(resp, cookies):
     if len(resp_cookies) != len(cookies):
         return False
     for cookie in cookies:
-        print("cool coookiecool", cookie)
         if cookie[0] not in resp_cookies.keys():
             ok = False
             break
@@ -155,8 +185,6 @@ def test_cookies(resp, cookies):
             ok = False
             break
         for k, v in cookie[2].items():
-            print("k:", k)
-            print("keys:", resp_cookies[cookie[0]].keys())
             if k.lower() not in resp_cookies[cookie[0]].keys():
                 ok = False
                 break
@@ -228,7 +256,15 @@ def send_raw(host, port, raw):
     """
     with socket.create_connection((host, port)) as sock:
         sock.sendall(raw)
-        raw_res = sock.recv(4096)
+        raw_res = b""
+        try:
+            while True:
+                chunk = sock.recv(4096)
+                if not chunk or chunk == b"":
+                    break
+                raw_res += chunk
+        except ConnectionResetError as e:
+            print("Reset Error", e, file=sys.stderr)
     return raw_res
 
 
@@ -265,3 +301,26 @@ def check_server_output(server):
     outerror = server.proc.stderr.read()
     ret = server.proc.returncode
     print(f"RETURN|{ret}|{output}|{outerror}|\n")
+
+
+def get_kitty_content(filename):
+    """
+    format the file `filename` as a POST request body
+    """
+    boundary = "----kittyBoundary1234"
+    _, extension = filename.rsplit(".", 1)
+
+    with open(filename, "rb") as f:
+        file_data = f.read()
+
+        body = (
+            (
+                f"--{boundary}\r\n"
+                f'Content-Disposition: form-data; name="file"; filename="{os.path.basename(filename)}"\r\n'
+                f"Content-Type: image/{extension}\r\n"
+                "\r\n"
+            ).encode()
+            + file_data
+            + (f"--{boundary}--\r\n").encode()
+        )
+    return body, boundary
