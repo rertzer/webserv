@@ -7,46 +7,47 @@ import sys
 from urllib.parse import urlencode
 
 import testutils as tu
+from simplerequest import SimpleRequest
+from simpletester import SimpleTester
 from webserver import WebServer
 
 
 def test_1():
     """
     Test GET requests.
-    ! server behavior in subtest 7 isn't satisfactory
+    ! server behavior in subtest 6 (brutus_get) isn't satisfactory
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
     host = "localhost"
-    port = 8080
+    headers = {"Host": host}
 
-    tests = (
-        ("GET", "/", 200, 1146, host),
-        ("GOT", "/", 400, 847, host),
-        ("GET", "/nowhere", 404, 851, host),
-        ("GET", "/", 200, 1146, "hostile"),
-        ("GET", "/html/kitty/kitty.html", 200, 1469, host),
-        (
+    tester = SimpleTester(1, host, 8080)
+    tester.start_server("")
+
+    requests = (
+        SimpleRequest("GET", "/", headers, 200, 1146),
+        SimpleRequest("GOT", "/", headers, 400, 847),
+        SimpleRequest("GET", "/nowhere", headers, 404, 851),
+        SimpleRequest("GET", "/html/kitty/kitty.html", headers, 200, 1469),
+        SimpleRequest(
             "GET",
             "/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
+            headers,
             200,
             2678,
-            host,
         ),
-        (
+        SimpleRequest(
             "GET",
             "/php/brutus_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
+            headers,
             200,
             27,
-            host,
         ),
+        SimpleRequest("GET", "/", {"Host": "hostile"}, 200, 1146),
     )
-    passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
-
-    tu.test_request_end(server)
-    tu.check_server_output(server)
-
-    return (passed, len(tests))
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
+    return (passed, len(requests))
 
 
 def test_2():
