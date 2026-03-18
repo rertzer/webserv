@@ -456,13 +456,17 @@ def test_9():
     """
     Test file large upload and download.
     ! ResetError needs to be investigated
+    ! Get no error when doing a boundary mistake during upload
     """
     server = tu.test_request_start("")
     assert isinstance(server, WebServer)
     host = "localhost"
     port = 8081
 
-    kitty_2_content, boundary_2 = tu.get_kitty_content("../www/img/kitty2.jpg")
+    kitty_1_content, boundary_1 = tu.get_kitty_content("../www/img/kitty2.jpg")
+    length_1 = len(kitty_1_content)
+
+    kitty_2_content, boundary_2 = tu.get_wrong_kitty_content("../www/img/kitty2.jpg")
     length_2 = len(kitty_2_content)
 
     tests = (
@@ -470,10 +474,22 @@ def test_9():
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
-                + f"Content-Type: multipart/form-data; boundary={boundary_2}\r\n"
+                + f"Content-Type: multipart/form-data; boundary={boundary_2} \r\n"
                 + f"Content-Length: {length_2}\r\n\r\n"
             ).encode()
             + kitty_2_content,
+            200,
+            1284,
+        ),
+        (("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(), 200, 1198),
+        (
+            (
+                "POST /html/kitty/success.html HTTP/1.1\r\n"
+                + "Host: localhost\r\n"
+                + f"Content-Type: multipart/form-data; boundary={boundary_1}\r\n"
+                + f"Content-Length: {length_1}\r\n\r\n"
+            ).encode()
+            + kitty_1_content,
             200,
             1284,
         ),

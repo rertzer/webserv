@@ -324,3 +324,27 @@ def get_kitty_content(filename):
             + (f"--{boundary}--\r\n").encode()
         )
     return body, boundary
+
+
+def get_wrong_kitty_content(filename):
+    """
+    format the file `filename` as a POST request body with a boundary mistake
+    """
+    boundary_1 = "----kittyBoundary1234"
+    boundary_2 = "----kittyBoundary5678"
+    _, extension = filename.rsplit(".", 1)
+
+    with open(filename, "rb") as f:
+        file_data = f.read()
+
+        body = (
+            (
+                # f"--{boundary_1}\r\n"
+                f'Content-Disposition: form-data; name="file"; filename="{os.path.basename(filename)}"\r\n'
+                f"Content-Type: image/{extension}\r\n"
+                "\r\n"
+            ).encode()
+            + file_data
+            + (f"--{boundary_2}--\r\n").encode()
+        )
+    return body, boundary_1
