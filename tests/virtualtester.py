@@ -7,6 +7,7 @@ import io
 import subprocess
 import time
 from http.client import HTTPResponse
+from http.cookies import SimpleCookie
 
 import simplerequest
 import testutils as tu
@@ -95,6 +96,45 @@ class VirtualTester:
                     and resp.getheader("Location") is not None
                 ):
                     ok = True
+            if request.cookies is not None:
+                ok = ok and self.test_cookies(request, resp)
 
-        print(f"test_request_f{self.index}.{request.index}", tu.okko(ok))
+        print(f"test_request_{self.index}.{request.index}", tu.okko(ok))
         return ok
+
+    def test_cookies(self, request, resp):
+        """
+        Test the receiced cookies
+        """
+        ok = True
+        resp_cookies = self.get_cookies(resp)
+        if len(resp_cookies) != len(request.cookies):
+            return False
+        for cookie in request.cookies:
+            if cookie[0] not in resp_cookies.keys():
+                ok = False
+                break
+            if resp_cookies[cookie[0]].value != cookie[1]:
+                ok = False
+                break
+            for k, v in cookie[2].items():
+                if k.lower() not in resp_cookies[cookie[0]].keys():
+                    ok = False
+                    break
+                if v != resp_cookies[cookie[0]][k.lower()]:
+                    ok = False
+                    break
+            if ok is False:
+                break
+
+        return ok
+
+    def get_cookies(self, resp):
+        """
+        Retrieve cookies from the server response.
+        """
+        cookies = SimpleCookie()
+        for header, value in resp.getheaders():
+            if header.lower() == "set-cookie":
+                cookies.load(value)
+        return cookies

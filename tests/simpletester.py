@@ -29,7 +29,7 @@ class SimpleTester(VirtualTester):
         """
         try:
             conn = http.client.HTTPConnection(self.host, self.port)
-            conn.request(request.method, request.path, headers=request.headers)
+            conn.request(request.method, request.path, request.content, request.headers)
             return conn.getresponse()
         except ConnectionRefusedError as e:
             print({e})

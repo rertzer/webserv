@@ -11,8 +11,10 @@ class SimpleRequest(VirtualRequest):
     It implements properly formed http requests.
     """
 
-    def __init__(self, method, path, headers, status, length):
+    def __init__(self, method, path, headers, status, length, content="", cookies=""):
         VirtualRequest.__init__(self, status, length)
         self.method = method
         self.path = path
         self.headers = headers
+        self.content = content
+        self.cookies = cookies

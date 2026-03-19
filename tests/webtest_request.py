@@ -7,6 +7,8 @@ import sys
 from urllib.parse import urlencode
 
 import testutils as tu
+from rawrequest import RawRequest
+from rawtester import RawTester
 from simplerequest import SimpleRequest
 from simpletester import SimpleTester
 from webserver import WebServer
@@ -56,44 +58,53 @@ def test_2():
     use socket
     """
 
-    tests = (
-        (b"\r\nHost: localhost\r\n\r\n", 400, 847),
-        (b"GET / HTTP/6.1\r\nHost: localhost\r\n\r\n", 505, 864),
-        (b"PUT / HTTP/1.1\r\nHost: localhost\r\n\r\n", 501, 844),
-        (b"Thisisnotavalidrequest HTTP/1.1\r\nHost: localhost\r\n\r\n", 400, 847),
-        (b"POST /php/norminet.html HTTP/1.1\r\nHost: localhost\r\n\r\n", 404, 851),
+    tester = RawTester(2, "localhost", 8080)
+    tester.start_server("")
+
+    requests = (
+        RawRequest(b"\r\nHost: localhost\r\n\r\n", 400, 847),
+        RawRequest(b"GET / HTTP/6.1\r\nHost: localhost\r\n\r\n", 505, 864),
+        RawRequest(b"PUT / HTTP/1.1\r\nHost: localhost\r\n\r\n", 501, 844),
+        RawRequest(
+            b"Thisisnotavalidrequest HTTP/1.1\r\nHost: localhost\r\n\r\n", 400, 847
+        ),
+        RawRequest(
+            b"POST /php/norminet.html HTTP/1.1\r\nHost: localhost\r\n\r\n", 404, 851
+        ),
     )
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
 
-    passed = sum(
-        tu.test_raw(f"2.{i + 1}", "localhost", 8080, t) for i, t in enumerate(tests)
-    )
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
 
-    tu.test_request_end(server)
-    tu.check_server_output(server)
-
-    return (passed, len(tests))
+    return (passed, len(requests))
 
 
 def test_3():
     """
     Test POST requests on cesar_post.php.
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
-    host = "localhost"
-    port = 8080
 
-    tests = (
-        (
-            {"Content-Type": "application/x-www-form-urlencoded"},
-            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
+    host = "localhost"
+
+    tester = SimpleTester(3, host, 8080)
+    tester.start_server("")
+
+    requests = (
+        SimpleRequest(
+            "POST",
+            "/php/cesar_post.php",
+            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             200,
             2664,
+            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
         ),
-        (
-            {"Content-Type": "application/x-www-form-urlencoded"},
+        SimpleRequest(
+            "POST",
+            "/php/cesar_post.php",
+            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
+            200,
+            2684,
             urlencode(
                 {
                     "cipher_key": "23",
@@ -101,45 +112,46 @@ def test_3():
                     "cipher": "on",
                 }
             ),
-            200,
-            2684,
         ),
-        (
-            {"Content-Type": "application/x-www-form-urlencoded"},
+        SimpleRequest(
+            "POST",
+            "/php/cesar_post.php",
+            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
+            200,
+            487,
             urlencode(
                 {"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}
             ),
-            200,
-            487,
         ),
-        (
-            {"Content-Type": "application/x-www-form-urlencoded"},
-            urlencode({"texte_area": "hello world"}),
+        SimpleRequest(
+            "POST",
+            "/php/cesar_post.php",
+            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             200,
             2630,
+            urlencode({"texte_area": "hello world"}),
         ),
-        (
-            {"Content-Type": "application/x-www-form-urlencoded"},
-            urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}),
+        SimpleRequest(
+            "POST",
+            "/php/cesar_post.php",
+            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             200,
             2664,
+            urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}),
         ),
-        (
-            {"Content-Type": "text/html"},
-            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
+        SimpleRequest(
+            "POST",
+            "/php/cesar_post.php",
+            {"Host": host, "Content-Type": "text/html"},
             200,
             2630,
+            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
         ),
     )
-    passed = sum(
-        tu.test_post_request(i + 1, host, port, "/php/cesar_post.php", t)
-        for i, t in enumerate(tests)
-    )
-
-    tu.test_request_end(server)
-    tu.check_server_output(server)
-
-    return (passed, len(tests))
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
+    return (passed, len(requests))
 
 
 def test_4():
@@ -147,13 +159,12 @@ def test_4():
     Test POST requests on cesar_post.php.
     Testing invalid POST requests.
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
-    host = "localhost"
-    port = 8080
 
-    tests = (
-        (
+    tester = RawTester(4, "localhost", 8080)
+    tester.start_server("")
+
+    requests = (
+        RawRequest(
             (
                 "POST /php/cesar_post.php HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -166,7 +177,7 @@ def test_4():
             200,
             2630,
         ),
-        (
+        RawRequest(
             (
                 "POST /php/cesar_post.php HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -180,12 +191,12 @@ def test_4():
             2630,
         ),
     )
-    passed = sum(tu.test_raw(f"4.{i + 1}", host, port, t) for i, t in enumerate(tests))
 
-    tu.test_request_end(server)
-    tu.check_server_output(server)
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
 
-    return (passed, len(tests))
+    return (passed, len(requests))
 
 
 def test_5():
@@ -193,13 +204,12 @@ def test_5():
     Test GET python CGI requests on quizz.py.
     Testing cookies.
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
-    host = "localhost"
-    port = 8080
 
-    tests = (
-        (
+    tester = RawTester(5, "localhost", 8080)
+    tester.start_server("")
+
+    requests = (
+        RawRequest(
             ("GET /python/quizz.py HTTP/1.1\r\n" + "Host: localhost\r\n").encode(),
             200,
             1299,
@@ -208,7 +218,7 @@ def test_5():
                 ["total", "0", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=0&q_answer=Xavier+Niel HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -222,7 +232,7 @@ def test_5():
                 ["name", "Droopy", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=son+chat HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -236,7 +246,7 @@ def test_5():
                 ["name", "Droopy", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -250,7 +260,7 @@ def test_5():
                 ["name", "Droopy", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -265,7 +275,7 @@ def test_5():
                 ["name", "Droopy", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -279,7 +289,7 @@ def test_5():
                 ["name", "Droopy", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -293,7 +303,7 @@ def test_5():
                 ["name", "Droopy", {"SameSite": "Strict"}],
             ),
         ),
-        (
+        RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\r"
@@ -307,42 +317,42 @@ def test_5():
             ),
         ),
     )
-    passed = sum(
-        tu.test_raw_with_cookies(f"5.{i + 1}", host, port, t)
-        for i, t in enumerate(tests)
-    )
 
-    tu.test_request_end(server)
-    tu.check_server_output(server)
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
 
-    return (passed, len(tests))
+    return (passed, len(requests))
 
 
 def test_6():
     """
     Test  GET index and DELETE.
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
     host = "localhost"
-    port = 8081
+    headers = {"Host": host}
 
-    tests = (
-        ("GET", "/html/", 200, 1457, host),
-        ("GET", "/html/page/", 200, 1988, host),
-        ("DELETE", "/html/page/notToDelete.html", 405, 285, host),
-        ("GET", "/html/page/delete/", 200, 1257, host),
-        ("GET", "/html/page/delete/toDelete.html", 200, 478, host),
-        ("DELETE", "/html/page/delete/toDelete.html", 200, 38, host),
-        ("DELETE", "/html/page/delete/toDelete.html", 404, 281, host),
-        ("GET", "/html/page/delete/", 200, 1131, host),
-        ("GET", "/html/page/", 200, 1988, host),
-        ("DELETE", "/html/page/delete/toDelete.html", 404, 281, host),
+    tester = SimpleTester(6, host, 8081)
+    tester.start_server("")
+
+    requests = (
+        SimpleRequest("GET", "/html/", headers, 200, 1457),
+        SimpleRequest("GET", "/html/page/", headers, 200, 1988),
+        SimpleRequest("DELETE", "/html/page/notToDelete.html", headers, 405, 285),
+        SimpleRequest("GET", "/html/page/delete/", headers, 200, 1257),
+        SimpleRequest("GET", "/html/page/delete/toDelete.html", headers, 200, 478),
+        SimpleRequest("DELETE", "/html/page/delete/toDelete.html", headers, 200, 38),
+        SimpleRequest("DELETE", "/html/page/delete/toDelete.html", headers, 404, 281),
+        SimpleRequest("GET", "/html/page/delete/", headers, 200, 1131),
+        SimpleRequest("GET", "/html/page/", headers, 200, 1988),
+        SimpleRequest("DELETE", "/html/page/delete/toDelete.html", headers, 404, 281),
+        SimpleRequest("GET", "/redir/anything", headers, 301, 0),
+        SimpleRequest("GET", "/newRoot/newRoot.html", headers, 200, 379),
+        SimpleRequest("GET", "/newIndex/", headers, 200, 370),
     )
-    passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
 
-    tu.test_request_end(server)
-    tu.check_server_output(server)
+    passed = tester.run_requests(requests)
+
     try:
         subprocess.run(
             ["cp", "toDelete.html.bak", "toDelete.html"],
@@ -353,24 +363,19 @@ def test_6():
         print("Restoring the toDelelte file failed:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
 
-    return (passed, len(tests))
+    tester.stop_server()
+    tester.check_server_output()
+    return (passed, len(requests))
 
 
 def test_7():
-    """
-    Test GET redirection, new root, new index, ERROR 403.
-    """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
-    host = "localhost"
-    port = 8081
 
-    tests = (
-        ("GET", "/redir/anything", 301, 0, host),
-        ("GET", "/newRoot/newRoot.html", 200, 379, host),
-        ("GET", "/newIndex/", 200, 370, host),
-        ("GET", "/html/page/forbidden.html", 403, 304, host),
-    )
+    host = "localhost"
+    headers = {"Host": host}
+
+    tester = SimpleTester(7, host, 8081)
+    tester.start_server("")
+
     try:
         subprocess.run(
             ["chmod", "000", "forbidden.html"],
@@ -380,10 +385,13 @@ def test_7():
     except subprocess.CalledProcessError as e:
         print("Unable to change forbidden.html rights:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
-    passed = sum(tu.test_request(i + 1, host, port, t) for i, t in enumerate(tests))
 
-    tu.test_request_end(server)
-    # tu.check_server_output(server)
+    requests = (SimpleRequest("GET", "/html/page/forbidden.html", headers, 403, 304),)
+
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
+
     try:
         subprocess.run(
             ["chmod", "644", "forbidden.html"],
@@ -394,17 +402,17 @@ def test_7():
         print("Unable to change forbidden.html rights:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
 
-    return (passed, len(tests))
+    return (passed, len(requests))
 
 
 def test_8():
     """
     Test POST file upload and error 413 (Request Entity To Large).
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
     host = "localhost"
-    port = 8080
+
+    tester = RawTester(8, host, 8080)
+    tester.start_server("")
 
     kitty_1_content, boundary_1 = tu.get_kitty_content("../www/img/kitty1.jpeg")
     length_1 = len(kitty_1_content)
@@ -412,8 +420,8 @@ def test_8():
     kitty_2_content, boundary_2 = tu.get_kitty_content("../www/img/kitty2.jpg")
     length_2 = len(kitty_2_content)
 
-    tests = (
-        (
+    requests = (
+        RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -424,7 +432,7 @@ def test_8():
             200,
             1284,
         ),
-        (
+        RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -436,10 +444,10 @@ def test_8():
             877,
         ),
     )
-    passed = sum(tu.test_raw(f"8.{i + 1}", host, port, t) for i, t in enumerate(tests))
 
-    tu.test_request_end(server)
-    tu.check_server_output(server)
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
     try:
         subprocess.run(
             ["rm", "-f", "kitty1.jpeg"],
@@ -450,7 +458,7 @@ def test_8():
         print("Deleting kitty failed:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
 
-    return (passed, len(tests))
+    return (passed, len(requests))
 
 
 def test_9():
@@ -459,10 +467,9 @@ def test_9():
     ! ResetError needs to be investigated
     ! Get no error when doing a boundary mistake during upload
     """
-    server = tu.test_request_start("")
-    assert isinstance(server, WebServer)
     host = "localhost"
-    port = 8081
+    tester = RawTester(9, host, 8081)
+    tester.start_server("")
 
     kitty_1_content, boundary_1 = tu.get_kitty_content("../www/img/kitty2.jpg")
     length_1 = len(kitty_1_content)
@@ -470,8 +477,8 @@ def test_9():
     kitty_2_content, boundary_2 = tu.get_wrong_kitty_content("../www/img/kitty2.jpg")
     length_2 = len(kitty_2_content)
 
-    tests = (
-        (
+    requests = (
+        RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -482,8 +489,10 @@ def test_9():
             200,
             1284,
         ),
-        (("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(), 200, 1198),
-        (
+        RawRequest(
+            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(), 200, 1198
+        ),
+        RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
@@ -494,17 +503,20 @@ def test_9():
             200,
             1284,
         ),
-        (("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(), 200, 1321),
-        (
+        RawRequest(
+            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(), 200, 1321
+        ),
+        RawRequest(
             ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
             200,
             178976,
         ),
     )
-    passed = sum(tu.test_raw(f"9.{i + 1}", host, port, t) for i, t in enumerate(tests))
 
-    tu.test_request_end(server)
-    tu.check_server_output(server)
+    passed = tester.run_requests(requests)
+    tester.stop_server()
+    tester.check_server_output()
+
     try:
         subprocess.run(
             ["rm", "-f", "kitty2.jpg"],
@@ -515,4 +527,4 @@ def test_9():
         print("Deleting kitty failed:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
 
-    return (passed, len(tests))
+    return (passed, len(requests))
