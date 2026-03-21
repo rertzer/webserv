@@ -1,37 +1,13 @@
 #!/usr/bin/env python3
-"""
-Test module for webserv
-"""
-import webtest_cmdline_parsing as cmd_parsing
 import webtest_conf_parsing as conf_parsing
 import webtest_request as request
 from testutils import tester
 
 
 def main():
-    """
-    Tests for Webserv main function.
-    """
 
     test_fun = (
-        cmd_parsing.test_1,
-        cmd_parsing.test_2,
-        cmd_parsing.test_3,
-        conf_parsing.test_1,
-        conf_parsing.test_2,
-        conf_parsing.test_3,
-        conf_parsing.test_4,
-        conf_parsing.test_5,
-        conf_parsing.test_6,
-        conf_parsing.test_7,
-        conf_parsing.test_8,
-        conf_parsing.test_9,
-        conf_parsing.test_10,
-        conf_parsing.test_11,
-        conf_parsing.test_12,
-        conf_parsing.test_13,
-        conf_parsing.test_14,
-        conf_parsing.test_15,
+        conf_parsing.test_cmdline_and_conf,
         request.test_1,
         request.test_2,
         request.test_3,

@@ -1,234 +1,131 @@
-"""
-Webserv tests: test command line arguments parsing.
-"""
+import io
 
-from testutils import test_cmd
+import testutils as tu
+from confrequest import ConfRequest
 from webserver import WebServer
 
 
-def test_1():
-    """
-    Test a missing closing } in conf file.
-    Notice that the error message isn't the right one.
-    """
-    server = test_cmd("tests/conf_test/test_ko_1.conf")
+def conf_tester(index, test):
+    server = tu.run_server(test.conf_file)
     assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "A close bracket appear that isn't open anywhere\n"
-    return (ret, 1)
-
-
-def test_2():
-    """
-    Test a missing opening { in conf file.
-    Notice that the error message isn't the right one.
-    """
-    server = test_cmd("tests/conf_test/test_ko_2.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    ret = server.proc.returncode
-    ret = (
-        ret == 1
-        and output
-        == "Line where ';' is missing: server  line = 1\nA line in the conf File isn't ending with a semicolon\n"
-    )
-    return (ret, 1)
-
-
-def test_3():
-    """
-    Test a missing ending ; in conf file.
-    """
-    server = test_cmd("tests/conf_test/test_ko_3.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    ret = server.proc.returncode
-    ret = (
-        ret == 1
-        and output
-        == "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\nA line in the conf File isn't ending with a semicolon\n"
-    )
-    return (ret, 1)
-
-
-def test_4():
-    """
-    test a missing listen instruction
-    """
-    server = test_cmd("tests/conf_test/test_ko_4.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = (
-        ret == 2
-        and output == "-------------TEST SOCKET------------------\n\n"
-        and error == "Error: socket failed\n"
+    assert isinstance(server.proc.stdout, io.TextIOWrapper)
+    assert isinstance(server.proc.stderr, io.TextIOWrapper)
+    ok = (
+        server.proc.returncode == test.status
+        and server.proc.stdout.read() == test.stdout
+        and server.proc.stderr.read() == test.stderr
     )
 
-    return (ret, 1)
+    print(f"test_conf_1.{index}", tu.okko(ok))
+    return ok
 
 
-def test_5():
-    """
-    test  missing root instruction
-    """
-    server = test_cmd("tests/conf_test/test_ko_5.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_6():
-    """
-    test error_page 400 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_6.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_7():
-    """
-    test error_page 403 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_7.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_8():
-    """
-    test error_page 404 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_8.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_9():
-    """
-    test error_page 405 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_9.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_10():
-    """
-    test error_page 413 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_10.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_11():
-    """
-    test error_page 500 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_11.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_12():
-    """
-    test error_page 501 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_12.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_13():
-    """
-    test error_page 505 missing
-    """
-    server = test_cmd("tests/conf_test/test_ko_13.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = ret == 1 and output == "Error: Server parsing error\n" and error == ""
-
-    return (ret, 1)
-
-
-def test_14():
-    """
-    extra line
-    """
-    server = test_cmd("tests/conf_test/test_ko_14.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    ret = (
-        ret == 1
-        and output
-        == "line not know -> 	this line shouldn't be here; <- End of line not know\nError: Server parsing error\n"
-        and error == ""
+def test_cmdline_and_conf():
+    tests = (
+        ConfRequest(
+            "a b c d",
+            1,
+            "The program can have 1 parameter not more\n",
+            "",
+        ),
+        ConfRequest("my.bad", 1, "The program needs a .conf parameter\n", ""),
+        ConfRequest(
+            "youwillneverfindme.conf",
+            1,
+            "The file youwillneverfindme.conf doesn't exist\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_1.conf",
+            1,
+            "A close bracket appear that isn't open anywhere\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_2.conf",
+            1,
+            "Line where ';' is missing: server  line = 1\nA line in the conf File isn't ending with a semicolon\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_3.conf",
+            1,
+            "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\nA line in the conf File isn't ending with a semicolon\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_4.conf",
+            2,
+            "-------------TEST SOCKET------------------\n\n",
+            "Error: socket failed\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_5.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_6.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_7.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_8.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_9.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_10.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_11.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_12.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_13.conf",
+            1,
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_14.conf",
+            1,
+            "line not know -> 	this line shouldn't be here; <- End of line not know\nError: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_15.conf",
+            1,
+            "maxBodySize[maxBodySize.length() - 1] N\nclient_max_body_size doesn't respect subject rules\nError: Server parsing error\n",
+            "",
+        ),
     )
 
-    return (ret, 1)
-
-
-def test_15():
-    """
-    Max body size argument in NAN
-    """
-    server = test_cmd("tests/conf_test/test_ko_15.conf")
-    assert isinstance(server, WebServer)
-    output = server.proc.stdout.read()
-    error = server.proc.stderr.read()
-    ret = server.proc.returncode
-    # print(f"|{ret}|{output}|{error}|")
-    ret = (
-        ret == 1
-        and output
-        == "maxBodySize[maxBodySize.length() - 1] N\nclient_max_body_size doesn't respect subject rules\nError: Server parsing error\n"
-        and error == ""
-    )
-    return (ret, 1)
+    passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
+    return passed, len(tests)

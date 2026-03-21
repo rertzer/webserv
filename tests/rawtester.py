@@ -1,29 +1,17 @@
-"""
-RawTester is used to test not properly formated requests.
-
-"""
-
-import http.client
-import io
 import socket
-import subprocess
 import sys
-import time
-from http.client import HTTPResponse
 
-import simplerequest
 import testutils as tu
-from virtualtester import VirtualTester
-from webserver import WebServer
+from virtualrequesttester import VirtualRequestTester
 
 
-class RawTester(VirtualTester):
+class RawTester(VirtualRequestTester):
     """
     Tests requests in raw format
     """
 
     def __init__(self, index, host, port):
-        VirtualTester.__init__(self, index, host, port)
+        VirtualRequestTester.__init__(self, index, host, port)
 
     def test_request(self, index, request):
         """
