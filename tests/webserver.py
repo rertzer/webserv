@@ -2,6 +2,7 @@
 Module webserver provides a WebServer object.
 """
 
+import io
 import os
 import selectors
 import subprocess
@@ -43,6 +44,20 @@ class WebServer:
         except subprocess.TimeoutExpired:
             self.proc.kill()
 
+    def stop(self):
+        try:
+            self.proc.wait(timeout=1)
+        except subprocess.TimeoutExpired:
+            self.finish()
+
+    def check_output(self):
+        assert isinstance(self.proc.stdout, io.TextIOWrapper)
+        assert isinstance(self.proc.stderr, io.TextIOWrapper)
+        output = self.proc.stdout.read()
+        outerror = self.proc.stderr.read()
+        ret = self.proc.returncode
+        print(f"RETURN status: {ret}\nSTDOUT:\n{output}\nSTDERR:\n{outerror}\n")
+
     def run_for(self, delay):
         """
         Run for delay in seconds.
@@ -78,3 +93,26 @@ class WebServer:
                 print("stdout: ", line.rstrip())
             elif pipe is self.proc.stderr:
                 print("stderr: ", line.rstrip())
+
+    @staticmethod
+    def run_server(params):
+        try:
+            server = WebServer(params)
+        except RuntimeError as e:
+            print({e})
+            return None
+        try:
+            server.proc.wait(timeout=4)
+        except subprocess.TimeoutExpired:
+            server.finish()
+        return server
+
+    @staticmethod
+    def start(conf_file):
+        server = None
+        try:
+            server = WebServer(conf_file)
+            time.sleep(1)
+        except RuntimeError as e:
+            print({e})
+        return server

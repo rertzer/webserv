@@ -5,21 +5,6 @@ from confrequest import ConfRequest
 from webserver import WebServer
 
 
-def conf_tester(index, test):
-    server = tu.run_server(test.conf_file)
-    assert isinstance(server, WebServer)
-    assert isinstance(server.proc.stdout, io.TextIOWrapper)
-    assert isinstance(server.proc.stderr, io.TextIOWrapper)
-    ok = (
-        server.proc.returncode == test.status
-        and server.proc.stdout.read() == test.stdout
-        and server.proc.stderr.read() == test.stderr
-    )
-
-    print(f"test_conf_1.{index}", tu.okko(ok))
-    return ok
-
-
 def test_cmdline_and_conf():
     tests = (
         ConfRequest(
@@ -44,13 +29,15 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_2.conf",
             1,
-            "Line where ';' is missing: server  line = 1\nA line in the conf File isn't ending with a semicolon\n",
+            "Line where ';' is missing: server  line = 1\n"
+            "A line in the conf File isn't ending with a semicolon\n",
             "",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_3.conf",
             1,
-            "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\nA line in the conf File isn't ending with a semicolon\n",
+            "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\n"
+            "A line in the conf File isn't ending with a semicolon\n",
             "",
         ),
         ConfRequest(
@@ -116,16 +103,33 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_14.conf",
             1,
-            "line not know -> 	this line shouldn't be here; <- End of line not know\nError: Server parsing error\n",
+            "line not know -> 	this line shouldn't be here; <- End of line not know\n"
+            "Error: Server parsing error\n",
             "",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_15.conf",
             1,
-            "maxBodySize[maxBodySize.length() - 1] N\nclient_max_body_size doesn't respect subject rules\nError: Server parsing error\n",
+            "maxBodySize[maxBodySize.length() - 1] N\n"
+            "client_max_body_size doesn't respect subject rules\n"
+            "Error: Server parsing error\n",
             "",
         ),
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
     return passed, len(tests)
+
+
+def conf_tester(index, test):
+    server = WebServer.run_server(test.conf_file)
+    assert isinstance(server, WebServer)
+    assert isinstance(server.proc.stdout, io.TextIOWrapper)
+    assert isinstance(server.proc.stderr, io.TextIOWrapper)
+    ok = (
+        server.proc.returncode == test.status
+        and server.proc.stdout.read() == test.stdout
+        and server.proc.stderr.read() == test.stderr
+    )
+    tu.print_result("conf_1", index, ok)
+    return ok
