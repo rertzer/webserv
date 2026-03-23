@@ -17,7 +17,7 @@ def okko(val):
 
 def tester(fun):
     passed, total = fun()
-    print(fun.__name__, okko(passed == total))
+    print(fun.__name__, "series", okko(passed == total))
     return (passed, total)
 
 
@@ -120,3 +120,7 @@ def cp_backup_to_delete(file):
     except subprocess.CalledProcessError as e:
         print("Restoring the toDelelte file failed:", e.returncode, file=sys.stderr)
         print(e.stderr, file=sys.stderr)
+
+
+def same_length(a, b):
+    return len(a) == len(b)

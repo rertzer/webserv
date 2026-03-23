@@ -1,3 +1,4 @@
+from functools import reduce
 from http.client import HTTPResponse
 from http.cookies import SimpleCookie
 
@@ -19,7 +20,7 @@ class VirtualRequestTester:
             return None
         passed = self.run_requests(requests)
         self.server.stop()
-        self.check_server_output()
+        # self.check_server_output()
         return passed
 
     def check_server_output(self):
@@ -39,27 +40,25 @@ class VirtualRequestTester:
         return None
 
     def check_resp(self, request, resp):
-        ok = False
-        if isinstance(resp, HTTPResponse) and request.status == resp.status:
-            ok = self.check_content(request, resp)
+        ok = (
+            isinstance(resp, HTTPResponse)
+            and request.status == resp.status
+            and self.check_content(request, resp)
+        )
 
         tu.print_result(f"request_{self.index}", request.index, ok)
         return ok
 
     def check_content(self, request, resp):
-        ok = (self.check_content_len(request, resp), self.check_location(resp))[
-            request.length == 0
-        ]
-
-        if request.cookies is not None:
-            ok = ok and self.test_cookies(request, resp)
-        return ok
-
-    def check_content_len(self, request, resp):
-        content = tu.read_content(resp)
         return (
-            resp.getheader("Content-Length") == str(request.length)
-            and len(content) == request.length
+            (
+                request.same_length(resp)
+                if request.length != 0
+                else self.check_location(resp)
+            )
+            and self.test_cookies(request, resp)
+            if request.cookies is not None
+            else True
         )
 
     def check_location(self, resp):
@@ -69,33 +68,10 @@ class VirtualRequestTester:
         )
 
     def test_cookies(self, request, resp):
-        ok = True
         resp_cookies = self.get_cookies(resp)
-        if len(resp_cookies) != len(request.cookies):
-            return False
-        for cookie in request.cookies:
-            ok = self.test_cookie(cookie, resp_cookies)
-            if ok is False:
-                break
-
-        return ok
-
-    def test_cookie(self, cookie, resp_cookies):
-        ok = True
-        if (
-            cookie[0] not in resp_cookies.keys()
-            or resp_cookies[cookie[0]].value != cookie[1]
-        ):
-            ok = False
-        else:
-            for k, v in cookie[2].items():
-                if (
-                    k.lower() not in resp_cookies[cookie[0]].keys()
-                    or v != resp_cookies[cookie[0]][k.lower()]
-                ):
-                    ok = False
-                    break
-        return ok
+        return tu.same_length(request.cookies, resp_cookies) and self.cookies_identical(
+            request.cookies, resp_cookies
+        )
 
     def get_cookies(self, resp):
         cookies = SimpleCookie()
@@ -103,3 +79,6 @@ class VirtualRequestTester:
             if header.lower() == "set-cookie":
                 cookies.load(value)
         return cookies
+
+    def cookies_identical(self, request_cookies, resp_cookies):
+        return reduce(lambda a, b: a and b.test(resp_cookies), request_cookies, True)

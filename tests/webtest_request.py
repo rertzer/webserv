@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 import testutils as tu
 from rawrequest import RawRequest
 from rawtester import RawTester
+from requestcookie import RequestCookie
 from simplerequest import SimpleRequest
 from simpletester import SimpleTester
 
@@ -142,8 +143,8 @@ def test_2():
             200,
             1299,
             (
-                ["good", "0", {"SameSite": "Strict"}],
-                ["total", "0", {"SameSite": "Strict"}],
+                RequestCookie("good", "0", {"SameSite": "Strict"}),
+                RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -155,9 +156,9 @@ def test_2():
             200,
             1451,
             (
-                ["good", "0", {"SameSite": "Strict"}],
-                ["total", "1", {"SameSite": "Strict"}],
-                ["name", "Droopy", {"SameSite": "Strict"}],
+                RequestCookie("good", "0", {"SameSite": "Strict"}),
+                RequestCookie("total", "1", {"SameSite": "Strict"}),
+                RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -169,9 +170,9 @@ def test_2():
             200,
             1509,
             (
-                ["good", "3", {"SameSite": "Strict"}],
-                ["total", "5", {"SameSite": "Strict"}],
-                ["name", "Droopy", {"SameSite": "Strict"}],
+                RequestCookie("good", "3", {"SameSite": "Strict"}),
+                RequestCookie("total", "5", {"SameSite": "Strict"}),
+                RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -183,9 +184,9 @@ def test_2():
             200,
             1519,
             (
-                ["good", "3", {"SameSite": "Strict"}],
-                ["total", "5", {"SameSite": "Strict"}],
-                ["name", "Droopy", {"SameSite": "Strict"}],
+                RequestCookie("good", "3", {"SameSite": "Strict"}),
+                RequestCookie("total", "5", {"SameSite": "Strict"}),
+                RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -197,10 +198,10 @@ def test_2():
             200,
             1519,
             (
-                ["bad", "3", {}],
-                ["good", "0", {"SameSite": "Strict"}],
-                ["total", "5", {"SameSite": "Strict"}],
-                ["name", "Droopy", {"SameSite": "Strict"}],
+                RequestCookie("bad", "3", {}),
+                RequestCookie("good", "0", {"SameSite": "Strict"}),
+                RequestCookie("total", "5", {"SameSite": "Strict"}),
+                RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -212,9 +213,9 @@ def test_2():
             200,
             1519,
             (
-                ["good", "0", {"SameSite": "Strict"}],
-                ["total", "5", {"SameSite": "Strict"}],
-                ["name", "Droopy", {"SameSite": "Strict"}],
+                RequestCookie("good", "0", {"SameSite": "Strict"}),
+                RequestCookie("total", "5", {"SameSite": "Strict"}),
+                RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -226,9 +227,9 @@ def test_2():
             200,
             1519,
             (
-                ["good", "3", {"SameSite": "Strict"}],
-                ["total", "5", {"SameSite": "Strict"}],
-                ["name", "Droopy", {"SameSite": "Strict"}],
+                RequestCookie("good", "3", {"SameSite": "Strict"}),
+                RequestCookie("total", "5", {"SameSite": "Strict"}),
+                RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
         RawRequest(
@@ -240,8 +241,8 @@ def test_2():
             200,
             1299,
             (
-                ["good", "0", {"SameSite": "Strict"}],
-                ["total", "0", {"SameSite": "Strict"}],
+                RequestCookie("good", "0", {"SameSite": "Strict"}),
+                RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
         ),
     )
