@@ -8,6 +8,8 @@ def main():
 
     test_fun = (
         conf_parsing.test_cmdline_and_conf,
+        request.test_not_delete,
+        request.test_delete,
         request.test_1,
         request.test_2,
         request.test_3,
