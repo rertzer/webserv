@@ -1,36 +1,19 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   contentMap.cpp                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/17 11:37:17 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 14:54:27 by pjay             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ContentMap.hpp"
 
-std::string ContentMap::getContentValue(std::string value)
-{
+std::string ContentMap::getContentValue(std::string value) {
 	std::map<std::string, std::string>::iterator it = _allContentType.find(value);
 	// if (value == "py" || value == "php")
 	// {
 	// 	return "text/html";
 	// }
-	if (it == _allContentType.end())
-	{
+	if (it == _allContentType.end()) {
 		return "text/plain";
-	}
-	else
-	{
+	} else {
 		return (it->second + "/" + value);
 	}
 }
 
-ContentMap::ContentMap()
-{
+ContentMap::ContentMap() {
 	_allContentType["php"] = "application";
 	_allContentType["py"] = "application";
 	_allContentType["EDI-X12"] = "application";
@@ -83,7 +66,8 @@ ContentMap::ContentMap()
 	_allContentType["vnd.ms-excel"] = "application";
 	_allContentType["vnd.openxmlformats-officedocument.spreadsheetml.sheet"] = "application";
 	_allContentType["vnd.ms-powerpoint"] = "application";
-	_allContentType["vnd.openxmlformats-officedocument.presentationml.presentation"] = "application";
+	_allContentType["vnd.openxmlformats-officedocument.presentationml.presentation"] =
+		"application";
 	_allContentType["msword"] = "application";
 	_allContentType["vnd.openxmlformats-officedocument.wordprocessingml.document"] = "application";
 	_allContentType["vnd.mozilla.xul+xml"] = "application";

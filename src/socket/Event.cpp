@@ -1,31 +1,15 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Event.cpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/31 13:26:24 by rertzer           #+#    #+#             */
-/*   Updated: 2023/09/17 13:29:11 by rertzer          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Event.hpp"
+#include "Cgi.hpp"
+#include "ErrorException.hpp"
 
+// Public
+Event::Event(int f, int e, TCPSocket* s) : fd(f), events(e), status(0), soc(s) {}
 
-//Public
-Event::Event(int f, int e, TCPSocket* s):fd(f), events(e), status(0), soc(s)
-{
-}
+Event::Event(Event const& rhs) : fd(rhs.fd), events(rhs.events), status(rhs.status), soc(rhs.soc) {}
 
-Event::Event(Event const & rhs):fd(rhs.fd), events(rhs.events), status(rhs.status), soc(rhs.soc)
-{
-}
-
-Event::~Event() {} Event & Event::operator=(Event const & rhs)
-{
-	if (this != &rhs)
-	{
+Event::~Event() {}
+Event& Event::operator=(Event const& rhs) {
+	if (this != &rhs) {
 		fd = rhs.fd;
 		events = rhs.events;
 		status = rhs.status;
@@ -34,60 +18,49 @@ Event::~Event() {} Event & Event::operator=(Event const & rhs)
 	return *this;
 }
 
-int	Event::getFd() const
-{
+int Event::getFd() const {
 	return fd;
 }
 
-TCPSocket *	Event::getSocket() const
-{
+TCPSocket* Event::getSocket() const {
 	return soc;
 }
 
-int	Event::getEvents() const
-{
+int Event::getEvents() const {
 	return events;
 }
 
-int	Event::getStatus() const
-{
+int Event::getStatus() const {
 	return status;
 }
 
-void	Event::setServ(std::vector<Server> s)
-{
+void Event::setServ(std::vector<Server> s) {
 	serv = s;
 }
 
-bool	Event::isIn() const
-{
+bool Event::isIn() const {
 	return (events & POLLIN);
 }
 
-bool	Event::isOut() const
-{
+bool Event::isOut() const {
 	return (events & POLLOUT);
 }
 
-bool	Event::isErr() const
-{
+bool Event::isErr() const {
 	return (events & POLLERR);
 }
 
-bool	Event::isHup() const
-{
+bool Event::isHup() const {
 	return (events & POLLHUP);
 }
 
-bool	Event::isCgiFd() const
-{
+bool Event::isCgiFd() const {
 	if (fd == getSocket()->getFd())
 		return false;
 	return true;
 }
 
-void	Event::handleEvent()
-{
+void Event::handleEvent() {
 	std::map<int, handlefun> whichfun;
 	whichfun[POLLIN] = &Event::handleIn;
 	whichfun[POLLOUT] = &Event::handleOut;
@@ -95,132 +68,103 @@ void	Event::handleEvent()
 	whichfun[POLLHUP] = &Event::handleHup;
 	whichfun[POLLNVAL] = &Event::handleNval;
 
-	try
-	{
-		for (int i = 0 ; i < 5; i++)
-		{
-			if (events & ev[i])
-			{
+	try {
+		for (int i = 0; i < 5; i++) {
+			if (events & ev[i]) {
 				handlefun fun = whichfun[ev[i]];
 				(this->*fun)();
 				if (status)
 					return;
 			}
 		}
-	}
-	catch (const Request::RequestException & e)
-	{
+	} catch (const Request::RequestException& e) {
 		status = 3;
 
-	}
-	catch (const ErrorException & e)
-	{
-		if (soc->req == NULL)
-		{
-			soc->setMessageOut((createErrorPage(e.getCode(), findTheDefaultServ(serv, soc->getMotherPort())).getResponse()));
-		}
-		else
-		{
+	} catch (const ErrorException& e) {
+		if (soc->req == NULL) {
+			soc->setMessageOut(
+				(createErrorPage(e.getCode(), findTheDefaultServ(serv, soc->getMotherPort()))
+					 .getResponse()));
+		} else {
 			if (soc->req->getCgiStatus())
 				status = 4;
-			soc->setMessageOut((createErrorPage(e.getCode(), findTheServ(*soc->req,serv, soc->getMotherPort()))).getResponse());
+			soc->setMessageOut(
+				(createErrorPage(e.getCode(), findTheServ(*soc->req, serv, soc->getMotherPort())))
+					.getResponse());
 		}
 		soc->setKeepAlive(false);
 		soc->setError(true);
-		if (! status)
+		if (!status)
 			status = 1;
 	}
 }
 
-void	Event::handleIn()
-{
-	if (soc->getError())
-	{
+void Event::handleIn() {
+	if (soc->getError()) {
 		soc->readAll();
 		return;
 	}
-	if (soc->req == NULL)
-	{
+	if (soc->req == NULL) {
 		soc->req = new Request(soc, serv);
-	}
-	else
-	{
-		if (soc->req->getCgiStatus() == 3)
-		{
+	} else {
+		if (soc->req->getCgiStatus() == 3) {
 			handleCgiIn();
 			return;
-		}
-		else if (soc->req->getCgiStatus() == 0)
-		{
+		} else if (soc->req->getCgiStatus() == 0) {
 			soc->req->feed(serv);
 		}
 	}
 	printCleanRequest(*soc->req);
-	if (soc->req->ready())
-	{
+	if (soc->req->ready()) {
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 		if (soc->req->getCgiStatus() == 1)
 			status = 4;
 		else if (soc->req->getCgiStatus() == 2)
 			status = 4;
-		else
-		{
+		else {
 			soc->setMessageOut(resp.getResponse());
 			status = 1;
 		}
 	}
 }
 
-void	Event::handleCgiIn()
-{
-	if (!isCgiFd())
-	{
+void Event::handleCgiIn() {
+	if (!isCgiFd()) {
 		soc->req->getCgi()->closePipe();
 		status = 9;
 		return;
-	}
-	else
+	} else
 		soc->req->getCgi()->readPipeFd();
-	if (soc->req->getCgiStatus() == 4)
-	{
+	if (soc->req->getCgiStatus() == 4) {
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = 6;
-	}
-	else
+	} else
 		status = 0;
 }
 
-void	Event::handleOut()
-{
+void Event::handleOut() {
 	if (soc->req && (soc->req->getCgiStatus() == 1 || soc->req->getCgiStatus() == 5))
 		handleCgiOut();
-	else
-	{
-		if (!soc->getMessageOut().empty())
-		{
+	else {
+		if (!soc->getMessageOut().empty()) {
 			soc->send();
-			if (soc->getMessageOut().empty())
-			{
-				if (soc->req != NULL)
-				{
+			if (soc->getMessageOut().empty()) {
+				if (soc->req != NULL) {
 					delete soc->req;
 					soc->req = NULL;
 				}
-				if (soc->getKeepAlive())
-				{
+				if (soc->getKeepAlive()) {
 					soc->setKeepAlive(false);
-					status =  2;
-				}
-				else
+					status = 2;
+				} else
 					status = 3;
 			}
 		}
 	}
 }
 
-void	Event::handleCgiOut()
-{
+void Event::handleCgiOut() {
 	soc->req->getCgi()->writePostFd();
 	if (soc->req->getCgiStatus() == 3)
 		status = 7;
@@ -228,56 +172,45 @@ void	Event::handleCgiOut()
 		status = 5;
 }
 
-void	Event::handleError()
-{
+void Event::handleError() {
 	internalError();
 }
 
-void	Event::handleHup()
-{
+void Event::handleHup() {
 	status = 3;
-	if (isCgiFd())
-	{
+	if (isCgiFd()) {
 		soc->req->getCgi()->closePipe();
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = 6;
-	}
-	else if (cgiIsPending())
+	} else if (cgiIsPending())
 		soc->req->getCgi()->stop();
 }
 
-void	Event::handleNval()
-{
+void Event::handleNval() {
 	status = 3;
 }
 
-bool	Event::cgiIsPending()
-{
+bool Event::cgiIsPending() {
 	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid())
 		return true;
 	return false;
 }
 
-void	Event::internalError()
-{
-	if (isCgiFd())
-	{
+void Event::internalError() {
+	if (isCgiFd()) {
 		status = 6;
-		throw (ErrorException(500));
-	}
-	else
+		throw(ErrorException(500));
+	} else
 		status = 3;
 }
 
-void	Event::cgiExec()
-{
+void Event::cgiExec() {
 	soc->req->getCgi()->exec();
 }
 
-//Private
-Event::Event()
-{}
+// Private
+Event::Event() {}
 
-//Static const
-int const 	Event::ev[5] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};
+// Static const
+int const Event::ev[5] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};

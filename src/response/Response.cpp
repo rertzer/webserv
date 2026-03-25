@@ -1,17 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Response.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/02 14:49:31 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 14:56:56 by pjay             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Response.hpp"
-#include "TCPSocket.hpp"
+#include "Cgi.hpp"
+#include "color.hpp"
 
 std::string Response::getResponse() {
 	std::string response = "HTTP/1.1 " + _status + " \r\n";

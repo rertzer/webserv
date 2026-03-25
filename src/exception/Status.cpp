@@ -1,20 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Status.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rertzer <rertzer@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/07 11:41:50 by rertzer           #+#    #+#             */
-/*   Updated: 2023/08/07 11:59:00 by rertzer          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include <map>
+#include <sstream>
 
 #include "Status.hpp"
 
-std::string	Status::getReason(int code)
-{
-	std::map<int, std::string>	reason;
+std::string Status::getReason(int code) {
+	std::map<int, std::string> reason;
 
 	reason[100] = "Continue";
 	reason[200] = "OK";
@@ -42,15 +32,14 @@ std::string	Status::getReason(int code)
 	reason[503] = "Service Unavailable";
 	reason[504] = "Gateway Timeout";
 	reason[505] = "HTTP Version Not Supported";
-	
+
 	std::map<int, std::string>::const_iterator cit = reason.find(code);
 	if (cit == reason.end())
 		return "";
 	return cit->second;
 }
 
-std::string Status::getMsg(int code)
-{
+std::string Status::getMsg(int code) {
 	std::stringstream ss;
 	ss << code << " " << getReason(code);
 	return ss.str();

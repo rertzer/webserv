@@ -1,21 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Response.hpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/04 10:56:27 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/09 15:21:08 by rertzer          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#pragma once
-#include "Cgi.hpp"
+#ifndef RESPONSE_HPP
+#define RESPONSE_HPP
 #include "ContentMap.hpp"
 #include "Request.hpp"
 #include "Server.hpp"
-#include "Status.hpp"
 #include "macroDef.hpp"
 
 class TCPSocket;
@@ -89,3 +76,5 @@ class Response {
 	int									getAllowedMethods(void) const;
 	std::vector<std::string>			getCookie(void) const;
 };
+
+#endif

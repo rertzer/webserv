@@ -1,4 +1,5 @@
 #include "DirListing.hpp"
+#include "ErrorException.hpp"
 
 DirListing::DirListing(std::string p) : path(p) {
 	DIR* dd;

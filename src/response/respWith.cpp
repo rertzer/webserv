@@ -1,17 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   respWith.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pjay <pjay@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/12 13:36:36 by pjay              #+#    #+#             */
-/*   Updated: 2023/09/19 14:57:29 by pjay             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Response.hpp"
+#include "Status.hpp"
 #include "TCPSocket.hpp"
+#include "color.hpp"
 #include "macroDef.hpp"
 
 int respWithLoc(Request& req, Response& rep) {
