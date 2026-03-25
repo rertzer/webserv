@@ -1,6 +1,6 @@
 CXX := c++
 
-CXXFLAGS := -Wall -Wextra -Werror -std=c++98 -g3
+CXXFLAGS := -Wall -Wextra -Werror -g3
 
 NAME := webserv
 
@@ -44,9 +44,9 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -MMD $< -o $@ -I $(INC_DIR)
 
-debug : CXXFLAGS += DEBUG
-debug : re
-	./$(NAME)
+test: $(NAME)
+	cd tests/ && ./webtest.py
+	
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o  $@ $(OBJS)
