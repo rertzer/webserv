@@ -21,6 +21,16 @@ def test_cmdline_and_conf():
             "",
         ),
         ConfRequest(
+            "tests/conf_test/test_ok_4.conf",
+            -15,
+            "-------------TEST SOCKET------------------\n\n"
+            "TCP socket 3 on port 8080 created\n"
+            "TCP socket 4 on port 8081 created\n"
+            "TCP socket 5 on port 8083 created\n"
+            "Listening...\n",
+            "",
+        ),
+        ConfRequest(
             "tests/conf_test/test_ko_1.conf",
             1,
             "A close bracket appear that isn't open anywhere\n",

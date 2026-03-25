@@ -78,7 +78,7 @@ class WebServer:
             print({e})
             return None
         try:
-            server.proc.wait(timeout=4)
+            server.proc.wait(timeout=2)
         except subprocess.TimeoutExpired:
             server.finish()
         return server
