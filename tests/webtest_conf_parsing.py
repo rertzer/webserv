@@ -52,9 +52,9 @@ def test_cmdline_and_conf():
         ),
         ConfRequest(
             "tests/conf_test/test_ko_4.conf",
-            2,
-            "-------------TEST SOCKET------------------\n\n",
-            "Error: socket failed\n",
+            1,
+            "Error: Server parsing error\n",
+            "",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_5.conf",
@@ -125,6 +125,12 @@ def test_cmdline_and_conf():
             "Error: Server parsing error\n",
             "",
         ),
+        ConfRequest(
+            "tests/conf_test/test_ko_17.conf",
+            2,
+            "-------------TEST SOCKET------------------\n\n",
+            "Error: socket failed\n",
+        ),
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
@@ -136,10 +142,16 @@ def conf_tester(index, test):
     assert isinstance(server, WebServer)
     assert isinstance(server.proc.stdout, io.TextIOWrapper)
     assert isinstance(server.proc.stderr, io.TextIOWrapper)
+    server_status = server.proc.returncode
+    server_output = server.proc.stdout.read()
+    server_error = server.proc.stderr.read()
+    # print(server_status)
+    # print(server_output)
+    # print(server_error)
     ok = (
-        server.proc.returncode == test.status
-        and server.proc.stdout.read() == test.stdout
-        and server.proc.stderr.read() == test.stderr
+        server_status == test.status
+        and server_output == test.stdout
+        and server_error == test.stderr
     )
     tu.print_result("conf_1", index, ok)
     return ok
