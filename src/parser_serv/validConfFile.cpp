@@ -18,9 +18,9 @@ int checkConfFile(std::string av) {
 }
 
 int checkBracket(std::ifstream& conf) {
-	std::vector<bool> bracket_open;
-	std::string		  line;
-	int				  line_index = 0;
+	int			open_brackets = 0;
+	std::string line;
+	int			line_index = 0;
 
 	while (std::getline(conf, line)) {
 		line_index++;
@@ -41,17 +41,17 @@ int checkBracket(std::ifstream& conf) {
 			return (1);
 		}
 		if (line.find("{") != std::string::npos)
-			bracket_open.push_back(true);
+			++open_brackets;
 		if (line.find("}") != std::string::npos) {
-			if (bracket_open.size() > 0)
-				bracket_open.pop_back();
+			if (open_brackets > 0)
+				--open_brackets;
 			else {
 				CFNG_BRAC_CLOSE;
 				return (1);
 			}
 		}
 	}
-	if (bracket_open.size() == 0)
+	if (open_brackets == 0)
 		return (0);
 	else {
 		CFNG_BRAC_OPEN;

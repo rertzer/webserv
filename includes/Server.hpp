@@ -13,6 +13,16 @@ enum methodAllowed {
 	POSTDELETE = 7,
 };
 
+using Line = std::string;
+using LineList = std::vector<Line>;
+using LineListIter = LineList::iterator;
+
+typedef struct loc_parsing_t {
+	bool	 open = false;
+	int		 brackets = 0;
+	LineList lines;
+} LocParsing;
+
 class Server {
    private:
 	std::string						   _servName;
@@ -24,10 +34,19 @@ class Server {
 	std::map<std::string, std::string> _errorPage;
 	std::vector<Location>			   _location;
 	int								   _maxBodySize;
+	void							   setAutoIndex(LineListIter it);
+	void							   setAllowedMethod(LineListIter it);
+	void							   setPort(LineListIter it);
+	void							   setRoot(LineListIter it);
+	void							   setDefaultPage(LineListIter it);
+	void							   setServerName(LineListIter it);
+	void							   setErrorPage(LineListIter it);
+	void							   setMaxBodySize(LineListIter it);
+	void							   addLocation(LineListIter it, LocParsing& loc);
 
    public:
 	Server();
-	Server(std::vector<std::string> servStrings);
+	Server(LineList servStrings);
 	Server(const Server& rhs);
 	~Server();
 	Server&								operator=(const Server& rhs);
@@ -41,7 +60,7 @@ class Server {
 	int&								getListenPort();
 	int									getAllowMethods();
 	std::string							getAutoIndex();
-	void								checkIfHaveNeccessary();
+	void								checkIfConform();
 };
 
 #endif

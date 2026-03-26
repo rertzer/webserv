@@ -140,8 +140,8 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_19.conf",
             1,
-            "Servers with the same name must have different port numbers.\n",
             "",
+            "Servers with the same name must have different port numbers.\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_20.conf",
@@ -154,6 +154,12 @@ def test_cmdline_and_conf():
             1,
             "",
             "Error: Server parsing error.\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_22.conf",
+            1,
+            "Error: Server parsing error\n",
+            "Autoindex needs to be on or off.\n",
         ),
     )
 
@@ -171,7 +177,7 @@ def conf_tester(index, test):
     server_error = server.proc.stderr.read()
     print(server_status)
     print("|", server_output, "|")
-    print(server_error)
+    print("!", server_error, "!")
 
     ok = (
         server_status == test.status
