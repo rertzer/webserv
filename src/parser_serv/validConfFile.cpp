@@ -2,7 +2,8 @@
 #include "macroDef.hpp"
 
 static int	checkBracket(std::ifstream& conf);
-static bool checkEmptyLine(std::string line);
+static void removeComments(std::string& line);
+static bool checkEmptyLine(std::string const& line);
 
 int checkConfFile(std::string av) {
 	std::ifstream conf;
@@ -20,13 +21,11 @@ int checkBracket(std::ifstream& conf) {
 	std::vector<bool> bracket_open;
 	std::string		  line;
 	int				  line_index = 0;
+
 	while (std::getline(conf, line)) {
 		line_index++;
-		size_t hash_position = line.find("#");
-		if (hash_position != std::string::npos) {
-			line = line.substr(0, hash_position);
-		}
-		if (checkEmptyLine(line) == true)
+		removeComments(line);
+		if (checkEmptyLine(line))
 			continue;
 
 		if (line.find(";") != std::string::npos) {
@@ -60,9 +59,15 @@ int checkBracket(std::ifstream& conf) {
 	}
 }
 
-static bool checkEmptyLine(std::string line) {
+static void removeComments(std::string& line) {
+	size_t hash_position = line.find("#");
+	if (hash_position != std::string::npos) {
+		line = line.substr(0, hash_position);
+	}
+}
+
+static bool checkEmptyLine(std::string const& line) {
 	bool empty_line = true;
-	// std::cerr << "line " << line.size() << line << "| ffffffffffffffffffffffffffffffffffff\n";
 	for (size_t i = 0; i < line.size(); i++) {
 		if (isspace(line[i]) == false) {
 			empty_line = false;

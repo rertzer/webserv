@@ -90,7 +90,7 @@ Server::Server(std::vector<std::string> servStrings) {
 			locOpen = true;
 		else {
 			if (locOpen == false) {
-				std::cout << "line not know -> " << *it << " <- End of line not know" << std::endl;
+				std::cout << "Unknown line->" << *it << "<-" << std::endl;
 				throw(ServerException());
 			}
 		}

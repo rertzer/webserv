@@ -28,7 +28,7 @@ class Request;
 class Response;
 class Location;
 
-int						 fillServ(std::string av, std::vector<Server>& serv);
+bool					 fillServ(std::string av, std::vector<Server>& serv);
 int						 serverRun(std::vector<Server>);
 std::string				 sendResponse(Request& req, std::vector<Server>& serv);
 void					 stringTrim(std::string& str);
