@@ -15,14 +15,18 @@ Server::Server(std::vector<std::string> servStrings) {
 	std::vector<bool>		 bracOpen;
 	_allowedMethod = GETPOSTDELETE;
 	_maxBodySize = -1;
+	_nPort = 0;
 	for (std::vector<std::string>::iterator it = servStrings.begin(); it != servStrings.end();
 		 it++) {
 		if (it->find("allow_methods") != std::string::npos && locOpen == false) {
 			_allowedMethod = getAllowMethodsServer(it->substr(
 				it->find("allow_methods") + 14, it->find(";") - it->find("allow_methods") - 14));
-		} else if (it->find("listen") != std::string::npos && locOpen == false)
+		} else if (it->find("listen") != std::string::npos && locOpen == false) {
 			_nPort = atoi(
 				it->substr(it->find("listen") + 7, it->find(";") - it->find("listen") - 7).c_str());
+
+		}
+
 		else if (it->find("server_name") != std::string::npos)
 			_servName = it->substr(it->find("server_name") + 12,
 								   it->find(";") - it->find("server_name") - 12);
@@ -102,6 +106,9 @@ Server::Server(std::vector<std::string> servStrings) {
 				locString.clear();
 			}
 		}
+	}
+	if (_nPort == 0) {
+		throw(ServerException());
 	}
 	checkIfHaveNeccessary();
 	if (_autoIndex.length() == 0)

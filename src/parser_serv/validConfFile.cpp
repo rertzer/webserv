@@ -1,67 +1,72 @@
+#include "confFile.hpp"
 #include "macroDef.hpp"
 
-static int checkBracket(std::ifstream& conf);
+static int	checkBracket(std::ifstream& conf);
+static bool checkEmptyLine(std::string line);
 
 int checkConfFile(std::string av) {
 	std::ifstream conf;
 	conf.open(av.c_str(), std::fstream::in);
 	if (!conf.is_open()) {
 		std::cout << "The file " << av << " doesn't exist" << std::endl;
-		return (-1);
+		return (1);
 	}
-	if (checkBracket(conf) == 0) {
-		conf.close();
-		return (0);
-	} else {
-		conf.close();
-		return (-1);
-	}
+	int check = checkBracket(conf);
+	conf.close();
+	return (check);
 }
 
 int checkBracket(std::ifstream& conf) {
-	std::vector<bool> bracketOpen;
-	std::string		  fullText;
-	int				  line = 0;
-	while (getline(conf, fullText)) {
-		line++;
-		bool fullOfWs = true;
-		if (fullText.find("#") != std::string::npos)
-			fullText = fullText.substr(0, fullText.find("#"));
-		for (size_t i = 0; i < fullText.size(); i++) {
-			if (isspace(fullText[i]) == false) {
-				fullOfWs = false;
-			}
+	std::vector<bool> bracket_open;
+	std::string		  line;
+	int				  line_index = 0;
+	while (std::getline(conf, line)) {
+		line_index++;
+		size_t hash_position = line.find("#");
+		if (hash_position != std::string::npos) {
+			line = line.substr(0, hash_position);
 		}
-		if (fullOfWs == true || fullText.empty() == true)
+		if (checkEmptyLine(line) == true)
 			continue;
-		if (fullText.find(";") != std::string::npos) {
-			fullText = fullText.substr(0, fullText.find(";") + 1);
-			if (fullText[fullText.size() - 1] != ';') {
+
+		if (line.find(";") != std::string::npos) {
+			line = line.substr(0, line.find(";") + 1);
+			if (line.empty() || line.back() != ';') {
 				CFNG_SMI_COLON;
-				return (-1);
+				return (1);
 			}
-		} else if ((fullText.find("{") == std::string::npos) &&
-				   (fullText.find("}") == std::string::npos)) {
-			std::cout << "Line where ';' is missing: " << fullText << " line = " << line
+		} else if ((line.find("{") == std::string::npos) && (line.find("}") == std::string::npos)) {
+			std::cout << "Line where ';' is missing: " << line << " line = " << line_index
 					  << std::endl;
 			CFNG_SMI_COLON;
-			return (-1);
+			return (1);
 		}
-		if (fullText.find("{") != std::string::npos)
-			bracketOpen.push_back(true);
-		if (fullText.find("}") != std::string::npos) {
-			if (bracketOpen.size() > 0)
-				bracketOpen.pop_back();
+		if (line.find("{") != std::string::npos)
+			bracket_open.push_back(true);
+		if (line.find("}") != std::string::npos) {
+			if (bracket_open.size() > 0)
+				bracket_open.pop_back();
 			else {
 				CFNG_BRAC_CLOSE;
-				return (-1);
+				return (1);
 			}
 		}
 	}
-	if (bracketOpen.size() == 0)
+	if (bracket_open.size() == 0)
 		return (0);
 	else {
 		CFNG_BRAC_OPEN;
-		return (-1);
+		return (1);
 	}
+}
+
+static bool checkEmptyLine(std::string line) {
+	bool empty_line = true;
+	// std::cerr << "line " << line.size() << line << "| ffffffffffffffffffffffffffffffffffff\n";
+	for (size_t i = 0; i < line.size(); i++) {
+		if (isspace(line[i]) == false) {
+			empty_line = false;
+		}
+	}
+	return (empty_line);
 }

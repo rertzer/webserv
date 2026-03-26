@@ -1,7 +1,8 @@
 #include <csignal>
 #include <cstdio>
+
 #include "Server.hpp"
-#include "macroDef.hpp"
+#include "confFile.hpp"
 
 volatile sig_atomic_t quitok = false;
 
@@ -19,7 +20,7 @@ int main(int ac, char** av) {
 	std::vector<Server> serv;
 
 	try {
-		if (checkConfFile(conf_file_name) == -1 || fillServ(conf_file_name, serv) == -1) {
+		if (checkConfFile(conf_file_name) == 1 || fillServ(conf_file_name, serv) == 1) {
 			return (1);
 		}
 	} catch (std::exception& e) {

@@ -28,7 +28,6 @@ class Request;
 class Response;
 class Location;
 
-int						 checkConfFile(std::string av);
 int						 fillServ(std::string av, std::vector<Server>& serv);
 int						 serverRun(std::vector<Server>);
 std::string				 sendResponse(Request& req, std::vector<Server>& serv);
