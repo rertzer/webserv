@@ -113,7 +113,7 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_14.conf",
             1,
-            "line not know -> 	this line shouldn't be here; <- End of line not know\n"
+            "Unknown line->	this line shouldn't be here;<-\n"
             "Error: Server parsing error\n",
             "",
         ),
@@ -131,6 +131,30 @@ def test_cmdline_and_conf():
             "-------------TEST SOCKET------------------\n\n",
             "Error: socket failed\n",
         ),
+        # ConfRequest(
+        #     "tests/conf_test/test_ko_18.conf",
+        #     2,
+        #     "-------------TEST SOCKET------------------\n\n",
+        #     "Error: socket failed\n",
+        # ),
+        ConfRequest(
+            "tests/conf_test/test_ko_19.conf",
+            1,
+            "Servers with the same name must have different port numbers.\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_20.conf",
+            1,
+            "",
+            "Error: Server parsing error.\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_21.conf",
+            1,
+            "",
+            "Error: Server parsing error.\n",
+        ),
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
@@ -145,9 +169,10 @@ def conf_tester(index, test):
     server_status = server.proc.returncode
     server_output = server.proc.stdout.read()
     server_error = server.proc.stderr.read()
-    # print(server_status)
-    # print(server_output)
-    # print(server_error)
+    print(server_status)
+    print("|", server_output, "|")
+    print(server_error)
+
     ok = (
         server_status == test.status
         and server_output == test.stdout
