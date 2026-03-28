@@ -38,13 +38,16 @@ OBJS := $(addprefix $(OBJ_DIR), $(OBJ))
 DEPS := $(OBJS:.o=.d)
 
 
+
+
+
 all: $(NAME)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -MMD $< -o $@ -I $(INC_DIR)
 
-test: $(NAME)
+test: docker 
 	cd tests/ && ./webtest.py
 	
 
@@ -53,6 +56,9 @@ $(NAME): $(OBJS)
 
 #$(OBJ_DIR):
 #	mkdir  $(OBJ_DIR)
+
+docker:
+	docker run --rm -v "$$(pwd)":/src -w /src silkeh/clang make all
 
 clean:
 	rm -f $(OBJS)
@@ -72,4 +78,4 @@ re: fclean
 
 -include $(DEPS)
 
-.PHONY: all clean fclean re
+.PHONY: all clean docker fclean re test
