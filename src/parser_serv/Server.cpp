@@ -1,7 +1,7 @@
-// #include <boost/algorithm/string.hpp>
 
 #include "Server.hpp"
 #include "ServerException.hpp"
+#include "utils.hpp"
 
 static bool findInLine(LineListIter it, Line line);
 
@@ -18,6 +18,7 @@ Server::Server(LineList servStrings)
 	LocParsing loc;
 
 	for (auto it = servStrings.begin(); it != servStrings.end(); it++) {
+		auto line = split(*it);
 		if (!loc.open) {
 			// std::cerr << "--" << *it << std::endl;
 			if (findInLine(it, "allow_methods")) {

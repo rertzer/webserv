@@ -2,6 +2,7 @@
 #define SERVER_HPP
 #include "Location.hpp"
 #include "macroDef.hpp"
+#include "utils.hpp"
 
 enum methodAllowed {
 	GET = 1,
@@ -12,10 +13,6 @@ enum methodAllowed {
 	GETDELETE = 6,
 	POSTDELETE = 7,
 };
-
-using Line = std::string;
-using LineList = std::vector<Line>;
-using LineListIter = LineList::iterator;
 
 typedef struct loc_parsing_t {
 	bool	 open = false;
