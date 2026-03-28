@@ -15,6 +15,7 @@ EXCEPTION_DIR := exception/
 LISTING_DIR := dirlisting/
 PARS_DIR := parser_serv/
 RESP_DIR := response/
+UTILS_DIR := utils/
 
 
 SOURCES := main.cpp
@@ -24,21 +25,20 @@ EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
 LISTING_SOURCES := dirContent.cpp DirListing.cpp FileDesc.cpp
 PARS_SOURCES := validConfFile.cpp Server.cpp fillServ.cpp Location.cpp LineLoc.cpp ServerException.cpp
 RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp fillResponse.cpp dealWith.cpp checkAndGet.cpp respWith.cpp
+UTILS_SOURCES := printLineList.cpp split.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
 SOURCES += $(addprefix $(RESP_DIR), $(RESP_SOURCES))
 SOURCES += $(addprefix $(LISTING_DIR), $(LISTING_SOURCES))
 SOURCES += $(addprefix $(EXCEPTION_DIR), $(EXCEPTION_SOURCES))
 SOURCES += $(addprefix $(PARS_DIR), $(PARS_SOURCES))
+SOURCES += $(addprefix $(UTILS_DIR), $(UTILS_SOURCES))
 
 OBJ := $(SOURCES:.cpp=.o)
 
 OBJS := $(addprefix $(OBJ_DIR), $(OBJ))
 
 DEPS := $(OBJS:.o=.d)
-
-
-
 
 
 all: $(NAME)
@@ -68,6 +68,7 @@ clean:
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
 	rm -fd $(OBJ_DIR)$(RESP_DIR)
 	rm -fd $(OBJ_DIR)$(LISTING_DIR)
+	rm -fd $(OBJ_DIR)$(UTILS_DIR)
 	rm -fd $(OBJ_DIR)
 
 fclean: clean
