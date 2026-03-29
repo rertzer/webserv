@@ -22,6 +22,8 @@ typedef struct loc_parsing_t {
 	LineList lines;
 } LocParsing;
 
+using ServerParserHandler = ParsingState (Server::*)(LineListIter it, LocParsing& loc);
+
 class Server {
    private:
 	std::string						   _servName;
@@ -33,19 +35,18 @@ class Server {
 	std::map<std::string, std::string> _errorPage;
 	std::vector<Location>			   _location;
 	int								   _maxBodySize;
-	bool							   setAutoIndex(LineListIter it);
-	bool							   setAllowedMethod(LineListIter it);
-	bool							   setPort(Line& line);
-	bool							   setRoot(LineListIter it);
-	bool							   setDefaultPage(LineListIter it);
-	bool							   setServerName(LineListIter it);
-	bool							   setErrorPage(LineListIter it);
-	bool							   setMaxBodySize(LineListIter it);
+	ParsingState					   setAutoIndex(LineListIter it, LocParsing& loc);
+	ParsingState					   setAllowedMethod(LineListIter it, LocParsing& loc);
+	ParsingState					   setPort(Line& line, LocParsing& loc);
+	ParsingState					   setRoot(LineListIter it, LocParsing& loc);
+	ParsingState					   setDefaultPage(LineListIter it, LocParsing& loc);
+	ParsingState					   setServerName(LineListIter it, LocParsing& loc);
+	ParsingState					   setErrorPage(LineListIter it, LocParsing& loc);
+	ParsingState					   setMaxBodySize(LineListIter it, LocParsing& loc);
 	void							   addLocation(LineListIter it, LocParsing& loc);
-	ParsingState					   parseStart(LineList& list);
+	ParsingState					   parseStart(LineList& list, LocParsing& loc);
 	ParsingState parseServer(LineList& list, LineListIter it, LocParsing& loc);
 	ParsingState parseLocation(LineListIter list, LocParsing& loc);
-	bool		 handleCaseA(LineListIter& it);
 
    public:
 	Server();
