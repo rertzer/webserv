@@ -206,9 +206,9 @@ def conf_tester(index, test):
     server_status = server.proc.returncode
     server_output = server.proc.stdout.read()
     server_error = server.proc.stderr.read()
-    # print(server_status)
-    # print("|", server_output, "|")
-    # print("!", server_error, "!")
+    print(server_status)
+    print("|", server_output, "|")
+    print("!", server_error, "!")
 
     ok = (
         server_status == test.status

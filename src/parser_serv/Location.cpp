@@ -6,10 +6,10 @@ Location::Location(std::vector<std::string> locString) {
 	size_t line = 0;
 
 	for (std::vector<std::string>::iterator it = locString.begin(); it != locString.end(); it++) {
-		if (line == 0)
+		if (line == 0) {
 			_locationPath =
 				it->substr(it->find("location") + 9, it->find("{") - it->find("location") - 10);
-		else if (*it != "" && it->find("}") == std::string::npos) {
+		} else if (*it != "") {
 			_locationLine.push_back((LineLoc)*it);
 		}
 		line++;

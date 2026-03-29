@@ -15,42 +15,75 @@ std::string Server::getAutoIndex() {
 
 Server::Server(LineList servStrings)
 	: _allowedMethod(GETPOSTDELETE), _autoIndex("off"), _nPort(0), _maxBodySize(-1) {
-	LocParsing loc;
+	LocParsing	 loc;
+	ParsingState state = ParsingState::START;
 
 	for (auto it = servStrings.begin(); it != servStrings.end(); it++) {
-		auto line = split(*it);
-		if (!loc.open) {
-			// std::cerr << "--" << *it << std::endl;
-			if (findInLine(it, "allow_methods")) {
-				setAllowedMethod(it);
-			} else if (findInLine(it, "listen")) {
-				setPort(it);
-			} else if (findInLine(it, "root")) {
-				setRoot(it);
-			} else if (findInLine(it, "autoindex")) {
-				setAutoIndex(it);
-			} else if (findInLine(it, "index ")) {
-				setDefaultPage(it);
-			} else if (findInLine(it, "server_name")) {
-				setServerName(it);
-			} else if (findInLine(it, "error_page")) {
-				setErrorPage(it);
-			} else if (findInLine(it, "client_max_body_size")) {
-				setMaxBodySize(it);
-			} else if (findInLine(it, "location ")) {
-				loc.open = true;
-			} else {
-				std::cout << "Unknown line->" << *it << "<-" << std::endl;
-				throw(ServerException());
-			}
+		// auto list = split(*it);
+		switch (state) {
+			case ParsingState::START:
+				state = parseStart(it);
+				break;
+			case ParsingState::SERVER:
+				state = parseServer(it, loc);
+				break;
+			case ParsingState::LOCATION:
+				state = parseLocation(it, loc);
+				break;
+			default:
+				state = ParsingState::ERROR;
+				break;
 		}
-		if (loc.open) {
-			addLocation(it, loc);
+		if (state == ParsingState::ERROR) {
+			break;
 		}
 	}
 	checkIfConform();
 }
 
+ParsingState Server::parseStart(LineListIter it) {
+	if (findInLine(it, "listen")) {
+		setPort(it);
+	} else {
+		std::cout << "Unknown line->" << *it << "<-" << std::endl;
+		throw(ServerException());
+	}
+	return ParsingState::SERVER;
+}
+
+ParsingState Server::parseServer(LineListIter it, LocParsing& loc) {
+	ParsingState state = ParsingState::SERVER;
+	if (findInLine(it, "allow_methods")) {
+		setAllowedMethod(it);
+
+	} else if (findInLine(it, "root")) {
+		setRoot(it);
+	} else if (findInLine(it, "autoindex")) {
+		setAutoIndex(it);
+	} else if (findInLine(it, "index ")) {
+		setDefaultPage(it);
+	} else if (findInLine(it, "server_name")) {
+		setServerName(it);
+	} else if (findInLine(it, "error_page")) {
+		setErrorPage(it);
+	} else if (findInLine(it, "client_max_body_size")) {
+		setMaxBodySize(it);
+	} else if (findInLine(it, "location ")) {
+		state = parseLocation(it, loc);
+	} else {
+		std::cout << "Unknown line->" << *it << "<-" << std::endl;
+		throw(ServerException());
+	}
+	return (state);
+}
+ParsingState Server::parseLocation(LineListIter it, LocParsing& loc) {
+	loc.open = true;
+	addLocation(it, loc);
+	if (!loc.open) {
+		return (ParsingState::SERVER);
+	}
+	return (ParsingState::LOCATION);
+}
 void Server::checkIfConform() {
 	int error_page_status[] = {400, 403, 404, 405, 413, 500, 501, 505};
 	if (_root.empty() || _nPort == 0)
@@ -195,15 +228,12 @@ void Server::setMaxBodySize(LineListIter it) {
 }
 
 void Server::addLocation(LineListIter it, LocParsing& loc) {
-	loc.lines.push_back(*it);
-	if (it->find("{") != std::string::npos)
-		++loc.brackets;
-	if (it->find("}") != std::string::npos)
-		--loc.brackets;
-	if (loc.brackets == 0) {
+	if (it->find(";") == std::string::npos && it->find("}") != std::string::npos) {
 		loc.open = false;
 		_location.push_back(Location(loc.lines));
 		loc.lines.clear();
+	} else {
+		loc.lines.push_back(*it);
 	}
 }
 

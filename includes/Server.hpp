@@ -14,6 +14,8 @@ enum methodAllowed {
 	POSTDELETE = 7,
 };
 
+enum class ParsingState { START, SERVER, LOCATION, ERROR };
+
 typedef struct loc_parsing_t {
 	bool	 open = false;
 	int		 brackets = 0;
@@ -40,6 +42,9 @@ class Server {
 	void							   setErrorPage(LineListIter it);
 	void							   setMaxBodySize(LineListIter it);
 	void							   addLocation(LineListIter it, LocParsing& loc);
+	ParsingState					   parseStart(LineListIter list);
+	ParsingState					   parseServer(LineListIter list, LocParsing& loc);
+	ParsingState					   parseLocation(LineListIter list, LocParsing& loc);
 
    public:
 	Server();
