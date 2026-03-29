@@ -54,7 +54,7 @@ def test_cmdline_and_conf():
             "tests/conf_test/test_ko_4.conf",
             1,
             "Error: Server parsing error\n",
-            "",
+            "'listen' missing\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_5.conf",
@@ -113,7 +113,7 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_14.conf",
             1,
-            "Unknown line->	this line shouldn't be here;<-\n"
+            "Unknown line->	this line shouldn't be here<-\n"
             "Error: Server parsing error\n",
             "",
         ),
@@ -189,7 +189,14 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_27.conf",
             1,
-            "" "Error: Server parsing error\n",
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_28.conf",
+            1,
+            "Unknown line->\tindeedaninvalidline /html/page/index2.html<-\n"
+            "Error: Server parsing error\n",
             "",
         ),
     )

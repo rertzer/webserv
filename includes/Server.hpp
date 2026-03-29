@@ -33,18 +33,19 @@ class Server {
 	std::map<std::string, std::string> _errorPage;
 	std::vector<Location>			   _location;
 	int								   _maxBodySize;
-	void							   setAutoIndex(LineListIter it);
-	void							   setAllowedMethod(LineListIter it);
-	void							   setPort(LineListIter it);
-	void							   setRoot(LineListIter it);
-	void							   setDefaultPage(LineListIter it);
-	void							   setServerName(LineListIter it);
-	void							   setErrorPage(LineListIter it);
-	void							   setMaxBodySize(LineListIter it);
+	bool							   setAutoIndex(LineListIter it);
+	bool							   setAllowedMethod(LineListIter it);
+	bool							   setPort(Line& line);
+	bool							   setRoot(LineListIter it);
+	bool							   setDefaultPage(LineListIter it);
+	bool							   setServerName(LineListIter it);
+	bool							   setErrorPage(LineListIter it);
+	bool							   setMaxBodySize(LineListIter it);
 	void							   addLocation(LineListIter it, LocParsing& loc);
-	ParsingState					   parseStart(LineListIter list);
-	ParsingState					   parseServer(LineListIter list, LocParsing& loc);
-	ParsingState					   parseLocation(LineListIter list, LocParsing& loc);
+	ParsingState					   parseStart(LineList& list);
+	ParsingState parseServer(LineList& list, LineListIter it, LocParsing& loc);
+	ParsingState parseLocation(LineListIter list, LocParsing& loc);
+	bool		 handleCaseA(LineListIter& it);
 
    public:
 	Server();
