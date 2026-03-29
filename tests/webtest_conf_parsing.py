@@ -161,6 +161,31 @@ def test_cmdline_and_conf():
             "Error: Server parsing error\n",
             "Autoindex needs to be on or off.\n",
         ),
+        ConfRequest(
+            "tests/conf_test/test_ko_23.conf",
+            1,
+            "Error: Server parsing error\n",
+            "\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_24.conf",
+            1,
+            "Error: Server parsing error\n",
+            "\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_25.conf",
+            1,
+            "Only one item after an autoindex keyword in a location\n"
+            "Error: Server parsing error\n",
+            "",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_26.conf",
+            1,
+            "" "Error: Server parsing error\n",
+            "",
+        ),
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
@@ -175,9 +200,9 @@ def conf_tester(index, test):
     server_status = server.proc.returncode
     server_output = server.proc.stdout.read()
     server_error = server.proc.stderr.read()
-    print(server_status)
-    print("|", server_output, "|")
-    print("!", server_error, "!")
+    # print(server_status)
+    # print("|", server_output, "|")
+    # print("!", server_error, "!")
 
     ok = (
         server_status == test.status

@@ -482,3 +482,22 @@ def test_6():
     passed = RawTester(6, host, port).proceed_requests("", requests)
     tu.remove_from_upload("kitty2.jpg")
     return (passed, len(requests))
+
+
+def test_7():
+    host = "localhost"
+    port = 8080
+    headers = {"Host": host}
+
+    requests = (
+        SimpleRequest("GET", "/", headers, HTTPStatus.OK, 1146),
+        SimpleRequest("GET", "/css/", headers, HTTPStatus.OK, 1957),
+        SimpleRequest("GET", "/upload/", headers, HTTPStatus.OK, 1198),
+        SimpleRequest("GET", "/img/", headers, HTTPStatus.OK, 1146),
+        SimpleRequest("GET", "/img/toDelete/", headers, HTTPStatus.OK, 1117),
+    )
+
+    passed = SimpleTester(7, host, port).proceed_requests(
+        "tests/conf_test/test_ok_5.conf", requests
+    )
+    return (passed, len(requests))
