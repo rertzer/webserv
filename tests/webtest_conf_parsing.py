@@ -186,6 +186,12 @@ def test_cmdline_and_conf():
             "" "Error: Server parsing error\n",
             "",
         ),
+        ConfRequest(
+            "tests/conf_test/test_ko_27.conf",
+            1,
+            "" "Error: Server parsing error\n",
+            "",
+        ),
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
