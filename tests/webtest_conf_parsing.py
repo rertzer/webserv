@@ -7,6 +7,7 @@ from webserver import WebServer
 
 def test_cmdline_and_conf():
     tests = (
+        # test 1
         ConfRequest(
             "a b c d",
             1,
@@ -17,8 +18,8 @@ def test_cmdline_and_conf():
         ConfRequest(
             "youwillneverfindme.conf",
             1,
-            "The file youwillneverfindme.conf doesn't exist\n",
             "",
+            "Error: Server parsing error.\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ok_4.conf",
@@ -30,113 +31,106 @@ def test_cmdline_and_conf():
             "Listening...\n",
             "",
         ),
+        # test 5
         ConfRequest(
             "tests/conf_test/test_ko_1.conf",
             1,
-            "A close bracket appear that isn't open anywhere\n",
             "",
+            "Error: Server parsing error.\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_2.conf",
             1,
-            "Line where ';' is missing: server  line = 1\n"
-            "A line in the conf File isn't ending with a semicolon\n",
             "",
+            "Error: Server parsing error.\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_3.conf",
             1,
-            "Line where ';' is missing: \tclient_max_body_size 1000000 line = 3\n"
-            "A line in the conf File isn't ending with a semicolon\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_4.conf",
             1,
-            "Error: Server parsing error\n",
-            "'listen' missing\n",
+            "",
+            "'listen' missing\nError: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_5.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
+        # test 10
         ConfRequest(
             "tests/conf_test/test_ko_6.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_7.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_8.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_9.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_10.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
+        # test 15
         ConfRequest(
             "tests/conf_test/test_ko_11.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_12.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_13.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_14.conf",
             1,
-            "Unknown line->	this line shouldn't be here<-\n"
-            "Error: Server parsing error\n",
             "",
+            "Unknown line: this\nError: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_15.conf",
             1,
-            "maxBodySize[maxBodySize.length() - 1] N\n"
-            "client_max_body_size doesn't respect subject rules\n"
-            "Error: Server parsing error\n",
             "",
+            "Invalid client_max_body_size\nError: Server parsing error\n",
         ),
+        # test 20
         ConfRequest(
             "tests/conf_test/test_ko_17.conf",
             2,
             "-------------TEST SOCKET------------------\n\n",
             "Error: socket failed\n",
         ),
-        # ConfRequest(
-        #     "tests/conf_test/test_ko_18.conf",
-        #     2,
-        #     "-------------TEST SOCKET------------------\n\n",
-        #     "Error: socket failed\n",
-        # ),
         ConfRequest(
             "tests/conf_test/test_ko_19.conf",
             1,
@@ -158,46 +152,58 @@ def test_cmdline_and_conf():
         ConfRequest(
             "tests/conf_test/test_ko_22.conf",
             1,
-            "Error: Server parsing error\n",
-            "Autoindex needs to be on or off.\n",
+            "",
+            "Autoindex needs to be on or off.\nError: Server parsing error\n",
         ),
+        # test 25
         ConfRequest(
             "tests/conf_test/test_ko_23.conf",
             1,
-            "Error: Server parsing error\n",
-            "\n",
+            "",
+            "Unknown line: badserver_name\nError: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_24.conf",
             1,
-            "Error: Server parsing error\n",
-            "\n",
+            "",
+            "Unknown line: oops\nError: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_25.conf",
             1,
-            "Only one item after an autoindex keyword in a location\n"
+            "Not a valid command\n",
             "Error: Server parsing error\n",
-            "",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_26.conf",
             1,
-            "" "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_27.conf",
             1,
-            "Error: Server parsing error\n",
             "",
+            "Error: Server parsing error.\n",
         ),
+        # test 30
         ConfRequest(
             "tests/conf_test/test_ko_28.conf",
             1,
-            "Unknown line->\tindeedaninvalidline /html/page/index2.html<-\n"
-            "Error: Server parsing error\n",
             "",
+            "Unknown line: indeedaninvalidline\nError: Server parsing error\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_29.conf",
+            1,
+            "",
+            "Error page number out of range\nError: Server parsing error\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_18.conf",
+            1,
+            "",
+            "Error: Server parsing error.\n",
         ),
     )
 

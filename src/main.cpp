@@ -21,11 +21,11 @@ int main(int ac, char** av) {
 	std::vector<Server> serv;
 
 	try {
-		if (checkConfFile(conf_file_name) == 1 || !fillServ(conf_file_name, serv)) {
+		if (!fillServ(conf_file_name, serv)) {
 			return (1);
 		}
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		return (1);
 	}
 	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;

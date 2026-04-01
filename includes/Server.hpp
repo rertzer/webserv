@@ -1,5 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
+
+#include <map>
+
 #include "Location.hpp"
 #include "macroDef.hpp"
 #include "utils.hpp"
@@ -22,7 +25,7 @@ typedef struct loc_parsing_t {
 	LineList lines;
 } LocParsing;
 
-using ServerParserHandler = ParsingState (Server::*)(LineListIter it, LocParsing& loc);
+using ServerParserHandler = ParsingState (Server::*)(LineList& list, LocParsing& loc);
 
 class Server {
    private:
@@ -35,18 +38,18 @@ class Server {
 	std::map<std::string, std::string> _errorPage;
 	std::vector<Location>			   _location;
 	int								   _maxBodySize;
-	ParsingState					   setAutoIndex(LineListIter it, LocParsing& loc);
-	ParsingState					   setAllowedMethod(LineListIter it, LocParsing& loc);
+	ParsingState					   setAutoIndex(LineList& list, LocParsing& loc);
+	ParsingState					   setAllowedMethod(LineList& list, LocParsing& loc);
 	ParsingState					   setPort(Line& line, LocParsing& loc);
-	ParsingState					   setRoot(LineListIter it, LocParsing& loc);
-	ParsingState					   setDefaultPage(LineListIter it, LocParsing& loc);
-	ParsingState					   setServerName(LineListIter it, LocParsing& loc);
-	ParsingState					   setErrorPage(LineListIter it, LocParsing& loc);
-	ParsingState					   setMaxBodySize(LineListIter it, LocParsing& loc);
-	void							   addLocation(LineListIter it, LocParsing& loc);
+	ParsingState					   setRoot(LineList& list, LocParsing& loc);
+	ParsingState					   setDefaultPage(LineList& list, LocParsing& loc);
+	ParsingState					   setServerName(LineList& list, LocParsing& loc);
+	ParsingState					   setErrorPage(LineList& list, LocParsing& loc);
+	ParsingState					   setMaxBodySize(LineList& list, LocParsing& loc);
+	ParsingState					   parseLocation(LineList& list, LocParsing& loc);
+	void							   addLocation(LineList& list, LocParsing& loc);
 	ParsingState					   parseStart(LineList& list, LocParsing& loc);
-	ParsingState parseServer(LineList& list, LineListIter it, LocParsing& loc);
-	ParsingState parseLocation(LineListIter list, LocParsing& loc);
+	ParsingState					   parseServer(LineList& list, LocParsing& loc);
 
    public:
 	Server();

@@ -1,18 +1,15 @@
 #include <iostream>
+#include <ranges>
 
 #include "Location.hpp"
+#include "utils.hpp"
 
 Location::Location(std::vector<std::string> locString) {
-	size_t line = 0;
-
-	for (std::vector<std::string>::iterator it = locString.begin(); it != locString.end(); it++) {
-		if (line == 0) {
-			_locationPath =
-				it->substr(it->find("location") + 9, it->find("{") - it->find("location") - 10);
-		} else if (*it != "") {
-			_locationLine.push_back((LineLoc)*it);
-		}
-		line++;
+	auto loc = split(locString[0]);
+	_locationPath = loc[1];
+	for (auto& it : locString | std::views::drop(1)) {
+		auto list = split(it);
+		_locationLine.push_back((LineLoc)list);
 	}
 }
 

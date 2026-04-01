@@ -2,4 +2,5 @@ CompileFlags:
   Add:
     - "-I../includes/"
     - "-I../../includes"
+    - "-std=c++20"
 

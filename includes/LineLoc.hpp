@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "utils.hpp"
+
 class LineLoc {
    private:
 	std::string				 _cmd;
@@ -13,6 +15,7 @@ class LineLoc {
 	std::string&			  getCmd();
 	std::vector<std::string>& getArgs();
 	LineLoc(std::string line);
+	LineLoc(LineList& list);
 	int checkArgs(std::string toFind);
 };
 

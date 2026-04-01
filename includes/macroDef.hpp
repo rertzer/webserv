@@ -1,7 +1,6 @@
 #ifndef MACRODEF_HPP
 #define MACRODEF_HPP
 
-#include <bits/stdc++.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -13,6 +12,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "utils.hpp"
 
 #define CONF_FILE_NO_GOOD \
 	std::cout << "The conf file doesn't respect subject requirement" << std::endl;
@@ -50,7 +51,7 @@ int						 checkForRedirection(Location& loc);
 std::pair<std::string, std::string> RedirectTo(Location& loc);
 std::string							getArgsLoc(Location& loc, std::string toFind);
 int									isThereAspecRoot(Location& loc);
-int									getAllowMethodsServer(std::string allowMethod);
+int									getAllowMethodsServer(LineList const& list);
 void								printServ(Server& serv);
 std::pair<std::string, std::string> getExtension(Location Loc);
 int									checkIfOnlyDigits(std::string str);

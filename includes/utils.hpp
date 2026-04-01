@@ -10,7 +10,8 @@ using Line = std::string;
 using LineList = std::vector<Line>;
 using LineListIter = LineList::iterator;
 
-LineList split(Line const& line);
-void	 printLineList(LineList const& list);
+LineList	split(Line const& line);
+void		printLineList(LineList const& list);
+std::string join(LineList const& list);
 
 #endif

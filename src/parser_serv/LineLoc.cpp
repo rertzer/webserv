@@ -1,68 +1,42 @@
 #include <iostream>
-#include <sstream>
+#include <ranges>
+#include <unordered_set>
 
 #include "LineLoc.hpp"
 #include "ServerException.hpp"
+#include "utils.hpp"
 
 LineLoc::LineLoc(std::string line) {
-	std::stringstream ss(line);
-	std::string		  defaultStock;
-	int				  i = 0;
-	while (getline(ss, defaultStock, ' ')) {
-		if (i == 0) {
-			if (defaultStock.find_first_not_of(" \t") == std::string::npos)
-				throw(ServerException());
-			_cmd =
-				defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
-			if (_cmd != "root" && _cmd != "return" && _cmd != "autoindex" &&
-				_cmd != "allow_methods" && _cmd != "index" && _cmd != "extension" &&
-				_cmd != "cgi_path" && _cmd != "upload_path") {
-				std::cout << "Not a valid command" << std::endl;
-				throw(ServerException());
-			}
-		} else if (defaultStock != "") {
-			defaultStock =
-				defaultStock.substr(defaultStock.find_first_not_of(" \t"), defaultStock.length());
-			if (defaultStock == ";")
-				break;
-			if (defaultStock.find(";") != std::string::npos &&
-				defaultStock.find(";") == defaultStock.length() - 1)
-				defaultStock = defaultStock.substr(0, defaultStock.find(";"));
-			_args.push_back(defaultStock);
-		}
-		i++;
-	}
-	if (_cmd == "index" && _args.size() != 1) {
-		std::cout << "Only one item after an index keyword in a location" << std::endl;
+	auto list = split(line);
+
+	std::unordered_set<std::string> valid_cmds = {"root",		   "return",	 "autoindex",
+												  "allow_methods", "index",		 "extension",
+												  "cgi_path",	   "upload_path"};
+	if (valid_cmds.find(list[0]) == valid_cmds.end() ||
+		(list[0] != "return" && list[0] != "allow_methods" && list.size() != 2)) {
+		std::cout << "Not a valid command\n";
 		throw(ServerException());
 	}
-	if (_cmd == "root" && _args.size() != 1) {
-		std::cout << "Only one item after a root keyword in a location" << std::endl;
+	_cmd = list[0];
+
+	for (auto it : list | std::views::drop(1)) {
+		_args.push_back(it);
+	}
+}
+
+LineLoc::LineLoc(LineList& list) {
+	std::unordered_set<std::string> valid_cmds = {"root",		   "return",	 "autoindex",
+												  "allow_methods", "index",		 "extension",
+												  "cgi_path",	   "upload_path"};
+	if (valid_cmds.find(list[0]) == valid_cmds.end() ||
+		(list[0] != "return" && list[0] != "allow_methods" && list.size() != 2)) {
+		std::cout << "Not a valid command\n";
 		throw(ServerException());
 	}
-	if (_cmd == "upload_path" && _args.size() != 1) {
-		std::cout << "Only one item after a upload_path keyword in a location" << std::endl;
-		throw(ServerException());
-	}
-	if (_cmd == "return" && _args.size() != 2) {
-		std::cout << "Only one number and one file after a retur keyword" << std::endl;
-		throw(ServerException());
-	}
-	if (_cmd == "autoindex" && _args.size() != 1) {
-		std::cout << "Only one item after an autoindex keyword in a location" << std::endl;
-		throw(ServerException());
-	}
-	if (_cmd == "allow_methods" && _args.size() == 0) {
-		std::cout << "At least one item after an allow_methods keyword in a location" << std::endl;
-		throw(ServerException());
-	}
-	if (_cmd == "extension" && _args.size() != 1) {
-		std::cout << "Only one item after an extension keyword in a location" << std::endl;
-		throw(ServerException());
-	}
-	if (_cmd == "cgi_path" && _args.size() != 1) {
-		std::cout << "Only one item after an cgi_path keyword in a location" << std::endl;
-		throw(ServerException());
+	_cmd = list[0];
+
+	for (auto it : list | std::views::drop(1)) {
+		_args.push_back(it);
 	}
 }
 

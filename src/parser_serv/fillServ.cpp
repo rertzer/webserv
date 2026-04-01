@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -13,11 +15,11 @@ bool fillServ(std::string av, std::vector<Server>& serv) {
 	std::vector<std::string> serv_strings;
 	auto					 open_brackets = 0;
 	auto					 serv_open = false;
-
+	auto					 server_created = false;
 	try {
 		conf.open(av.c_str(), std::fstream::in);
 	} catch (std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		return (false);
 	}
 
@@ -33,21 +35,28 @@ bool fillServ(std::string av, std::vector<Server>& serv) {
 			serv_open = true;
 			++open_brackets;
 			continue;
-		}
-		if (serv_open) {
+		} else if (serv_open) {
 			open_brackets += countBrackets(line);
 
 			if (open_brackets == 0) {
 				serv_open = false;
 				serv.push_back(Server(serv_strings));
+				server_created = true;
 				serv_strings.clear();
 			} else {
 				serv_strings.push_back(line);
 			}
+		} else {
+			std::cerr << "Error: Server parsing error.\n";
+			return (false);
 		}
 		if (open_brackets < 0) {
 			return (false);
 		}
+	}
+	if (!server_created) {
+		std::cerr << "Error: Server parsing error.\n";
+		return (false);
 	}
 	return (checkDuplicatedPortNames(serv));
 }
