@@ -3,6 +3,8 @@
 #include "ErrorException.hpp"
 #include "TCPSocket.hpp"
 
+#include <fstream>
+#include <sstream>
 Request::Request(TCPSocket* s, std::vector<Server>& serv)
 	: port(s->getMotherPort()),
 	  status(100),

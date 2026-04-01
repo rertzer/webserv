@@ -1,3 +1,6 @@
+#include <fstream>
+#include <sstream>
+
 #include "ErrorException.hpp"
 #include "Response.hpp"
 #include "Server.hpp"
@@ -115,19 +118,17 @@ int checkAllowMethod(Location loc) {
 	return (-1);
 }
 
-int getAllowMethodsServer(std::string allowMethod) {
-	std::stringstream ss(allowMethod);
-	std::string		  defaultStock;
-	bool			  get = false;
-	bool			  post = false;
-	bool			  deleteMethod = false;
+int getAllowMethodsServer(LineList const& list) {
+	bool get = false;
+	bool post = false;
+	bool deleteMethod = false;
 
-	while (getline(ss, defaultStock, ' ')) {
-		if (defaultStock == "GET")
+	for (auto it = std::next(list.begin()); it != list.end(); ++it) {
+		if (*it == "GET")
 			get = true;
-		else if (defaultStock == "POST")
+		else if (*it == "POST")
 			post = true;
-		else if (defaultStock == "DELETE")
+		else if (*it == "DELETE")
 			deleteMethod = true;
 		else {
 			std::cout << "Error in allowed method" << std::endl;
@@ -271,4 +272,19 @@ std::string getUploadPath(Location loc) {
 		it++;
 	}
 	return (ret);
+}
+
+std::string join(LineList const& list) {
+	if (list.empty())
+		return "";
+
+	std::ostringstream oss;
+	auto			   it = list.begin();
+
+	oss << *it++;  // first element
+
+	for (; it != list.end(); ++it)
+		oss << ' ' << *it;
+
+	return oss.str();
 }

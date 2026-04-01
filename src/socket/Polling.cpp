@@ -1,6 +1,8 @@
 #include "Polling.hpp"
 #include "Cgi.hpp"
 
+#include <algorithm>
+
 extern sig_atomic_t quitok;
 
 // Public

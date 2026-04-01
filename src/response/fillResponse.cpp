@@ -3,6 +3,9 @@
 #include "Response.hpp"
 #include "macroDef.hpp"
 
+#include <fstream>
+#include <sstream>
+
 int isDir(std::string fileName) {
 	struct stat path;
 

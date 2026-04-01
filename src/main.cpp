@@ -1,5 +1,6 @@
 #include <csignal>
 #include <cstdio>
+#include <iostream>
 
 #include "Server.hpp"
 #include "confFile.hpp"
