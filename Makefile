@@ -1,6 +1,8 @@
 CXX := c++
 
-CXXFLAGS := -Wall -Wextra -Werror -g3
+CXXFLAGS := -Wall -Wextra -Werror -g3 -std=c++20 -stdlib=libc++
+
+LDFLAGS := -stdlib=libc++ -static-libstdc++
 
 NAME := webserv
 
@@ -52,7 +54,7 @@ test: docker
 	
 
 $(NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o  $@ $(OBJS)
+	$(CXX) $(LDFLAGS) -o  $@ $(OBJS)
 
 #$(OBJ_DIR):
 #	mkdir  $(OBJ_DIR)
