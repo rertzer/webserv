@@ -13,10 +13,10 @@ typedef void (*handlestatus)(Event& ev, Polling& pool);
 
 statusCode serverRun(std::vector<Server>);
 void	   handleEvent(Polling& pool, std::vector<Server>& serv);
-void	   loadMotherSocket(Polling& pool, std::vector<Server> serv);
-void	   eventOnMother(Event& ev, Polling& pool);
+void	   loadListeningSocket(Polling& pool, std::vector<Server> serv);
+void	   eventOnListeningSocket(Event& ev, Polling& pool);
 void	   eventOnOther(Event& ev, Polling& pool);
-void	   checkBadEventOnMother(Event& ev, Polling& pool);
+void	   checkBadEventOnListeningSocket(Event& ev, Polling& pool);
 void	   handleEventStatus(Event& ev, Polling& pool);
 void	   handleInOk(Event& ev, Polling& pool);
 void	   handleOutOk(Event& ev, Polling& pool);

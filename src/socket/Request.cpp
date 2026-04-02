@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 Request::Request(TCPSocket* s, std::vector<Server>& serv)
-	: port(s->getMotherPort()),
+	: port(s->getListeningSocketPort()),
 	  status(100),
 	  body_size(1000000),
 	  soc(s),
@@ -326,7 +326,7 @@ void Request::setQuery(std::string const& query) {
 
 void Request::setHeader(std::vector<Server> serv) {
 	setFields();
-	Server theserv = findTheServ(*this, serv, soc->getMotherPort());
+	Server theserv = findTheServ(*this, serv, soc->getListeningSocketPort());
 	setBodySize(theserv.getBodySize());
 	checkHeader();
 	setKeepAlive();

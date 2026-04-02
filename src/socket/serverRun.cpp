@@ -10,7 +10,7 @@ statusCode serverRun(std::vector<Server> serv) {
 	statusCode status = statusCode::OK;
 	try {
 		Polling pool;
-		loadMotherSocket(pool, serv);
+		loadListeningSocket(pool, serv);
 		std::cout << "Listening...\n";
 
 		while (1) {
@@ -22,52 +22,47 @@ statusCode serverRun(std::vector<Server> serv) {
 				handleEvent(pool, serv);
 		}
 	} catch (const TCPSocket::SocketException& e) {
-		std::cerr << e.what() << std::endl;
-		status = statusCode::SOCKET;
+		status = handleException(e, statusCode::SOCKET);
 	} catch (const Cgi::CgiException& e) {
-		std::cerr << e.what() << std::endl;
-		status = statusCode::CGI;
+		status = handleException(e, statusCode::CGI);
 	} catch (const Polling::PollingException& e) {
-		std::cerr << e.what() << std::endl;
-		status = statusCode::POLLING;
+		status = handleException(e, statusCode::POLLING);
 	} catch (const ServerException& e) {
-		std::cerr << e.what() << std::endl;
-		status = statusCode::SERVER;
+		status = handleException(e, statusCode::SERVER);
 	} catch (const std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		status = statusCode::STANDARD;
+		status = handleException(e, statusCode::STANDARD);
 	}
 	return status;
 }
 
-void loadMotherSocket(Polling& pool, std::vector<Server> serv) {
+void loadListeningSocket(Polling& pool, std::vector<Server> serv) {
 	std::map<int, int> unique_port;
 	for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++) {
 		int vp = it->getListenPort();
 		unique_port[vp] = 1;
 	}
 	for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
-		pool.addMotherSocket(it->first);
+		pool.addListeningSocket(it->first);
 }
 
 void handleEvent(Polling& pool, std::vector<Server>& serv) {
 	Event ev = pool.nextEvent();
 	ev.setServ(serv);
 
-	if (pool.isMother(ev))
-		eventOnMother(ev, pool);
+	if (pool.isListeningSocket(ev))
+		eventOnListeningSocket(ev, pool);
 	else
 		eventOnOther(ev, pool);
 	pool.reset(ev.getFd());
 }
 
-void eventOnMother(Event& ev, Polling& pool) {
+void eventOnListeningSocket(Event& ev, Polling& pool) {
 	if (ev.isIn())
 		pool.connect(ev);
-	checkBadEventOnMother(ev, pool);
+	checkBadEventOnListeningSocket(ev, pool);
 }
 
-void checkBadEventOnMother(Event& ev, Polling& pool) {
+void checkBadEventOnListeningSocket(Event& ev, Polling& pool) {
 	std::string event_msg;
 	if (ev.isErr())
 		event_msg += "EPOLLERR ";

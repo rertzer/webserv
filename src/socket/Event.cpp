@@ -83,13 +83,15 @@ void Event::handleEvent() {
 	} catch (const ErrorException& e) {
 		if (soc->req == NULL) {
 			soc->setMessageOut(
-				(createErrorPage(e.getCode(), findTheDefaultServ(serv, soc->getMotherPort()))
+				(createErrorPage(e.getCode(),
+								 findTheDefaultServ(serv, soc->getListeningSocketPort()))
 					 .getResponse()));
 		} else {
 			if (soc->req->getCgiStatus())
 				status = 4;
 			soc->setMessageOut(
-				(createErrorPage(e.getCode(), findTheServ(*soc->req, serv, soc->getMotherPort())))
+				(createErrorPage(e.getCode(),
+								 findTheServ(*soc->req, serv, soc->getListeningSocketPort())))
 					.getResponse());
 		}
 		soc->setKeepAlive(false);
@@ -116,7 +118,7 @@ void Event::handleIn() {
 	}
 	printCleanRequest(*soc->req);
 	if (soc->req->ready()) {
-		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
 		if (soc->req->getCgiStatus() == 1)
 			status = 4;
 		else if (soc->req->getCgiStatus() == 2)
@@ -136,7 +138,7 @@ void Event::handleCgiIn() {
 	} else
 		soc->req->getCgi()->readPipeFd();
 	if (soc->req->getCgiStatus() == 4) {
-		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = 6;
 	} else
@@ -180,7 +182,7 @@ void Event::handleHup() {
 	status = 3;
 	if (isCgiFd()) {
 		soc->req->getCgi()->closePipe();
-		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getMotherPort()));
+		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = 6;
 	} else if (cgiIsPending())

@@ -15,17 +15,17 @@ class Polling {
 	Polling();
 	~Polling();
 
-	void	   addMotherSocket(int port);
+	void	   addListeningSocket(int port);
 	void	   addCgiFds(std::vector<int> fds);
 	void	   connect(Event const& ev);
-	void	   removeMotherSocket(int fd);
+	void	   removeListeningSocket(int fd);
 	void	   removeSocket(int fd);
 	void	   removeCgiFd(int fd);
 	int		   wait();
 	Event	   nextEvent();
 	TCPSocket* getSocketByFd(int fd);
 	TCPSocket* getSocketByCgiFd(int fd);
-	bool	   isMother(Event ev) const;
+	bool	   isListeningSocket(Event ev) const;
 	void	   setOut(int fd);
 	void	   resetOut(int fd);
 	void	   reset(int fd);

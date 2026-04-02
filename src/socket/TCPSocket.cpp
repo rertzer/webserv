@@ -64,7 +64,7 @@ int TCPSocket::getPort() const {
 	return ntohs(socket_addr.sin_port);
 }
 
-int TCPSocket::getMotherPort() const {
+int TCPSocket::getListeningSocketPort() const {
 	return mother_port;
 }
 

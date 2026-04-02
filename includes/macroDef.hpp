@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <cstring>
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -40,6 +41,12 @@ class Server;
 class Request;
 class Response;
 class Location;
+
+template <typename E>
+statusCode handleException(const E& e, statusCode code) {
+	std::cerr << e.what() << std::endl;
+	return code;
+}
 
 statusCode				 fillServ(std::string av, std::vector<Server>& serv);
 std::string				 sendResponse(Request& req, std::vector<Server>& serv);

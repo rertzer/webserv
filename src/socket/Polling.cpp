@@ -31,7 +31,7 @@ Polling& Polling::operator=(Polling const& rhs) {
 	return *this;
 }
 
-void Polling::addMotherSocket(int port) {
+void Polling::addListeningSocket(int port) {
 	TCPSocket* soc = new TCPSocket(port);
 	addSocket(soc);
 	mother_fds.push_back(soc->getFd());
@@ -43,7 +43,7 @@ void Polling::connect(Event const& ev) {
 	addSocket(soc);
 }
 
-void Polling::removeMotherSocket(int fd) {
+void Polling::removeListeningSocket(int fd) {
 	mother_fds.remove(fd);
 	removeSocket(fd);
 }
@@ -94,7 +94,7 @@ TCPSocket* Polling::getSocketByCgiFd(int fd) {
 	return getSocketFromStrip(fd, powerstripCgi);
 }
 
-bool Polling::isMother(Event ev) const {
+bool Polling::isListeningSocket(Event ev) const {
 	std::list<int>::const_iterator li = std::find(mother_fds.begin(), mother_fds.end(), ev.getFd());
 	if (li != mother_fds.end())
 		return true;

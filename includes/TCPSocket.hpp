@@ -19,7 +19,7 @@ class TCPSocket {
 	TCPSocket& operator=(TCPSocket const& rhs);
 
 	int			getPort() const;
-	int			getMotherPort() const;
+	int			getListeningSocketPort() const;
 	int			getFd() const;
 	bool		getError() const;
 	void		setError(bool er);
