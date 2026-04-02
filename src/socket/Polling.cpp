@@ -10,8 +10,7 @@ Polling::Polling() : nfds(0), events_nb(0) {
 }
 
 Polling::~Polling() {
-	for (std::map<int, TCPSocket*>::iterator it = powerstrip.begin(); it != powerstrip.end();
-		 it++) {
+	for (auto it = powerstrip.begin(); it != powerstrip.end(); it++) {
 		delete (it->second);
 	}
 }
@@ -48,8 +47,8 @@ void Polling::removeListeningSocket(int fd) {
 }
 
 void Polling::removeSocket(int fd) {
-	std::map<int, TCPSocket*>::iterator mi = powerstrip.find(fd);
-	if (mi != powerstrip.end()) {
+	auto it = powerstrip.find(fd);
+	if (it != powerstrip.end()) {
 		removeFd(fd);
 		delete (powerstrip[fd]);
 		powerstrip.erase(fd);
@@ -57,8 +56,8 @@ void Polling::removeSocket(int fd) {
 }
 
 void Polling::removeCgiFd(int fd) {
-	std::map<int, TCPSocket*>::iterator mi = powerstripCgi.find(fd);
-	if (mi != powerstripCgi.end()) {
+	auto it = powerstripCgi.find(fd);
+	if (it != powerstripCgi.end()) {
 		removeFd(fd);
 		powerstripCgi.erase(fd);
 	}
@@ -66,8 +65,9 @@ void Polling::removeCgiFd(int fd) {
 
 int Polling::wait() {
 	events_nb = ::poll(fds, nfds, -1);
-	if (quitok)
+	if (quitok) {
 		return 0;
+	}
 	if (events_nb == -1)
 		throw(PollingException());
 	return events_nb;
@@ -94,8 +94,7 @@ TCPSocket* Polling::getSocketByCgiFd(int fd) {
 }
 
 bool Polling::isListeningSocket(Event ev) const {
-	std::list<int>::const_iterator li =
-		std::find(listening_fds.begin(), listening_fds.end(), ev.getFd());
+	auto li = std::find(listening_fds.begin(), listening_fds.end(), ev.getFd());
 	if (li != listening_fds.end())
 		return true;
 	return false;
@@ -128,7 +127,7 @@ void Polling::reset(int fd) {
 	}
 }
 void Polling::setCgiIn(TCPSocket* soc) {
-	std::vector<int> cgi_fds = soc->req->getCgi()->getFds();
+	auto cgi_fds = soc->req->getCgi()->getFds();
 	for (nfds_t i = 0; i < nfds; i++) {
 		if (fds[i].fd == cgi_fds[2]) {
 			fds[i].events = POLLIN;
@@ -187,9 +186,9 @@ void Polling::removeFd(int fd) {
 }
 
 TCPSocket* Polling::getSocketFromStrip(int fd, std::map<int, TCPSocket*>& strip) const {
-	std::map<int, TCPSocket*>::const_iterator mi = strip.find(fd);
-	if (mi != strip.end())
-		return mi->second;
+	auto it = strip.find(fd);
+	if (it != strip.end())
+		return it->second;
 	return nullptr;
 }
 
