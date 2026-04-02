@@ -127,11 +127,11 @@ void Event::handleIn() {
 bool Event::checkAndHandleCgiIn() {
 	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE)) {
 		handleCgiIn();
-		return (true);
+		return true;
 	} else if (isCgiStatus(CgiStatus::NO_INIT)) {
 		soc->req->feed(servers);
 	}
-	return (false);
+	return false;
 }
 
 void Event::handleInRequestReady() {
@@ -147,11 +147,11 @@ void Event::handleInRequestReady() {
 }
 Response Event::getListeningSocketResponse() {
 	Response resp(*soc->req, getListentingSocketServer());
-	return (resp);
+	return resp;
 }
 
 Server& Event::getListentingSocketServer() {
-	return (findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
+	return findTheServ(*soc->req, servers, soc->getListeningSocketPort());
 }
 
 void Event::handleCgiIn() {
@@ -224,9 +224,9 @@ void Event::handleNval() {
 
 bool Event::cgiIsPending() {
 	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid()) {
-		return (true);
+		return true;
 	}
-	return (false);
+	return false;
 }
 
 void Event::internalError() {

@@ -18,20 +18,20 @@ int CheckForRedirection(Location loc) {
 			return (1);
 		it++;
 	}
-	return (0);
+	return 0;
 }
 
 std::string getSpecIndex(Location loc, Response& rep) {
 	std::vector<std::string> index = loc.getIndex();
 	if (index.size() == 0)
-		return ("");
+		return "";
 	else {
 		for (std::vector<std::string>::iterator it = index.begin(); it != index.end(); it++) {
 			if (access((rep.getRoot() + *it).c_str(), F_OK) != -1 &&
 				access((rep.getRoot() + *it).c_str(), R_OK) != -1)
 				return (*it);
 		}
-		return ("");
+		return "";
 	}
 }
 
@@ -58,7 +58,7 @@ Location getTheLocation(std::string path, Response& rep) {
 			path = path.substr(0, path.rfind("/"));
 		}
 	}
-	return (Location());
+	return Location();
 }
 
 int checkIfLocation(std::string path, Response& rep) {
@@ -85,5 +85,5 @@ int checkIfLocation(std::string path, Response& rep) {
 		}
 		std::cout << "boucled here" << std::endl;
 	}
-	return (-1);
+	return -1;
 }

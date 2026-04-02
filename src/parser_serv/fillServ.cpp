@@ -21,7 +21,7 @@ statusCode fillServ(std::string av, std::vector<Server>& serv) {
 		conf.open(av.c_str(), std::fstream::in);
 	} catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
-		return (statusCode::INTERNAL);
+		return statusCode::INTERNAL;
 	}
 
 	for (std::string line; getline(conf, line);) {
@@ -31,7 +31,7 @@ statusCode fillServ(std::string av, std::vector<Server>& serv) {
 		if (line.find("server {") != std::string::npos) {
 			if (serv_open) {
 				std::cerr << "Error: Server parsing error.\n";
-				return (statusCode::PARSING);
+				return statusCode::PARSING;
 			}
 			serv_open = true;
 			++open_brackets;
@@ -49,17 +49,17 @@ statusCode fillServ(std::string av, std::vector<Server>& serv) {
 			}
 		} else {
 			std::cerr << "Error: Server parsing error.\n";
-			return (statusCode::PARSING);
+			return statusCode::PARSING;
 		}
 		if (open_brackets < 0) {
-			return (statusCode::PARSING);
+			return statusCode::PARSING;
 		}
 	}
 	if (!server_created) {
 		std::cerr << "Error: Server parsing error.\n";
-		return (statusCode::PARSING);
+		return statusCode::PARSING;
 	}
-	return (checkDuplicatedPortNames(serv));
+	return checkDuplicatedPortNames(serv);
 }
 
 static void removeComments(std::string& line) {
@@ -81,7 +81,7 @@ static int countBrackets(std::string const& line) {
 	if (line.find("}") != std::string::npos) {
 		count -= 1;
 	}
-	return (count);
+	return count;
 }
 
 static statusCode checkDuplicatedPortNames(std::vector<Server>& serv) {
@@ -99,5 +99,5 @@ static statusCode checkDuplicatedPortNames(std::vector<Server>& serv) {
 			break;
 		}
 	}
-	return (status);
+	return status;
 }

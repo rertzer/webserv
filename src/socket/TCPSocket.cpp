@@ -136,7 +136,7 @@ std::string TCPSocket::getLine() {
 		line = msg_in.substr(0, pos);
 		msg_in = msg_in.erase(0, pos + 2);
 	}
-	return (line);
+	return line;
 }
 
 void TCPSocket::getRawData(std::string& content, int len) {

@@ -16,7 +16,7 @@ int respWithLoc(Request& req, Response& rep) {
 				loc = getTheLocation(req.getQuery(), rep);
 			} else if (checkAutoIndex(loc) == 1 || rep.getAutoIndex() == "on") {
 				createAutoIndexResp(req, loc, rep);
-				return (0);
+				return 0;
 			} else
 				req.setQuery("/");
 		}
@@ -37,7 +37,7 @@ int respWithLoc(Request& req, Response& rep) {
 		std::cout << GREEN "Redir = {[Status :" << rep.getStatus()
 				  << "][New Location: " << rep.getLocation() << "]" RESET << std::endl;
 		req.getSocket()->setKeepAlive(false);
-		return (0);
+		return 0;
 	}
 	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
 		return initCgi(req, loc, rep);
@@ -47,7 +47,7 @@ int respWithLoc(Request& req, Response& rep) {
 			req.upload_all();
 		}
 	}
-	return (1);
+	return 1;
 }
 
 int respWithOutLoc(Request& req, Response& rep) {
@@ -55,10 +55,10 @@ int respWithOutLoc(Request& req, Response& rep) {
 		if (req.getQuery()[req.getQuery().length() - 1] == '/') {
 			if (rep.getAutoIndex() == "on") {
 				createAutoIndexResp(req, Location(), rep);
-				return (0);
+				return 0;
 			} else
 				req.setQuery("/");
 		}
 	}
-	return (1);
+	return 1;
 }

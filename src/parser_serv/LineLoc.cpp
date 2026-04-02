@@ -41,11 +41,11 @@ LineLoc::LineLoc(LineList& list) {
 }
 
 std::string& LineLoc::getCmd() {
-	return (_cmd);
+	return _cmd;
 }
 
 std::vector<std::string>& LineLoc::getArgs() {
-	return (_args);
+	return _args;
 }
 
 int LineLoc::checkArgs(std::string toFind) {
@@ -53,5 +53,5 @@ int LineLoc::checkArgs(std::string toFind) {
 		if (_args[i] == toFind)
 			return (1);
 	}
-	return (0);
+	return 0;
 }

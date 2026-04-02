@@ -22,7 +22,7 @@ std::string Response::getResponse() {
 		std::cout << RED "\nReponse send:\n" << response << RESET << std::endl;
 	response += "\r\n";
 	response += _content;
-	return (response);
+	return response;
 }
 
 Response::Response(Request& req, Server& serv) {
@@ -134,7 +134,7 @@ std::pair<std::string, std::string> Response::extractField(size_t pos) {
 		stringTrim(field.first);
 		stringTrim(field.second);
 	}
-	return (field);
+	return field;
 }
 
 int Response::respWithCgi(Request& req) {
@@ -155,7 +155,7 @@ int Response::respWithCgi(Request& req) {
 	_status = "200 OK";
 	_contentLength = intToString(_content.length());
 	_connectionClose = "keep-alive";
-	return (0);
+	return 0;
 }
 
 void Response::setConnectionClose(std::string connectionClose) {
@@ -179,61 +179,61 @@ void Response::setContentMap(ContentMap contentMap) {
 }
 
 Server Response::getServ(void) const {
-	return (_serv);
+	return _serv;
 }
 
 std::string Response::getContentType(void) const {
-	return (_contentType);
+	return _contentType;
 }
 
 std::string Response::getContentLength(void) const {
-	return (_contentLength);
+	return _contentLength;
 }
 
 std::string Response::getStatus(void) const {
-	return (_status);
+	return _status;
 }
 
 std::string Response::getMethod(void) const {
-	return (_method);
+	return _method;
 }
 
 std::string Response::getConnectionClose(void) const {
-	return (_connectionClose);
+	return _connectionClose;
 }
 
 std::string Response::getContent(void) const {
-	return (_content);
+	return _content;
 }
 
 std::string Response::getLocation(void) const {
-	return (_location);
+	return _location;
 }
 
 std::string Response::getRoot(void) const {
-	return (_root);
+	return _root;
 }
 
 std::string Response::getAutoIndex(void) const {
-	return (_autoIndex);
+	return _autoIndex;
 }
 
 std::pair<std::string, std::string> Response::getExtensionAllowed(void) const {
-	return (_extensionAllowed);
+	return _extensionAllowed;
 }
 
 int Response::getReadFileAccess(void) const {
-	return (_readFileAccess);
+	return _readFileAccess;
 }
 
 int Response::getAllowedMethods(void) const {
-	return (_allowedMethods);
+	return _allowedMethods;
 }
 
 std::vector<std::string> Response::getCookie(void) const {
-	return (_setCookie);
+	return _setCookie;
 }
 
 ContentMap Response::getContentMap(void) const {
-	return (_contentMap);
+	return _contentMap;
 }

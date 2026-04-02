@@ -9,11 +9,11 @@
 static void trimSemiColon(LineListIter& it);
 
 int Server::getAllowMethods() {
-	return (_allowedMethod);
+	return _allowedMethod;
 }
 
 std::string Server::getAutoIndex() {
-	return (_autoIndex);
+	return _autoIndex;
 }
 
 Server::Server(LineList servStrings)
@@ -75,16 +75,16 @@ ParsingState Server::parseServer(LineList& list, LocParsing& loc) {
 		throw(ServerException());
 	}
 
-	return (state);
+	return state;
 }
 
 ParsingState Server::parseLocation(LineList& list, LocParsing& loc) {
 	loc.open = true;
 	addLocation(list, loc);
 	if (!loc.open) {
-		return (ParsingState::SERVER);
+		return ParsingState::SERVER;
 	}
-	return (ParsingState::LOCATION);
+	return ParsingState::LOCATION;
 }
 void Server::checkIfConform() {
 	int error_page_status[] = {400, 403, 404, 405, 413, 500, 501, 505};
@@ -99,37 +99,37 @@ void Server::checkIfConform() {
 Server::~Server() {}
 
 std::string& Server::getServName() {
-	return (_servName);
+	return _servName;
 }
 
 int Server::getBodySize() const {
-	return (_maxBodySize);
+	return _maxBodySize;
 }
 
 std::string& Server::getRoot() {
-	return (_root);
+	return _root;
 }
 
 std::string Server::getErrorPage(std::string errorNb) {
 	if (_errorPage.find(errorNb) == _errorPage.end())
 		throw(ServerException());
-	return (_errorPage.find(errorNb)->second);
+	return _errorPage.find(errorNb)->second)
 }
 
 std::map<std::string, std::string>& Server::getAllErrorPage() {
-	return (_errorPage);
+	return _errorPage;
 }
 
 std::vector<Location>& Server::getAllLocation() {
-	return (_location);
+	return _location;
 }
 
 int& Server::getListenPort() {
-	return (_nPort);
+	return _nPort;
 }
 
 std::vector<std::string>& Server::getDefaultPage() {
-	return (_defaultPage);
+	return _defaultPage;
 }
 
 Server& Server::operator=(const Server& rhs) {
@@ -144,7 +144,7 @@ Server& Server::operator=(const Server& rhs) {
 		_nPort = rhs._nPort;
 		_defaultPage = rhs._defaultPage;
 	}
-	return (*this);
+	return *this;
 }
 
 Server::Server(const Server& rhs) {
@@ -161,19 +161,19 @@ ParsingState Server::setAutoIndex(LineList& list, LocParsing& loc) {
 		std::cerr << "Autoindex needs to be on or off.\n";
 		throw(ServerException());
 	}
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setAllowedMethod(LineList& list, LocParsing& loc) {
 	(void)loc;
 	_allowedMethod = getAllowMethodsServer(list);
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setPort(Line& line, LocParsing& loc) {
 	(void)loc;
 	_nPort = atoi(line.c_str());
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setRoot(LineList& list, LocParsing& loc) {
@@ -182,7 +182,7 @@ ParsingState Server::setRoot(LineList& list, LocParsing& loc) {
 		throw(ServerException());
 	}
 	_root = list[1];
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setDefaultPage(LineList& list, LocParsing& loc) {
@@ -192,7 +192,7 @@ ParsingState Server::setDefaultPage(LineList& list, LocParsing& loc) {
 	}
 	if (_defaultPage.size() == 0)
 		throw(ServerException());
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setServerName(LineList& list, LocParsing& loc) {
@@ -201,7 +201,7 @@ ParsingState Server::setServerName(LineList& list, LocParsing& loc) {
 		throw(ServerException());
 	}
 	_servName = list[1];
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setErrorPage(LineList& list, LocParsing& loc) {
@@ -217,7 +217,7 @@ ParsingState Server::setErrorPage(LineList& list, LocParsing& loc) {
 		throw(ServerException());
 	}
 	_errorPage.insert(std::pair<std::string, std::string>(errorNb, errorPage));
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 ParsingState Server::setMaxBodySize(LineList& list, LocParsing& loc) {
@@ -231,7 +231,7 @@ ParsingState Server::setMaxBodySize(LineList& list, LocParsing& loc) {
 		std::cerr << "Invalid client_max_body_size\n";
 		throw(ServerException());
 	}
-	return (ParsingState::SERVER);
+	return ParsingState::SERVER;
 }
 
 void Server::addLocation(LineList& list, LocParsing& loc) {

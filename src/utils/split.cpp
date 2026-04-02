@@ -8,7 +8,7 @@ LineList split(Line const& line) {
 	while ((start = line.find_first_not_of(SPACES, start)) != std::string::npos) {
 		start = getNextWord(splited, line, start);
 	}
-	return (splited);
+	return splited;
 }
 
 static size_t getNextWord(LineList& splited, Line const& line, size_t start) {

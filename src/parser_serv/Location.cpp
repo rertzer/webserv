@@ -14,11 +14,11 @@ Location::Location(std::vector<std::string> locString) {
 }
 
 std::string Location::getLocationPath() const {
-	return (_locationPath);
+	return _locationPath;
 }
 
 std::vector<LineLoc>& Location::getLocationLine() {
-	return (_locationLine);
+	return _locationLine;
 }
 
 Location::Location() {}
@@ -43,5 +43,5 @@ std::vector<std::string> Location::getIndex() {
 		}
 		it++;
 	}
-	return (_stringIndex);
+	return _stringIndex;
 }

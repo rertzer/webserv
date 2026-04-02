@@ -22,11 +22,11 @@ std::string readFile(std::string file, Response& rep) {
 	}
 	if (access(file.c_str(), F_OK) == -1) {
 		rep.setReadFileAccess(FILE_NOT_FOUND);
-		return ("404");
+		return "404";
 	}
 	if (access(file.c_str(), R_OK) == -1) {
 		rep.setReadFileAccess(ACCESS_DENIED);
-		return ("403");
+		return "403";
 	}
 	fileOp.open(file.c_str());
 	if (fileOp.is_open()) {
@@ -34,11 +34,11 @@ std::string readFile(std::string file, Response& rep) {
 		fileStr << fileOp.rdbuf();
 		fileOp.close();
 		rep.setReadFileAccess(OK);
-		return (fileStr.str());
+		return fileStr.str();
 	} else {
 		fileOp.close();
 		rep.setReadFileAccess(FILE_NOT_FOUND);
-		return ("404");
+		return "404";
 	}
 }
 
@@ -113,7 +113,7 @@ void setCookie(std::string ck, Response& rep) {
 int initCgi(Request& req, Location& loc, Response& rep) {
 	Cgi* myCgi = new Cgi(req.getMethod(), rep.getRoot(), req, getExtension(loc));
 	req.setCgi(myCgi);
-	return (0);
+	return 0;
 }
 
 std::pair<std::string, std::string> extractField(size_t pos, Response& rep) {
@@ -131,5 +131,5 @@ std::pair<std::string, std::string> extractField(size_t pos, Response& rep) {
 		stringTrim(field.first);
 		stringTrim(field.second);
 	}
-	return (field);
+	return field;
 }

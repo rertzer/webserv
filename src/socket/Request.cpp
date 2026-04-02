@@ -227,7 +227,7 @@ std::string Request::getLine(std::string const& sep) {
 		line = content.substr(0, pos);
 		content.erase(0, pos + sep.length());
 	}
-	return (line);
+	return line;
 }
 
 bool Request::ready() const {
@@ -261,7 +261,7 @@ std::string Request::getLine(std::string& data, std::string const& sep) {
 		line = data.substr(0, pos);
 		data.erase(0, pos + sep.length());
 	}
-	return (line);
+	return line;
 }
 
 unsigned int Request::getUIntField(std::string const& name) const {

@@ -21,7 +21,7 @@ std::string readSpecFile(std::string file) {
 		std::stringstream fileStr;
 		fileStr << fileOp.rdbuf();
 		fileOp.close();
-		return (fileStr.str());
+		return fileStr.str();
 	} else {
 		fileOp.close();
 		throw(ErrorException(404));
@@ -31,7 +31,7 @@ std::string readSpecFile(std::string file) {
 std::string intToString(int n) {
 	std::stringstream ss;
 	ss << n;
-	return (ss.str());
+	return ss.str();
 }
 
 Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort) {
@@ -39,12 +39,12 @@ Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort) {
 
 	while (it != serv.end()) {
 		if (it->getListenPort() == listeningPort) {
-			return (*it);
+			return *it;
 		}
 		it++;
 	}
 	throw(ServerException());
-	return (*(serv.begin()));
+	return *(serv.begin());
 }
 
 Server& findTheServ(Request& req, std::vector<Server>& serv, int listeningPort) {
@@ -52,11 +52,11 @@ Server& findTheServ(Request& req, std::vector<Server>& serv, int listeningPort) 
 	while (it != serv.end()) {
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort())) {
 			if (listeningPort == it->getListenPort())
-				return (*it);
+				return *it;
 		}
 		it++;
 	};
-	return (findTheDefaultServ(serv, listeningPort));
+	return findTheDefaultServ(serv, listeningPort);
 }
 
 Response createErrorPage(int codeErr, Server serv) {
@@ -75,7 +75,7 @@ Response createErrorPage(int codeErr, Server serv) {
 	std::string contentLength = intToString(content.length());
 	std::string connectionClose = "close";
 	Response	errResp(status, contentType, contentLength, connectionClose, content);
-	return (errResp);
+	return errResp;
 }
 
 int checkAllowMethod(Location loc) {
@@ -99,23 +99,23 @@ int checkAllowMethod(Location loc) {
 	}
 	if (found == true) {
 		if (get && post && deleteMethod)
-			return (GETPOSTDELETE);
+			return GETPOSTDELETE;
 		if (get && post)
-			return (GETPOST);
+			return GETPOST;
 		if (get && deleteMethod)
-			return (GETDELETE);
+			return GETDELETE;
 		if (post && deleteMethod)
-			return (POSTDELETE);
+			return POSTDELETE;
 		if (get)
-			return (GET);
+			return GET;
 		if (post)
-			return (POST);
+			return POST;
 		if (deleteMethod)
-			return (DELETE);
+			return DELETE;
 		if (!get && !post && !deleteMethod)
-			return (GETPOSTDELETE);
+			return GETPOSTDELETE;
 	}
-	return (-1);
+	return -1;
 }
 
 int getAllowMethodsServer(LineList const& list) {
@@ -136,22 +136,22 @@ int getAllowMethodsServer(LineList const& list) {
 		}
 	}
 	if (get && post && deleteMethod)
-		return (GETPOSTDELETE);
+		return GETPOSTDELETE;
 	if (get && post)
-		return (GETPOST);
+		return GETPOST;
 	if (get && deleteMethod)
-		return (GETDELETE);
+		return GETDELETE;
 	if (post && deleteMethod)
-		return (POSTDELETE);
+		return POSTDELETE;
 	if (get)
-		return (GET);
+		return GET;
 	if (post)
-		return (POST);
+		return POST;
 	if (deleteMethod)
-		return (DELETE);
+		return DELETE;
 	if (!get && !post && !deleteMethod)
-		return (GETPOSTDELETE);
-	return (-1);
+		return GETPOSTDELETE;
+	return -1;
 }
 
 int checkAutoIndex(Location loc) {
@@ -160,13 +160,13 @@ int checkAutoIndex(Location loc) {
 	while (it != lineLoc.end()) {
 		if (it->getCmd() == "autoindex") {
 			if (it->getArgs()[0] == "on")
-				return (1);
+				return 1;
 			else
-				return (0);
+				return 0;
 		}
 		it++;
 	}
-	return (-1);
+	return -1;
 }
 
 int checkForRedirection(Location& loc) {
@@ -175,11 +175,11 @@ int checkForRedirection(Location& loc) {
 	while (it != lineLoc.end()) {
 		if (it->getCmd() == "return") {
 			if (it->getArgs().size() >= 2)
-				return (1);
+				return 1;
 		}
 		it++;
 	}
-	return (0);
+	return 0;
 }
 
 std::pair<std::string, std::string> RedirectTo(Location& loc) {
@@ -194,7 +194,7 @@ std::pair<std::string, std::string> RedirectTo(Location& loc) {
 		}
 		it++;
 	}
-	return (ret);
+	return ret;
 }
 
 int isThereAspecRoot(Location& loc) {
@@ -202,10 +202,10 @@ int isThereAspecRoot(Location& loc) {
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end()) {
 		if (it->getCmd() == "root")
-			return (1);
+			return 1;
 		it++;
 	}
-	return (0);
+	return 0;
 }
 
 std::string getArgsLoc(Location& loc, std::string toFind) {
@@ -213,10 +213,10 @@ std::string getArgsLoc(Location& loc, std::string toFind) {
 	std::vector<LineLoc>::iterator it = lineLoc.begin();
 	while (it != lineLoc.end()) {
 		if (it->getCmd() == toFind)
-			return (it->getArgs()[0]);
+			return it->getArgs()[0];
 		it++;
 	}
-	return ("");
+	return "";
 }
 
 void printServ(Server& serv) {
@@ -251,15 +251,15 @@ std::pair<std::string, std::string> getExtension(Location loc) {
 			ret.second = it->getArgs()[0];
 		it++;
 	}
-	return (ret);
+	return ret;
 }
 
 int checkIfOnlyDigits(std::string str) {
 	for (size_t i = 0; i < str.length(); i++) {
 		if (!isdigit(str[i]))
-			return (-1);
+			return -1;
 	}
-	return (0);
+	return 0;
 }
 
 std::string getUploadPath(Location loc) {
@@ -271,7 +271,7 @@ std::string getUploadPath(Location loc) {
 			ret = it->getArgs()[0];
 		it++;
 	}
-	return (ret);
+	return ret;
 }
 
 std::string join(LineList const& list) {
