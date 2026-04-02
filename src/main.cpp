@@ -8,7 +8,7 @@
 
 volatile sig_atomic_t quitok = false;
 
-static void		   handleBreak(int a);
+static void		   handleBreak(int signal);
 static void		   setSignals();
 static void		   checkArgNumber(int ac);
 static std::string getConfFileName(char** av);
@@ -50,8 +50,8 @@ static void setSignals() {
 	}
 }
 
-static void handleBreak(int a) {
-	if (a == SIGINT) {
+static void handleBreak(int signal) {
+	if (signal == SIGINT) {
 		quitok = true;
 	}
 }
