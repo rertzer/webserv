@@ -52,7 +52,7 @@ static void handleBreak(int a) {
 
 static void checkArgNumber(int ac) {
 	if (ac > 2) {
-		std::cout << "The program can have 1 parameter not more" << std::endl;
+		std::cerr << "The program can have 1 parameter not more" << std::endl;
 		exit(1);
 	}
 }
@@ -73,7 +73,7 @@ static void checkConfFileExtension(std::string conf_file_name) {
 	std::string conf_extension = ".conf";
 	size_t		extension_pos = conf_file_name.length() - conf_extension.length();
 	if (conf_file_name.compare(extension_pos, conf_extension.length(), conf_extension) != 0) {
-		std::cout << "The program needs a .conf parameter" << std::endl;
+		std::cerr << "The program needs a .conf parameter" << std::endl;
 		exit(1);
 	}
 }

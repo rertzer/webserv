@@ -11,10 +11,10 @@ def test_cmdline_and_conf():
         ConfRequest(
             "a b c d",
             1,
-            "The program can have 1 parameter not more\n",
             "",
+            "The program can have 1 parameter not more\n",
         ),
-        ConfRequest("my.bad", 1, "The program needs a .conf parameter\n", ""),
+        ConfRequest("my.bad", 1, "", "The program needs a .conf parameter\n"),
         ConfRequest(
             "youwillneverfindme.conf",
             1,
