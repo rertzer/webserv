@@ -22,6 +22,18 @@
 #define CFNG_BRAC_OPEN std::cout << "A close bracket appear that isn't open anywhere" << std::endl;
 #define CFNG_BRAC_CLOSE std::cout << "A bracket is not close in the conf file" << std::endl;
 
+enum class statusCode {
+	OK,
+	INTERNAL,
+	INVALID_ARG,
+	PARSING,
+	SERVER,
+	CGI,
+	SOCKET,
+	POLLING,
+	STANDARD
+};
+
 enum parsEnd { BRAC_OPEN, BRAC_CLOSE, SMI_COL, BAD_END };
 
 class Server;
@@ -29,8 +41,7 @@ class Request;
 class Response;
 class Location;
 
-bool					 fillServ(std::string av, std::vector<Server>& serv);
-int						 serverRun(std::vector<Server>);
+statusCode				 fillServ(std::string av, std::vector<Server>& serv);
 std::string				 sendResponse(Request& req, std::vector<Server>& serv);
 void					 stringTrim(std::string& str);
 void					 stringDoubleQuotTrim(std::string& str);

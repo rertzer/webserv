@@ -2,10 +2,12 @@
 #include "Cgi.hpp"
 #include "ServerException.hpp"
 #include "color.hpp"
+#include "macroDef.hpp"
 
 extern sig_atomic_t quitok;
 
-int serverRun(std::vector<Server> serv) {
+statusCode serverRun(std::vector<Server> serv) {
+	statusCode status = statusCode::OK;
 	try {
 		Polling pool;
 		loadMotherSocket(pool, serv);
@@ -21,22 +23,21 @@ int serverRun(std::vector<Server> serv) {
 		}
 	} catch (const TCPSocket::SocketException& e) {
 		std::cerr << e.what() << std::endl;
-		return 2;
+		status = statusCode::SOCKET;
 	} catch (const Cgi::CgiException& e) {
 		std::cerr << e.what() << std::endl;
-		return 3;
+		status = statusCode::CGI;
 	} catch (const Polling::PollingException& e) {
 		std::cerr << e.what() << std::endl;
-		return 4;
+		status = statusCode::POLLING;
 	} catch (const ServerException& e) {
 		std::cerr << e.what() << std::endl;
-		return 5;
+		status = statusCode::SERVER;
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
-		return 6;
+		status = statusCode::STANDARD;
 	}
-	std::cout << GREEN "Good bye!" << WHITE << std::endl;
-	return 0;
+	return status;
 }
 
 void loadMotherSocket(Polling& pool, std::vector<Server> serv) {

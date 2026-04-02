@@ -3,7 +3,8 @@
 #include <iostream>
 
 #include "Server.hpp"
-#include "confFile.hpp"
+#include "color.hpp"
+#include "serverRun.hpp"
 
 volatile sig_atomic_t quitok = false;
 
@@ -16,20 +17,25 @@ static void		   checkConfFileExtension(std::string conf_file_name);
 int main(int ac, char** av) {
 	setSignals();
 	checkArgNumber(ac);
+	auto status = statusCode::OK;
 
 	std::string			conf_file_name = getConfFileName(av);
 	std::vector<Server> serv;
 
 	try {
-		if (!fillServ(conf_file_name, serv)) {
-			return (1);
-		}
+		status = fillServ(conf_file_name, serv);
 	} catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
-		return (1);
+		status = statusCode::PARSING;
 	}
-	std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
-	return serverRun(serv);
+	if (status == statusCode::OK) {
+		std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
+		status = serverRun(serv);
+	}
+	if (status == statusCode::OK) {
+		std::cout << GREEN "Good bye!" << WHITE << std::endl;
+	}
+	return static_cast<int>(status);
 }
 
 static void setSignals() {
@@ -40,7 +46,7 @@ static void setSignals() {
 	sigbreak.sa_flags = 0;
 	if (sigaction(SIGINT, &sigbreak, NULL) != 0) {
 		std::perror("sigaction");
-		exit(1);
+		exit(static_cast<int>(statusCode::INTERNAL));
 	}
 }
 
@@ -53,7 +59,7 @@ static void handleBreak(int a) {
 static void checkArgNumber(int ac) {
 	if (ac > 2) {
 		std::cerr << "The program can have 1 parameter not more" << std::endl;
-		exit(1);
+		exit(static_cast<int>(statusCode::INVALID_ARG));
 	}
 }
 static std::string getConfFileName(char** av) {
@@ -74,6 +80,6 @@ static void checkConfFileExtension(std::string conf_file_name) {
 	size_t		extension_pos = conf_file_name.length() - conf_extension.length();
 	if (conf_file_name.compare(extension_pos, conf_extension.length(), conf_extension) != 0) {
 		std::cerr << "The program needs a .conf parameter" << std::endl;
-		exit(1);
+		exit(static_cast<int>(statusCode::INVALID_ARG));
 	}
 }
