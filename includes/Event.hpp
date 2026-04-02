@@ -55,6 +55,7 @@ class Event {
 	bool		isErr() const;
 	bool		isHup() const;
 	bool		isCgiFd() const;
+	bool		isCgiStatus(CgiStatus cgi_status) const;
 	void		handleEvent();
 	void		handleIn();
 	void		handleOut();
@@ -66,11 +67,16 @@ class Event {
 
    private:
 	Event();
-	void handleCgiIn();
-	void handleCgiOut();
-	bool cgiIsPending();
-	void handleOneEvent(int i);
-	void handleErrorException(const ErrorException& e);
+	void	 handleCgiIn();
+	void	 handleCgiOut();
+	void	 handleMessageOut();
+	bool	 cgiIsPending();
+	void	 handleOneEvent(int i);
+	void	 handleErrorException(const ErrorException& e);
+	bool	 checkAndHandleCgiIn();
+	void	 handleInRequestReady();
+	Response getListeningSocketResponse();
+	Server&	 getListentingSocketServer();
 
 	int					fd;
 	int					events;

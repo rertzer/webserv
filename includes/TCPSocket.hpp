@@ -35,6 +35,7 @@ class TCPSocket {
 	void		addRawData(std::string& content, int len);
 	bool		getKeepAlive() const;
 	void		setKeepAlive(bool k);
+	void		deleteRequest();
 	int			send();
 
 	Request* req;

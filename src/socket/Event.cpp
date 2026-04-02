@@ -1,7 +1,6 @@
 #include "Event.hpp"
 #include "Cgi.hpp"
 
-// Public
 Event::Event(int f, int e, TCPSocket* s) : fd(f), events(e), status(eventStatus::NOTHING), soc(s) {}
 
 Event::Event(Event const& rhs) : fd(rhs.fd), events(rhs.events), status(rhs.status), soc(rhs.soc) {}
@@ -59,6 +58,10 @@ bool Event::isCgiFd() const {
 	return true;
 }
 
+bool Event::isCgiStatus(CgiStatus cgi_status) const {
+	return (soc->req->getCgiStatus() == cgi_status);
+}
+
 void Event::handleEvent() {
 	try {
 		for (auto ev : poll_event) {
@@ -92,10 +95,10 @@ void Event::handleErrorException(const ErrorException& e) {
 	if (soc->req == nullptr) {
 		server = findTheDefaultServ(servers, soc->getListeningSocketPort());
 	} else {
-		if (soc->req->getCgiStatus() != CgiStatus::NO_INIT) {
+		if (!isCgiStatus(CgiStatus::NO_INIT)) {
 			status = eventStatus::CGI_INIT;
 		}
-		server = findTheServ(*soc->req, servers, soc->getListeningSocketPort());
+		server = getListentingSocketServer();
 	}
 	soc->setMessageOut((createErrorPage(e.getCode(), server)).getResponse());
 	soc->setKeepAlive(false);
@@ -112,26 +115,43 @@ void Event::handleIn() {
 	}
 	if (soc->req == nullptr) {
 		soc->req = new Request(soc, servers);
-	} else {
-		if (soc->req->getCgiStatus() == CgiStatus::WAIT_READ_PIPE) {
-			handleCgiIn();
-			return;
-		} else if (soc->req->getCgiStatus() == CgiStatus::NO_INIT) {
-			soc->req->feed(servers);
-		}
+	} else if (checkAndHandleCgiIn()) {
+		return;
 	}
 	printCleanRequest(*soc->req);
 	if (soc->req->ready()) {
-		Response resp(*soc->req, findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
-		if (soc->req->getCgiStatus() == CgiStatus::WAIT_WRITE_POST)
-			status = eventStatus::CGI_INIT;
-		else if (soc->req->getCgiStatus() == CgiStatus::READY_EXEC)
-			status = eventStatus::CGI_INIT;
-		else {
-			soc->setMessageOut(resp.getResponse());
-			status = eventStatus::IN;
-		}
+		handleInRequestReady();
 	}
+}
+
+bool Event::checkAndHandleCgiIn() {
+	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE)) {
+		handleCgiIn();
+		return (true);
+	} else if (isCgiStatus(CgiStatus::NO_INIT)) {
+		soc->req->feed(servers);
+	}
+	return (false);
+}
+
+void Event::handleInRequestReady() {
+	Response resp = getListeningSocketResponse();
+	if (isCgiStatus(CgiStatus::WAIT_WRITE_POST)) {
+		status = eventStatus::CGI_INIT;
+	} else if (isCgiStatus(CgiStatus::READY_EXEC)) {
+		status = eventStatus::CGI_INIT;
+	} else {
+		soc->setMessageOut(resp.getResponse());
+		status = eventStatus::IN;
+	}
+}
+Response Event::getListeningSocketResponse() {
+	Response resp(*soc->req, getListentingSocketServer());
+	return (resp);
+}
+
+Server& Event::getListentingSocketServer() {
+	return (findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
 }
 
 void Event::handleCgiIn() {
@@ -139,44 +159,47 @@ void Event::handleCgiIn() {
 		soc->req->getCgi()->closePipe();
 		status = eventStatus::CGI_ERROR;
 		return;
-	} else
+	} else {
 		soc->req->getCgi()->readPipeFd();
-	if (soc->req->getCgiStatus() == CgiStatus::DONE) {
-		Response resp(*soc->req, findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
+	}
+
+	if (isCgiStatus(CgiStatus::DONE)) {
+		Response resp = getListeningSocketResponse();
 		soc->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
-	} else
+	} else {
 		status = eventStatus::NOTHING;
+	}
 }
 
 void Event::handleOut() {
-	if (soc->req && (soc->req->getCgiStatus() == CgiStatus::WAIT_WRITE_POST ||
-					 soc->req->getCgiStatus() == CgiStatus::POST_TO_READ))
+	if (soc->req &&
+		(isCgiStatus(CgiStatus::WAIT_WRITE_POST) || isCgiStatus(CgiStatus::POST_TO_READ))) {
 		handleCgiOut();
-	else {
-		if (!soc->getMessageOut().empty()) {
-			soc->send();
-			if (soc->getMessageOut().empty()) {
-				if (soc->req != nullptr) {
-					delete soc->req;
-					soc->req = nullptr;
-				}
-				if (soc->getKeepAlive()) {
-					soc->setKeepAlive(false);
-					status = eventStatus::OUT;
-				} else
-					status = eventStatus::CLOSE;
-			}
-		}
+	} else if (!soc->getMessageOut().empty()) {
+		handleMessageOut();
 	}
 }
 
 void Event::handleCgiOut() {
 	soc->req->getCgi()->writePostFd();
-	if (soc->req->getCgiStatus() == CgiStatus::WAIT_READ_PIPE)
+	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE))
 		status = eventStatus::CGI_POST_EXEC;
 	else
 		status = eventStatus::CGI_CONTINUE;
+}
+
+void Event::handleMessageOut() {
+	soc->send();
+	if (soc->getMessageOut().empty()) {
+		soc->deleteRequest();
+	}
+	if (soc->getKeepAlive()) {
+		soc->setKeepAlive(false);
+		status = eventStatus::OUT;
+	} else {
+		status = eventStatus::CLOSE;
+	}
 }
 
 void Event::handleError() {
@@ -187,11 +210,12 @@ void Event::handleHup() {
 	status = eventStatus::CLOSE;
 	if (isCgiFd()) {
 		soc->req->getCgi()->closePipe();
-		Response resp(*soc->req, findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
+		Response resp = getListeningSocketResponse();
 		soc->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
-	} else if (cgiIsPending())
+	} else if (cgiIsPending()) {
 		soc->req->getCgi()->stop();
+	}
 }
 
 void Event::handleNval() {
@@ -199,24 +223,26 @@ void Event::handleNval() {
 }
 
 bool Event::cgiIsPending() {
-	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid())
-		return true;
-	return false;
+	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid()) {
+		return (true);
+	}
+
+	return (false);
 }
 
 void Event::internalError() {
 	if (isCgiFd()) {
 		status = eventStatus::CGI_CLOSE;
 		throw(ErrorException(500));
-	} else
+	} else {
 		status = eventStatus::CLOSE;
+	}
 }
 
 void Event::cgiExec() {
 	soc->req->getCgi()->exec();
 }
 
-// Private
 Event::Event() {}
 
 // Static const

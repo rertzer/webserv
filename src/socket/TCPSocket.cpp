@@ -157,6 +157,13 @@ void TCPSocket::setKeepAlive(bool k) {
 	keep_alive = k;
 }
 
+void TCPSocket::deleteRequest() {
+	if (req != nullptr) {
+		delete req;
+		req = nullptr;
+	}
+}
+
 int TCPSocket::send() {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
 	if (len <= 0)
