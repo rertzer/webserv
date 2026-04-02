@@ -47,7 +47,7 @@ class TCPSocket {
 
    private:
 	int				   socket_fd;
-	int				   mother_port;
+	int				   listening_port;
 	struct sockaddr_in socket_addr;
 	socklen_t		   socket_addr_length;
 	std::string		   msg_in;

@@ -3,7 +3,7 @@
 #include "Request.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p) : req(nullptr), mother_port(p), keep_alive(true), error(false) {
+TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true), error(false) {
 	socket_addr_length = sizeof(socket_addr);
 
 	memset(&socket_addr, 0, socket_addr_length);
@@ -28,7 +28,7 @@ TCPSocket::TCPSocket(int p) : req(nullptr), mother_port(p), keep_alive(true), er
 }
 
 TCPSocket::TCPSocket()
-	: req(nullptr), socket_fd(0), mother_port(0), keep_alive(false), error(false) {
+	: req(nullptr), socket_fd(0), listening_port(0), keep_alive(false), error(false) {
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
 }
@@ -50,7 +50,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket const& rhs) {
 	if (this != &rhs) {
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
-		mother_port = rhs.mother_port;
+		listening_port = rhs.listening_port;
 		socket_addr_length = rhs.socket_addr_length;
 		msg_in = rhs.msg_in;
 		msg_out = rhs.msg_out;
@@ -66,7 +66,7 @@ int TCPSocket::getPort() const {
 }
 
 int TCPSocket::getListeningSocketPort() const {
-	return mother_port;
+	return listening_port;
 }
 
 int TCPSocket::getFd() const {
@@ -86,7 +86,7 @@ void TCPSocket::accept(TCPSocket* csoc) {
 							   &csoc->socket_addr_length);
 	if (csoc->socket_fd == -1)
 		throw(ErrorException(500));
-	csoc->mother_port = getPort();
+	csoc->listening_port = getPort();
 }
 
 void TCPSocket::close() {

@@ -49,7 +49,7 @@ class Polling {
 	struct pollfd			  fds[256];
 	nfds_t					  nfds;
 	int						  events_nb;
-	std::list<int>			  mother_fds;
+	std::list<int>			  listening_fds;
 	std::map<int, TCPSocket*> powerstrip;
 	std::map<int, TCPSocket*> powerstripCgi;
 };

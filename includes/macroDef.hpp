@@ -58,7 +58,7 @@ bool					 ciCompare(std::string const& left, std::string const& right);
 std::string				 lowString(std::string const& str);
 std::string				 envFormat(std::string const& str);
 std::string				 intToString(int n);
-Server&					 findTheServ(Request& req, std::vector<Server>& serv, int motherPort);
+Server&					 findTheServ(Request& req, std::vector<Server>& serv, int listeningPort);
 std::string				 readFile(std::string file);
 Response				 createErrorPage(int codeErr, Server serv);
 int						 checkAutoIndex(Location loc);
@@ -93,6 +93,6 @@ void								checkExec(std::string filePath);
 int									respWithLoc(Request& req, Response& rep);
 int									respWithOutLoc(Request& req, Response& rep);
 void								printCleanRequest(Request req);
-Server&								findTheDefaultServ(std::vector<Server>& serv, int motherPort);
+Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort);
 
 #endif

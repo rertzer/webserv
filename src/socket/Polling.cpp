@@ -5,7 +5,6 @@
 
 extern sig_atomic_t quitok;
 
-// Public
 Polling::Polling() : nfds(0), events_nb(0) {
 	memset(fds, 0, sizeof(fds));
 }
@@ -24,7 +23,7 @@ Polling& Polling::operator=(Polling const& rhs) {
 			fds[i] = rhs.fds[i];
 		nfds = rhs.nfds;
 		events_nb = rhs.events_nb;
-		mother_fds = rhs.mother_fds;
+		listening_fds = rhs.listening_fds;
 		powerstrip = rhs.powerstrip;
 		powerstripCgi = rhs.powerstripCgi;
 	}
@@ -34,7 +33,7 @@ Polling& Polling::operator=(Polling const& rhs) {
 void Polling::addListeningSocket(int port) {
 	TCPSocket* soc = new TCPSocket(port);
 	addSocket(soc);
-	mother_fds.push_back(soc->getFd());
+	listening_fds.push_back(soc->getFd());
 }
 
 void Polling::connect(Event const& ev) {
@@ -44,7 +43,7 @@ void Polling::connect(Event const& ev) {
 }
 
 void Polling::removeListeningSocket(int fd) {
-	mother_fds.remove(fd);
+	listening_fds.remove(fd);
 	removeSocket(fd);
 }
 
@@ -95,8 +94,9 @@ TCPSocket* Polling::getSocketByCgiFd(int fd) {
 }
 
 bool Polling::isListeningSocket(Event ev) const {
-	std::list<int>::const_iterator li = std::find(mother_fds.begin(), mother_fds.end(), ev.getFd());
-	if (li != mother_fds.end())
+	std::list<int>::const_iterator li =
+		std::find(listening_fds.begin(), listening_fds.end(), ev.getFd());
+	if (li != listening_fds.end())
 		return true;
 	return false;
 }

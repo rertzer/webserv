@@ -34,11 +34,11 @@ std::string intToString(int n) {
 	return (ss.str());
 }
 
-Server& findTheDefaultServ(std::vector<Server>& serv, int motherPort) {
+Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort) {
 	std::vector<Server>::iterator it = serv.begin();
 
 	while (it != serv.end()) {
-		if (it->getListenPort() == motherPort) {
+		if (it->getListenPort() == listeningPort) {
 			return (*it);
 		}
 		it++;
@@ -47,16 +47,16 @@ Server& findTheDefaultServ(std::vector<Server>& serv, int motherPort) {
 	return (*(serv.begin()));
 }
 
-Server& findTheServ(Request& req, std::vector<Server>& serv, int motherPort) {
+Server& findTheServ(Request& req, std::vector<Server>& serv, int listeningPort) {
 	std::vector<Server>::iterator it = serv.begin();
 	while (it != serv.end()) {
 		if (req.getField("Host") == it->getServName() + ":" + intToString(req.getPort())) {
-			if (motherPort == it->getListenPort())
+			if (listeningPort == it->getListenPort())
 				return (*it);
 		}
 		it++;
 	};
-	return (findTheDefaultServ(serv, motherPort));
+	return (findTheDefaultServ(serv, listeningPort));
 }
 
 Response createErrorPage(int codeErr, Server serv) {

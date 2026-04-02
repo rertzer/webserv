@@ -226,7 +226,6 @@ bool Event::cgiIsPending() {
 	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid()) {
 		return (true);
 	}
-
 	return (false);
 }
 
