@@ -1,8 +1,10 @@
-#include "serverRun.hpp"
+#include <set>
+
 #include "Cgi.hpp"
 #include "ServerException.hpp"
 #include "color.hpp"
 #include "macroDef.hpp"
+#include "serverRun.hpp"
 
 extern sig_atomic_t quitok;
 
@@ -35,39 +37,44 @@ statusCode serverRun(std::vector<Server> serv) {
 	return status;
 }
 
-void loadListeningSocket(Polling& pool, std::vector<Server> serv) {
-	std::map<int, int> unique_port;
-	for (std::vector<Server>::iterator it = serv.begin(); it != serv.end(); it++) {
-		int vp = it->getListenPort();
-		unique_port[vp] = 1;
+void loadListeningSocket(Polling& pool, std::vector<Server> servers) {
+	std::set<int> unique_ports;
+	for (auto& serv : servers) {
+		int port = serv.getListenPort();
+		if (unique_ports.find(port) == unique_ports.end()) {
+			unique_ports.insert(port);
+			pool.addListeningSocket(port);
+		}
 	}
-	for (std::map<int, int>::iterator it = unique_port.begin(); it != unique_port.end(); it++)
-		pool.addListeningSocket(it->first);
 }
 
 void handleEvent(Polling& pool, std::vector<Server>& serv) {
 	Event ev = pool.nextEvent();
 	ev.setServ(serv);
 
-	if (pool.isListeningSocket(ev))
+	if (pool.isListeningSocket(ev)) {
 		eventOnListeningSocket(ev, pool);
-	else
+	} else {
 		eventOnOther(ev, pool);
+	}
 	pool.reset(ev.getFd());
 }
 
 void eventOnListeningSocket(Event& ev, Polling& pool) {
-	if (ev.isIn())
+	if (ev.isIn()) {
 		pool.connect(ev);
+	}
 	checkBadEventOnListeningSocket(ev, pool);
 }
 
 void checkBadEventOnListeningSocket(Event& ev, Polling& pool) {
 	std::string event_msg;
-	if (ev.isErr())
+	if (ev.isErr()) {
 		event_msg += "EPOLLERR ";
-	if (ev.isHup())
+	}
+	if (ev.isHup()) {
 		event_msg += "EPOLLHUP ";
+	}
 	if (!event_msg.empty()) {
 		int port = ev.getSocket()->getPort();
 		std::cout << event_msg << ". Stopping connection on port " << port << std::endl;
@@ -77,8 +84,9 @@ void checkBadEventOnListeningSocket(Event& ev, Polling& pool) {
 
 void eventOnOther(Event& ev, Polling& pool) {
 	ev.handleEvent();
-	if (ev.getStatus())
+	if (ev.getStatus() != eventStatus::NOTHING) {
 		handleEventStatus(ev, pool);
+	}
 }
 
 void handleEventStatus(Event& ev, Polling& pool) {
@@ -93,7 +101,7 @@ void handleEventStatus(Event& ev, Polling& pool) {
 	whichandle[8] = &handleCgiGetExec;
 	whichandle[9] = &handleCgiError;
 
-	handlestatus hs = whichandle[ev.getStatus()];
+	handlestatus hs = whichandle[static_cast<int>(ev.getStatus())];
 	(hs)(ev, pool);
 }
 

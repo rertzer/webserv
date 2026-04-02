@@ -22,6 +22,19 @@
  * 8 = add cgi fds and exec (GET)
  * 9 = close cgi fd*/
 
+enum class eventStatus {
+	NOTHING,
+	IN,
+	OUT,
+	CLOSE,
+	CGI_INIT,
+	CGI_CONTINUE,
+	CGI_CLOSE,
+	CGI_POST_EXEC,
+	CGI_GET_EXEC,
+	CGI_ERROR
+};
+
 class Event {
    public:
 	Event(int f, int e, TCPSocket* soc);
@@ -30,24 +43,24 @@ class Event {
 
 	Event& operator=(Event const& rhs);
 
-	int		   getFd() const;
-	TCPSocket* getSocket() const;
-	int		   getEvents() const;
-	int		   getStatus() const;
-	void	   setServ(std::vector<Server> s);
-	bool	   isIn() const;
-	bool	   isOut() const;
-	bool	   isErr() const;
-	bool	   isHup() const;
-	bool	   isCgiFd() const;
-	void	   handleEvent();
-	void	   handleIn();
-	void	   handleOut();
-	void	   handleError();
-	void	   handleHup();
-	void	   handleNval();
-	void	   internalError();
-	void	   cgiExec();
+	int			getFd() const;
+	TCPSocket*	getSocket() const;
+	int			getEvents() const;
+	eventStatus getStatus() const;
+	void		setServ(std::vector<Server> s);
+	bool		isIn() const;
+	bool		isOut() const;
+	bool		isErr() const;
+	bool		isHup() const;
+	bool		isCgiFd() const;
+	void		handleEvent();
+	void		handleIn();
+	void		handleOut();
+	void		handleError();
+	void		handleHup();
+	void		handleNval();
+	void		internalError();
+	void		cgiExec();
 
    private:
 	Event();
@@ -57,7 +70,7 @@ class Event {
 
 	int					fd;
 	int					events;
-	int					status;
+	eventStatus			status;
 	TCPSocket*			soc;
 	std::vector<Server> serv;
 

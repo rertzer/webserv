@@ -3,7 +3,7 @@
 #include "ErrorException.hpp"
 
 // Public
-Event::Event(int f, int e, TCPSocket* s) : fd(f), events(e), status(0), soc(s) {}
+Event::Event(int f, int e, TCPSocket* s) : fd(f), events(e), status(eventStatus::NOTHING), soc(s) {}
 
 Event::Event(Event const& rhs) : fd(rhs.fd), events(rhs.events), status(rhs.status), soc(rhs.soc) {}
 
@@ -30,7 +30,7 @@ int Event::getEvents() const {
 	return events;
 }
 
-int Event::getStatus() const {
+eventStatus Event::getStatus() const {
 	return status;
 }
 
@@ -73,12 +73,12 @@ void Event::handleEvent() {
 			if (events & ev[i]) {
 				handlefun fun = whichfun[ev[i]];
 				(this->*fun)();
-				if (status)
+				if (status != eventStatus::NOTHING)
 					return;
 			}
 		}
 	} catch (const Request::RequestException& e) {
-		status = 3;
+		status = eventStatus::CLOSE;
 
 	} catch (const ErrorException& e) {
 		if (soc->req == NULL) {
@@ -88,7 +88,7 @@ void Event::handleEvent() {
 					 .getResponse()));
 		} else {
 			if (soc->req->getCgiStatus())
-				status = 4;
+				status = eventStatus::CGI_INIT;
 			soc->setMessageOut(
 				(createErrorPage(e.getCode(),
 								 findTheServ(*soc->req, serv, soc->getListeningSocketPort())))
@@ -96,8 +96,8 @@ void Event::handleEvent() {
 		}
 		soc->setKeepAlive(false);
 		soc->setError(true);
-		if (!status)
-			status = 1;
+		if (status == eventStatus::NOTHING)
+			status = eventStatus::IN;
 	}
 }
 
@@ -120,12 +120,12 @@ void Event::handleIn() {
 	if (soc->req->ready()) {
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
 		if (soc->req->getCgiStatus() == 1)
-			status = 4;
+			status = eventStatus::CGI_INIT;
 		else if (soc->req->getCgiStatus() == 2)
-			status = 4;
+			status = eventStatus::CGI_INIT;
 		else {
 			soc->setMessageOut(resp.getResponse());
-			status = 1;
+			status = eventStatus::IN;
 		}
 	}
 }
@@ -133,16 +133,16 @@ void Event::handleIn() {
 void Event::handleCgiIn() {
 	if (!isCgiFd()) {
 		soc->req->getCgi()->closePipe();
-		status = 9;
+		status = eventStatus::CGI_ERROR;
 		return;
 	} else
 		soc->req->getCgi()->readPipeFd();
 	if (soc->req->getCgiStatus() == 4) {
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
 		soc->setMessageOut(resp.getResponse());
-		status = 6;
+		status = eventStatus::CGI_CLOSE;
 	} else
-		status = 0;
+		status = eventStatus::NOTHING;
 }
 
 void Event::handleOut() {
@@ -158,9 +158,9 @@ void Event::handleOut() {
 				}
 				if (soc->getKeepAlive()) {
 					soc->setKeepAlive(false);
-					status = 2;
+					status = eventStatus::OUT;
 				} else
-					status = 3;
+					status = eventStatus::CLOSE;
 			}
 		}
 	}
@@ -169,9 +169,9 @@ void Event::handleOut() {
 void Event::handleCgiOut() {
 	soc->req->getCgi()->writePostFd();
 	if (soc->req->getCgiStatus() == 3)
-		status = 7;
+		status = eventStatus::CGI_POST_EXEC;
 	else
-		status = 5;
+		status = eventStatus::CGI_CONTINUE;
 }
 
 void Event::handleError() {
@@ -179,18 +179,18 @@ void Event::handleError() {
 }
 
 void Event::handleHup() {
-	status = 3;
+	status = eventStatus::CLOSE;
 	if (isCgiFd()) {
 		soc->req->getCgi()->closePipe();
 		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
 		soc->setMessageOut(resp.getResponse());
-		status = 6;
+		status = eventStatus::CGI_CLOSE;
 	} else if (cgiIsPending())
 		soc->req->getCgi()->stop();
 }
 
 void Event::handleNval() {
-	status = 3;
+	status = eventStatus::CLOSE;
 }
 
 bool Event::cgiIsPending() {
@@ -201,10 +201,10 @@ bool Event::cgiIsPending() {
 
 void Event::internalError() {
 	if (isCgiFd()) {
-		status = 6;
+		status = eventStatus::CGI_CLOSE;
 		throw(ErrorException(500));
 	} else
-		status = 3;
+		status = eventStatus::CLOSE;
 }
 
 void Event::cgiExec() {
