@@ -65,11 +65,11 @@ int Request::getStatus() const {
 	return status;
 }
 
-int Request::getCgiStatus() const {
-	if (cgi != NULL)
+CgiStatus Request::getCgiStatus() const {
+	if (cgi != nullptr)
 		return cgi->getStatus();
 	else
-		return 0;
+		return CgiStatus::NO_INIT;
 }
 
 const std::string& Request::getProtocol() const {

@@ -4,12 +4,14 @@
 #include <poll.h>
 #include <vector>
 
+#include "ErrorException.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Server.hpp"
 #include "TCPSocket.hpp"
 #include "macroDef.hpp"
 
+constexpr size_t MAX_POLL_EVENT = 5;
 /* Event status: message for/from Polling
  * 0 = do nothing
  * 1 = set Out on fd
@@ -67,14 +69,16 @@ class Event {
 	void handleCgiIn();
 	void handleCgiOut();
 	bool cgiIsPending();
+	void handleOneEvent(int i);
+	void handleErrorException(const ErrorException& e);
 
 	int					fd;
 	int					events;
 	eventStatus			status;
 	TCPSocket*			soc;
-	std::vector<Server> serv;
+	std::vector<Server> servers;
 
 	typedef void (Event::*handlefun)();
-	static const int ev[5];
+	static const int poll_event[MAX_POLL_EVENT];
 };
 #endif

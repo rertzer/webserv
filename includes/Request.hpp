@@ -8,12 +8,11 @@
 #include <string>
 #include <vector>
 
-// #include "Cgi.hpp"
+#include "Cgi.hpp"
 #include "Server.hpp"
 #include "macroDef.hpp"
 
 class TCPSocket;
-class Cgi;
 
 class Request {
    public:
@@ -25,7 +24,7 @@ class Request {
 
 	int										  getPort() const;
 	int										  getStatus() const;
-	int										  getCgiStatus() const;
+	CgiStatus								  getCgiStatus() const;
 	const std::string&						  getProtocol() const;
 	const std::string&						  getMethod() const;
 	TCPSocket*								  getSocket() const;

@@ -12,16 +12,16 @@ Cgi::Cgi(std::string m, std::string p, Request& r, std::pair<std::string, std::s
 	  buffer(NULL),
 	  buffer_size(1600000),
 	  pid(0),
-	  status(0),
+	  status(CgiStatus::NO_INIT),
 	  req(r),
 	  cgi_path(cp) {
 	setUrl();
 	setEnv();
 	initPipes();
 	if (method == "POST")
-		status = 1;
+		status = CgiStatus::WAIT_WRITE_POST;
 	else
-		status = 2;
+		status = CgiStatus::READY_EXEC;
 }
 
 Cgi::Cgi(Cgi const& rhs) : req(rhs.req) {
@@ -58,7 +58,7 @@ std::string Cgi::getContent() const {
 	return content;
 }
 
-int Cgi::getStatus() const {
+CgiStatus Cgi::getStatus() const {
 	return status;
 }
 
@@ -150,10 +150,10 @@ int Cgi::writePostFd() {
 		}
 	}
 	if (static_cast<unsigned int>(size) == req.getContent().size()) {
-		status = 3;
+		status = CgiStatus::WAIT_READ_PIPE;
 		::close(post_fd[1]);
 	} else
-		status = 5;
+		status = CgiStatus::POST_TO_READ;
 	req.eraseContent(size);
 
 	return size;
@@ -183,7 +183,7 @@ void Cgi::closePipe() {
 	::waitpid(pid, &ret, 0);
 	::close(pipe_fd[0]);
 	pid = 0;
-	status = 4;
+	status = CgiStatus::DONE;
 }
 
 void Cgi::exec() {
@@ -223,8 +223,8 @@ void Cgi::execFather() {
 	::close(pipe_fd[1]);
 	if (method == "POST")
 		::close(post_fd[0]);
-	if (status == 2)
-		status = 3;
+	if (status == CgiStatus::READY_EXEC)
+		status = CgiStatus::WAIT_READ_PIPE;
 }
 
 char** Cgi::formatArgv() const {

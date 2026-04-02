@@ -7,8 +7,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Request.hpp"
+// #include "Request.hpp"
 
+class Request;
 /*Cgi status :
  * 0 = not initialized
  * 1 = waiting to write post_fd
@@ -16,6 +17,8 @@
  * 3 = waiting to read pipe_fd
  * 4 = cgi done
  * 5 = post to read*/
+
+enum class CgiStatus { NO_INIT, WAIT_WRITE_POST, READY_EXEC, WAIT_READ_PIPE, DONE, POST_TO_READ };
 
 class Cgi {
    public:
@@ -28,7 +31,7 @@ class Cgi {
 
 	std::string		 getPath() const;
 	std::string		 getContent() const;
-	int				 getStatus() const;
+	CgiStatus		 getStatus() const;
 	std::vector<int> getFds() const;
 	int				 getPid() const;
 	int				 writePostFd();
@@ -65,7 +68,7 @@ class Cgi {
 	int									post_fd[2];
 	int									pipe_fd[2];
 	int									pid;
-	int									status;
+	CgiStatus							status;
 	Request&							req;
 	std::pair<std::string, std::string> cgi_path;
 };

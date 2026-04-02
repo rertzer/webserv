@@ -1,6 +1,5 @@
 #include "Event.hpp"
 #include "Cgi.hpp"
-#include "ErrorException.hpp"
 
 // Public
 Event::Event(int f, int e, TCPSocket* s) : fd(f), events(e), status(eventStatus::NOTHING), soc(s) {}
@@ -35,7 +34,7 @@ eventStatus Event::getStatus() const {
 }
 
 void Event::setServ(std::vector<Server> s) {
-	serv = s;
+	servers = s;
 }
 
 bool Event::isIn() const {
@@ -61,43 +60,48 @@ bool Event::isCgiFd() const {
 }
 
 void Event::handleEvent() {
-	std::map<int, handlefun> whichfun;
-	whichfun[POLLIN] = &Event::handleIn;
-	whichfun[POLLOUT] = &Event::handleOut;
-	whichfun[POLLERR] = &Event::handleError;
-	whichfun[POLLHUP] = &Event::handleHup;
-	whichfun[POLLNVAL] = &Event::handleNval;
-
 	try {
-		for (int i = 0; i < 5; i++) {
-			if (events & ev[i]) {
-				handlefun fun = whichfun[ev[i]];
-				(this->*fun)();
-				if (status != eventStatus::NOTHING)
-					return;
+		for (auto ev : poll_event) {
+			handleOneEvent(ev);
+			if (status != eventStatus::NOTHING) {
+				return;
 			}
 		}
 	} catch (const Request::RequestException& e) {
 		status = eventStatus::CLOSE;
-
 	} catch (const ErrorException& e) {
-		if (soc->req == NULL) {
-			soc->setMessageOut(
-				(createErrorPage(e.getCode(),
-								 findTheDefaultServ(serv, soc->getListeningSocketPort()))
-					 .getResponse()));
-		} else {
-			if (soc->req->getCgiStatus())
-				status = eventStatus::CGI_INIT;
-			soc->setMessageOut(
-				(createErrorPage(e.getCode(),
-								 findTheServ(*soc->req, serv, soc->getListeningSocketPort())))
-					.getResponse());
+		handleErrorException(e);
+	}
+}
+
+void Event::handleOneEvent(int ev) {
+	static std::map<int, handlefun> whichfun{{POLLIN, &Event::handleIn},
+											 {POLLOUT, &Event::handleOut},
+											 {POLLERR, &Event::handleError},
+											 {POLLHUP, &Event::handleHup},
+											 {POLLNVAL, &Event::handleNval}};
+
+	if (events & ev) {
+		handlefun fun = whichfun[ev];
+		(this->*fun)();
+	}
+}
+
+void Event::handleErrorException(const ErrorException& e) {
+	Server server;
+	if (soc->req == nullptr) {
+		server = findTheDefaultServ(servers, soc->getListeningSocketPort());
+	} else {
+		if (soc->req->getCgiStatus() != CgiStatus::NO_INIT) {
+			status = eventStatus::CGI_INIT;
 		}
-		soc->setKeepAlive(false);
-		soc->setError(true);
-		if (status == eventStatus::NOTHING)
-			status = eventStatus::IN;
+		server = findTheServ(*soc->req, servers, soc->getListeningSocketPort());
+	}
+	soc->setMessageOut((createErrorPage(e.getCode(), server)).getResponse());
+	soc->setKeepAlive(false);
+	soc->setError(true);
+	if (status == eventStatus::NOTHING) {
+		status = eventStatus::IN;
 	}
 }
 
@@ -106,22 +110,22 @@ void Event::handleIn() {
 		soc->readAll();
 		return;
 	}
-	if (soc->req == NULL) {
-		soc->req = new Request(soc, serv);
+	if (soc->req == nullptr) {
+		soc->req = new Request(soc, servers);
 	} else {
-		if (soc->req->getCgiStatus() == 3) {
+		if (soc->req->getCgiStatus() == CgiStatus::WAIT_READ_PIPE) {
 			handleCgiIn();
 			return;
-		} else if (soc->req->getCgiStatus() == 0) {
-			soc->req->feed(serv);
+		} else if (soc->req->getCgiStatus() == CgiStatus::NO_INIT) {
+			soc->req->feed(servers);
 		}
 	}
 	printCleanRequest(*soc->req);
 	if (soc->req->ready()) {
-		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
-		if (soc->req->getCgiStatus() == 1)
+		Response resp(*soc->req, findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
+		if (soc->req->getCgiStatus() == CgiStatus::WAIT_WRITE_POST)
 			status = eventStatus::CGI_INIT;
-		else if (soc->req->getCgiStatus() == 2)
+		else if (soc->req->getCgiStatus() == CgiStatus::READY_EXEC)
 			status = eventStatus::CGI_INIT;
 		else {
 			soc->setMessageOut(resp.getResponse());
@@ -137,8 +141,8 @@ void Event::handleCgiIn() {
 		return;
 	} else
 		soc->req->getCgi()->readPipeFd();
-	if (soc->req->getCgiStatus() == 4) {
-		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
+	if (soc->req->getCgiStatus() == CgiStatus::DONE) {
+		Response resp(*soc->req, findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
 	} else
@@ -146,15 +150,16 @@ void Event::handleCgiIn() {
 }
 
 void Event::handleOut() {
-	if (soc->req && (soc->req->getCgiStatus() == 1 || soc->req->getCgiStatus() == 5))
+	if (soc->req && (soc->req->getCgiStatus() == CgiStatus::WAIT_WRITE_POST ||
+					 soc->req->getCgiStatus() == CgiStatus::POST_TO_READ))
 		handleCgiOut();
 	else {
 		if (!soc->getMessageOut().empty()) {
 			soc->send();
 			if (soc->getMessageOut().empty()) {
-				if (soc->req != NULL) {
+				if (soc->req != nullptr) {
 					delete soc->req;
-					soc->req = NULL;
+					soc->req = nullptr;
 				}
 				if (soc->getKeepAlive()) {
 					soc->setKeepAlive(false);
@@ -168,7 +173,7 @@ void Event::handleOut() {
 
 void Event::handleCgiOut() {
 	soc->req->getCgi()->writePostFd();
-	if (soc->req->getCgiStatus() == 3)
+	if (soc->req->getCgiStatus() == CgiStatus::WAIT_READ_PIPE)
 		status = eventStatus::CGI_POST_EXEC;
 	else
 		status = eventStatus::CGI_CONTINUE;
@@ -182,7 +187,7 @@ void Event::handleHup() {
 	status = eventStatus::CLOSE;
 	if (isCgiFd()) {
 		soc->req->getCgi()->closePipe();
-		Response resp(*soc->req, findTheServ(*soc->req, this->serv, soc->getListeningSocketPort()));
+		Response resp(*soc->req, findTheServ(*soc->req, servers, soc->getListeningSocketPort()));
 		soc->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
 	} else if (cgiIsPending())
@@ -215,4 +220,4 @@ void Event::cgiExec() {
 Event::Event() {}
 
 // Static const
-int const Event::ev[5] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};
+int const Event::poll_event[MAX_POLL_EVENT] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};

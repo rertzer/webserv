@@ -31,7 +31,7 @@ Response::Response(Request& req, Server& serv) {
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	_allowedMethods = serv.getAllowMethods();
-	if (req.getCgiStatus() == 4) {
+	if (req.getCgiStatus() == CgiStatus::DONE) {
 		if (respWithCgi(req) == 0)
 			return;
 	}
