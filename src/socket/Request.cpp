@@ -10,7 +10,7 @@ Request::Request(TCPSocket* s, std::vector<Server>& serv)
 	  status(100),
 	  body_size(1000000),
 	  soc(s),
-	  cgi(NULL),
+	  cgi(nullptr),
 	  header_ok(false),
 	  content_ok(false)
 
@@ -32,9 +32,9 @@ Request::Request(Request const& rhs) {
 }
 
 Request::~Request() {
-	if (cgi != NULL) {
+	if (cgi != nullptr) {
 		delete cgi;
-		cgi = NULL;
+		cgi = nullptr;
 	}
 }
 

@@ -3,7 +3,7 @@
 #include "Request.hpp"
 
 // PUBLIC
-TCPSocket::TCPSocket(int p) : req(NULL), mother_port(p), keep_alive(true), error(false) {
+TCPSocket::TCPSocket(int p) : req(nullptr), mother_port(p), keep_alive(true), error(false) {
 	socket_addr_length = sizeof(socket_addr);
 
 	memset(&socket_addr, 0, socket_addr_length);
@@ -27,7 +27,8 @@ TCPSocket::TCPSocket(int p) : req(NULL), mother_port(p), keep_alive(true), error
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
 }
 
-TCPSocket::TCPSocket() : req(NULL), socket_fd(0), mother_port(0), keep_alive(false), error(false) {
+TCPSocket::TCPSocket()
+	: req(nullptr), socket_fd(0), mother_port(0), keep_alive(false), error(false) {
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
 }
@@ -41,7 +42,7 @@ TCPSocket::~TCPSocket() {
 		::close(socket_fd);
 	if (req) {
 		delete req;
-		req = NULL;
+		req = nullptr;
 	}
 }
 

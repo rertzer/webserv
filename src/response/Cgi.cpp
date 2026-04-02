@@ -9,7 +9,7 @@
 Cgi::Cgi(std::string m, std::string p, Request& r, std::pair<std::string, std::string> cp)
 	: method(m),
 	  path(p),
-	  buffer(NULL),
+	  buffer(nullptr),
 	  buffer_size(1600000),
 	  pid(0),
 	  status(CgiStatus::NO_INIT),
@@ -231,7 +231,7 @@ char** Cgi::formatArgv() const {
 	char** argv = new char*[3];
 	argv[0] = strdup(cgi_path.second.c_str());
 	argv[1] = strdup(path.c_str());
-	argv[2] = NULL;
+	argv[2] = nullptr;
 	return argv;
 }
 
@@ -253,6 +253,6 @@ char** Cgi::formatEnv() const {
 		env_array[i] = strdup(tmp.c_str());
 		i++;
 	}
-	env_array[i] = NULL;
+	env_array[i] = nullptr;
 	return env_array;
 }

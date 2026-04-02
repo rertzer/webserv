@@ -4,7 +4,7 @@
 DirListing::DirListing(std::string p) : path(p) {
 	DIR* dd;
 	dd = opendir(path.c_str());
-	if (dd == NULL) {
+	if (dd == nullptr) {
 		int error = 500;
 		if (errno == ENOTDIR || errno == ENOENT)
 			error = 404;

@@ -190,7 +190,7 @@ TCPSocket* Polling::getSocketFromStrip(int fd, std::map<int, TCPSocket*>& strip)
 	std::map<int, TCPSocket*>::const_iterator mi = strip.find(fd);
 	if (mi != strip.end())
 		return mi->second;
-	return NULL;
+	return nullptr;
 }
 
 Event Polling::extractEvent(nfds_t i) {
@@ -198,7 +198,7 @@ Event Polling::extractEvent(nfds_t i) {
 	short rev = fds[i].revents;
 	fds[i].revents = 0;
 	TCPSocket* soc = getSocketByFd(fds[i].fd);
-	if (soc == NULL)
+	if (soc == nullptr)
 		soc = getSocketByCgiFd(fds[i].fd);
 	return Event(fds[i].fd, rev, soc);
 }

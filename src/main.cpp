@@ -44,7 +44,7 @@ static void setSignals() {
 	sigemptyset(&sigbreak.sa_mask);
 	sigaddset(&sigbreak.sa_mask, SIGTERM);
 	sigbreak.sa_flags = 0;
-	if (sigaction(SIGINT, &sigbreak, NULL) != 0) {
+	if (sigaction(SIGINT, &sigbreak, nullptr) != 0) {
 		std::perror("sigaction");
 		exit(static_cast<int>(statusCode::INTERNAL));
 	}
