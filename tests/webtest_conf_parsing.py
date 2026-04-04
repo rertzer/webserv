@@ -45,8 +45,7 @@ def test_cmdline_and_conf():
             "Error: Server parsing error.\n",
         ),
         ConfRequest(
-            # "tests/conf_test/test_ko_client_max_body_size_semicolon_missing.conf",
-            "tests/conf_test/test_ko_3.conf",
+            "tests/conf_test/test_ko_client_max_body_size_semicolon_missing.conf",
             3,
             "",
             "Unknown line: client_max_body_size\nError: Server parsing error\n",
@@ -65,7 +64,19 @@ def test_cmdline_and_conf():
         ),
         # test 10
         ConfRequest(
-            "tests/conf_test/test_ko_index_and_server_name_lines_missing.conf",
+            "tests/conf_test/test_ko_index_line_missing.conf",
+            3,
+            "",
+            "Error: Server parsing error\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_server_line_missing.conf",
+            3,
+            "",
+            "Error: Server parsing error\n",
+        ),
+        ConfRequest(
+            "tests/conf_test/test_ko_error_400_line_missing.conf",
             3,
             "",
             "Error: Server parsing error\n",
@@ -82,6 +93,7 @@ def test_cmdline_and_conf():
             "",
             "Error: Server parsing error\n",
         ),
+        # test 15
         ConfRequest(
             "tests/conf_test/test_ko_error_405_line_missing.conf",
             3,
@@ -94,7 +106,6 @@ def test_cmdline_and_conf():
             "",
             "Error: Server parsing error\n",
         ),
-        # test 15
         ConfRequest(
             "tests/conf_test/test_ko_error_500_line_missing.conf",
             3,
@@ -113,6 +124,7 @@ def test_cmdline_and_conf():
             "",
             "Error: Server parsing error\n",
         ),
+        # test 20
         ConfRequest(
             "tests/conf_test/test_ko_extra_line.conf",
             3,
@@ -125,7 +137,6 @@ def test_cmdline_and_conf():
             "",
             "Invalid client_max_body_size\nError: Server parsing error\n",
         ),
-        # test 20
         ConfRequest(
             "tests/conf_test/test_ko_bad_port.conf",
             6,
@@ -144,6 +155,7 @@ def test_cmdline_and_conf():
             "",
             "Error: Server parsing error.\n",
         ),
+        # test 25
         ConfRequest(
             "tests/conf_test/test_ko_server_in_a_server_bad_end.conf",
             3,
@@ -156,7 +168,6 @@ def test_cmdline_and_conf():
             "",
             "Autoindex needs to be on or off.\nError: Server parsing error\n",
         ),
-        # test 25
         ConfRequest(
             "tests/conf_test/test_ko_badservername.conf",
             3,
@@ -175,6 +186,7 @@ def test_cmdline_and_conf():
             "Not a valid command\n",
             "Error: Server parsing error\n",
         ),
+        # test 30
         ConfRequest(
             "tests/conf_test/test_ko_extra_word_on_server_name_line.conf",
             3,
@@ -187,7 +199,6 @@ def test_cmdline_and_conf():
             "",
             "Error: Server parsing error.\n",
         ),
-        # test 30
         ConfRequest(
             "tests/conf_test/test_ko_invalid_line.conf",
             3,
@@ -220,9 +231,9 @@ def conf_tester(index, test):
     server_status = server.proc.returncode
     server_output = server.proc.stdout.read()
     server_error = server.proc.stderr.read()
-    print(server_status)
-    print("|", server_output, "|")
-    print("!", server_error, "!")
+    # print(server_status)
+    # print("|", server_output, "|")
+    # print("!", server_error, "!")
 
     ok = (
         server_status == test.status
