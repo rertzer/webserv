@@ -272,8 +272,8 @@ def test_3():
 
     requests = (
         SimpleRequest("GET", "/html/", headers, HTTPStatus.OK, 1457),
-        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 1988),
-        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1257),
+        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2327),
+        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1512),
         SimpleRequest(
             "GET", "/html/page/delete/toDelete.html", headers, HTTPStatus.OK, 478
         ),
@@ -335,8 +335,8 @@ def test_delete():
             HTTPStatus.NOT_FOUND,
             281,
         ),
-        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1131),
-        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 1988),
+        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1372),
+        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2327),
         SimpleRequest(
             "DELETE",
             "/html/page/delete/toDelete.html",
@@ -491,10 +491,10 @@ def test_7():
 
     requests = (
         SimpleRequest("GET", "/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GET", "/css/", headers, HTTPStatus.OK, 1957),
-        SimpleRequest("GET", "/upload/", headers, HTTPStatus.OK, 1198),
+        SimpleRequest("GET", "/css/", headers, HTTPStatus.OK, 2296),
+        SimpleRequest("GET", "/upload/", headers, HTTPStatus.OK, 1453),
         SimpleRequest("GET", "/img/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GET", "/img/toDelete/", headers, HTTPStatus.OK, 1117),
+        SimpleRequest("GET", "/img/toDelete/", headers, HTTPStatus.OK, 1358),
     )
 
     passed = SimpleTester(7, host, port).proceed_requests(
