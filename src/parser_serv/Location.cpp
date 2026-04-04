@@ -2,13 +2,19 @@
 #include <ranges>
 
 #include "Location.hpp"
+#include "ServerException.hpp"
 #include "utils.hpp"
 
 Location::Location(std::vector<std::string> locString) {
 	auto loc = split(locString[0]);
 	_locationPath = loc[1];
 	for (auto& it : locString | std::views::drop(1)) {
-		auto list = split(it);
+		auto list = serverLineSplit(it);
+		if (list.back() != ";") {
+			std::cerr << "Location: semicolon missing " << it << std::endl;
+			throw(ServerException());
+		}
+		list.pop_back();
 		_locationLine.push_back((LineLoc)list);
 	}
 }

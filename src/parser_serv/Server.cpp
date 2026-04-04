@@ -6,7 +6,7 @@
 #include "ServerException.hpp"
 #include "utils.hpp"
 
-static void trimSemiColon(LineListIter& it);
+static void trimAfterSemiColon(LineListIter& it);
 
 int Server::getAllowMethods() {
 	return _allowedMethod;
@@ -22,8 +22,8 @@ Server::Server(LineList servStrings)
 	ParsingState state = ParsingState::START;
 
 	for (auto it = servStrings.begin(); it != servStrings.end(); it++) {
-		trimSemiColon(it);
-		auto list = split(*it);
+		trimAfterSemiColon(it);
+		auto list = serverLineSplit(*it);
 		switch (state) {
 			case ParsingState::START:
 				state = parseStart(list, loc);
@@ -46,7 +46,7 @@ Server::Server(LineList servStrings)
 }
 
 ParsingState Server::parseStart(LineList& list, LocParsing& loc) {
-	if (list[0] == "listen" && list.size() == 2) {
+	if (list.size() == 3 && list[0] == "listen" && list[2] == ";") {
 		setPort(list[1], loc);
 	} else {
 		std::cerr << "'listen' missing" << std::endl;
@@ -68,7 +68,7 @@ ParsingState Server::parseServer(LineList& list, LocParsing& loc) {
 		{"server_name", &Server::setServerName}};
 
 	auto hit = handlers.find(list[0]);
-	if (hit != handlers.end()) {
+	if (hit != handlers.end() && (list[0] == "location" || list.back() == ";")) {
 		state = (this->*(hit->second))(list, loc);
 	} else {
 		std::cerr << "Unknown line: " << list[0] << std::endl;
@@ -88,8 +88,9 @@ ParsingState Server::parseLocation(LineList& list, LocParsing& loc) {
 }
 void Server::checkIfConform() {
 	int error_page_status[] = {400, 403, 404, 405, 413, 500, 501, 505};
-	if (_root.empty() || _nPort == 0)
+	if (_root.empty() || _nPort == 0) {
 		throw(ServerException());
+	}
 	for (auto status : error_page_status) {
 		if (_errorPage.find(intToString(status)) == _errorPage.end())
 			throw(ServerException());
@@ -111,9 +112,10 @@ std::string& Server::getRoot() {
 }
 
 std::string Server::getErrorPage(std::string errorNb) {
-	if (_errorPage.find(errorNb) == _errorPage.end())
+	if (_errorPage.find(errorNb) == _errorPage.end()) {
 		throw(ServerException());
-	return _errorPage.find(errorNb)->second)
+	}
+	return _errorPage.find(errorNb)->second;
 }
 
 std::map<std::string, std::string>& Server::getAllErrorPage() {
@@ -155,7 +157,7 @@ Server::Server() {}
 
 ParsingState Server::setAutoIndex(LineList& list, LocParsing& loc) {
 	(void)loc;
-	if (list.size() == 2 && (list[1] == "on" || list[1] == "off")) {
+	if (list.size() == 3 && (list[1] == "on" || list[1] == "off")) {
 		_autoIndex = list[1];
 	} else {
 		std::cerr << "Autoindex needs to be on or off.\n";
@@ -166,6 +168,7 @@ ParsingState Server::setAutoIndex(LineList& list, LocParsing& loc) {
 
 ParsingState Server::setAllowedMethod(LineList& list, LocParsing& loc) {
 	(void)loc;
+	list.pop_back();
 	_allowedMethod = getAllowMethodsServer(list);
 	return ParsingState::SERVER;
 }
@@ -178,7 +181,7 @@ ParsingState Server::setPort(Line& line, LocParsing& loc) {
 
 ParsingState Server::setRoot(LineList& list, LocParsing& loc) {
 	(void)loc;
-	if (list.size() != 2) {
+	if (list.size() != 3) {
 		throw(ServerException());
 	}
 	_root = list[1];
@@ -187,17 +190,21 @@ ParsingState Server::setRoot(LineList& list, LocParsing& loc) {
 
 ParsingState Server::setDefaultPage(LineList& list, LocParsing& loc) {
 	(void)loc;
-	for (auto& it : list | std::views::drop(1)) {
+	if (list.size() < 3) {
+		throw(ServerException());
+	}
+	for (auto& it : list | std::views::drop(1) | std::views::take(list.size() - 2)) {
 		_defaultPage.push_back(it);
 	}
-	if (_defaultPage.size() == 0)
+	if (_defaultPage.size() == 0) {
 		throw(ServerException());
+	}
 	return ParsingState::SERVER;
 }
 
 ParsingState Server::setServerName(LineList& list, LocParsing& loc) {
 	(void)loc;
-	if (list.size() != 2) {
+	if (list.size() != 3) {
 		throw(ServerException());
 	}
 	_servName = list[1];
@@ -222,12 +229,12 @@ ParsingState Server::setErrorPage(LineList& list, LocParsing& loc) {
 
 ParsingState Server::setMaxBodySize(LineList& list, LocParsing& loc) {
 	(void)loc;
-	if (list.size() != 2) {
+	if (list.size() != 3) {
 		throw(ServerException());
 	}
-	if (checkIfOnlyDigits(list[1]) == 0)
+	if (checkIfOnlyDigits(list[1]) == 0) {
 		_maxBodySize = atoi(list[1].c_str());
-	else {
+	} else {
 		std::cerr << "Invalid client_max_body_size\n";
 		throw(ServerException());
 	}
@@ -244,10 +251,10 @@ void Server::addLocation(LineList& list, LocParsing& loc) {
 	}
 }
 
-static void trimSemiColon(LineListIter& it) {
+static void trimAfterSemiColon(LineListIter& it) {
 	size_t end = it->find(";");
 
 	if (end != std::string::npos) {
-		*it = it->substr(0, end);
+		*it = it->substr(0, end + 1);
 	}
 }
