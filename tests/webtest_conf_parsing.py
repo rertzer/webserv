@@ -19,7 +19,7 @@ def test_cmdline_and_conf():
             "youwillneverfindme.conf",
             3,
             "",
-            "Error: Server parsing error.\n",
+            "Cannot open file: youwillneverfindme.conf\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ok_4.conf",

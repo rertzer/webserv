@@ -4,6 +4,7 @@
 #include <unordered_set>
 
 #include "Server.hpp"
+#include "ServerParsing.hpp"
 #include "macroDef.hpp"
 
 static void		  removeComments(std::string& line);
@@ -11,17 +12,12 @@ static bool		  blankOnly(std::string const& line);
 static int		  countBrackets(std::string const& line);
 static statusCode checkDuplicatedPortNames(std::vector<Server>& serv);
 
-statusCode fillServ(std::string av, std::vector<Server>& serv) {
-	std::ifstream			 conf;
-	std::vector<std::string> serv_strings;
-	auto					 open_brackets = 0;
-	auto					 serv_open = false;
-	auto					 server_created = false;
-	try {
-		conf.open(av.c_str(), std::fstream::in);
-	} catch (std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		return statusCode::INTERNAL;
+statusCode fillServ(std::string path, std::vector<Server>& serv) {
+	ServerParsing parsing{};
+
+	std::ifstream conf(path, std::ios::binary);
+	if (!conf) {
+		throw std::runtime_error("Cannot open file: " + path);
 	}
 
 	for (std::string line; getline(conf, line);) {
@@ -29,33 +25,33 @@ statusCode fillServ(std::string av, std::vector<Server>& serv) {
 		if (blankOnly(line))
 			continue;
 		if (line.find("server {") != std::string::npos) {
-			if (serv_open) {
+			if (parsing.is_open) {
 				std::cerr << "Error: Server parsing error.\n";
 				return statusCode::PARSING;
 			}
-			serv_open = true;
-			++open_brackets;
+			parsing.is_open = true;
+			++parsing.brackets;
 			continue;
-		} else if (serv_open) {
-			open_brackets += countBrackets(line);
+		} else if (parsing.is_open) {
+			parsing.brackets += countBrackets(line);
 
-			if (open_brackets == 0) {
-				serv_open = false;
-				serv.push_back(Server(serv_strings));
-				server_created = true;
-				serv_strings.clear();
+			if (parsing.brackets == 0) {
+				parsing.is_open = false;
+				serv.push_back(Server(parsing.lines));
+				parsing.created = true;
+				parsing.lines.clear();
 			} else {
-				serv_strings.push_back(line);
+				parsing.lines.push_back(line);
 			}
 		} else {
 			std::cerr << "Error: Server parsing error.\n";
 			return statusCode::PARSING;
 		}
-		if (open_brackets < 0) {
+		if (parsing.brackets < 0) {
 			return statusCode::PARSING;
 		}
 	}
-	if (!server_created) {
+	if (!parsing.created) {
 		std::cerr << "Error: Server parsing error.\n";
 		return statusCode::PARSING;
 	}
