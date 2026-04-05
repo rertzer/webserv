@@ -67,6 +67,7 @@ class Response {
 	std::string							getContentLength(void) const;
 	std::string							getConnectionClose(void) const;
 	std::string							getContent(void) const;
+	std::string							getDirContent(std::string path);
 	std::string							getLocation(void) const;
 	std::string							getRoot(void) const;
 	std::string							getAutoIndex(void) const;

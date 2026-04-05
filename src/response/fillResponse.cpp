@@ -96,7 +96,7 @@ void createAutoIndexResp(Request& req, Location loc, Response& rep) {
 		(req.getMethod() == "POST" &&
 		 (rep.getAllowedMethods() == POST || rep.getAllowedMethods() == GETPOST ||
 		  rep.getAllowedMethods() == POSTDELETE || rep.getAllowedMethods() == GETPOSTDELETE))) {
-		rep.setContent(dirContent(rep.getRoot(), req.getQuery()));
+		rep.setContent(rep.getDirContent(req.getQuery()));
 		rep.setStatus("200 OK");
 		rep.setMethod(req.getMethod());
 		rep.setContentType("text/html");

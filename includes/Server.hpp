@@ -18,6 +18,7 @@ enum methodAllowed {
 };
 
 enum class ParsingState { START, SERVER, LOCATION, ERROR };
+enum class HtmlCode { AUTOINDEX_HEADER, AUTOINDEX_CONTENT, AUTOINDEX_FOOTER };
 
 typedef struct loc_parsing_t {
 	bool	 open = false;
@@ -38,6 +39,7 @@ class Server {
 	std::map<std::string, std::string> _errorPage;
 	std::vector<Location>			   _location;
 	int								   _maxBodySize;
+	std::map<HtmlCode, std::string>	   html_code;
 	ParsingState					   setAutoIndex(LineList& list, LocParsing& loc);
 	ParsingState					   setAllowedMethod(LineList& list, LocParsing& loc);
 	ParsingState					   setPort(Line& line, LocParsing& loc);
@@ -50,6 +52,7 @@ class Server {
 	void							   addLocation(LineList& list, LocParsing& loc);
 	ParsingState					   parseStart(LineList& list, LocParsing& loc);
 	ParsingState					   parseServer(LineList& list, LocParsing& loc);
+	void							   loadHtmlCode();
 
    public:
 	Server();
@@ -68,6 +71,7 @@ class Server {
 	int									getAllowMethods();
 	std::string							getAutoIndex();
 	void								checkIfConform();
+	std::string							getHtmlCode(HtmlCode kind);
 };
 
 #endif

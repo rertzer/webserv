@@ -43,6 +43,7 @@ Server::Server(LineList servStrings)
 		}
 	}
 	checkIfConform();
+	loadHtmlCode();
 }
 
 ParsingState Server::parseStart(LineList& list, LocParsing& loc) {
@@ -145,6 +146,7 @@ Server& Server::operator=(const Server& rhs) {
 		_location = rhs._location;
 		_nPort = rhs._nPort;
 		_defaultPage = rhs._defaultPage;
+		html_code = rhs.html_code;
 	}
 	return *this;
 }
@@ -249,6 +251,16 @@ void Server::addLocation(LineList& list, LocParsing& loc) {
 	} else {
 		loc.lines.push_back(join(list));
 	}
+}
+
+void Server::loadHtmlCode() {
+	html_code[HtmlCode::AUTOINDEX_HEADER] = getFileContent("data/index_header.html");
+	html_code[HtmlCode::AUTOINDEX_CONTENT] = getFileContent("data/index_content.html");
+	html_code[HtmlCode::AUTOINDEX_FOOTER] = getFileContent("data/index_footer.html");
+}
+
+std::string Server::getHtmlCode(HtmlCode kind) {
+	return html_code[kind];
 }
 
 static void trimAfterSemiColon(LineListIter& it) {

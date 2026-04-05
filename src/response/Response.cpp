@@ -1,5 +1,6 @@
 #include "Response.hpp"
 #include "Cgi.hpp"
+#include "DirListing.hpp"
 #include "color.hpp"
 
 std::string Response::getResponse() {
@@ -156,6 +157,27 @@ int Response::respWithCgi(Request& req) {
 	_contentLength = intToString(_content.length());
 	_connectionClose = "keep-alive";
 	return 0;
+}
+
+std::string Response::getDirContent(std::string path) {
+	DirListing drl(_root + path);
+	auto	   index = _serv.getHtmlCode(HtmlCode::AUTOINDEX_HEADER);
+
+	replaceAll(index, "PATH", path);
+
+	auto				  content = _serv.getHtmlCode(HtmlCode::AUTOINDEX_CONTENT);
+	std::vector<FileDesc> files = drl.getDirContent();
+	for (std::vector<FileDesc>::iterator it = files.begin(); it != files.end(); it++) {
+		auto new_content = content;
+		replaceAll(new_content, "NAME", it->getName());
+		replaceAll(new_content, "TYPE", it->getTypeName());
+		replaceAll(new_content, "SIZE", std::to_string(it->getSize()));
+		replaceAll(new_content, "LASTMODIFIED", it->getLastModified());
+		index.append(new_content);
+	}
+	auto footer = _serv.getHtmlCode(HtmlCode::AUTOINDEX_FOOTER);
+	index.append(footer);
+	return index;
 }
 
 void Response::setConnectionClose(std::string connectionClose) {

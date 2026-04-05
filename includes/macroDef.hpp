@@ -64,7 +64,6 @@ Response				 createErrorPage(int codeErr, Server serv);
 int						 checkAutoIndex(Location loc);
 int						 checkAllowMethod(Location loc);
 bool					 changeToIndex(Location loc, Request& req, std::string root);
-std::string				 dirContent(std::string root, std::string path);
 int						 checkForRedirection(Location& loc);
 std::pair<std::string, std::string> RedirectTo(Location& loc);
 std::string							getArgsLoc(Location& loc, std::string toFind);
