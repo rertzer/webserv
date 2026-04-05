@@ -4,61 +4,36 @@
 #include <unordered_set>
 
 #include "Server.hpp"
+#include "ServerParsing.hpp"
 #include "macroDef.hpp"
 
 static void		  removeComments(std::string& line);
 static bool		  blankOnly(std::string const& line);
-static int		  countBrackets(std::string const& line);
 static statusCode checkDuplicatedPortNames(std::vector<Server>& serv);
 
-statusCode fillServ(std::string av, std::vector<Server>& serv) {
-	std::ifstream			 conf;
-	std::vector<std::string> serv_strings;
-	auto					 open_brackets = 0;
-	auto					 serv_open = false;
-	auto					 server_created = false;
-	try {
-		conf.open(av.c_str(), std::fstream::in);
-	} catch (std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		return statusCode::INTERNAL;
+statusCode fillServ(std::string path, std::vector<Server>& serv) {
+	ServerParsing parsing{};
+
+	std::ifstream conf(path, std::ios::binary);
+	if (!conf) {
+		throw std::runtime_error("Cannot open file: " + path);
 	}
 
+	auto status = statusCode::PARSING;
 	for (std::string line; getline(conf, line);) {
 		removeComments(line);
 		if (blankOnly(line))
 			continue;
-		if (line.find("server {") != std::string::npos) {
-			if (serv_open) {
-				std::cerr << "Error: Server parsing error.\n";
-				return statusCode::PARSING;
-			}
-			serv_open = true;
-			++open_brackets;
-			continue;
-		} else if (serv_open) {
-			open_brackets += countBrackets(line);
-
-			if (open_brackets == 0) {
-				serv_open = false;
-				serv.push_back(Server(serv_strings));
-				server_created = true;
-				serv_strings.clear();
-			} else {
-				serv_strings.push_back(line);
-			}
-		} else {
-			std::cerr << "Error: Server parsing error.\n";
-			return statusCode::PARSING;
-		}
-		if (open_brackets < 0) {
-			return statusCode::PARSING;
+		if ((status = parsing.parse(line, serv)) != statusCode::OK) {
+			break;
 		}
 	}
-	if (!server_created) {
+
+	if (status != statusCode::OK || parsing.getOpen()) {
 		std::cerr << "Error: Server parsing error.\n";
 		return statusCode::PARSING;
 	}
+
 	return checkDuplicatedPortNames(serv);
 }
 
@@ -71,17 +46,6 @@ static void removeComments(std::string& line) {
 
 static bool blankOnly(std::string const& line) {
 	return (line.find_first_not_of(" \t\r") == std::string::npos);
-}
-
-static int countBrackets(std::string const& line) {
-	int count = 0;
-	if (line.find("{") != std::string::npos) {
-		count = 1;
-	}
-	if (line.find("}") != std::string::npos) {
-		count -= 1;
-	}
-	return count;
 }
 
 static statusCode checkDuplicatedPortNames(std::vector<Server>& serv) {

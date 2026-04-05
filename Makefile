@@ -25,7 +25,7 @@ SOURCES := main.cpp
 SOCKET_SOURCES := TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp utils.cpp serverRun.cpp
 EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
 LISTING_SOURCES := DirListing.cpp FileDesc.cpp
-PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp LineLoc.cpp ServerException.cpp
+PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp LineLoc.cpp ServerException.cpp ServerParsing.cpp
 RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp fillResponse.cpp dealWith.cpp checkAndGet.cpp respWith.cpp
 UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp getFileContent.cpp
 

@@ -19,7 +19,7 @@ def test_cmdline_and_conf():
             "youwillneverfindme.conf",
             3,
             "",
-            "Error: Server parsing error.\n",
+            "Cannot open file: youwillneverfindme.conf\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ok_4.conf",
@@ -153,14 +153,14 @@ def test_cmdline_and_conf():
             "tests/conf_test/test_ko_server_in_a_server.conf",
             3,
             "",
-            "Error: Server parsing error.\n",
+            "Unknown line: server\nError: Server parsing error\n",
         ),
         # test 25
         ConfRequest(
             "tests/conf_test/test_ko_server_in_a_server_bad_end.conf",
             3,
             "",
-            "Error: Server parsing error.\n",
+            "Unknown line: server\nError: Server parsing error\n",
         ),
         ConfRequest(
             "tests/conf_test/test_ko_autoindex_as_kapput.conf",
@@ -242,9 +242,9 @@ def conf_tester(index, test):
     server_status = server.proc.returncode
     server_output = server.proc.stdout.read()
     server_error = server.proc.stderr.read()
-    # print(server_status)
-    # print("|", server_output, "|")
-    # print("!", server_error, "!")
+    print(server_status)
+    print("|", server_output, "|")
+    print("!", server_error, "!")
 
     ok = (
         server_status == test.status
