@@ -122,5 +122,22 @@ def cp_backup_to_delete(file):
         print(e.stderr, file=sys.stderr)
 
 
+def backup_data(file, backup=True):
+    target = file
+    if backup is True:
+        target += ".bak"
+    else:
+        file += ".bak"
+    try:
+        subprocess.run(
+            ["mv", file, target],
+            cwd="../data/",
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("backup data failed:", e.returncode, file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
+
+
 def same_length(a, b):
     return len(a) == len(b)

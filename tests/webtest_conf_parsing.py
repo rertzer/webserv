@@ -220,7 +220,18 @@ def test_cmdline_and_conf():
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))
-    return passed, len(tests)
+
+    test = ConfRequest(
+        "tests/conf_test/test_ok_4.conf",
+        3,
+        "",
+        "Cannot open file: data/index_header.html\n",
+    )
+    tu.backup_data("index_header.html")
+    test_nb = len(tests) + 1
+    passed += conf_tester(test_nb, test)
+    tu.backup_data("index_header.html", False)
+    return passed, test_nb
 
 
 def conf_tester(index, test):
