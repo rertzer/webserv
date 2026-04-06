@@ -47,6 +47,8 @@ class Cgi {
 
    private:
 	void   setUrl();
+	void   extractQueryString(std::string& url);
+	void   setPath(std::string const& url);
 	void   setEnv();
 	void   initPipes();
 	void   setPostFd();
@@ -55,6 +57,9 @@ class Cgi {
 	void   execFather();
 	char** formatArgv() const;
 	char** formatEnv() const;
+	size_t appendEnv(char**								env_array,
+					 std::map<std::string, std::string> env_map,
+					 bool								format = false) const;
 
 	std::string							method;
 	std::string							path;

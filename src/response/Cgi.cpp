@@ -85,19 +85,28 @@ void Cgi::stop() {
 // private
 void Cgi::setUrl() {
 	std::string url = req.getQuery();
-	int			pos = url.find('?');
-	if (pos != -1) {
-		query_string = url.substr(pos + 1, -1);
-		url.erase(pos, -1);
-	}
-	pos = url.rfind(cgi_path.first);
 
-	if (pos != -1) {
+	extractQueryString(url);
+	setPath(url);
+}
+
+void Cgi::extractQueryString(std::string& url) {
+	auto pos = url.find('?');
+	if (pos != std::string::npos) {
+		query_string = url.substr(pos + 1);
+		url.erase(pos);
+	}
+}
+
+void Cgi::setPath(std::string const& url) {
+	auto pos = url.rfind(cgi_path.first);
+
+	if (pos != std::string::npos) {
 		path += url.substr(0, pos + cgi_path.first.size());
 		if (pos + cgi_path.first.size() + 1 < url.size())
-			path_info = url.substr(pos + cgi_path.first.size() + 1, -1);
+			path_info = url.substr(pos + cgi_path.first.size() + 1);
 		pos = path.rfind("/");
-		if (pos != -1)
+		if (pos != std::string::npos)
 			working_dir = path.substr(0, pos);
 	}
 }
@@ -188,12 +197,13 @@ void Cgi::closePipe() {
 
 void Cgi::exec() {
 	pid = ::fork();
-	if (pid < 0)
+	if (pid < 0) {
 		throw(ErrorException(500));
-	if (pid == 0)
+	} else if (pid == 0) {
 		execSon();
-	if (pid)
+	} else {
 		execFather();
+	}
 }
 
 int Cgi::execSon() {
@@ -228,31 +238,32 @@ void Cgi::execFather() {
 }
 
 char** Cgi::formatArgv() const {
-	char** argv = new char*[3];
-	argv[0] = strdup(cgi_path.second.c_str());
-	argv[1] = strdup(path.c_str());
-	argv[2] = nullptr;
-	return argv;
+	return new char*[3]{strdup(cgi_path.second.c_str()), strdup(path.c_str()), nullptr};
 }
 
 char** Cgi::formatEnv() const {
 	int	   env_size = req.getHeader().size() + env_map.size() + 1;
 	char** env_array = new char*[env_size];
-	int	   i = 0;
-	for (std::map<std::string, std::string>::const_iterator it = req.getHeader().begin();
-		 it != req.getHeader().end(); it++) {
-		std::string tmp;
-		tmp.append(envFormat(it->first) + "=" + it->second);
-		env_array[i] = strdup(tmp.c_str());
-		i++;
-	}
-	for (std::map<std::string, std::string>::const_iterator it = env_map.begin();
-		 it != env_map.end(); it++) {
-		std::string tmp;
-		tmp.append(it->first + "=" + it->second);
-		env_array[i] = strdup(tmp.c_str());
-		i++;
-	}
+	size_t i = appendEnv(env_array, req.getHeader(), true);
+	i += appendEnv(&env_array[i], env_map);
+
 	env_array[i] = nullptr;
 	return env_array;
+}
+
+size_t Cgi::appendEnv(char**							 env_array,
+					  std::map<std::string, std::string> env_map,
+					  bool								 format) const {
+	size_t i = 0;
+	for (auto& env : env_map) {
+		std::string tmp;
+		std::string first = env.first;
+		if (format) {
+			first = envFormat(first);
+		}
+		tmp.append(first + "=" + env.second);
+		env_array[i] = strdup(tmp.c_str());
+		i++;
+	}
+	return i;
 }
