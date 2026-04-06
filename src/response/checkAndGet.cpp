@@ -2,6 +2,7 @@
 #include "Response.hpp"
 
 static std::string extractDirPath(std::string path);
+static Location*   findLocation(std::vector<Location>& all_loc, std::string path);
 static Location*   findLocationByPath(std::vector<Location>& all_loc, std::string path);
 
 void checkExec(std::string filePath) {
@@ -32,8 +33,15 @@ std::string getSpecIndex(Location loc, Response& rep) {
 
 Location getTheLocation(std::string path, Response& rep) {
 	std::vector<Location> all_loc = rep.getServ().getAllLocation();
-	Location*			  loc = nullptr;
 	path = extractDirPath(path);
+	Location* loc = findLocation(all_loc, path);
+	if (loc)
+		return *loc;
+	return Location();
+}
+
+static Location* findLocation(std::vector<Location>& all_loc, std::string path) {
+	Location* loc = nullptr;
 	while (path.find("/") != std::string::npos) {
 		loc = findLocationByPath(all_loc, path);
 		if (loc || path.rfind("/") == 0) {
@@ -41,9 +49,7 @@ Location getTheLocation(std::string path, Response& rep) {
 		}
 		path = path.substr(0, path.rfind("/"));
 	}
-	if (loc)
-		return *loc;
-	return Location();
+	return loc;
 }
 
 static std::string extractDirPath(std::string path) {
@@ -64,28 +70,14 @@ static Location* findLocationByPath(std::vector<Location>& all_loc, std::string 
 }
 
 int checkIfLocation(std::string path, Response& rep) {
-	std::vector<Location> loc = rep.getServ().getAllLocation();
-	bool				  enter = false;
-	std::cout << "arrive here" << std::endl;
 	if (path != "/") {
 		path = path.substr(0, path.rfind("."));
 	}
-	while (path.find("/") != std::string::npos) {
-		for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); it++) {
-			if (it->getLocationPath() == path) {
-				return (0);
-			}
-		}
-		if (path.rfind("/") == 0) {
-			if (enter == false) {
-				path = "/";
-				enter = true;
-			} else
-				return (-1);
-		} else {
-			path = path.substr(0, path.rfind("/"));
-		}
-		std::cout << "boucled here" << std::endl;
+
+	Location* loc = findLocation(rep.getServ().getAllLocation(), path);
+	if (loc) {
+		return 0;
 	}
+
 	return -1;
 }
