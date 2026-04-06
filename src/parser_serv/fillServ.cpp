@@ -13,17 +13,18 @@ static statusCode checkDuplicatedPortNames(std::vector<Server>& serv);
 
 statusCode fillServ(std::string path, std::vector<Server>& serv) {
 	ServerParsing parsing{};
+	auto		  status = statusCode::PARSING;
 
 	std::ifstream conf(path, std::ios::binary);
 	if (!conf) {
 		throw std::runtime_error("Cannot open file: " + path);
 	}
 
-	auto status = statusCode::PARSING;
 	for (std::string line; getline(conf, line);) {
 		removeComments(line);
-		if (blankOnly(line))
+		if (blankOnly(line)) {
 			continue;
+		}
 		if ((status = parsing.parse(line, serv)) != statusCode::OK) {
 			break;
 		}

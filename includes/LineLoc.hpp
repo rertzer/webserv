@@ -14,7 +14,6 @@ class LineLoc {
    public:
 	std::string&			  getCmd();
 	std::vector<std::string>& getArgs();
-	LineLoc(std::string line);
 	LineLoc(LineList& list);
 	int checkArgs(std::string toFind);
 };

@@ -30,24 +30,21 @@ std::vector<LineLoc>& Location::getLocationLine() {
 Location::Location() {}
 
 void Location::printLoc() {
-	for (std::vector<LineLoc>::iterator it = _locationLine.begin(); it != _locationLine.end();
-		 it++) {
-		std::cout << "Line cmd = " << it->getCmd() << std::endl;
-		for (std::vector<std::string>::iterator it2 = it->getArgs().begin();
-			 it2 != it->getArgs().end(); it2++)
-			std::cout << "Value = " << *it2 << std::endl;
+	for (auto& ll : _locationLine) {
+		std::cout << "Line cmd = " << ll.getCmd() << std::endl;
+		for (auto& arg : ll.getArgs())
+			std::cout << "Value = " << arg << std::endl;
 	}
 }
 
 std::vector<std::string> Location::getIndex() {
-	std::vector<std::string>	   _stringIndex;
-	std::vector<LineLoc>::iterator it = _locationLine.begin();
-	while (it != _locationLine.end()) {
-		if (it->getCmd() == "index") {
-			_stringIndex = it->getArgs();
-			return (_stringIndex);
+	std::vector<std::string> _stringIndex;
+
+	for (auto& ll : _locationLine) {
+		if (ll.getCmd() == "index") {
+			_stringIndex = ll.getArgs();
+			break;
 		}
-		it++;
 	}
 	return _stringIndex;
 }
