@@ -3,12 +3,12 @@
 
 void dealWithGet(Request req, Response& rep) {
 	rep.setMethod("GET");
-	feelPart(req, rep);
+	fillPart(req, rep);
 }
 
 void dealWithPost(Request req, Response& rep) {
 	rep.setMethod("POST");
-	feelPart(req, rep);
+	fillPart(req, rep);
 }
 
 void dealWithDelete(Request req, Response& rep) {

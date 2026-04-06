@@ -84,6 +84,13 @@ Response& Response::operator=(Response const& rhs) {
 	return *this;
 }
 
+void Response::fillOK(std::string content) {
+	setStatus("200 OK");
+	setContent(content);
+	setContentLength(intToString(getContent().length()));
+	setConnectionClose("keep-alive");
+}
+
 void Response::Setserv(Server serv) {
 	_serv = serv;
 }
@@ -114,6 +121,11 @@ void Response::setMethod(std::string method) {
 
 void Response::setContentType(std::string contentType) {
 	_contentType = contentType;
+}
+
+void Response::setContentTypeByRequest(Request const& req) {
+	_contentType = getContentMap().getContentValue(
+		req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));
 }
 
 void Response::setContentLength(std::string contentLength) {

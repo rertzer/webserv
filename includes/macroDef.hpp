@@ -81,7 +81,7 @@ std::string							getContentKey(std::string value, Response& rep);
 std::string							findLocation(std::string path, Response& rep);
 int									checkIfLocation(std::string path, Response& rep);
 Location							getTheLocation(std::string path, Response& rep);
-void								feelPart(Request req, Response& rep);
+void								fillPart(Request req, Response& rep);
 int									respWithLoc(Request& req, Response& rep);
 int									initCgi(Request& req, Location& loc, Response& rep);
 int									respWithCgi(Request& req, Response& rep);

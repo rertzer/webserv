@@ -2,6 +2,7 @@
 #include "ErrorException.hpp"
 #include "Response.hpp"
 #include "macroDef.hpp"
+#include "utils.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -16,7 +17,7 @@ int isDir(std::string fileName) {
 }
 
 std::string readFile(std::string file, Response& rep) {
-	std::ifstream fileOp;
+	std::string file_content;
 	if (isDir(file) == 0) {
 		throw(ErrorException(404));
 	}
@@ -28,33 +29,28 @@ std::string readFile(std::string file, Response& rep) {
 		rep.setReadFileAccess(ACCESS_DENIED);
 		return "403";
 	}
-	fileOp.open(file.c_str());
-	if (fileOp.is_open()) {
-		std::stringstream fileStr;
-		fileStr << fileOp.rdbuf();
-		fileOp.close();
-		rep.setReadFileAccess(OK);
-		return fileStr.str();
-	} else {
-		fileOp.close();
+	try {
+		file_content = getFileContent(file);
+	} catch (std::exception& e) {
 		rep.setReadFileAccess(FILE_NOT_FOUND);
 		return "404";
 	}
+	rep.setReadFileAccess(OK);
+	return file_content;
 }
 
-void feelPart(Request req, Response& rep) {
+void fillPart(Request req, Response& rep) {
 	if (req.getQuery() == "/") {
-		std::string				 fileStr;
-		std::vector<std::string> defaultPage = rep.getServ().getDefaultPage();
-		for (std::vector<std::string>::iterator it = defaultPage.begin(); it != defaultPage.end();
-			 it++) {
-			fileStr = readFile(rep.getRoot() + *it, rep);
+		std::string fileStr;
+		auto		default_page = rep.getServ().getDefaultPage();
+		for (auto& page : default_page) {
+			fileStr = readFile(rep.getRoot() + page, rep);
 			if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED) {
 				break;
 			}
 			if (fileStr != "404" && rep.getReadFileAccess() != FILE_NOT_FOUND) {
 				rep.setContentType(rep.getContentMap().getContentValue(
-					it->substr(it->rfind(".") + 1, it->length())));
+					page.substr(page.rfind(".") + 1, page.length())));
 				break;
 			}
 		}
@@ -63,10 +59,7 @@ void feelPart(Request req, Response& rep) {
 		else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
 			rep = createErrorPage(403, rep.getServ());
 		else {
-			rep.setStatus("200 OK");
-			rep.setContent(fileStr);
-			rep.setContentLength(intToString(rep.getContent().length()));
-			rep.setConnectionClose("keep-alive");
+			rep.fillOK(fileStr);
 		}
 	} else {
 		std::string fileStr;
@@ -76,12 +69,8 @@ void feelPart(Request req, Response& rep) {
 		else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
 			rep = createErrorPage(403, rep.getServ());
 		else {
-			rep.setStatus("200 OK");
-			rep.setContentType(rep.getContentMap().getContentValue(
-				req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length())));
-			rep.setContent(fileStr);
-			rep.setContentLength(intToString(rep.getContent().length()));
-			rep.setConnectionClose("keep-alive");
+			rep.fillOK(fileStr);
+			rep.setContentTypeByRequest(req);
 		}
 	}
 }

@@ -59,6 +59,8 @@ class Response {
 	void setReadFileAccess(int);
 	void setContentMap(ContentMap);
 	void setAllowedMethods(int);
+	void setContentTypeByRequest(Request const& req);
+	void fillOK(std::string content);
 	// getter
 	Server								getServ(void) const;
 	std::string							getMethod(void) const;
