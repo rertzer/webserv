@@ -31,7 +31,7 @@ Response::Response(Request& req, Server& serv) {
 	_serv = serv;
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
-	_allowedMethods = serv.getAllowMethods();
+	allowed_methods = serv.getAllowMethods();
 	if (req.getCgiStatus() == CgiStatus::DONE) {
 		if (respWithCgi(req) == 0)
 			return;
@@ -43,20 +43,15 @@ Response::Response(Request& req, Server& serv) {
 		if (respWithOutLoc(req, *this) == 0)
 			return;
 	}
-	if (req.getMethod() == "GET" &&
-		(_allowedMethods == GET || _allowedMethods == GETPOST || _allowedMethods == GETDELETE ||
-		 _allowedMethods == GETPOSTDELETE))
+	if (req.getMethod() == "GET" && (isAllowed(GET)))
 		dealWithGet(req, *this);
-	else if (req.getMethod() == "POST" &&
-			 (_allowedMethods == POST || _allowedMethods == GETPOST ||
-			  _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
+	else if (req.getMethod() == "POST" && (isAllowed(POST)))
 		dealWithPost(req, *this);
-	else if (req.getMethod() == "DELETE" &&
-			 (_allowedMethods == DELETE || _allowedMethods == GETDELETE ||
-			  _allowedMethods == POSTDELETE || _allowedMethods == GETPOSTDELETE))
+	else if (req.getMethod() == "DELETE" && isAllowed(DELETE))
 		dealWithDelete(req, *this);
-	else
+	else {
 		*this = createErrorPage(405, _serv);
+	}
 }
 
 Response::Response(std::string status,
@@ -103,8 +98,8 @@ void Response::setAutoIndex(std::string autoIndex) {
 	_autoIndex = autoIndex;
 }
 
-void Response::setAllowedMethods(int allowedMethods) {
-	_allowedMethods = allowedMethods;
+void Response::setAllowedMethods(BitSet methods) {
+	allowed_methods = methods;
 }
 
 void Response::setLocation(std::string location) {
@@ -260,8 +255,8 @@ int Response::getReadFileAccess(void) const {
 	return _readFileAccess;
 }
 
-int Response::getAllowedMethods(void) const {
-	return _allowedMethods;
+BitSet Response::getAllowedMethods(void) const {
+	return allowed_methods;
 }
 
 std::vector<std::string> Response::getCookie(void) const {
@@ -270,4 +265,8 @@ std::vector<std::string> Response::getCookie(void) const {
 
 ContentMap Response::getContentMap(void) const {
 	return _contentMap;
+}
+
+bool Response::isAllowed(HttpMethod method) const {
+	return allowed_methods.isSet(method);
 }

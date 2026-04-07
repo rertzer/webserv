@@ -22,9 +22,8 @@ int respWithLoc(Request& req, Response& rep) {
 		}
 	}
 
-	int allowMethod = checkAllowMethod(loc);
-	if (allowMethod != -1)
-		rep.setAllowedMethods(allowMethod);
+	BitSet allow_method = checkAllowMethod(loc);
+	rep.setAllowedMethods(allow_method);
 	if (isThereAspecRoot(loc) == 1) {
 		rep.setRoot(
 			getArgsLoc(loc, "root")

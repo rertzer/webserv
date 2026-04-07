@@ -29,7 +29,7 @@ class Response {
 	ContentMap							_contentMap;
 	std::string							_location;
 	std::string							_root;
-	int									_allowedMethods;
+	BitSet								allowed_methods;
 	std::pair<std::string, std::string> extractField(size_t pos);
 
    public:
@@ -58,7 +58,7 @@ class Response {
 	void setExtensionAllowed(std::pair<std::string, std::string>);
 	void setReadFileAccess(int);
 	void setContentMap(ContentMap);
-	void setAllowedMethods(int);
+	void setAllowedMethods(BitSet);
 	void setContentTypeByRequest(Request const& req);
 	void fillOK(std::string content);
 	// getter
@@ -76,7 +76,8 @@ class Response {
 	std::pair<std::string, std::string> getExtensionAllowed(void) const;
 	int									getReadFileAccess(void) const;
 	ContentMap							getContentMap(void) const;
-	int									getAllowedMethods(void) const;
+	BitSet								getAllowedMethods(void) const;
+	bool								isAllowed(HttpMethod method) const;
 	std::vector<std::string>			getCookie(void) const;
 };
 

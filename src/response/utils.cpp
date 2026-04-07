@@ -78,80 +78,38 @@ Response createErrorPage(int codeErr, Server serv) {
 	return errResp;
 }
 
-int checkAllowMethod(Location loc) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	bool						   get = false;
-	bool						   post = false;
-	bool						   deleteMethod = false;
-	bool						   found = false;
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "allow_methods") {
-			if (it->checkArgs("GET") == 1)
-				get = true;
-			if (it->checkArgs("POST") == 1)
-				post = true;
-			if (it->checkArgs("DELETE") == 1)
-				deleteMethod = true;
-			found = true;
+BitSet checkAllowMethod(Location loc) {
+	BitSet methods;
+
+	for (auto& line : loc.getLocationLine()) {
+		if (line.getCmd() == "allow_methods") {
+			if (line.checkArgs("GET") == 1)
+				methods.addFlag(GET);
+			if (line.checkArgs("POST") == 1)
+				methods.addFlag(POST);
+			if (line.checkArgs("DELETE") == 1)
+				methods.addFlag(DELETE);
 		}
-		it++;
 	}
-	if (found == true) {
-		if (get && post && deleteMethod)
-			return GETPOSTDELETE;
-		if (get && post)
-			return GETPOST;
-		if (get && deleteMethod)
-			return GETDELETE;
-		if (post && deleteMethod)
-			return POSTDELETE;
-		if (get)
-			return GET;
-		if (post)
-			return POST;
-		if (deleteMethod)
-			return DELETE;
-		if (!get && !post && !deleteMethod)
-			return GETPOSTDELETE;
-	}
-	return -1;
+
+	return methods;
 }
 
-int getAllowMethodsServer(LineList const& list) {
-	bool get = false;
-	bool post = false;
-	bool deleteMethod = false;
-
+BitSet getAllowMethodsServer(LineList const& list) {
+	BitSet methods;
 	for (auto it = std::next(list.begin()); it != list.end(); ++it) {
-		if (*it == "GET")
-			get = true;
-		else if (*it == "POST")
-			post = true;
+		if (*it == "GET") {
+			methods.addFlag(GET);
+		} else if (*it == "POST")
+			methods.addFlag(POST);
 		else if (*it == "DELETE")
-			deleteMethod = true;
+			methods.addFlag(DELETE);
 		else {
-			std::cout << "Error in allowed method" << std::endl;
 			throw(ServerException());
 		}
 	}
-	if (get && post && deleteMethod)
-		return GETPOSTDELETE;
-	if (get && post)
-		return GETPOST;
-	if (get && deleteMethod)
-		return GETDELETE;
-	if (post && deleteMethod)
-		return POSTDELETE;
-	if (get)
-		return GET;
-	if (post)
-		return POST;
-	if (deleteMethod)
-		return DELETE;
-	if (!get && !post && !deleteMethod)
-		return GETPOSTDELETE;
-	return -1;
+
+	return methods;
 }
 
 int checkAutoIndex(Location loc) {
@@ -223,7 +181,8 @@ void printServ(Server& serv) {
 	std::cout << "Server name : " << serv.getServName() << std::endl;
 	std::cout << "Server root : " << serv.getRoot() << std::endl;
 	std::cout << "Server Auto index : " << serv.getAutoIndex() << std::endl;
-	std::cout << "Server allowed method : " << serv.getAllowMethods() << std::endl;
+	std::cout << "Server allowed method : " << static_cast<int>(serv.getAllowMethods().getFlags())
+			  << std::endl;
 	std::cout << "Listening on port : " << serv.getListenPort() << std::endl;
 	for (std::map<std::string, std::string>::iterator it = serv.getAllErrorPage().begin();
 		 it != serv.getAllErrorPage().end(); it++)
