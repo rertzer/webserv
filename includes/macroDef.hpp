@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "BitSet.hpp"
 #include "utils.hpp"
 
 #define CONF_FILE_NO_GOOD \
@@ -62,13 +63,13 @@ Server&					 findTheServ(Request& req, std::vector<Server>& serv, int listeningP
 std::string				 readFile(std::string file);
 Response				 createErrorPage(int codeErr, Server serv);
 int						 checkAutoIndex(Location loc);
-int						 checkAllowMethod(Location loc);
+BitSet					 checkAllowMethod(Location loc);
 bool					 changeToIndex(Location loc, Request& req, std::string root);
 int						 checkForRedirection(Location& loc);
 std::pair<std::string, std::string> RedirectTo(Location& loc);
 std::string							getArgsLoc(Location& loc, std::string toFind);
 int									isThereAspecRoot(Location& loc);
-int									getAllowMethodsServer(LineList const& list);
+BitSet								getAllowMethodsServer(LineList const& list);
 void								printServ(Server& serv);
 std::pair<std::string, std::string> getExtension(Location Loc);
 int									checkIfOnlyDigits(std::string str);

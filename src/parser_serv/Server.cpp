@@ -8,8 +8,8 @@
 
 static void trimAfterSemiColon(LineListIter& it);
 
-int Server::getAllowMethods() {
-	return _allowedMethod;
+BitSet Server::getAllowMethods() const {
+	return allowed_method;
 }
 
 std::string Server::getAutoIndex() {
@@ -17,7 +17,7 @@ std::string Server::getAutoIndex() {
 }
 
 Server::Server(LineList servStrings)
-	: _allowedMethod(GETPOSTDELETE), _autoIndex("off"), _nPort(0), _maxBodySize(-1) {
+	: allowed_method(GET | POST | DELETE), _autoIndex("off"), _nPort(0), _maxBodySize(-1) {
 	LocParsing	 loc;
 	ParsingState state = ParsingState::START;
 
@@ -138,7 +138,7 @@ std::vector<std::string>& Server::getDefaultPage() {
 Server& Server::operator=(const Server& rhs) {
 	if (this != &rhs) {
 		_servName = rhs._servName;
-		_allowedMethod = rhs._allowedMethod;
+		allowed_method = rhs.allowed_method;
 		_autoIndex = rhs._autoIndex;
 		_maxBodySize = rhs._maxBodySize;
 		_root = rhs._root;
@@ -171,7 +171,7 @@ ParsingState Server::setAutoIndex(LineList& list, LocParsing& loc) {
 ParsingState Server::setAllowedMethod(LineList& list, LocParsing& loc) {
 	(void)loc;
 	list.pop_back();
-	_allowedMethod = getAllowMethodsServer(list);
+	allowed_method = getAllowMethodsServer(list);
 	return ParsingState::SERVER;
 }
 
@@ -261,6 +261,10 @@ void Server::loadHtmlCode() {
 
 std::string Server::getHtmlCode(HtmlCode kind) {
 	return html_code[kind];
+}
+
+bool Server::isAllowed(HttpMethod method) const {
+	return allowed_method.isSet(method);
 }
 
 static void trimAfterSemiColon(LineListIter& it) {

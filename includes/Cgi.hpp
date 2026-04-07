@@ -7,7 +7,8 @@
 #include <map>
 #include <string>
 #include <vector>
-// #include "Request.hpp"
+
+#include "Server.hpp"
 
 class Request;
 /*Cgi status :
@@ -23,7 +24,7 @@ enum class CgiStatus { NO_INIT, WAIT_WRITE_POST, READY_EXEC, WAIT_READ_PIPE, DON
 class Cgi {
    public:
 	// Cgi();
-	Cgi(std::string m, std::string p, Request& r, std::pair<std::string, std::string> cp);
+	Cgi(HttpMethod m, std::string p, Request& r, std::pair<std::string, std::string> cp);
 	Cgi(Cgi const& rhs);
 	~Cgi();
 
@@ -61,7 +62,7 @@ class Cgi {
 					 std::map<std::string, std::string> env_map,
 					 bool								format = false) const;
 
-	std::string							method;
+	HttpMethod							method;
 	std::string							path;
 	std::string							working_dir;
 	std::string							path_info;

@@ -3,19 +3,11 @@
 
 #include <map>
 
+#include "BitSet.hpp"
+#include "HttpMethod.hpp"
 #include "Location.hpp"
 #include "macroDef.hpp"
 #include "utils.hpp"
-
-enum methodAllowed {
-	GET = 1,
-	POST = 2,
-	DELETE = 3,
-	GETPOST = 4,
-	GETPOSTDELETE = 5,
-	GETDELETE = 6,
-	POSTDELETE = 7,
-};
 
 enum class ParsingState { START, SERVER, LOCATION, ERROR };
 enum class HtmlCode { AUTOINDEX_HEADER, AUTOINDEX_CONTENT, AUTOINDEX_FOOTER };
@@ -31,7 +23,7 @@ using ServerParserHandler = ParsingState (Server::*)(LineList& list, LocParsing&
 class Server {
    private:
 	std::string						   _servName;
-	int								   _allowedMethod;
+	BitSet							   allowed_method;
 	std::string						   _autoIndex;
 	int								   _nPort;
 	std::vector<std::string>		   _defaultPage;
@@ -68,10 +60,12 @@ class Server {
 	std::map<std::string, std::string>& getAllErrorPage();
 	std::vector<Location>&				getAllLocation();
 	int&								getListenPort();
-	int									getAllowMethods();
+	BitSet								getAllowMethods() const;
 	std::string							getAutoIndex();
 	void								checkIfConform();
 	std::string							getHtmlCode(HtmlCode kind);
+	void								addMethod();
+	bool								isAllowed(HttpMethod method) const;
 };
 
 #endif

@@ -2,17 +2,17 @@
 #include "macroDef.hpp"
 
 void dealWithGet(Request req, Response& rep) {
-	rep.setMethod("GET");
+	rep.setMethod(GET);
 	fillPart(req, rep);
 }
 
 void dealWithPost(Request req, Response& rep) {
-	rep.setMethod("POST");
+	rep.setMethod(POST);
 	fillPart(req, rep);
 }
 
 void dealWithDelete(Request req, Response& rep) {
-	rep.setMethod("DELETE");
+	rep.setMethod(DELETE);
 	checkExec(rep.getRoot() + req.getQuery());
 	if (std::remove((rep.getRoot() + req.getQuery()).c_str()) != 0) {
 		rep = createErrorPage(404, rep.getServ());

@@ -78,143 +78,83 @@ Response createErrorPage(int codeErr, Server serv) {
 	return errResp;
 }
 
-int checkAllowMethod(Location loc) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	bool						   get = false;
-	bool						   post = false;
-	bool						   deleteMethod = false;
-	bool						   found = false;
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "allow_methods") {
-			if (it->checkArgs("GET") == 1)
-				get = true;
-			if (it->checkArgs("POST") == 1)
-				post = true;
-			if (it->checkArgs("DELETE") == 1)
-				deleteMethod = true;
-			found = true;
+BitSet checkAllowMethod(Location loc) {
+	BitSet methods;
+
+	for (auto& line : loc.getLocationLine()) {
+		if (line.getCmd() == "allow_methods") {
+			if (line.checkArgs("GET") == 1)
+				methods.addFlag(GET);
+			if (line.checkArgs("POST") == 1)
+				methods.addFlag(POST);
+			if (line.checkArgs("DELETE") == 1)
+				methods.addFlag(DELETE);
 		}
-		it++;
 	}
-	if (found == true) {
-		if (get && post && deleteMethod)
-			return GETPOSTDELETE;
-		if (get && post)
-			return GETPOST;
-		if (get && deleteMethod)
-			return GETDELETE;
-		if (post && deleteMethod)
-			return POSTDELETE;
-		if (get)
-			return GET;
-		if (post)
-			return POST;
-		if (deleteMethod)
-			return DELETE;
-		if (!get && !post && !deleteMethod)
-			return GETPOSTDELETE;
-	}
-	return -1;
+
+	return methods;
 }
 
-int getAllowMethodsServer(LineList const& list) {
-	bool get = false;
-	bool post = false;
-	bool deleteMethod = false;
-
+BitSet getAllowMethodsServer(LineList const& list) {
+	BitSet methods;
 	for (auto it = std::next(list.begin()); it != list.end(); ++it) {
-		if (*it == "GET")
-			get = true;
-		else if (*it == "POST")
-			post = true;
-		else if (*it == "DELETE")
-			deleteMethod = true;
-		else {
-			std::cout << "Error in allowed method" << std::endl;
+		HttpMethod method = stringToMethod(*it);
+		if (method != NONE) {
+			methods.addFlag(method);
+		} else {
 			throw(ServerException());
 		}
 	}
-	if (get && post && deleteMethod)
-		return GETPOSTDELETE;
-	if (get && post)
-		return GETPOST;
-	if (get && deleteMethod)
-		return GETDELETE;
-	if (post && deleteMethod)
-		return POSTDELETE;
-	if (get)
-		return GET;
-	if (post)
-		return POST;
-	if (deleteMethod)
-		return DELETE;
-	if (!get && !post && !deleteMethod)
-		return GETPOSTDELETE;
-	return -1;
+
+	return methods;
 }
 
 int checkAutoIndex(Location loc) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "autoindex") {
-			if (it->getArgs()[0] == "on")
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == "autoindex") {
+			if (ll.getArgs()[0] == "on")
 				return 1;
 			else
 				return 0;
 		}
-		it++;
 	}
 	return -1;
 }
 
 int checkForRedirection(Location& loc) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "return") {
-			if (it->getArgs().size() >= 2)
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == "return") {
+			if (ll.getArgs().size() >= 2)
 				return 1;
 		}
-		it++;
 	}
 	return 0;
 }
 
 std::pair<std::string, std::string> RedirectTo(Location& loc) {
-	std::vector<LineLoc>				lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator		it = lineLoc.begin();
 	std::pair<std::string, std::string> ret;
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "return") {
-			ret.first = it->getArgs()[0];
-			ret.second = it->getArgs()[1];
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == "return") {
+			ret.first = ll.getArgs()[0];
+			ret.second = ll.getArgs()[1];
 			return (ret);
 		}
-		it++;
 	}
 	return ret;
 }
 
 int isThereAspecRoot(Location& loc) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "root")
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == "root")
 			return 1;
-		it++;
 	}
 	return 0;
 }
 
 std::string getArgsLoc(Location& loc, std::string toFind) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == toFind)
-			return it->getArgs()[0];
-		it++;
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == toFind)
+			return ll.getArgs()[0];
 	}
 	return "";
 }
@@ -223,7 +163,8 @@ void printServ(Server& serv) {
 	std::cout << "Server name : " << serv.getServName() << std::endl;
 	std::cout << "Server root : " << serv.getRoot() << std::endl;
 	std::cout << "Server Auto index : " << serv.getAutoIndex() << std::endl;
-	std::cout << "Server allowed method : " << serv.getAllowMethods() << std::endl;
+	std::cout << "Server allowed method : " << static_cast<int>(serv.getAllowMethods().getFlags())
+			  << std::endl;
 	std::cout << "Listening on port : " << serv.getListenPort() << std::endl;
 	for (std::map<std::string, std::string>::iterator it = serv.getAllErrorPage().begin();
 		 it != serv.getAllErrorPage().end(); it++)
@@ -241,35 +182,29 @@ void printServ(Server& serv) {
 }
 
 std::pair<std::string, std::string> getExtension(Location loc) {
-	std::vector<LineLoc>				lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator		it = lineLoc.begin();
 	std::pair<std::string, std::string> ret;
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "extension")
-			ret.first = it->getArgs()[0];
-		if (it->getCmd() == "cgi_path")
-			ret.second = it->getArgs()[0];
-		it++;
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == "extension")
+			ret.first = ll.getArgs()[0];
+		if (ll.getCmd() == "cgi_path")
+			ret.second = ll.getArgs()[0];
 	}
 	return ret;
 }
 
 int checkIfOnlyDigits(std::string str) {
-	for (size_t i = 0; i < str.length(); i++) {
-		if (!isdigit(str[i]))
-			return -1;
+	for (auto l : str) {
+		if (!isdigit(l))
+			return 1;
 	}
 	return 0;
 }
 
 std::string getUploadPath(Location loc) {
-	std::vector<LineLoc>		   lineLoc = loc.getLocationLine();
-	std::vector<LineLoc>::iterator it = lineLoc.begin();
-	std::string					   ret;
-	while (it != lineLoc.end()) {
-		if (it->getCmd() == "upload_path")
-			ret = it->getArgs()[0];
-		it++;
+	std::string ret;
+	for (auto& ll : loc.getLocationLine()) {
+		if (ll.getCmd() == "upload_path")
+			ret = ll.getArgs()[0];
 	}
 	return ret;
 }

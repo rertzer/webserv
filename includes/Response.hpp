@@ -16,7 +16,7 @@ enum codeProb {
 class Response {
    private:
 	Server								_serv;
-	std::string							_method;
+	HttpMethod							method;
 	std::string							_status;
 	std::string							_contentType;
 	std::string							_contentLength;
@@ -29,7 +29,7 @@ class Response {
 	ContentMap							_contentMap;
 	std::string							_location;
 	std::string							_root;
-	int									_allowedMethods;
+	BitSet								allowed_methods;
 	std::pair<std::string, std::string> extractField(size_t pos);
 
    public:
@@ -46,7 +46,7 @@ class Response {
 	// setter
 	void setCookie(std::string ck);
 	void Setserv(Server);
-	void setMethod(std::string);
+	void setMethod(HttpMethod);
 	void setStatus(std::string);
 	void setContentType(std::string);
 	void setContentLength(std::string);
@@ -58,12 +58,12 @@ class Response {
 	void setExtensionAllowed(std::pair<std::string, std::string>);
 	void setReadFileAccess(int);
 	void setContentMap(ContentMap);
-	void setAllowedMethods(int);
+	void setAllowedMethods(BitSet);
 	void setContentTypeByRequest(Request const& req);
 	void fillOK(std::string content);
 	// getter
 	Server								getServ(void) const;
-	std::string							getMethod(void) const;
+	HttpMethod							getMethod(void) const;
 	std::string							getStatus(void) const;
 	std::string							getContentType(void) const;
 	std::string							getContentLength(void) const;
@@ -76,7 +76,8 @@ class Response {
 	std::pair<std::string, std::string> getExtensionAllowed(void) const;
 	int									getReadFileAccess(void) const;
 	ContentMap							getContentMap(void) const;
-	int									getAllowedMethods(void) const;
+	BitSet								getAllowedMethods(void) const;
+	bool								isAllowed(HttpMethod method) const;
 	std::vector<std::string>			getCookie(void) const;
 };
 

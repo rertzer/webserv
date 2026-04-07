@@ -20,7 +20,7 @@ class VirtualRequestTester:
             return None
         passed = self.run_requests(requests)
         self.server.stop()
-        # self.check_server_output()
+        self.check_server_output()
         return passed
 
     def check_server_output(self):

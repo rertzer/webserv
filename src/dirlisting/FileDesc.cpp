@@ -4,6 +4,7 @@
 #include <string>
 
 #include "FileDesc.hpp"
+
 FileDesc::FileDesc(std::string path, struct dirent* sd) {
 	struct stat statbuf;
 
@@ -43,15 +44,12 @@ std::string FileDesc::getLastModified() const {
 }
 
 std::string FileDesc::getTypeName() const {
-	std::map<mode_t, std::string> typenames;
-	typenames[S_IFSOCK] = "socket";
-	typenames[S_IFLNK] = "symbolic link";
-	typenames[S_IFREG] = "regular file";
-	typenames[S_IFBLK] = "block device";
-	typenames[S_IFDIR] = "directory";
-	typenames[S_IFCHR] = "character device";
-	typenames[S_IFIFO] = "FIFO";
+	std::map<mode_t, std::string> typenames{
+		{S_IFSOCK, "socket"},	   {S_IFLNK, "symbolic link"}, {S_IFREG, "regular file"},
+		{S_IFBLK, "block device"}, {S_IFDIR, "directory"},	   {S_IFCHR, "character device"},
+		{S_IFIFO, "FIFO"}
 
+	};
 	return typenames[type];
 }
 

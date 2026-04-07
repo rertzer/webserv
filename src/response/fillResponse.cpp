@@ -4,9 +4,6 @@
 #include "macroDef.hpp"
 #include "utils.hpp"
 
-#include <fstream>
-#include <sstream>
-
 int isDir(std::string fileName) {
 	struct stat path;
 
@@ -76,15 +73,11 @@ void fillPart(Request req, Response& rep) {
 }
 
 void createAutoIndexResp(Request& req, Location loc, Response& rep) {
-	int allowMethod = checkAllowMethod(loc);
-	if (allowMethod != -1)
-		rep.setAllowedMethods(allowMethod);
-	if ((req.getMethod() == "GET" &&
-		 (rep.getAllowedMethods() == GET || rep.getAllowedMethods() == GETPOST ||
-		  rep.getAllowedMethods() == GETDELETE || rep.getAllowedMethods() == GETPOSTDELETE)) ||
-		(req.getMethod() == "POST" &&
-		 (rep.getAllowedMethods() == POST || rep.getAllowedMethods() == GETPOST ||
-		  rep.getAllowedMethods() == POSTDELETE || rep.getAllowedMethods() == GETPOSTDELETE))) {
+	BitSet allow_method = checkAllowMethod(loc);
+	if (allow_method.getFlags() != 0)
+		rep.setAllowedMethods(allow_method);
+	if ((req.getMethod() == GET && rep.isAllowed(GET)) ||
+		(req.getMethod() == POST && (rep.isAllowed(POST)))) {
 		rep.setContent(rep.getDirContent(req.getQuery()));
 		rep.setStatus("200 OK");
 		rep.setMethod(req.getMethod());

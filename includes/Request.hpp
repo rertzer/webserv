@@ -26,7 +26,7 @@ class Request {
 	int										  getStatus() const;
 	CgiStatus								  getCgiStatus() const;
 	const std::string&						  getProtocol() const;
-	const std::string&						  getMethod() const;
+	HttpMethod								  getMethod() const;
 	TCPSocket*								  getSocket() const;
 	const std::string&						  getQuery() const;
 	const std::map<std::string, std::string>& getHeader() const;
@@ -84,7 +84,7 @@ class Request {
 	std::map<std::string, std::string> header;
 	std::map<std::string, std::string> trailer;
 	std::map<std::string, std::string> multipart;
-	std::string						   method;
+	HttpMethod						   method;
 	std::string						   query;
 	std::string						   protocol;
 	std::string						   content;
