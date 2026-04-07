@@ -149,20 +149,22 @@ void Cgi::setPipeFd() {
 }
 
 int Cgi::writePostFd() {
-	int size = 0;
-	if (req.getContent().size()) {
-		size = ::write(post_fd[1], req.getContent().c_str(), req.getContent().size());
+	ssize_t size = 0;
+	size_t	content_size = req.getContent().size();
+	if (content_size) {
+		size = ::write(post_fd[1], req.getContent().c_str(), content_size);
 		if (size <= 0) {
 			perror("pipe error");
 			::close(post_fd[1]);
 			throw(ErrorException(500));
 		}
 	}
-	if (static_cast<unsigned int>(size) == req.getContent().size()) {
+	if (static_cast<unsigned int>(size) == content_size) {
 		status = CgiStatus::WAIT_READ_PIPE;
 		::close(post_fd[1]);
-	} else
+	} else {
 		status = CgiStatus::POST_TO_READ;
+	}
 	req.eraseContent(size);
 
 	return size;
