@@ -74,15 +74,16 @@ void fillPart(Request req, Response& rep) {
 
 void createAutoIndexResp(Request& req, Location loc, Response& rep) {
 	BitSet allow_method = checkAllowMethod(loc);
-	if (allow_method.getFlags() != 0)
+	if (allow_method.getFlags() != 0) {
 		rep.setAllowedMethods(allow_method);
-	if ((req.getMethod() == GET && rep.isAllowed(GET)) ||
-		(req.getMethod() == POST && (rep.isAllowed(POST)))) {
-		rep.setContent(rep.getDirContent(req.getQuery()));
+	}
+
+	auto method = req.getMethod();
+	if ((method == GET || method == POST) && (rep.isAllowed(method))) {
+		rep.setContentWithLength(rep.getDirContent(req.getQuery()));
 		rep.setStatus("200 OK");
-		rep.setMethod(req.getMethod());
+		rep.setMethod(method);
 		rep.setContentType("text/html");
-		rep.setContentLength(intToString(rep.getContent().length()));
 	} else {
 		rep = createErrorPage(405, rep.getServ());
 	}

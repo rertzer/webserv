@@ -3,8 +3,8 @@
 
 #include "Cgi.hpp"
 #include "ErrorException.hpp"
+#include "HttpMethod.hpp"
 #include "Request.hpp"
-#include "Server.hpp"
 
 // public
 Cgi::Cgi(HttpMethod m, std::string p, Request& r, std::pair<std::string, std::string> cp)
@@ -160,7 +160,7 @@ int Cgi::writePostFd() {
 			throw(ErrorException(500));
 		}
 	}
-	if (static_cast<unsigned int>(size) == content_size) {
+	if (static_cast<size_t>(size) == content_size) {
 		status = CgiStatus::WAIT_READ_PIPE;
 		::close(post_fd[1]);
 	} else {
@@ -174,17 +174,17 @@ int Cgi::writePostFd() {
 int Cgi::readPipeFd() {
 	buffer = new char[buffer_size + 1];
 	int size = ::read(pipe_fd[0], buffer, buffer_size);
-	if (size < 0) {
-		delete[] buffer;
-		closePipe();
-		throw(ErrorException(500));
-	} else if (size == 0) {
-		closePipe();
-	} else {
+
+	if (size > 0) {
 		buffer[size] = '\0';
 		content.insert(0, buffer, size);
+	} else {
+		closePipe();
 	}
 	delete[] buffer;
+	if (size < 0) {
+		throw(ErrorException(500));
+	}
 	return size;
 }
 

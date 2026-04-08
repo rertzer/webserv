@@ -1,6 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 #include "ContentMap.hpp"
+#include "FileDesc.hpp"
 #include "Request.hpp"
 #include "Server.hpp"
 #include "macroDef.hpp"
@@ -31,6 +32,24 @@ class Response {
 	std::string							_root;
 	BitSet								allowed_methods;
 	std::pair<std::string, std::string> extractField(size_t pos);
+	void								extractFields();
+	std::string appendDirContent(std::string content, FileDesc const& filedesc);
+	std::string getResponseStatus() const;
+	std::string getResponseHeader();
+	std::string getResponseLocation() const;
+	std::string getResponseConnection() const;
+	std::string getResponseContentHeader() const;
+	std::string getResponseCookies() const;
+	std::string getResponseContent() const;
+	void		logResponse(std::string resp) const;
+	void		dealWithMethod(Request& req);
+	void		dealWithDelete(Request& req);
+	int			respWithLoc(Request& req);
+	bool		setRequestQuery(Location& loc, Request& req);
+
+	void setWithLocRoot(Location& loc);
+	bool setWithLocRedirection(Location& loc, Request& req);
+	int	 respWithoutLoc(Request& req);
 
    public:
 	Response(Request& req, Server& serv);
@@ -52,6 +71,7 @@ class Response {
 	void setContentLength(std::string);
 	void setConnectionClose(std::string);
 	void setContent(std::string);
+	void setContentWithLength(std::string);
 	void setLocation(std::string);
 	void setRoot(std::string);
 	void setAutoIndex(std::string);
