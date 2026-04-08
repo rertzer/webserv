@@ -23,6 +23,7 @@ def test_1():
         SimpleRequest("GOT", "/", headers, HTTPStatus.BAD_REQUEST, 847),
         SimpleRequest("GET", "/nowhere", headers, HTTPStatus.NOT_FOUND, 851),
         SimpleRequest("GET", "/html/kitty/kitty.html", headers, HTTPStatus.OK, 1469),
+        # 5
         SimpleRequest(
             "GET",
             "/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
@@ -60,6 +61,7 @@ def test_1():
                 }
             ),
         ),
+        # 10
         SimpleRequest(
             "POST",
             "/php/cesar_post.php",
@@ -113,6 +115,11 @@ def test_2():
         ),
         RawRequest(
             b"PUT / HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            HTTPStatus.NOT_IMPLEMENTED,
+            844,
+        ),
+        RawRequest(
+            b"HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n",
             HTTPStatus.NOT_IMPLEMENTED,
             844,
         ),
