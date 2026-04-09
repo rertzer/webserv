@@ -32,7 +32,7 @@ std::string getSpecIndex(Location loc, Response& rep) {
 }
 
 Location getTheLocation(std::string path, Response& rep) {
-	std::vector<Location> all_loc = rep.getServ().getAllLocation();
+	auto all_loc = rep.getServ().getAllLocation();
 	path = extractDirPath(path);
 	Location* loc = findLocation(all_loc, path);
 	if (loc)

@@ -4,17 +4,10 @@
 #include <map>
 
 #include "BitSet.hpp"
+#include "HttpMethod.hpp"
 #include "Location.hpp"
 #include "macroDef.hpp"
 #include "utils.hpp"
-
-enum HttpMethod {
-	NONE = 0U,
-	GET = 1U << 0,
-	POST = 1U << 1,
-	DELETE = 1U << 2,
-
-};
 
 enum class ParsingState { START, SERVER, LOCATION, ERROR };
 enum class HtmlCode { AUTOINDEX_HEADER, AUTOINDEX_CONTENT, AUTOINDEX_FOOTER };

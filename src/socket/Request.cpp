@@ -76,7 +76,7 @@ const std::string& Request::getProtocol() const {
 	return protocol;
 }
 
-const std::string& Request::getMethod() const {
+HttpMethod Request::getMethod() const {
 	return method;
 }
 
@@ -132,9 +132,10 @@ bool Request::checkSubField(std::string const& name, std::string const& value) c
 }
 
 bool Request::isUpload() const {
-	if (getMethod() == "POST" && checkSubField("Content-Type", "multipart/form-data") &&
-		!upload_path.empty())
+	if (getMethod() == POST && checkSubField("Content-Type", "multipart/form-data") &&
+		!upload_path.empty()) {
 		return true;
+	}
 	return false;
 }
 
@@ -306,13 +307,27 @@ void Request::setControlData() {
 		line = soc->getLine();
 
 	int m = line.find(" ");
-	if (m == -1)
+	if (m == -1) {
 		throw(ErrorException(400));
-	method = line.substr(0, m);
-
+	}
+	auto methodstr = line.substr(0, m);
+	if (methodstr == "GET") {
+		method = GET;
+	} else if (methodstr == "POST") {
+		method = POST;
+	} else if (methodstr == "DELETE") {
+		method = DELETE;
+	} else if (methodstr == "PUT") {
+		method = PUT;
+	} else if (methodstr == "HEAD") {
+		method = HEAD;
+	} else {
+		method = NONE;
+	}
 	int q = line.find(" ", m + 1);
-	if (q == -1)
+	if (q == -1) {
 		throw(ErrorException(400));
+	}
 	query = line.substr(m + 1, q - (m + 1));
 
 	protocol = line.substr(q + 1);
@@ -412,17 +427,11 @@ void Request::checkControlData() const {
 		throw(ErrorException(505));
 	std::vector<std::string> allowed_methods;
 
-	allowed_methods.push_back("GET");
-	allowed_methods.push_back("POST");
-	allowed_methods.push_back("DELETE");
-
-	for (unsigned int i = 0; i < allowed_methods.size(); i++) {
-		if (method == allowed_methods[i])
-			return;
+	if (method == NONE) {
+		throw(ErrorException(400));
 	}
-	if (method == "PUT" || method == "HEAD")
+	if (method == PUT || method == HEAD)
 		throw(ErrorException(501));
-	throw(ErrorException(400));
 }
 
 void Request::checkHeader() const {

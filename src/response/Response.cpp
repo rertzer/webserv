@@ -1,29 +1,70 @@
 #include "Response.hpp"
 #include "Cgi.hpp"
 #include "DirListing.hpp"
+#include "Status.hpp"
+#include "TCPSocket.hpp"
 #include "color.hpp"
+#include "macroDef.hpp"
 
 std::string Response::getResponse() {
-	std::string response = "HTTP/1.1 " + _status + " \r\n";
+	std::string header = getResponseHeader();
+	logResponse(header);
+
+	return header + getResponseContent();
+}
+
+std::string Response::getResponseHeader() {
+	std::string header;
+
+	header += getResponseStatus();
 	if (!_location.empty()) {
-		response += "Location: " + _location + "\r\n";
-		return response;
+		header += getResponseLocation();
+	} else {
+		header += getResponseConnection();
+		header += getResponseContentHeader();
+		header += getResponseCookies();
 	}
-	if (!_connectionClose.empty())
-		response += "Connection: " + _connectionClose + "\r\n";
-	response +=
-		"Content-Type: " + _contentType + "\r\n" + "Content-Length: " + _contentLength + "\r\n";
-	int cookie_nb = _setCookie.size();
+	return header;
+}
+
+std::string Response::getResponseStatus() const {
+	return "HTTP/1.1 " + _status + " \r\n";
+}
+
+std::string Response::getResponseLocation() const {
+	return "Location: " + _location + "\r\n";
+}
+
+std::string Response::getResponseConnection() const {
+	std::string connection = "";
+	if (!_connectionClose.empty()) {
+		connection = "Connection: " + _connectionClose + "\r\n";
+	}
+	return connection;
+}
+
+std::string Response::getResponseContentHeader() const {
+	return "Content-Type: " + _contentType + "\r\n" + "Content-Length: " + _contentLength + "\r\n";
+}
+
+std::string Response::getResponseCookies() const {
+	int			cookie_nb = _setCookie.size();
+	std::string cookies = "";
 	for (int i = 0; i < cookie_nb; i++) {
-		response += "Set-Cookie: " + _setCookie[i] + "\r\n";
+		cookies += "Set-Cookie: " + _setCookie[i] + "\r\n";
 	}
+	return cookies;
+}
+
+std::string Response::getResponseContent() const {
+	return "\r\n" + _content;
+}
+
+void Response::logResponse(std::string resp) const {
 	if (_status == "200 OK")
-		std::cout << GREEN "\nReponse send:\n" << response << RESET << std::endl;
+		std::cout << GREEN "\nReponse send:\n" << resp << RESET << std::endl;
 	else
-		std::cout << RED "\nReponse send:\n" << response << RESET << std::endl;
-	response += "\r\n";
-	response += _content;
-	return response;
+		std::cout << RED "\nReponse send:\n" << resp << RESET << std::endl;
 }
 
 Response::Response(Request& req, Server& serv) {
@@ -32,28 +73,41 @@ Response::Response(Request& req, Server& serv) {
 	_root = _serv.getRoot();
 	_autoIndex = _serv.getAutoIndex();
 	allowed_methods = serv.getAllowMethods();
-	if (req.getCgiStatus() == CgiStatus::DONE) {
-		if (respWithCgi(req) == 0)
-			return;
+	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
+		return;
 	}
-	if (checkIfLocation(req.getQuery(), *this) != -1) {
-		if (respWithLoc(req, *this) == 0)
-			return;
+	if (checkIfLocation(req.getQuery(), *this) != -1 && respWithLoc(req) == 0) {
+		return;
+	}
+	if (respWithoutLoc(req) == 0) {
+		return;
+	}
+	dealWithMethod(req);
+}
+
+void Response::dealWithMethod(Request& req) {
+	method = req.getMethod();
+	if (isAllowed(method)) {
+		if (method == GET || method == POST) {
+			fillPart(req, *this);
+		} else if (method == DELETE) {
+			dealWithDelete(req);
+		}
 	} else {
-		if (respWithOutLoc(req, *this) == 0)
-			return;
-	}
-	if (req.getMethod() == "GET" && (isAllowed(GET)))
-		dealWithGet(req, *this);
-	else if (req.getMethod() == "POST" && (isAllowed(POST)))
-		dealWithPost(req, *this);
-	else if (req.getMethod() == "DELETE" && isAllowed(DELETE))
-		dealWithDelete(req, *this);
-	else {
 		*this = createErrorPage(405, _serv);
 	}
 }
 
+void Response::dealWithDelete(Request& req) {
+	checkExec(getRoot() + req.getQuery());
+	if (std::remove((getRoot() + req.getQuery()).c_str()) != 0) {
+		*this = createErrorPage(404, getServ());
+	} else {
+		setStatus("200 OK");
+		setContentType("text/html");
+		setContentWithLength("<html><body>File deleted</body></html>");
+	}
+}
 Response::Response(std::string status,
 				   std::string contentType,
 				   std::string contentLength,
@@ -81,8 +135,7 @@ Response& Response::operator=(Response const& rhs) {
 
 void Response::fillOK(std::string content) {
 	setStatus("200 OK");
-	setContent(content);
-	setContentLength(intToString(getContent().length()));
+	setContentWithLength(content);
 	setConnectionClose("keep-alive");
 }
 
@@ -110,8 +163,8 @@ void Response::setStatus(std::string status) {
 	_status = status;
 }
 
-void Response::setMethod(std::string method) {
-	_method = method;
+void Response::setMethod(HttpMethod m) {
+	method = m;
 }
 
 void Response::setContentType(std::string contentType) {
@@ -146,13 +199,20 @@ std::pair<std::string, std::string> Response::extractField(size_t pos) {
 }
 
 int Response::respWithCgi(Request& req) {
-	_method = req.getMethod();
-	_content = req.getCgi()->getContent();
+	method = req.getMethod();
+	_status = "200 OK";
+	_connectionClose = "keep-alive";
 	_contentType = "text/html";
+	_content = req.getCgi()->getContent();
+	extractFields();
+	_contentLength = intToString(_content.length());
+	return 0;
+}
 
+void Response::extractFields() {
 	size_t pos = _content.find("\r\n");
 	while (pos != std::string::npos && pos != 0) {
-		std::pair<std::string, std::string> field = extractField(pos);
+		auto field = extractField(pos);
 		if (field.first == "Content-Type") {
 			_contentType = field.second;
 		} else if (field.first == "Set-Cookie") {
@@ -160,10 +220,6 @@ int Response::respWithCgi(Request& req) {
 		}
 		pos = _content.find("\r\n");
 	}
-	_status = "200 OK";
-	_contentLength = intToString(_content.length());
-	_connectionClose = "keep-alive";
-	return 0;
 }
 
 std::string Response::getDirContent(std::string path) {
@@ -172,19 +228,21 @@ std::string Response::getDirContent(std::string path) {
 
 	replaceAll(index, "PATH", path);
 
-	auto				  content = _serv.getHtmlCode(HtmlCode::AUTOINDEX_CONTENT);
-	std::vector<FileDesc> files = drl.getDirContent();
-	for (std::vector<FileDesc>::iterator it = files.begin(); it != files.end(); it++) {
-		auto new_content = content;
-		replaceAll(new_content, "NAME", it->getName());
-		replaceAll(new_content, "TYPE", it->getTypeName());
-		replaceAll(new_content, "SIZE", std::to_string(it->getSize()));
-		replaceAll(new_content, "LASTMODIFIED", it->getLastModified());
-		index.append(new_content);
+	auto content = _serv.getHtmlCode(HtmlCode::AUTOINDEX_CONTENT);
+	for (auto& filedesc : drl.getDirContent()) {
+		index += appendDirContent(content, filedesc);
 	}
 	auto footer = _serv.getHtmlCode(HtmlCode::AUTOINDEX_FOOTER);
 	index.append(footer);
 	return index;
+}
+
+std::string Response::appendDirContent(std::string content, FileDesc const& filedesc) {
+	replaceAll(content, "NAME", filedesc.getName());
+	replaceAll(content, "TYPE", filedesc.getTypeName());
+	replaceAll(content, "SIZE", std::to_string(filedesc.getSize()));
+	replaceAll(content, "LASTMODIFIED", filedesc.getLastModified());
+	return content;
 }
 
 void Response::setConnectionClose(std::string connectionClose) {
@@ -193,6 +251,11 @@ void Response::setConnectionClose(std::string connectionClose) {
 
 void Response::setContent(std::string content) {
 	_content = content;
+}
+
+void Response::setContentWithLength(std::string content) {
+	_content = content;
+	_contentLength = intToString(_content.length());
 }
 
 void Response::setExtensionAllowed(std::pair<std::string, std::string> extensionAllowed) {
@@ -223,8 +286,8 @@ std::string Response::getStatus(void) const {
 	return _status;
 }
 
-std::string Response::getMethod(void) const {
-	return _method;
+HttpMethod Response::getMethod(void) const {
+	return method;
 }
 
 std::string Response::getConnectionClose(void) const {
@@ -267,6 +330,83 @@ ContentMap Response::getContentMap(void) const {
 	return _contentMap;
 }
 
-bool Response::isAllowed(HttpMethod method) const {
-	return allowed_methods.isSet(method);
+bool Response::isAllowed(HttpMethod m) const {
+	return allowed_methods.isSet(m);
+}
+
+int Response::respWithLoc(Request& req) {
+	Location loc = getTheLocation(req.getQuery(), *this);
+
+	if (setRequestQuery(loc, req)) {
+		return 0;
+	}
+
+	BitSet allow_method = checkAllowMethod(loc);
+	setAllowedMethods(allow_method);
+	setWithLocRoot(loc);
+	if (setWithLocRedirection(loc, req)) {
+		return 0;
+	}
+	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
+		return initCgi(req, loc, *this);
+	else {
+		req.setUploadPath(getUploadPath(loc));
+		if (req.isUpload()) {
+			req.upload_all();
+		}
+	}
+	return 1;
+}
+
+bool Response::setRequestQuery(Location& loc, Request& req) {
+	auto req_query = req.getQuery();
+	if (req_query != "/") {
+		if (req_query.back() == '/') {
+			if (checkAutoIndex(loc) == 0) {	 // autoindex off
+				if (getSpecIndex(loc, *this) == "")
+					req_query = "/";
+				else
+					req_query = getSpecIndex(loc, *this);
+				loc = getTheLocation(req_query, *this);
+			} else if (checkAutoIndex(loc) == 1 || getAutoIndex() == "on") {
+				createAutoIndexResp(req, loc, *this);
+				return true;
+			} else
+				req_query = "/";
+		}
+		req.setQuery(req_query);
+	}
+	return false;
+}
+
+void Response::setWithLocRoot(Location& loc) {
+	if (isThereAspecRoot(loc) == 1) {
+		setRoot(getArgsLoc(loc, "root")
+					.substr(0, getArgsLoc(loc, "root").length() - loc.getLocationPath().length()));
+	}
+}
+
+bool Response::setWithLocRedirection(Location& loc, Request& req) {
+	bool redir = false;
+	if (checkForRedirection(loc) == 1) {
+		std::pair<std::string, std::string> redirection = RedirectTo(loc);
+		setStatus(Status::getMsg(atoi((redirection.first.c_str()))));
+		setLocation(redirection.second.substr(0, redirection.second.length()));
+		std::cout << GREEN "Redir = {[Status :" << getStatus()
+				  << "][New Location: " << getLocation() << "]" RESET << std::endl;
+		req.getSocket()->setKeepAlive(false);
+		redir = true;
+	}
+	return redir;
+}
+
+int Response::respWithoutLoc(Request& req) {
+	if (req.getQuery() != "/" && req.getQuery().back() == '/') {
+		if (getAutoIndex() == "on") {
+			createAutoIndexResp(req, Location(), *this);
+			return 0;
+		} else
+			req.setQuery("/");
+	}
+	return 1;
 }

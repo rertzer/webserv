@@ -3,10 +3,11 @@
 
 #include "Cgi.hpp"
 #include "ErrorException.hpp"
+#include "HttpMethod.hpp"
 #include "Request.hpp"
 
 // public
-Cgi::Cgi(std::string m, std::string p, Request& r, std::pair<std::string, std::string> cp)
+Cgi::Cgi(HttpMethod m, std::string p, Request& r, std::pair<std::string, std::string> cp)
 	: method(m),
 	  path(p),
 	  buffer(nullptr),
@@ -18,7 +19,7 @@ Cgi::Cgi(std::string m, std::string p, Request& r, std::pair<std::string, std::s
 	setUrl();
 	setEnv();
 	initPipes();
-	if (method == "POST")
+	if (method == POST)
 		status = CgiStatus::WAIT_WRITE_POST;
 	else
 		status = CgiStatus::READY_EXEC;
@@ -114,7 +115,7 @@ void Cgi::setPath(std::string const& url) {
 void Cgi::setEnv() {
 	env_map["REDIRECT_STATUS"] = "200";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-	env_map["REQUEST_METHOD"] = method;
+	env_map["REQUEST_METHOD"] = methodToString(method);
 	env_map["SERVER_PROTOCOL"] = "HTTP/1.1";
 	env_map["REQUEST_URI"] = req.getQuery();
 	env_map["SCRIPT_FILENAME"] = path;
@@ -127,7 +128,7 @@ void Cgi::setEnv() {
 }
 
 void Cgi::initPipes() {
-	if (method == "POST")
+	if (method == POST)
 		setPostFd();
 	else {
 		post_fd[0] = -1;
@@ -159,7 +160,7 @@ int Cgi::writePostFd() {
 			throw(ErrorException(500));
 		}
 	}
-	if (static_cast<unsigned int>(size) == content_size) {
+	if (static_cast<size_t>(size) == content_size) {
 		status = CgiStatus::WAIT_READ_PIPE;
 		::close(post_fd[1]);
 	} else {
@@ -173,17 +174,17 @@ int Cgi::writePostFd() {
 int Cgi::readPipeFd() {
 	buffer = new char[buffer_size + 1];
 	int size = ::read(pipe_fd[0], buffer, buffer_size);
-	if (size < 0) {
-		delete[] buffer;
-		closePipe();
-		throw(ErrorException(500));
-	} else if (size == 0) {
-		closePipe();
-	} else {
+
+	if (size > 0) {
 		buffer[size] = '\0';
 		content.insert(0, buffer, size);
+	} else {
+		closePipe();
 	}
 	delete[] buffer;
+	if (size < 0) {
+		throw(ErrorException(500));
+	}
 	return size;
 }
 
@@ -209,7 +210,7 @@ void Cgi::exec() {
 }
 
 int Cgi::execSon() {
-	if (method == "POST") {
+	if (method == POST) {
 		if (::dup2(post_fd[0], 0) == -1 || ::close(post_fd[0]) == -1 || ::close(post_fd[1]) == -1) {
 			perror("POST: dup2 or close error");
 			exit(-1);
@@ -233,7 +234,7 @@ int Cgi::execSon() {
 
 void Cgi::execFather() {
 	::close(pipe_fd[1]);
-	if (method == "POST")
+	if (method == POST)
 		::close(post_fd[0]);
 	if (status == CgiStatus::READY_EXEC)
 		status = CgiStatus::WAIT_READ_PIPE;
