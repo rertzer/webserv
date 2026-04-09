@@ -274,3 +274,24 @@ static void trimAfterSemiColon(LineListIter& it) {
 		*it = it->substr(0, end + 1);
 	}
 }
+
+Location* Server::findLocation(std::string path) {
+	Location* loc = nullptr;
+	while (path.find("/") != std::string::npos) {
+		loc = findLocationByPath(path);
+		if (loc || path.rfind("/") == 0) {
+			break;
+		}
+		path = path.substr(0, path.rfind("/"));
+	}
+	return loc;
+}
+
+Location* Server::findLocationByPath(std::string path) {
+	for (auto& loc : _location) {
+		if (loc.getLocationPath() == path) {
+			return &loc;
+		}
+	}
+	return nullptr;
+}

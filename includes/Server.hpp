@@ -45,6 +45,7 @@ class Server {
 	ParsingState					   parseStart(LineList& list, LocParsing& loc);
 	ParsingState					   parseServer(LineList& list, LocParsing& loc);
 	void							   loadHtmlCode();
+	Location*						   findLocationByPath(std::string path);
 
    public:
 	Server();
@@ -59,6 +60,7 @@ class Server {
 	std::string							getErrorPage(std::string errorNb);
 	std::map<std::string, std::string>& getAllErrorPage();
 	std::vector<Location>&				getAllLocation();
+	Location*							findLocation(std::string path);
 	int&								getListenPort();
 	BitSet								getAllowMethods() const;
 	std::string							getAutoIndex();
