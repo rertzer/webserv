@@ -1,6 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,5 +18,6 @@ void		printLineList(LineList const& list);
 std::string join(LineList const& list);
 std::string getFileContent(std::string path);
 void		replaceAll(std::string& str, std::string const& old_word, std::string const& new_word);
+std::optional<int> toInt(const std::string& str);
 
 #endif

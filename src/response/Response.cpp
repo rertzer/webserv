@@ -387,9 +387,14 @@ void Response::setWithLocRoot(Location& loc) {
 
 bool Response::setWithLocRedirection(Location& loc, Request& req) {
 	bool redir = false;
-	if (checkForRedirection(loc) == 1) {
+	if (loc.checkForRedirection()) {
 		std::pair<std::string, std::string> redirection = RedirectTo(loc);
-		setStatus(Status::getMsg(atoi((redirection.first.c_str()))));
+		auto								stat = toInt(redirection.first);
+		if (stat.has_value()) {
+			setStatus(Status::getMsg(stat.value()));
+		} else {
+			std::cerr << "status is not a valid number\n";
+		}
 		setLocation(redirection.second.substr(0, redirection.second.length()));
 		std::cout << GREEN "Redir = {[Status :" << getStatus()
 				  << "][New Location: " << getLocation() << "]" RESET << std::endl;

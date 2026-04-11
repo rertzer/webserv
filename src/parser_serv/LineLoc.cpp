@@ -30,7 +30,7 @@ std::vector<std::string>& LineLoc::getArgs() {
 	return _args;
 }
 
-int LineLoc::checkArgs(std::string toFind) {
+int LineLoc::checkArgs(std::string toFind) const {
 	for (size_t i = 0; i < _args.size(); i++) {
 		if (_args[i] == toFind)
 			return (1);

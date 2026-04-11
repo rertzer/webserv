@@ -8,15 +8,19 @@
 Location::Location(std::vector<std::string> locString) {
 	auto loc = split(locString[0]);
 	_locationPath = loc[1];
-	for (auto& it : locString | std::views::drop(1)) {
-		auto list = serverLineSplit(it);
-		if (list.back() != ";") {
-			std::cerr << "Location: semicolon missing " << it << std::endl;
-			throw(ServerException());
-		}
-		list.pop_back();
-		_locationLine.push_back((LineLoc)list);
+	for (auto& ls : locString | std::views::drop(1)) {
+		addLine(ls);
 	}
+}
+
+void Location::addLine(std::string ls) {
+	auto list = serverLineSplit(ls);
+	if (list.back() != ";") {
+		std::cerr << "Location: semicolon missing " << ls << std::endl;
+		throw(ServerException());
+	}
+	list.pop_back();
+	_locationLine.push_back((LineLoc)list);
 }
 
 std::string Location::getLocationPath() const {
@@ -26,17 +30,6 @@ std::string Location::getLocationPath() const {
 std::vector<LineLoc>& Location::getLocationLine() {
 	return _locationLine;
 }
-
-// Location::Location() {}
-
-void Location::printLoc() {
-	for (auto& ll : _locationLine) {
-		std::cout << "Line cmd = " << ll.getCmd() << std::endl;
-		for (auto& arg : ll.getArgs())
-			std::cout << "Value = " << arg << std::endl;
-	}
-}
-
 std::vector<std::string> Location::getIndex() {
 	std::vector<std::string> _stringIndex;
 
@@ -47,4 +40,20 @@ std::vector<std::string> Location::getIndex() {
 		}
 	}
 	return _stringIndex;
+}
+
+bool Location::checkForRedirection() {
+	for (auto& lineloc : getLocationLine()) {
+		if (lineloc.getCmd() == "return")
+			return (true);
+	}
+	return false;
+}
+
+void Location::printLoc() {
+	for (auto& ll : _locationLine) {
+		std::cout << "Line cmd = " << ll.getCmd() << std::endl;
+		for (auto& arg : ll.getArgs())
+			std::cout << "Value = " << arg << std::endl;
+	}
 }

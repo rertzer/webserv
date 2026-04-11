@@ -14,14 +14,6 @@ void checkExec(std::string filePath) {
 	}
 }
 
-int CheckForRedirection(Location loc) {
-	for (auto& lineloc : loc.getLocationLine()) {
-		if (lineloc.getCmd() == "return")
-			return (1);
-	}
-	return 0;
-}
-
 std::string getSpecIndex(Location loc, Response& rep) {
 	for (auto& item : loc.getIndex()) {
 		if (access((rep.getRoot() + item).c_str(), F_OK) != -1 &&

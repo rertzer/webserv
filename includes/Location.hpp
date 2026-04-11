@@ -8,14 +8,17 @@ class Location {
    private:
 	std::string			 _locationPath;
 	std::vector<LineLoc> _locationLine;
+	void				 addLine(std::string ls);
 
    public:
-	void printLoc();
 	Location() = default;
+	Location(std::vector<std::string> locationStrings);
+
 	std::vector<LineLoc>&	 getLocationLine();
 	std::vector<std::string> getIndex();
 	std::string				 getLocationPath() const;
-	Location(std::vector<std::string> locationStrings);
+	bool					 checkForRedirection();
+	void					 printLoc();
 };
 
 #endif

@@ -177,7 +177,13 @@ ParsingState Server::setAllowedMethod(LineList& list, LocParsing& loc) {
 
 ParsingState Server::setPort(Line& line, LocParsing& loc) {
 	(void)loc;
-	_nPort = atoi(line.c_str());
+	auto p = toInt(line);
+	if (p.has_value()) {
+		_nPort = p.value();
+	} else {
+		std::cerr << "Invalid port value\n";
+		throw(ServerException());
+	}
 	return ParsingState::SERVER;
 }
 
@@ -220,8 +226,8 @@ ParsingState Server::setErrorPage(LineList& list, LocParsing& loc) {
 	}
 	std::string errorNb = list[1];
 	std::string errorPage = list[2];
-	auto		number = atoi(errorNb.c_str());
-	if (number < 300 || number > 599) {
+	auto		number = toInt(errorNb);
+	if (!number.has_value() || number.value() < 300 || number.value() > 599) {
 		std::cerr << "Error page number out of range" << std::endl;
 		throw(ServerException());
 	}
@@ -234,8 +240,9 @@ ParsingState Server::setMaxBodySize(LineList& list, LocParsing& loc) {
 	if (list.size() != 3) {
 		throw(ServerException());
 	}
-	if (checkIfOnlyDigits(list[1]) == 0) {
-		_maxBodySize = atoi(list[1].c_str());
+	auto mbs = toInt(list[1]);
+	if (mbs.has_value()) {
+		_maxBodySize = mbs.value();
 	} else {
 		std::cerr << "Invalid client_max_body_size\n";
 		throw(ServerException());

@@ -1,3 +1,4 @@
+#include <charconv>
 #include <fstream>
 #include <sstream>
 
@@ -222,4 +223,14 @@ std::string join(LineList const& list) {
 		oss << ' ' << *it;
 
 	return oss.str();
+}
+
+std::optional<int> toInt(const std::string& str) {
+	int value;
+	auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+
+	if (ec == std::errc() && ptr == str.data() + str.size())
+		return value;
+
+	return std::nullopt;
 }

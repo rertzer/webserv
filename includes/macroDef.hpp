@@ -65,7 +65,6 @@ Response				 createErrorPage(int codeErr, Server serv);
 int						 checkAutoIndex(Location loc);
 BitSet					 checkAllowMethod(Location loc);
 bool					 changeToIndex(Location loc, Request& req, std::string root);
-int						 checkForRedirection(Location& loc);
 std::pair<std::string, std::string> RedirectTo(Location& loc);
 std::string							getArgsLoc(Location& loc, std::string toFind);
 int									isThereAspecRoot(Location& loc);
