@@ -79,16 +79,14 @@ void								dealWithDelete(Request req, Response& rep);
 std::string							readFile(std::string file, Response& rep);
 std::string							getContentKey(std::string value, Response& rep);
 std::string							findLocation(std::string path, Response& rep);
-int									checkIfLocation(std::string path, Response& rep);
-Location							getTheLocation(std::string path, Response& rep);
 void								fillPart(Request req, Response& rep);
 int									initCgi(Request& req, Location& loc, Response& rep);
 int									respWithCgi(Request& req, Response& rep);
 int									respWithOutLoc(Request& req, Response& rep);
-std::string							getSpecIndex(Location loc, Response& rep);
 void								createAutoIndexResp(Request& req, Location loc, Response& rep);
 void								checkExec(std::string filePath);
 void								printCleanRequest(Request req);
-Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort);
+Server&		findTheDefaultServ(std::vector<Server>& serv, int listeningPort);
+std::string extractDirPath(std::string path);
 
 #endif

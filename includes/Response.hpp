@@ -99,6 +99,9 @@ class Response {
 	BitSet								getAllowedMethods(void) const;
 	bool								isAllowed(HttpMethod method) const;
 	std::vector<std::string>			getCookie(void) const;
+	std::string							getSpecIndex(Location loc);
+	Location							getTheLocation(std::string path);
+	int									checkIfLocation(std::string path);
 };
 
 #endif

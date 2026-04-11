@@ -15,7 +15,7 @@ Response::Response(Request& req, Server& serv) {
 	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
 		return;
 	}
-	if (checkIfLocation(req.getQuery(), *this) && respWithLoc(req) == 0) {
+	if (checkIfLocation(req.getQuery()) && respWithLoc(req) == 0) {
 		return;
 	}
 	if (respWithoutLoc(req) == 0) {
@@ -334,7 +334,7 @@ bool Response::isAllowed(HttpMethod m) const {
 }
 
 int Response::respWithLoc(Request& req) {
-	Location loc = getTheLocation(req.getQuery(), *this);
+	Location loc = getTheLocation(req.getQuery());
 
 	if (setRequestQuery(loc, req)) {
 		return 0;
@@ -362,11 +362,11 @@ bool Response::setRequestQuery(Location& loc, Request& req) {
 	if (req_query != "/") {
 		if (req_query.back() == '/') {
 			if (checkAutoIndex(loc) == 0) {	 // autoindex off
-				if (getSpecIndex(loc, *this) == "")
+				if (getSpecIndex(loc) == "")
 					req_query = "/";
 				else
-					req_query = getSpecIndex(loc, *this);
-				loc = getTheLocation(req_query, *this);
+					req_query = getSpecIndex(loc);
+				loc = getTheLocation(req_query);
 			} else if (checkAutoIndex(loc) == 1 || getAutoIndex() == "on") {
 				createAutoIndexResp(req, loc, *this);
 				return true;
@@ -413,4 +413,32 @@ int Response::respWithoutLoc(Request& req) {
 			req.setQuery("/");
 	}
 	return 1;
+}
+
+std::string Response::getSpecIndex(Location loc) {
+	for (auto& item : loc.getIndex()) {
+		if (access((_root + item).c_str(), F_OK) != -1 &&
+			access((_root + item).c_str(), R_OK) != -1)
+			return (item);
+	}
+	return "";
+}
+
+Location Response::getTheLocation(std::string path) {
+	path = extractDirPath(path);
+	auto loc = getServ().findLocation(path);
+
+	if (loc.has_value()) {
+		return loc.value();
+	}
+	return Location();
+}
+
+int Response::checkIfLocation(std::string path) {
+	if (path != "/") {
+		path = path.substr(0, path.rfind("."));
+	}
+
+	auto loc = _serv.findLocation(path);
+	return loc.has_value();
 }
