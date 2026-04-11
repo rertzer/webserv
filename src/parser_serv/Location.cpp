@@ -27,7 +27,7 @@ std::vector<LineLoc>& Location::getLocationLine() {
 	return _locationLine;
 }
 
-Location::Location() {}
+// Location::Location() {}
 
 void Location::printLoc() {
 	for (auto& ll : _locationLine) {

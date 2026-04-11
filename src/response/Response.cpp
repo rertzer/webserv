@@ -6,6 +6,24 @@
 #include "color.hpp"
 #include "macroDef.hpp"
 
+Response::Response(Request& req, Server& serv) {
+	_readFileAccess = OK;
+	_serv = serv;
+	_root = _serv.getRoot();
+	_autoIndex = _serv.getAutoIndex();
+	allowed_methods = serv.getAllowMethods();
+	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
+		return;
+	}
+	if (checkIfLocation(req.getQuery(), *this) != -1 && respWithLoc(req) == 0) {
+		return;
+	}
+	if (respWithoutLoc(req) == 0) {
+		return;
+	}
+	dealWithMethod(req);
+}
+
 std::string Response::getResponse() {
 	std::string header = getResponseHeader();
 	logResponse(header);
@@ -66,25 +84,6 @@ void Response::logResponse(std::string resp) const {
 	else
 		std::cout << RED "\nReponse send:\n" << resp << RESET << std::endl;
 }
-
-Response::Response(Request& req, Server& serv) {
-	_readFileAccess = OK;
-	_serv = serv;
-	_root = _serv.getRoot();
-	_autoIndex = _serv.getAutoIndex();
-	allowed_methods = serv.getAllowMethods();
-	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
-		return;
-	}
-	if (checkIfLocation(req.getQuery(), *this) != -1 && respWithLoc(req) == 0) {
-		return;
-	}
-	if (respWithoutLoc(req) == 0) {
-		return;
-	}
-	dealWithMethod(req);
-}
-
 void Response::dealWithMethod(Request& req) {
 	method = req.getMethod();
 	if (isAllowed(method)) {
@@ -270,7 +269,7 @@ void Response::setContentMap(ContentMap contentMap) {
 	_contentMap = contentMap;
 }
 
-Server Response::getServ(void) const {
+Server& Response::getServ(void) {
 	return _serv;
 }
 

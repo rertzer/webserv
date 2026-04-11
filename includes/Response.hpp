@@ -82,7 +82,7 @@ class Response {
 	void setContentTypeByRequest(Request const& req);
 	void fillOK(std::string content);
 	// getter
-	Server								getServ(void) const;
+	Server&								getServ(void);
 	HttpMethod							getMethod(void) const;
 	std::string							getStatus(void) const;
 	std::string							getContentType(void) const;

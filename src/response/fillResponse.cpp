@@ -85,6 +85,7 @@ void createAutoIndexResp(Request& req, Location loc, Response& rep) {
 		rep.setMethod(method);
 		rep.setContentType("text/html");
 	} else {
+		std::cerr << "fill response 88\n";
 		rep = createErrorPage(405, rep.getServ());
 	}
 }

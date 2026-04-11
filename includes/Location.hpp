@@ -11,7 +11,7 @@ class Location {
 
    public:
 	void printLoc();
-	Location();
+	Location() = default;
 	std::vector<LineLoc>&	 getLocationLine();
 	std::vector<std::string> getIndex();
 	std::string				 getLocationPath() const;

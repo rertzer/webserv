@@ -2,8 +2,6 @@
 #include "Response.hpp"
 
 static std::string extractDirPath(std::string path);
-// static Location*   findLocation(std::vector<Location>& all_loc, std::string path);
-// static Location*   findLocationByPath(std::vector<Location>& all_loc, std::string path);
 
 void checkExec(std::string filePath) {
 	if (access(filePath.c_str(), F_OK) == -1) {
@@ -32,42 +30,29 @@ std::string getSpecIndex(Location loc, Response& rep) {
 }
 
 Location getTheLocation(std::string path, Response& rep) {
-	// auto all_loc = rep.getServ().getAllLocation();
 	path = extractDirPath(path);
 	Location* loc = rep.getServ().findLocation(path);
-	if (loc)
-		return *loc;
+
+	if (loc) {
+		auto myloc = *loc;
+		return myloc;
+	}
 	return Location();
 }
-//
-// static Location* findLocation(std::vector<Location>& all_loc, std::string path) {
-// 	Location* loc = nullptr;
-// 	while (path.find("/") != std::string::npos) {
-// 		loc = findLocationByPath(all_loc, path);
-// 		if (loc || path.rfind("/") == 0) {
-// 			break;
-// 		}
-// 		path = path.substr(0, path.rfind("/"));
-// 	}
-// 	return loc;
-// }
 
 static std::string extractDirPath(std::string path) {
 	if (path != "/") {
-		path = path.substr(0, path.rfind("."));
-		path = path.substr(0, path.rfind("/"));
+		auto pos = path.rfind(".");
+		if (pos != std::string::npos) {
+			path = path.substr(0, path.rfind("."));
+		}
+		pos = path.rfind("/");
+		if (pos != std::string::npos) {
+			path = path.substr(0, path.rfind("/"));
+		}
 	}
 	return path;
 }
-
-// static Location* findLocationByPath(std::vector<Location>& all_loc, std::string path) {
-// 	for (auto& loc : all_loc) {
-// 		if (loc.getLocationPath() == path) {
-// 			return &loc;
-// 		}
-// 	}
-// 	return nullptr;
-// }
 
 int checkIfLocation(std::string path, Response& rep) {
 	if (path != "/") {
