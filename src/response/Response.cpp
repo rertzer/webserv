@@ -15,7 +15,7 @@ Response::Response(Request& req, Server& serv) {
 	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
 		return;
 	}
-	if (checkIfLocation(req.getQuery(), *this) != -1 && respWithLoc(req) == 0) {
+	if (checkIfLocation(req.getQuery(), *this) && respWithLoc(req) == 0) {
 		return;
 	}
 	if (respWithoutLoc(req) == 0) {

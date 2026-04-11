@@ -1,3 +1,5 @@
+#include <optional>
+
 #include "ErrorException.hpp"
 #include "Response.hpp"
 
@@ -31,11 +33,10 @@ std::string getSpecIndex(Location loc, Response& rep) {
 
 Location getTheLocation(std::string path, Response& rep) {
 	path = extractDirPath(path);
-	Location* loc = rep.getServ().findLocation(path);
+	auto loc = rep.getServ().findLocation(path);
 
-	if (loc) {
-		auto myloc = *loc;
-		return myloc;
+	if (loc.has_value()) {
+		return loc.value();
 	}
 	return Location();
 }
@@ -59,10 +60,6 @@ int checkIfLocation(std::string path, Response& rep) {
 		path = path.substr(0, path.rfind("."));
 	}
 
-	Location* loc = rep.getServ().findLocation(path);
-	if (loc) {
-		return 0;
-	}
-
-	return -1;
+	auto loc = rep.getServ().findLocation(path);
+	return loc.has_value();
 }
