@@ -363,13 +363,13 @@ bool Response::setRequestQuery(Location& loc, Request& req) {
 	auto req_query = req.getQuery();
 	if (req_query != "/") {
 		if (req_query.back() == '/') {
-			if (checkAutoIndex(loc) == 0) {	 // autoindex off
+			if (loc.getAutoindex() == AutoIndex::OFF) {
 				if (getSpecIndex(loc) == "")
 					req_query = "/";
 				else
 					req_query = getSpecIndex(loc);
 				loc = getTheLocation(req_query);
-			} else if (checkAutoIndex(loc) == 1 || getAutoIndex() == "on") {
+			} else if (loc.getAutoindex() == AutoIndex::ON || getAutoIndex() == "on") {
 				createAutoIndexResp(req, loc, *this);
 				return true;
 			} else
@@ -392,14 +392,8 @@ void Response::setWithLocRoot(Location& loc) {
 bool Response::setWithLocRedirection(Location& loc, Request& req) {
 	bool redir = false;
 	if (loc.checkForRedirection()) {
-		std::pair<std::string, std::string> redirection = RedirectTo(loc);
-		auto								stat = toInt(redirection.first);
-		if (stat.has_value()) {
-			setStatus(Status::getMsg(stat.value()));
-		} else {
-			std::cerr << "status is not a valid number\n";
-		}
-		setLocation(redirection.second.substr(0, redirection.second.length()));
+		setStatus(Status::getMsg(loc.getRedirectionStatus()));
+		setLocation(loc.getRedirectionPath());
 		std::cout << GREEN "Redir = {[Status :" << getStatus()
 				  << "][New Location: " << getLocation() << "]" RESET << std::endl;
 		req.getSocket()->setKeepAlive(false);
@@ -420,11 +414,11 @@ int Response::respWithoutLoc(Request& req) {
 }
 
 std::string Response::getSpecIndex(Location loc) {
-	for (auto& item : loc.getIndex()) {
-		if (access((_root + item).c_str(), F_OK) != -1 &&
-			access((_root + item).c_str(), R_OK) != -1)
-			return (item);
-	}
+	auto item = loc.getIndex();
+	std::cerr << "RESPONSE getspecindex |" << item << "| root " << _root << std::endl;
+	if (!item.empty() && access((_root + item).c_str(), F_OK) != -1 &&
+		access((_root + item).c_str(), R_OK) != -1)
+		return (item);
 	return "";
 }
 

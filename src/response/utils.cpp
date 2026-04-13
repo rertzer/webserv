@@ -110,18 +110,6 @@ BitSet getAllowMethodsServer(LineList const& list) {
 	return methods;
 }
 
-int checkAutoIndex(Location loc) {
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == "autoindex") {
-			if (ll.getArgs()[0] == "on")
-				return 1;
-			else
-				return 0;
-		}
-	}
-	return -1;
-}
-
 int checkForRedirection(Location& loc) {
 	for (auto& ll : loc.getLocationLine()) {
 		if (ll.getCmd() == "return") {
@@ -159,36 +147,16 @@ std::string getArgsLoc(Location& loc, std::string toFind) {
 	return "";
 }
 
-void printServ(Server& serv) {
-	std::cout << "Server name : " << serv.getServName() << std::endl;
-	std::cout << "Server root : " << serv.getRoot() << std::endl;
-	std::cout << "Server Auto index : " << serv.getAutoIndex() << std::endl;
-	std::cout << "Server allowed method : " << static_cast<int>(serv.getAllowMethods().getFlags())
-			  << std::endl;
-	std::cout << "Listening on port : " << serv.getListenPort() << std::endl;
-	for (std::map<std::string, std::string>::iterator it = serv.getAllErrorPage().begin();
-		 it != serv.getAllErrorPage().end(); it++)
-		std::cout << it->first << " : " << it->second << std::endl;
-
-	std::cout << "--------Location-------------" << std::endl;
-
-	std::vector<Location> loc = serv.getAllLocation();
-	for (std::vector<Location>::iterator it = loc.begin(); it != loc.end(); it++) {
-		std::cout << "Location path : " << it->getLocationPath() << std::endl;
-		std::cout << "Location line : " << std::endl;
-		it->printLoc();
-	}
-	std::cout << "----------------------------------------" << std::endl;
-}
-
 std::pair<std::string, std::string> getExtension(Location loc) {
 	std::pair<std::string, std::string> ret;
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == "extension")
-			ret.first = ll.getArgs()[0];
-		if (ll.getCmd() == "cgi_path")
-			ret.second = ll.getArgs()[0];
+	auto								extension = loc.getExtension();
+	auto								path = loc.getCgiPath();
+	if (extension.empty() || path.empty()) {
+		return ret;
 	}
+
+	ret.first = extension;
+	ret.second = path;
 	return ret;
 }
 

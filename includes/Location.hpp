@@ -1,6 +1,12 @@
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
+
+#include <functional>
+
 #include "LineLoc.hpp"
+#include "autoindex.hpp"
+
+using LocationParsingHandler = std::function<void(const std::vector<std::string>&)>;
 
 class LineLoc;
 
@@ -8,27 +14,38 @@ class Location {
    private:
 	std::string				 _locationPath;
 	std::vector<LineLoc>	 _locationLine;
-	std::string				 root;
-	std::vector<std::string> _return;
-	std::string				 autoindex;
-	std::vector<std::string> allow_methods;
+	AutoIndex				 autoindex;
 	std::string				 index;
+	std::string				 root;
+	int						 redirection_status;
+	std::string				 redirection_path;
+	std::vector<std::string> allow_methods;
 	std::string				 extension;
 	std::string				 cgi_path;
 	std::string				 upload_path;
 
 	void addLine(std::string ls);
+	void setRoot(std::vector<std::string> list);
+	void setAutoIndex(std::vector<std::string> list);
+	void setIndex(std::vector<std::string> list);
+	void setRedirection(std::vector<std::string> list);
+	void setExtension(std::vector<std::string> list);
+	void setCgiPath(std::vector<std::string> list);
 
    public:
 	Location() = default;
 	Location(std::vector<std::string> locationStrings);
 
-	std::vector<LineLoc>&	 getLocationLine();
-	std::vector<std::string> getIndex();
-	std::string				 getLocationPath() const;
-	bool					 checkForRedirection();
-	void					 printLoc();
-	std::string				 getRoot() const;
+	std::vector<LineLoc>& getLocationLine();
+	std::string			  getLocationPath() const;
+	bool				  checkForRedirection();
+	std::string			  getIndex() const;
+	std::string			  getRoot() const;
+	int					  getRedirectionStatus() const;
+	std::string			  getRedirectionPath() const;
+	AutoIndex			  getAutoindex() const;
+	std::string			  getExtension() const;
+	std::string			  getCgiPath() const;
 };
 
 #endif
