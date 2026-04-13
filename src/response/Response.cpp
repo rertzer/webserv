@@ -129,6 +129,8 @@ Response& Response::operator=(Response const& rhs) {
 	_contentLength = rhs._contentLength;
 	_connectionClose = rhs._connectionClose;
 	_content = rhs._content;
+	_root = rhs._root;
+	root_path = rhs.root_path;
 	return *this;
 }
 
@@ -380,9 +382,11 @@ bool Response::setRequestQuery(Location& loc, Request& req) {
 
 void Response::setWithLocRoot(Location& loc) {
 	if (isThereAspecRoot(loc) == 1) {
-		setRoot(getArgsLoc(loc, "root")
-					.substr(0, getArgsLoc(loc, "root").length() - loc.getLocationPath().length()));
+		std::cerr << "previous root " << _root << std::endl;
+		setRoot(loc.getRoot());
+		root_path = loc.getLocationPath();
 	}
+	std::cerr << "root is now " << _root << std::endl;
 }
 
 bool Response::setWithLocRedirection(Location& loc, Request& req) {
@@ -441,4 +445,11 @@ int Response::checkIfLocation(std::string path) {
 
 	auto loc = _serv.findLocation(path);
 	return loc.has_value();
+}
+
+std::string Response::getFilePath(std::string const& file) const {
+	if (!root_path.empty() && file.starts_with(root_path)) {
+		return _root + file.substr(root_path.size());
+	}
+	return _root + file;
 }

@@ -41,7 +41,7 @@ void fillPart(Request req, Response& rep) {
 		std::string fileStr;
 		auto		default_page = rep.getServ().getDefaultPage();
 		for (auto& page : default_page) {
-			fileStr = readFile(rep.getRoot() + page, rep);
+			fileStr = readFile(rep.getFilePath(page), rep);
 			if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED) {
 				break;
 			}
@@ -51,19 +51,19 @@ void fillPart(Request req, Response& rep) {
 				break;
 			}
 		}
-		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND)
+		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND) {
 			rep = createErrorPage(404, rep.getServ());
-		else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
+		} else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
 			rep = createErrorPage(403, rep.getServ());
 		else {
 			rep.fillOK(fileStr);
 		}
 	} else {
 		std::string fileStr;
-		fileStr = readFile(rep.getRoot() + req.getQuery(), rep);
-		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND)
+		fileStr = readFile(rep.getFilePath(req.getQuery()), rep);
+		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND) {
 			throw(ErrorException(404));
-		else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
+		} else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
 			rep = createErrorPage(403, rep.getServ());
 		else {
 			rep.fillOK(fileStr);

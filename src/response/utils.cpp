@@ -145,11 +145,10 @@ std::pair<std::string, std::string> RedirectTo(Location& loc) {
 }
 
 int isThereAspecRoot(Location& loc) {
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == "root")
-			return 1;
+	if (loc.getRoot().empty()) {
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
 std::string getArgsLoc(Location& loc, std::string toFind) {

@@ -20,7 +20,12 @@ void Location::addLine(std::string ls) {
 		throw(ServerException());
 	}
 	list.pop_back();
-	_locationLine.push_back((LineLoc)list);
+	if (list[0] == "root" && list.size() == 2) {
+		// std::cerr << "adding root" << list[1] << std::endl;
+		root = list[1];
+	} else {
+		_locationLine.push_back((LineLoc)list);
+	}
 }
 
 std::string Location::getLocationPath() const {
@@ -56,4 +61,8 @@ void Location::printLoc() {
 		for (auto& arg : ll.getArgs())
 			std::cout << "Value = " << arg << std::endl;
 	}
+}
+
+std::string Location::getRoot() const {
+	return root;
 }

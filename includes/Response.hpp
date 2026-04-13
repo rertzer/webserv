@@ -30,6 +30,7 @@ class Response {
 	ContentMap							_contentMap;
 	std::string							_location;
 	std::string							_root;
+	std::string							root_path;
 	BitSet								allowed_methods;
 	std::pair<std::string, std::string> extractField(size_t pos);
 	void								extractFields();
@@ -102,6 +103,7 @@ class Response {
 	std::string							getSpecIndex(Location loc);
 	Location							getTheLocation(std::string path);
 	int									checkIfLocation(std::string path);
+	std::string							getFilePath(std::string const& file) const;
 };
 
 #endif
