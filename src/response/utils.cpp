@@ -79,23 +79,6 @@ Response createErrorPage(int codeErr, Server serv) {
 	return errResp;
 }
 
-BitSet checkAllowMethod(Location loc) {
-	BitSet methods;
-
-	for (auto& line : loc.getLocationLine()) {
-		if (line.getCmd() == "allow_methods") {
-			if (line.checkArgs("GET") == 1)
-				methods.addFlag(GET);
-			if (line.checkArgs("POST") == 1)
-				methods.addFlag(POST);
-			if (line.checkArgs("DELETE") == 1)
-				methods.addFlag(DELETE);
-		}
-	}
-
-	return methods;
-}
-
 BitSet getAllowMethodsServer(LineList const& list) {
 	BitSet methods;
 	for (auto it = std::next(list.begin()); it != list.end(); ++it) {
@@ -110,41 +93,11 @@ BitSet getAllowMethodsServer(LineList const& list) {
 	return methods;
 }
 
-int checkForRedirection(Location& loc) {
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == "return") {
-			if (ll.getArgs().size() >= 2)
-				return 1;
-		}
-	}
-	return 0;
-}
-
-std::pair<std::string, std::string> RedirectTo(Location& loc) {
-	std::pair<std::string, std::string> ret;
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == "return") {
-			ret.first = ll.getArgs()[0];
-			ret.second = ll.getArgs()[1];
-			return (ret);
-		}
-	}
-	return ret;
-}
-
 int isThereAspecRoot(Location& loc) {
 	if (loc.getRoot().empty()) {
 		return 0;
 	}
 	return 1;
-}
-
-std::string getArgsLoc(Location& loc, std::string toFind) {
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == toFind)
-			return ll.getArgs()[0];
-	}
-	return "";
 }
 
 std::pair<std::string, std::string> getExtension(Location loc) {
@@ -166,15 +119,6 @@ int checkIfOnlyDigits(std::string str) {
 			return 1;
 	}
 	return 0;
-}
-
-std::string getUploadPath(Location loc) {
-	std::string ret;
-	for (auto& ll : loc.getLocationLine()) {
-		if (ll.getCmd() == "upload_path")
-			ret = ll.getArgs()[0];
-	}
-	return ret;
 }
 
 std::string join(LineList const& list) {

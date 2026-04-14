@@ -5,6 +5,7 @@
 #include "Location.hpp"
 #include "ServerException.hpp"
 #include "autoindex.hpp"
+#include "macroDef.hpp"
 #include "utils.hpp"
 
 Location::Location(std::vector<std::string> locString)
@@ -24,6 +25,8 @@ void Location::addLine(std::string ls) {
 		{"return", [this](const auto& t) { setRedirection(t); }},
 		{"extension", [this](const auto& t) { setExtension(t); }},
 		{"cgi_path", [this](const auto& t) { setCgiPath(t); }},
+		{"upload_path", [this](const auto& t) { setUploadPath(t); }},
+		{"allow_methods", [this](const auto& t) { setAllowedMethods(t); }},
 	};
 	auto list = serverLineSplit(ls);
 	if (list.back() != ";") {
@@ -35,7 +38,8 @@ void Location::addLine(std::string ls) {
 	if (it != handlers.end()) {
 		it->second(list);
 	} else {
-		_locationLine.push_back((LineLoc)list);
+		std::cout << "Not a valid command\n";
+		throw ServerException();
 	}
 }
 
@@ -47,11 +51,7 @@ void Location::setRoot(std::vector<std::string> list) {
 }
 
 void Location::setAutoIndex(std::vector<std::string> list) {
-	if (list.size() != 2) {
-		std::cout << "Not a valid command\n";
-		throw ServerException();
-	}
-	if ((autoindex = autoIndexFromString(list[1])) == AutoIndex::NONE) {
+	if ((list.size() != 2) || (autoindex = autoIndexFromString(list[1])) == AutoIndex::NONE) {
 		std::cout << "Not a valid command\n";
 		throw ServerException();
 	}
@@ -92,13 +92,21 @@ void Location::setCgiPath(std::vector<std::string> list) {
 	cgi_path = list[1];
 }
 
+void Location::setUploadPath(std::vector<std::string> list) {
+	if (list.size() != 2) {
+		throw ServerException();
+	}
+	upload_path = list[1];
+}
+
+void Location::setAllowedMethods(std::vector<std::string> list) {
+	allowed_method = getAllowMethodsServer(list);
+}
+
 std::string Location::getLocationPath() const {
 	return _locationPath;
 }
 
-std::vector<LineLoc>& Location::getLocationLine() {
-	return _locationLine;
-}
 std::string Location::getIndex() const {
 	return index;
 }
@@ -128,4 +136,15 @@ std::string Location::getExtension() const {
 }
 std::string Location::getCgiPath() const {
 	return cgi_path;
+}
+std::string Location::getUploadPath() const {
+	return upload_path;
+}
+
+BitSet Location::getAllowedMethods() const {
+	return allowed_method;
+}
+
+bool Location::isAllowed(HttpMethod method) const {
+	return allowed_method.isSet(method);
 }

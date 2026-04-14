@@ -342,7 +342,7 @@ int Response::respWithLoc(Request& req) {
 		return 0;
 	}
 
-	BitSet allow_method = checkAllowMethod(loc);
+	BitSet allow_method = loc.getAllowedMethods();
 	setAllowedMethods(allow_method);
 	setWithLocRoot(loc);
 	if (setWithLocRedirection(loc, req)) {
@@ -351,7 +351,7 @@ int Response::respWithLoc(Request& req) {
 	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
 		return initCgi(req, loc, *this);
 	else {
-		req.setUploadPath(getUploadPath(loc));
+		req.setUploadPath(loc.getUploadPath());
 		if (req.isUpload()) {
 			req.upload_all();
 		}

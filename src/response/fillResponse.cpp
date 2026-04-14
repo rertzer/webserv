@@ -73,7 +73,7 @@ void fillPart(Request req, Response& rep) {
 }
 
 void createAutoIndexResp(Request& req, Location loc, Response& rep) {
-	BitSet allow_method = checkAllowMethod(loc);
+	BitSet allow_method = loc.getAllowedMethods();
 	if (allow_method.getFlags() != 0) {
 		rep.setAllowedMethods(allow_method);
 	}
