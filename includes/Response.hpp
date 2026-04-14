@@ -48,22 +48,21 @@ class Response {
 	int			respWithLoc(Request& req);
 	bool		setRequestQuery(Location& loc, Request& req);
 
-	void setWithLocRoot(Location& loc);
-	bool setWithLocRedirection(Location& loc, Request& req);
-	int	 respWithoutLoc(Request& req);
+	void		setWithLocRoot(Location& loc);
+	bool		setWithLocRedirection(Location& loc, Request& req);
+	int			respWithoutLoc(Request& req);
+	void		fillPart(Request req);
+	std::string readFile(std::string file);
+	bool		testFileAccess(std::string file);
 
    public:
 	Response(Request& req, Server& serv);
-	Response(Server&	 serv,
-			 std::string status,
-			 std::string contentType,
-			 std::string contentLength,
-			 std::string connectionClose,
-			 std::string content);
+	Response(Server& serv, int errcode);
 	Response(Response const& resp);
 	Response&	operator=(Response const& rhs);
 	std::string getResponse();
 	int			respWithCgi(Request& req);
+	void		setErrorPage(int errcode);
 	// setter
 	void setCookie(std::string ck);
 	void Setserv(Server);
@@ -81,7 +80,6 @@ class Response {
 	void setReadFileAccess(int);
 	void setContentMap(ContentMap);
 	void setAllowedMethods(BitSet);
-	void setContentTypeByRequest(Request const& req);
 	void fillOK(std::string content);
 	// getter
 	Server&								getServ(void);

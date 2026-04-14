@@ -4,74 +4,6 @@
 #include "macroDef.hpp"
 #include "utils.hpp"
 
-int isDir(std::string fileName) {
-	struct stat path;
-
-	memset(&path, 0, sizeof(path));
-	stat(fileName.c_str(), &path);
-
-	return S_ISREG(path.st_mode);
-}
-
-std::string readFile(std::string file, Response& rep) {
-	std::string file_content;
-	if (isDir(file) == 0) {
-		throw(ErrorException(404));
-	}
-	if (access(file.c_str(), F_OK) == -1) {
-		rep.setReadFileAccess(FILE_NOT_FOUND);
-		return "404";
-	}
-	if (access(file.c_str(), R_OK) == -1) {
-		rep.setReadFileAccess(ACCESS_DENIED);
-		return "403";
-	}
-	try {
-		file_content = getFileContent(file);
-	} catch (std::exception& e) {
-		rep.setReadFileAccess(FILE_NOT_FOUND);
-		return "404";
-	}
-	rep.setReadFileAccess(OK);
-	return file_content;
-}
-
-void fillPart(Request req, Response& rep) {
-	if (req.getQuery() == "/") {
-		std::string fileStr;
-		auto		default_page = rep.getServ().getDefaultPage();
-		for (auto& page : default_page) {
-			fileStr = readFile(rep.getFilePath(page), rep);
-			if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED) {
-				break;
-			}
-			if (fileStr != "404" && rep.getReadFileAccess() != FILE_NOT_FOUND) {
-				rep.setContentType(rep.getContentMap().getContentValue(
-					page.substr(page.rfind(".") + 1, page.length())));
-				break;
-			}
-		}
-		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND) {
-			rep = createErrorPage(404, rep.getServ());
-		} else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
-			rep = createErrorPage(403, rep.getServ());
-		else {
-			rep.fillOK(fileStr);
-		}
-	} else {
-		std::string fileStr;
-		fileStr = readFile(rep.getFilePath(req.getQuery()), rep);
-		if (fileStr == "404" && rep.getReadFileAccess() == FILE_NOT_FOUND) {
-			throw(ErrorException(404));
-		} else if (fileStr == "403" && rep.getReadFileAccess() == ACCESS_DENIED)
-			rep = createErrorPage(403, rep.getServ());
-		else {
-			rep.fillOK(fileStr);
-			rep.setContentTypeByRequest(req);
-		}
-	}
-}
-
 void createAutoIndexResp(Request& req, Location loc, Response& rep) {
 	BitSet allow_method = loc.getAllowedMethods();
 	if (allow_method.getFlags() != 0) {
@@ -86,7 +18,7 @@ void createAutoIndexResp(Request& req, Location loc, Response& rep) {
 		rep.setContentType("text/html");
 	} else {
 		std::cerr << "fill response 88\n";
-		rep = createErrorPage(405, rep.getServ());
+		rep.setErrorPage(405);
 	}
 }
 
@@ -95,7 +27,7 @@ void setCookie(std::string ck, Response& rep) {
 }
 
 int initCgi(Request& req, Location& loc, Response& rep) {
-	Cgi* myCgi = new Cgi(req.getMethod(), rep.getRoot(), req, getExtension(loc));
+	Cgi* myCgi = new Cgi(rep.getRoot(), req, loc.getExtension(), loc.getCgiPath());
 	req.setCgi(myCgi);
 	return 0;
 }

@@ -7,14 +7,15 @@
 #include "Request.hpp"
 
 // public
-Cgi::Cgi(HttpMethod m, std::string p, Request& r, std::pair<std::string, std::string> cp)
-	: method(m),
+Cgi::Cgi(std::string p, Request& r, std::string ext, std::string cp)
+	: method(r.getMethod()),
 	  path(p),
 	  buffer(nullptr),
 	  buffer_size(1600000),
 	  pid(0),
 	  status(CgiStatus::NO_INIT),
 	  req(r),
+	  extension(ext),
 	  cgi_path(cp) {
 	setUrl();
 	setEnv();
@@ -47,6 +48,7 @@ Cgi& Cgi::operator=(Cgi const& rhs) {
 		pid = rhs.pid;
 		status = rhs.status;
 		req = rhs.req;
+		extension = rhs.extension;
 	}
 	return *this;
 }
@@ -100,12 +102,12 @@ void Cgi::extractQueryString(std::string& url) {
 }
 
 void Cgi::setPath(std::string const& url) {
-	auto pos = url.rfind(cgi_path.first);
+	auto pos = url.rfind(extension);
 
 	if (pos != std::string::npos) {
-		path += url.substr(0, pos + cgi_path.first.size());
-		if (pos + cgi_path.first.size() + 1 < url.size())
-			path_info = url.substr(pos + cgi_path.first.size() + 1);
+		path += url.substr(0, pos + extension.size());
+		if (pos + extension.size() + 1 < url.size())
+			path_info = url.substr(pos + extension.size() + 1);
 		pos = path.rfind("/");
 		if (pos != std::string::npos)
 			working_dir = path.substr(0, pos);
@@ -226,7 +228,7 @@ int Cgi::execSon() {
 		perror("chdir");
 		exit(-1);
 	}
-	::execve(cgi_path.second.c_str(), argv, envp);
+	::execve(cgi_path.c_str(), argv, envp);
 	delete[] argv;
 	delete[] envp;
 	exit(-1);
@@ -241,7 +243,7 @@ void Cgi::execFather() {
 }
 
 char** Cgi::formatArgv() const {
-	return new char*[3]{strdup(cgi_path.second.c_str()), strdup(path.c_str()), nullptr};
+	return new char*[3]{strdup(cgi_path.c_str()), strdup(path.c_str()), nullptr};
 }
 
 char** Cgi::formatEnv() const {

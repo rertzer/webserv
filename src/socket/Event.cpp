@@ -100,7 +100,7 @@ void Event::handleErrorException(const ErrorException& e) {
 		}
 		server = getListentingSocketServer();
 	}
-	soc->setMessageOut((createErrorPage(e.getCode(), server)).getResponse());
+	soc->setMessageOut((Response(server, e.getCode())).getResponse());
 	soc->setKeepAlive(false);
 	soc->setError(true);
 	if (status == eventStatus::NOTHING) {

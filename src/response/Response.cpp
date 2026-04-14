@@ -1,10 +1,13 @@
 #include "Response.hpp"
+#include <filesystem>
 #include "Cgi.hpp"
 #include "DirListing.hpp"
+#include "ErrorException.hpp"
 #include "Status.hpp"
 #include "TCPSocket.hpp"
 #include "color.hpp"
 #include "macroDef.hpp"
+#include "utils.hpp"
 
 Response::Response(Request& req, Server& serv)
 	: _serv(serv),
@@ -23,22 +26,23 @@ Response::Response(Request& req, Server& serv)
 	}
 	dealWithMethod(req);
 }
-Response::Response(Server&	   serv,
-				   std::string status,
-				   std::string contentType,
-				   std::string contentLength,
-				   std::string connectionClose,
-				   std::string content)
-	: _serv(serv) {
-	_status = status;
-	_contentType = contentType;
-	_contentLength = contentLength;
-	_connectionClose = connectionClose;
-	_content = content;
+Response::Response(Server& serv, int errcode) : _serv(serv) {
+	setErrorPage(errcode);
 }
 
 Response::Response(Response const& resp) : _serv(resp._serv) {
 	*this = resp;
+}
+
+Response& Response::operator=(Response const& rhs) {
+	_status = rhs._status;
+	_contentType = rhs._contentType;
+	_contentLength = rhs._contentLength;
+	_connectionClose = rhs._connectionClose;
+	_content = rhs._content;
+	_root = rhs._root;
+	root_path = rhs.root_path;
+	return *this;
 }
 
 std::string Response::getResponse() {
@@ -101,23 +105,24 @@ void Response::logResponse(std::string resp) const {
 	else
 		std::cout << RED "\nReponse send:\n" << resp << RESET << std::endl;
 }
+
 void Response::dealWithMethod(Request& req) {
 	method = req.getMethod();
 	if (isAllowed(method)) {
 		if (method == GET || method == POST) {
-			fillPart(req, *this);
+			fillPart(req);
 		} else if (method == DELETE) {
 			dealWithDelete(req);
 		}
 	} else {
-		*this = createErrorPage(405, _serv);
+		setErrorPage(405);
 	}
 }
 
 void Response::dealWithDelete(Request& req) {
 	checkExec(getRoot() + req.getQuery());
 	if (std::remove((getRoot() + req.getQuery()).c_str()) != 0) {
-		*this = createErrorPage(404, getServ());
+		setErrorPage(404);
 	} else {
 		setStatus("200 OK");
 		setContentType("text/html");
@@ -125,15 +130,64 @@ void Response::dealWithDelete(Request& req) {
 	}
 }
 
-Response& Response::operator=(Response const& rhs) {
-	_status = rhs._status;
-	_contentType = rhs._contentType;
-	_contentLength = rhs._contentLength;
-	_connectionClose = rhs._connectionClose;
-	_content = rhs._content;
-	_root = rhs._root;
-	root_path = rhs.root_path;
-	return *this;
+void Response::fillPart(Request req) {
+	std::string filename;
+	if (req.getQuery() == "/") {
+		auto default_page = getServ().getDefaultPage();
+		for (auto& page : default_page) {
+			filename = page;
+			break;
+		}
+	} else {
+		filename = req.getQuery();
+	}
+
+	auto fileStr = readFile(getFilePath(filename));
+	if (_readFileAccess == OK) {
+		setContentType(getContentMap().getContentValue(fileExtension(filename)));
+	}
+
+	switch (_readFileAccess) {
+		case OK:
+			fillOK(fileStr);
+			break;
+		case ACCESS_DENIED:
+			setErrorPage(403);
+			break;
+		case FILE_NOT_FOUND:
+			setErrorPage(404);
+			break;
+		default:
+			setErrorPage(500);
+			break;
+	}
+}
+std::string Response::readFile(std::string file) {
+	std::string file_content;
+	if (testFileAccess(file)) {
+		try {
+			file_content = getFileContent(file);
+			setReadFileAccess(OK);
+		} catch (std::exception& e) {
+			setReadFileAccess(FILE_NOT_FOUND);
+		}
+	}
+
+	return file_content;
+}
+
+bool Response::testFileAccess(std::string file) {
+	bool allowed = false;
+	if (isDir(file) == 0) {
+		setReadFileAccess(FILE_NOT_FOUND);
+	} else if (!std::filesystem::exists(file)) {
+		setReadFileAccess(FILE_NOT_FOUND);
+	} else if (!isReadable(file)) {
+		setReadFileAccess(ACCESS_DENIED);
+	} else {
+		allowed = true;
+	}
+	return allowed;
 }
 
 void Response::fillOK(std::string content) {
@@ -174,13 +228,22 @@ void Response::setContentType(std::string contentType) {
 	_contentType = contentType;
 }
 
-void Response::setContentTypeByRequest(Request const& req) {
-	_contentType = getContentMap().getContentValue(
-		req.getQuery().substr(req.getQuery().rfind(".") + 1, req.getQuery().length()));
-}
-
 void Response::setContentLength(std::string contentLength) {
 	_contentLength = contentLength;
+}
+
+// for CGI headers
+void Response::extractFields() {
+	size_t pos = _content.find("\r\n");
+	while (pos != std::string::npos && pos != 0) {
+		auto field = extractField(pos);
+		if (field.first == "Content-Type") {
+			_contentType = field.second;
+		} else if (field.first == "Set-Cookie") {
+			_setCookie.push_back(field.second);
+		}
+		pos = _content.find("\r\n");
+	}
 }
 
 std::pair<std::string, std::string> Response::extractField(size_t pos) {
@@ -208,23 +271,11 @@ int Response::respWithCgi(Request& req) {
 	_contentType = "text/html";
 	_content = req.getCgi()->getContent();
 	extractFields();
-	_contentLength = intToString(_content.length());
+	_contentLength = std::to_string(_content.length());
 	return 0;
 }
 
-void Response::extractFields() {
-	size_t pos = _content.find("\r\n");
-	while (pos != std::string::npos && pos != 0) {
-		auto field = extractField(pos);
-		if (field.first == "Content-Type") {
-			_contentType = field.second;
-		} else if (field.first == "Set-Cookie") {
-			_setCookie.push_back(field.second);
-		}
-		pos = _content.find("\r\n");
-	}
-}
-
+// for AutoIndex
 std::string Response::getDirContent(std::string path) {
 	DirListing drl(_root + path);
 	auto	   index = _serv.getHtmlCode(HtmlCode::AUTOINDEX_HEADER);
@@ -258,7 +309,7 @@ void Response::setContent(std::string content) {
 
 void Response::setContentWithLength(std::string content) {
 	_content = content;
-	_contentLength = intToString(_content.length());
+	_contentLength = std::to_string(_content.length());
 }
 
 void Response::setExtensionAllowed(std::pair<std::string, std::string> extensionAllowed) {
@@ -350,7 +401,7 @@ int Response::respWithLoc(Request& req) {
 	if (setWithLocRedirection(loc, req)) {
 		return 0;
 	}
-	if (!getExtension(loc).first.empty() && req.getExtension() == getExtension(loc).first)
+	if (!loc.getExtension().empty() && req.getExtension() == loc.getExtension())
 		return initCgi(req, loc, *this);
 	else {
 		req.setUploadPath(loc.getUploadPath());
@@ -384,11 +435,9 @@ bool Response::setRequestQuery(Location& loc, Request& req) {
 
 void Response::setWithLocRoot(Location& loc) {
 	if (isThereAspecRoot(loc) == 1) {
-		std::cerr << "previous root " << _root << std::endl;
 		setRoot(loc.getRoot());
 		root_path = loc.getLocationPath();
 	}
-	std::cerr << "root is now " << _root << std::endl;
 }
 
 bool Response::setWithLocRedirection(Location& loc, Request& req) {
@@ -417,7 +466,6 @@ int Response::respWithoutLoc(Request& req) {
 
 std::string Response::getSpecIndex(Location loc) {
 	auto item = loc.getIndex();
-	std::cerr << "RESPONSE getspecindex |" << item << "| root " << _root << std::endl;
 	if (!item.empty() && access((_root + item).c_str(), F_OK) != -1 &&
 		access((_root + item).c_str(), R_OK) != -1)
 		return (item);
@@ -448,4 +496,18 @@ std::string Response::getFilePath(std::string const& file) const {
 		return _root + file.substr(root_path.size());
 	}
 	return _root + file;
+}
+
+void Response::setErrorPage(int errcode) {
+	std::string content;
+	_status = Status::getMsg(errcode);
+	_contentType = ContentMap().getContentValue(fileExtension(_serv.getErrorPage(errcode)));
+	try {
+		content = readSpecFile(_serv.getRoot() + _serv.getErrorPage(errcode));
+	} catch (const std::exception& e) {
+		content = "<html><body>File deleted</body></html>";
+	}
+	setContentWithLength(content);
+	_connectionClose = "close";
+	_setCookie.clear();
 }

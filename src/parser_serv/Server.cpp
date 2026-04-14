@@ -93,7 +93,7 @@ void Server::checkIfConform() {
 		throw(ServerException());
 	}
 	for (auto status : error_page_status) {
-		if (_errorPage.find(intToString(status)) == _errorPage.end())
+		if (_errorPage.find(status) == _errorPage.end())
 			throw(ServerException());
 	}
 }
@@ -112,14 +112,14 @@ std::string& Server::getRoot() {
 	return _root;
 }
 
-std::string Server::getErrorPage(std::string errorNb) {
+std::string Server::getErrorPage(int errorNb) const {
 	if (_errorPage.find(errorNb) == _errorPage.end()) {
 		throw(ServerException());
 	}
 	return _errorPage.find(errorNb)->second;
 }
 
-std::map<std::string, std::string>& Server::getAllErrorPage() {
+std::map<int, std::string>& Server::getAllErrorPage() {
 	return _errorPage;
 }
 
@@ -231,7 +231,7 @@ ParsingState Server::setErrorPage(LineList& list, LocParsing& loc) {
 		std::cerr << "Error page number out of range" << std::endl;
 		throw(ServerException());
 	}
-	_errorPage.insert(std::pair<std::string, std::string>(errorNb, errorPage));
+	_errorPage.insert(std::pair<int, std::string>(number.value(), errorPage));
 	return ParsingState::SERVER;
 }
 

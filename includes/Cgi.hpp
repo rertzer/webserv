@@ -23,8 +23,7 @@ enum class CgiStatus { NO_INIT, WAIT_WRITE_POST, READY_EXEC, WAIT_READ_PIPE, DON
 
 class Cgi {
    public:
-	// Cgi();
-	Cgi(HttpMethod m, std::string p, Request& r, std::pair<std::string, std::string> cp);
+	Cgi(std::string p, Request& r, std::string extension, std::string cgi_path);
 	Cgi(Cgi const& rhs);
 	~Cgi();
 
@@ -62,21 +61,22 @@ class Cgi {
 					 std::map<std::string, std::string> env_map,
 					 bool								format = false) const;
 
-	HttpMethod							method;
-	std::string							path;
-	std::string							working_dir;
-	std::string							path_info;
-	std::string							query_string;
-	std::string							content;
-	std::map<std::string, std::string>	env_map;
-	char*								buffer;
-	int									buffer_size;
-	int									post_fd[2];
-	int									pipe_fd[2];
-	int									pid;
-	CgiStatus							status;
-	Request&							req;
-	std::pair<std::string, std::string> cgi_path;
+	HttpMethod						   method;
+	std::string						   path;
+	std::string						   working_dir;
+	std::string						   path_info;
+	std::string						   query_string;
+	std::string						   content;
+	std::map<std::string, std::string> env_map;
+	char*							   buffer;
+	int								   buffer_size;
+	int								   post_fd[2];
+	int								   pipe_fd[2];
+	int								   pid;
+	CgiStatus						   status;
+	Request&						   req;
+	std::string						   extension;
+	std::string						   cgi_path;
 };
 
 #endif
