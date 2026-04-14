@@ -2,7 +2,6 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "ErrorException.hpp"
 #include "Location.hpp"
 #include "ServerException.hpp"
 #include "autoindex.hpp"
@@ -38,27 +37,6 @@ void Location::addLine(std::string ls) {
 	} else {
 		_locationLine.push_back((LineLoc)list);
 	}
-
-	if (list[0] == "root" && list.size() == 2) {
-		root = list[1];
-	} else if (list[0] == "autoindex" && list.size() == 2) {
-		autoindex = autoIndexFromString(list[1]);
-	} else if (list[0] == "index" && list.size() == 2) {
-		index = list[1];
-	} else if (list[0] == "return" && list.size() == 3) {
-		auto stat = toInt(list[1]);
-		if (stat.has_value()) {
-			redirection_status = stat.value();
-			redirection_path = list[2];
-		} else {
-			std::cerr << "return status not a valid number\n";
-			throw ServerException();
-		}
-	} else if (list[0] == "extension" && list.size() == 2) {
-		extension = list[1];
-	} else if (list[0] == "cgi_path" && list.size() == 2) {
-		cgi_path = list[1];
-	}
 }
 
 void Location::setRoot(std::vector<std::string> list) {
@@ -66,6 +44,52 @@ void Location::setRoot(std::vector<std::string> list) {
 		throw ServerException();
 	}
 	root = list[1];
+}
+
+void Location::setAutoIndex(std::vector<std::string> list) {
+	if (list.size() != 2) {
+		std::cout << "Not a valid command\n";
+		throw ServerException();
+	}
+	if ((autoindex = autoIndexFromString(list[1])) == AutoIndex::NONE) {
+		std::cout << "Not a valid command\n";
+		throw ServerException();
+	}
+}
+
+void Location::setIndex(std::vector<std::string> list) {
+	if (list.size() != 2) {
+		throw ServerException();
+	}
+	index = list[1];
+}
+
+void Location::setRedirection(std::vector<std::string> list) {
+	if (list.size() != 3) {
+		throw ServerException();
+	}
+	auto stat = toInt(list[1]);
+	if (stat.has_value()) {
+		redirection_status = stat.value();
+		redirection_path = list[2];
+	} else {
+		std::cerr << "return status not a valid number\n";
+		throw ServerException();
+	}
+}
+
+void Location::setExtension(std::vector<std::string> list) {
+	if (list.size() != 2) {
+		throw ServerException();
+	}
+	extension = list[1];
+}
+
+void Location::setCgiPath(std::vector<std::string> list) {
+	if (list.size() != 2) {
+		throw ServerException();
+	}
+	cgi_path = list[1];
 }
 
 std::string Location::getLocationPath() const {
