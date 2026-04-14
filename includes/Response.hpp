@@ -16,7 +16,7 @@ enum codeProb {
 
 class Response {
    private:
-	Server								_serv;
+	Server&								_serv;
 	HttpMethod							method;
 	std::string							_status;
 	std::string							_contentType;
@@ -54,7 +54,8 @@ class Response {
 
    public:
 	Response(Request& req, Server& serv);
-	Response(std::string status,
+	Response(Server&	 serv,
+			 std::string status,
 			 std::string contentType,
 			 std::string contentLength,
 			 std::string connectionClose,

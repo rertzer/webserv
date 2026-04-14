@@ -49,9 +49,9 @@ statusCode ServerParsing::parseClose(std::string const& line) {
 void ServerParsing::countBrackets(std::string const& line) {
 	for (auto letter : line) {
 		if (letter == '{') {
-			brackets += 1;
+			++brackets;
 		} else if (letter == '}') {
-			brackets -= 1;
+			--brackets;
 		}
 		if (brackets < 0) {
 			break;

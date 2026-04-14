@@ -6,12 +6,12 @@
 #include "color.hpp"
 #include "macroDef.hpp"
 
-Response::Response(Request& req, Server& serv) {
-	_readFileAccess = OK;
-	_serv = serv;
-	_root = _serv.getRoot();
-	_autoIndex = _serv.getAutoIndex();
-	allowed_methods = serv.getAllowMethods();
+Response::Response(Request& req, Server& serv)
+	: _serv(serv),
+	  _readFileAccess(OK),
+	  _autoIndex(serv.getAutoIndex()),
+	  _root(serv.getRoot()),
+	  allowed_methods(serv.getAllowMethods()) {
 	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
 		return;
 	}
@@ -22,6 +22,23 @@ Response::Response(Request& req, Server& serv) {
 		return;
 	}
 	dealWithMethod(req);
+}
+Response::Response(Server&	   serv,
+				   std::string status,
+				   std::string contentType,
+				   std::string contentLength,
+				   std::string connectionClose,
+				   std::string content)
+	: _serv(serv) {
+	_status = status;
+	_contentType = contentType;
+	_contentLength = contentLength;
+	_connectionClose = connectionClose;
+	_content = content;
+}
+
+Response::Response(Response const& resp) : _serv(resp._serv) {
+	*this = resp;
 }
 
 std::string Response::getResponse() {
@@ -106,21 +123,6 @@ void Response::dealWithDelete(Request& req) {
 		setContentType("text/html");
 		setContentWithLength("<html><body>File deleted</body></html>");
 	}
-}
-Response::Response(std::string status,
-				   std::string contentType,
-				   std::string contentLength,
-				   std::string connectionClose,
-				   std::string content) {
-	_status = status;
-	_contentType = contentType;
-	_contentLength = contentLength;
-	_connectionClose = connectionClose;
-	_content = content;
-}
-
-Response::Response(Response const& resp) {
-	*this = resp;
 }
 
 Response& Response::operator=(Response const& rhs) {

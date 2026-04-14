@@ -75,7 +75,7 @@ Response createErrorPage(int codeErr, Server serv) {
 	}
 	std::string contentLength = intToString(content.length());
 	std::string connectionClose = "close";
-	Response	errResp(status, contentType, contentLength, connectionClose, content);
+	Response	errResp(serv, status, contentType, contentLength, connectionClose, content);
 	return errResp;
 }
 
