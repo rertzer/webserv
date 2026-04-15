@@ -26,7 +26,7 @@ SOCKET_SOURCES := TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp
 EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
 LISTING_SOURCES := DirListing.cpp FileDesc.cpp
 PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp ServerException.cpp ServerParsing.cpp HttpMethod.cpp autoindex.cpp
-RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp fillResponse.cpp checkAndGet.cpp
+RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp checkAndGet.cpp
 UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp getFileContent.cpp BitSet.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
