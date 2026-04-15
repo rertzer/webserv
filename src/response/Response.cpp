@@ -1,11 +1,11 @@
 #include "Response.hpp"
-#include <filesystem>
 #include "Cgi.hpp"
 #include "DirListing.hpp"
 #include "Status.hpp"
 #include "TCPSocket.hpp"
 #include "autoindex.hpp"
 #include "color.hpp"
+#include "files.hpp"
 #include "macroDef.hpp"
 #include "utils.hpp"
 
@@ -120,7 +120,7 @@ void Response::dealWithMethod(Request& req) {
 }
 
 void Response::dealWithDelete(Request& req) {
-	checkExec(getRoot() + req.getQuery());
+	checkRegularReadable(getRoot() + req.getQuery());
 	if (std::remove((getRoot() + req.getQuery()).c_str()) != 0) {
 		setErrorPage(404);
 	} else {
@@ -178,11 +178,9 @@ std::string Response::readFile(std::string file) {
 
 bool Response::testFileAccess(std::string file) {
 	bool allowed = false;
-	if (isDir(file) == 0) {
+	if (!fileExists(file)) {
 		setReadFileAccess(FILE_NOT_FOUND);
-	} else if (!std::filesystem::exists(file)) {
-		setReadFileAccess(FILE_NOT_FOUND);
-	} else if (!isReadable(file)) {
+	} else if (!isRegularFile(file) || !isReadable(file)) {
 		setReadFileAccess(ACCESS_DENIED);
 	} else {
 		allowed = true;
@@ -485,10 +483,11 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 
 std::string Response::getSpecIndex(Location loc) {
 	auto item = loc.getIndex();
-	if (!item.empty() && access((_root + item).c_str(), F_OK) != -1 &&
-		access((_root + item).c_str(), R_OK) != -1)
-		return (item);
-	return "";
+	auto path = _root + item;
+	if (item.empty() || !isRegularFile(path) || !isReadable(path)) {
+		item.erase();
+	}
+	return item;
 }
 
 Location Response::getTheLocation(std::string path) {

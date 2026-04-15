@@ -11,7 +11,6 @@
 #include <cstring>
 #include <iostream>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "BitSet.hpp"
@@ -70,7 +69,6 @@ std::string				 getContentKey(std::string value, Response& rep);
 std::string				 findLocation(std::string path, Response& rep);
 int						 respWithCgi(Request& req, Response& rep);
 int						 respWithOutLoc(Request& req, Response& rep);
-void					 checkExec(std::string filePath);
 void					 printCleanRequest(Request req);
 Server&					 findTheDefaultServ(std::vector<Server>& serv, int listeningPort);
 std::string				 extractDirPath(std::string path);

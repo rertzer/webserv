@@ -1,50 +1,10 @@
 #include <charconv>
-#include <filesystem>
-#include <fstream>
 #include <sstream>
-#include "ErrorException.hpp"
-#include "Response.hpp"
+
+#include "Request.hpp"
 #include "Server.hpp"
 #include "ServerException.hpp"
-#include "Status.hpp"
 #include "macroDef.hpp"
-
-std::string readSpecFile(std::string file) {
-	std::ifstream fileOp;
-	fileOp.open(file.c_str());
-	if (access(file.c_str(), F_OK) == -1) {
-		throw(ErrorException(404));
-	}
-	if (access(file.c_str(), R_OK) == -1) {
-		throw(ErrorException(403));
-	}
-	if (fileOp.is_open()) {
-		std::stringstream fileStr;
-		fileStr << fileOp.rdbuf();
-		fileOp.close();
-		return fileStr.str();
-	} else {
-		fileOp.close();
-		throw(ErrorException(404));
-	}
-}
-int isDir(std::string fileName) {
-	struct stat path;
-
-	memset(&path, 0, sizeof(path));
-	stat(fileName.c_str(), &path);
-
-	return S_ISREG(path.st_mode);
-}
-bool isReadable(const std::string& path) {
-	namespace fs = std::filesystem;
-
-	auto p = fs::status(path).permissions();
-
-	return (p & fs::perms::owner_read) != fs::perms::none ||
-		   (p & fs::perms::group_read) != fs::perms::none ||
-		   (p & fs::perms::others_read) != fs::perms::none;
-}
 
 Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort) {
 	std::vector<Server>::iterator it = serv.begin();
@@ -113,15 +73,6 @@ std::string join(LineList const& list) {
 		oss << ' ' << *it;
 
 	return oss.str();
-}
-
-std::string fileExtension(std::string const& filename) {
-	std::string extension;
-	auto		lastdot = filename.rfind(".");
-	if (lastdot != std::string::npos) {
-		extension = filename.substr(lastdot + 1);
-	}
-	return extension;
 }
 
 std::optional<int> toInt(const std::string& str) {

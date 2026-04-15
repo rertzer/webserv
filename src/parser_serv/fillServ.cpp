@@ -14,8 +14,8 @@ static statusCode checkDuplicatedPortNames(std::vector<Server>& serv);
 statusCode fillServ(std::string path, std::vector<Server>& serv) {
 	ServerParsing parsing{};
 	auto		  status = statusCode::PARSING;
-	//
 	std::ifstream conf(path, std::ios::binary);
+
 	if (!conf) {
 		throw std::runtime_error("Cannot open file: " + path);
 	}

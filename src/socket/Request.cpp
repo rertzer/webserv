@@ -1,10 +1,12 @@
-#include "Request.hpp"
-#include "Cgi.hpp"
-#include "ErrorException.hpp"
-#include "TCPSocket.hpp"
-
 #include <fstream>
 #include <sstream>
+
+#include "Cgi.hpp"
+#include "ErrorException.hpp"
+#include "Request.hpp"
+#include "TCPSocket.hpp"
+#include "files.hpp"
+
 Request::Request(TCPSocket* s, std::vector<Server>& serv)
 	: port(s->getListeningSocketPort()),
 	  status(100),
@@ -204,7 +206,7 @@ void Request::initCgi(std::string root, Location& loc) {
 void Request::uploadFile(std::string const& filename, std::string const& part) {
 	checkValidFileName(filename);
 	std::string path = upload_path + filename;
-	if (access(path.c_str(), F_OK) == 0)
+	if (fileExists(path))
 		std::cout << "File " << path << " already exist\n";
 	else {
 		std::ofstream upfile(path.c_str(), std::ofstream::out);

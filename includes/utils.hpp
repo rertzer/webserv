@@ -16,11 +16,7 @@ LineList	extract(Line const& line, std::string sep = SPACES);
 LineList	serverLineSplit(Line const& line);
 void		printLineList(LineList const& list);
 std::string join(LineList const& list);
-std::string getFileContent(std::string path);
 void		replaceAll(std::string& str, std::string const& old_word, std::string const& new_word);
 std::optional<int> toInt(const std::string& str);
-std::string		   readSpecFile(std::string file);
-std::string		   fileExtension(std::string const& filename);
-int				   isDir(std::string fileName);
-bool			   isReadable(const std::string& path);
+
 #endif

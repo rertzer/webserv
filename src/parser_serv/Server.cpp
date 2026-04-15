@@ -5,6 +5,7 @@
 #include "Server.hpp"
 #include "ServerException.hpp"
 #include "autoindex.hpp"
+#include "files.hpp"
 #include "utils.hpp"
 
 static void trimAfterSemiColon(LineListIter& it);
