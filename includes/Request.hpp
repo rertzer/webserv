@@ -38,6 +38,7 @@ class Request {
 	std::string								  getExtension() const;
 	void									  setBodySize(int bs);
 	void									  setUploadPath(std::string up);
+	void									  initCgi(std::string root, Location& loc);
 	bool		 checkField(std::string const& name, std::string const& value) const;
 	bool		 checkSubField(std::string const& name, std::string const& value) const;
 	bool		 isUpload() const;

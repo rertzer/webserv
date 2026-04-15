@@ -2,9 +2,9 @@
 #include <filesystem>
 #include "Cgi.hpp"
 #include "DirListing.hpp"
-#include "ErrorException.hpp"
 #include "Status.hpp"
 #include "TCPSocket.hpp"
+#include "autoindex.hpp"
 #include "color.hpp"
 #include "macroDef.hpp"
 #include "utils.hpp"
@@ -205,7 +205,7 @@ void Response::setRoot(std::string root) {
 }
 
 void Response::setAutoIndex(std::string autoIndex) {
-	_autoIndex = autoIndex;
+	_autoIndex = autoIndexFromString(autoIndex);
 }
 
 void Response::setAllowedMethods(BitSet methods) {
@@ -360,7 +360,7 @@ std::string Response::getRoot(void) const {
 	return _root;
 }
 
-std::string Response::getAutoIndex(void) const {
+AutoIndex Response::getAutoIndex(void) const {
 	return _autoIndex;
 }
 
@@ -401,9 +401,10 @@ int Response::respWithLoc(Request& req) {
 	if (setWithLocRedirection(loc, req)) {
 		return 0;
 	}
-	if (!loc.getExtension().empty() && req.getExtension() == loc.getExtension())
-		return initCgi(req, loc, *this);
-	else {
+	if (!loc.getExtension().empty() && req.getExtension() == loc.getExtension()) {
+		req.initCgi(getRoot(), loc);
+		return 0;
+	} else {
 		req.setUploadPath(loc.getUploadPath());
 		if (req.isUpload()) {
 			req.upload_all();
@@ -422,8 +423,8 @@ bool Response::setRequestQuery(Location& loc, Request& req) {
 				else
 					req_query = getSpecIndex(loc);
 				loc = getTheLocation(req_query);
-			} else if (loc.getAutoindex() == AutoIndex::ON || getAutoIndex() == "on") {
-				createAutoIndexResp(req, loc, *this);
+			} else if (loc.getAutoindex() == AutoIndex::ON || _autoIndex == AutoIndex::ON) {
+				createAutoIndexResp(req, loc);
 				return true;
 			} else
 				req_query = "/";
@@ -455,13 +456,31 @@ bool Response::setWithLocRedirection(Location& loc, Request& req) {
 
 int Response::respWithoutLoc(Request& req) {
 	if (req.getQuery() != "/" && req.getQuery().back() == '/') {
-		if (getAutoIndex() == "on") {
-			createAutoIndexResp(req, Location(), *this);
+		if (_autoIndex == AutoIndex::ON) {
+			createAutoIndexResp(req, Location());
 			return 0;
 		} else
 			req.setQuery("/");
 	}
 	return 1;
+}
+
+void Response::createAutoIndexResp(Request& req, Location loc) {
+	BitSet allow_method = loc.getAllowedMethods();
+	if (allow_method.getFlags() != 0) {
+		setAllowedMethods(allow_method);
+	}
+
+	auto method = req.getMethod();
+	if ((method == GET || method == POST) && (isAllowed(method))) {
+		setContentWithLength(getDirContent(req.getQuery()));
+		setStatus("200 OK");
+		setMethod(method);
+		setContentType("text/html");
+	} else {
+		std::cerr << "fill response 88\n";
+		setErrorPage(405);
+	}
 }
 
 std::string Response::getSpecIndex(Location loc) {

@@ -27,7 +27,7 @@ class Server {
    private:
 	std::string						_servName;
 	BitSet							allowed_method;
-	std::string						_autoIndex;
+	AutoIndex						_autoIndex;
 	int								_nPort;
 	std::vector<std::string>		_defaultPage;
 	std::string						_root;
@@ -66,7 +66,7 @@ class Server {
 	LocationRefOpt				findLocation(std::string path);
 	int&						getListenPort();
 	BitSet						getAllowMethods() const;
-	std::string					getAutoIndex();
+	AutoIndex					getAutoIndex();
 	void						checkIfConform();
 	std::string					getHtmlCode(HtmlCode kind);
 	void						addMethod();

@@ -4,6 +4,7 @@
 
 #include "Server.hpp"
 #include "ServerException.hpp"
+#include "autoindex.hpp"
 #include "utils.hpp"
 
 static void trimAfterSemiColon(LineListIter& it);
@@ -12,12 +13,12 @@ BitSet Server::getAllowMethods() const {
 	return allowed_method;
 }
 
-std::string Server::getAutoIndex() {
+AutoIndex Server::getAutoIndex() {
 	return _autoIndex;
 }
 
 Server::Server(LineList servStrings)
-	: allowed_method(GET | POST | DELETE), _autoIndex("off"), _nPort(0), _maxBodySize(-1) {
+	: allowed_method(GET | POST | DELETE), _autoIndex(AutoIndex::OFF), _nPort(0), _maxBodySize(-1) {
 	LocParsing	 loc;
 	ParsingState state = ParsingState::START;
 
@@ -160,7 +161,7 @@ Server::Server() {}
 ParsingState Server::setAutoIndex(LineList& list, LocParsing& loc) {
 	(void)loc;
 	if (list.size() == 3 && (list[1] == "on" || list[1] == "off")) {
-		_autoIndex = list[1];
+		_autoIndex = autoIndexFromString(list[1]);
 	} else {
 		std::cerr << "Autoindex needs to be on or off.\n";
 		throw(ServerException());

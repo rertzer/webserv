@@ -26,7 +26,7 @@ class Response {
 	std::vector<std::string>			_setCookie;
 	std::pair<std::string, std::string> _extensionAllowed;
 	int									_readFileAccess;
-	std::string							_autoIndex;
+	AutoIndex							_autoIndex;
 	ContentMap							_contentMap;
 	std::string							_location;
 	std::string							_root;
@@ -47,7 +47,7 @@ class Response {
 	void		dealWithDelete(Request& req);
 	int			respWithLoc(Request& req);
 	bool		setRequestQuery(Location& loc, Request& req);
-
+	void		createAutoIndexResp(Request& req, Location loc);
 	void		setWithLocRoot(Location& loc);
 	bool		setWithLocRedirection(Location& loc, Request& req);
 	int			respWithoutLoc(Request& req);
@@ -92,7 +92,7 @@ class Response {
 	std::string							getDirContent(std::string path);
 	std::string							getLocation(void) const;
 	std::string							getRoot(void) const;
-	std::string							getAutoIndex(void) const;
+	AutoIndex							getAutoIndex(void) const;
 	std::pair<std::string, std::string> getExtensionAllowed(void) const;
 	int									getReadFileAccess(void) const;
 	ContentMap							getContentMap(void) const;

@@ -197,6 +197,10 @@ std::string Request::getExtension() const {
 	return ext;
 }
 
+void Request::initCgi(std::string root, Location& loc) {
+	cgi = new Cgi(root, *this, loc.getExtension(), loc.getCgiPath());
+}
+
 void Request::uploadFile(std::string const& filename, std::string const& part) {
 	checkValidFileName(filename);
 	std::string path = upload_path + filename;

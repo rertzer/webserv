@@ -4,32 +4,8 @@
 #include "macroDef.hpp"
 #include "utils.hpp"
 
-void createAutoIndexResp(Request& req, Location loc, Response& rep) {
-	BitSet allow_method = loc.getAllowedMethods();
-	if (allow_method.getFlags() != 0) {
-		rep.setAllowedMethods(allow_method);
-	}
-
-	auto method = req.getMethod();
-	if ((method == GET || method == POST) && (rep.isAllowed(method))) {
-		rep.setContentWithLength(rep.getDirContent(req.getQuery()));
-		rep.setStatus("200 OK");
-		rep.setMethod(method);
-		rep.setContentType("text/html");
-	} else {
-		std::cerr << "fill response 88\n";
-		rep.setErrorPage(405);
-	}
-}
-
 void setCookie(std::string ck, Response& rep) {
 	rep.getCookie().push_back(ck);
-}
-
-int initCgi(Request& req, Location& loc, Response& rep) {
-	Cgi* myCgi = new Cgi(rep.getRoot(), req, loc.getExtension(), loc.getCgiPath());
-	req.setCgi(myCgi);
-	return 0;
 }
 
 std::pair<std::string, std::string> extractField(size_t pos, Response& rep) {
