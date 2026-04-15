@@ -433,7 +433,7 @@ bool Response::setRequestQuery(Location& loc, Request& req) {
 }
 
 void Response::setWithLocRoot(Location& loc) {
-	if (isThereAspecRoot(loc) == 1) {
+	if (loc.isRooted()) {
 		setRoot(loc.getRoot());
 		root_path = loc.getLocationPath();
 	}

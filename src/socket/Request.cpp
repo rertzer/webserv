@@ -3,6 +3,7 @@
 
 #include "Cgi.hpp"
 #include "ErrorException.hpp"
+#include "HttpMethod.hpp"
 #include "Request.hpp"
 #include "TCPSocket.hpp"
 #include "files.hpp"
@@ -151,14 +152,7 @@ void Request::upload_all() {
 void Request::upload(std::string& part) {
 	std::string line = getLine(part, "\r\n");
 	while (line.length()) {
-		int k = line.find(":");
-		if (k == -1 || k == 0)
-			throw(ErrorException(400));
-		std::string key = line.substr(0, k);
-		std::string val = line.substr(k + 1);
-		stringTrim(val);
-		stringTrim(key);
-		multipart[key] = val;
+		addMultipart(line);
 		line = getLine(part, "\r\n");
 	}
 	std::string filename = getFileName();
@@ -166,37 +160,47 @@ void Request::upload(std::string& part) {
 		uploadFile(filename, part);
 }
 
+void Request::addMultipart(std::string& line) {
+	auto kv = splitPair(line, ':');
+	if (kv.first.empty()) {
+		throw(ErrorException(400));
+	}
+	stringTrim(kv.first);
+	stringTrim(kv.second);
+	multipart[kv.first] = kv.second;
+}
+
 std::string Request::getFileName() {
-	std::string				 fn = multipart["Content-Disposition"];
-	std::vector<std::string> fields = splitCsv(fn, ";");
-	for (std::vector<std::string>::iterator it = fields.begin(); it != fields.end(); it++) {
-		int k = it->find("=");
-		if (k == -1 || k == 0)
-			continue;
-		std::string key = it->substr(0, k);
-		std::string val = it->substr(k + 1);
-		stringDoubleQuotTrim(val);
-		stringDoubleQuotTrim(key);
-		if (key == "filename") {
-			fn = val;
+	std::string fn = multipart["Content-Disposition"];
+	for (auto& field : splitCsv(fn, ";")) {
+		auto kv = splitPair(field, '=');
+		stringDoubleQuotTrim(kv.first);
+		stringDoubleQuotTrim(kv.second);
+		if (kv.first == "filename") {
+			fn = kv.second;
 			break;
 		}
 	}
 	return fn;
 }
 
-std::string Request::getExtension() const {
-	std::string ext;
-	int			begin = query.find(".");
-	if (begin == -1)
-		return ext;
-	ext = query.substr(begin);
-	int end = ext.find("?");
-	if (end == -1)
-		end = ext.find("/");
-	if (end != -1)
-		ext.erase(end, -1);
-	return ext;
+std::optional<std::string> Request::getExtension() const {
+	std::optional<std::string> extension;
+	auto					   begin = query.find(".");
+
+	if (begin != std::string::npos) {
+		auto end = getExtensionEnd(begin);
+		extension = query.substr(begin, end - begin);
+	}
+	return extension;
+}
+
+size_t Request::getExtensionEnd(size_t begin) const {
+	auto end = query.find('?', begin);
+	if (end == std::string::npos) {
+		end = query.find('/', begin);
+	}
+	return end;
 }
 
 void Request::initCgi(std::string root, Location& loc) {
@@ -226,11 +230,10 @@ void Request::checkValidFileName(std::string const& filename) const {
 }
 
 std::string Request::getLine(std::string const& sep) {
-	int			pos = -1;
 	std::string line;
 
-	pos = content.find(sep);
-	if (pos != -1) {
+	auto pos = content.find(sep);
+	if (pos != std::string::npos) {
 		line = content.substr(0, pos);
 		content.erase(0, pos + sep.length());
 	}
@@ -242,13 +245,15 @@ bool Request::ready() const {
 }
 
 void Request::feed(std::vector<Server> serv) {
-	int len = soc->readAll();
-	if (len == 0)
+	if (soc->readAll() == 0) {
 		throw(RequestException());
-	if (!header_ok)
+	}
+	if (!header_ok) {
 		setHeader(serv);
-	if (header_ok && contentExist() && !content_ok)
+	}
+	if (header_ok && contentExist() && !content_ok) {
 		setContent();
+	}
 }
 
 void Request::eraseContent(int size) {
@@ -260,23 +265,22 @@ TCPSocket* Request::getSocket() const {
 }
 
 std::string Request::getLine(std::string& data, std::string const& sep) {
-	int			pos = -1;
 	std::string line;
 
-	pos = data.find(sep);
-	if (pos != -1) {
+	auto pos = data.find(sep);
+	if (pos != std::string::npos) {
 		line = data.substr(0, pos);
 		data.erase(0, pos + sep.length());
 	}
 	return line;
 }
 
-unsigned int Request::getUIntField(std::string const& name) const {
-	std::stringstream ss;
-	ss << getField(name);
-	unsigned int val = 0;
-	ss >> val;
-	return val;
+size_t Request::getContentLength() const {
+	auto len = toInt(getField("Content-Length"));
+	if (!len.has_value()) {
+		len = 0;
+	}
+	return len.value();
 }
 
 const std::map<std::string, std::string>& Request::getHeader() const {
@@ -292,62 +296,45 @@ const std::string& Request::getContent() const {
 }
 
 void Request::addField(std::string const& field) {
-	int k = field.find(":");
-	if (k == -1 || k == 0)
+	auto kv = splitPair(field, ':');
+	if (kv.first.empty()) {
 		throw(ErrorException(400));
-	std::string key = field.substr(0, k);
-	std::string val = field.substr(k + 1);
-	stringTrim(val);
-	stringTrim(key);
-	if (header.find(key) == header.end())
-		header[key] = val;
+	}
+	stringTrim(kv.first);
+	stringTrim(kv.second);
+	if (header.find(kv.first) == header.end())
+		header[kv.first] = kv.second;
 	else
-		header[key] += ", " + val;
+		header[kv.first] += ", " + kv.second;
 }
 
 // Private
 void Request::setControlData() {
 	std::string line = soc->getLine();
 
-	if (line.empty())
+	if (line.empty()) {
 		line = soc->getLine();
+	}
 
-	int m = line.find(" ");
-	if (m == -1) {
+	auto control_data = split(line);
+	if (control_data.size() != 3) {
 		throw(ErrorException(400));
 	}
-	auto methodstr = line.substr(0, m);
-	if (methodstr == "GET") {
-		method = GET;
-	} else if (methodstr == "POST") {
-		method = POST;
-	} else if (methodstr == "DELETE") {
-		method = DELETE;
-	} else if (methodstr == "PUT") {
-		method = PUT;
-	} else if (methodstr == "HEAD") {
-		method = HEAD;
-	} else {
-		method = NONE;
-	}
-	int q = line.find(" ", m + 1);
-	if (q == -1) {
-		throw(ErrorException(400));
-	}
-	query = line.substr(m + 1, q - (m + 1));
 
-	protocol = line.substr(q + 1);
+	method = stringToMethod(control_data[0]);
+	query = control_data[1];
+	protocol = control_data[2];
 
 	checkControlData();
 }
 
-void Request::setQuery(std::string const& query) {
-	this->query = query;
+void Request::setQuery(std::string const& q) {
+	query = q;
 }
 
-void Request::setHeader(std::vector<Server> serv) {
+void Request::setHeader(std::vector<Server> servers) {
 	setFields();
-	Server theserv = findTheServ(*this, serv, soc->getListeningSocketPort());
+	Server theserv = findServ(servers, soc->getListeningSocketPort());
 	setBodySize(theserv.getBodySize());
 	checkHeader();
 	setKeepAlive();
@@ -368,8 +355,7 @@ void Request::setFields() {
 	std::string line = soc->getLine();
 
 	while (line.length()) {
-		if (line.length())
-			addField(line);
+		addField(line);
 		line = soc->getLine();
 	}
 }
@@ -383,8 +369,7 @@ void Request::setContent() {
 		else
 			throw(ErrorException(501));
 	} else {
-		unsigned int len = getUIntField("Content-Length");
-		setContentByLength(len);
+		setContentByLength();
 	}
 }
 
@@ -419,8 +404,9 @@ void Request::setTrailer() {
 	setFields();
 }
 
-void Request::setContentByLength(unsigned int len) {
-	int remain = len - content.size();
+void Request::setContentByLength() {
+	size_t	len = getContentLength();
+	ssize_t remain = len - content.size();
 	if (remain > 0) {
 		soc->addRawData(content, remain);
 	}
@@ -429,10 +415,9 @@ void Request::setContentByLength(unsigned int len) {
 }
 
 void Request::checkControlData() const {
-	if (protocol != "HTTP/1.1")
+	if (protocol != "HTTP/1.1") {
 		throw(ErrorException(505));
-	std::vector<std::string> allowed_methods;
-
+	}
 	if (method == NONE) {
 		throw(ErrorException(400));
 	}
@@ -443,7 +428,7 @@ void Request::checkControlData() const {
 void Request::checkHeader() const {
 	if (getField("Host").empty())
 		throw(ErrorException(400));
-	if (getUIntField("Content-Length") > body_size) {
+	if (getContentLength() > body_size) {
 		throw(ErrorException(413));
 	}
 }
@@ -454,11 +439,22 @@ bool Request::contentExist() const {
 		content++;
 	if (!getField("Content-Length").empty())
 		content++;
-	if (content == 2)
+	if (content == 2) {
 		throw(ErrorException(400));
-	if (content)
-		return true;
-	return false;
+	}
+	return static_cast<bool>(content);
+}
+
+Server& Request::findServ(std::vector<Server>& servers, int listeningPort) {
+	std::vector<Server>::iterator it = servers.begin();
+	while (it != servers.end()) {
+		if (getField("Host") == it->getServName() + ":" + std::to_string(getPort())) {
+			if (listeningPort == it->getListenPort())
+				return *it;
+		}
+		it++;
+	};
+	return findTheDefaultServ(servers, listeningPort);
 }
 // Non member functions
 

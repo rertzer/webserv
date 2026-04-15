@@ -123,6 +123,7 @@ def test_2():
             HTTPStatus.NOT_IMPLEMENTED,
             844,
         ),
+        # 5
         RawRequest(
             b"Thisisnotavalidrequest HTTP/1.1\r\nHost: localhost\r\n\r\n",
             HTTPStatus.BAD_REQUEST,
@@ -168,6 +169,7 @@ def test_2():
                 RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
         ),
+        # 10
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=0&q_answer=Xavier+Niel HTTP/1.1\r\n"
@@ -239,6 +241,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         ),
+        # 15
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"

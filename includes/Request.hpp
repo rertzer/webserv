@@ -35,22 +35,24 @@ class Request {
 	std::string								  getField(std::string const& name) const;
 	unsigned int							  getBodySize() const;
 	Cgi*									  getCgi() const;
-	std::string								  getExtension() const;
+	std::optional<std::string>				  getExtension() const;
+	size_t									  getExtensionEnd(size_t begin) const;
 	void									  setBodySize(int bs);
 	void									  setUploadPath(std::string up);
 	void									  initCgi(std::string root, Location& loc);
-	bool		 checkField(std::string const& name, std::string const& value) const;
-	bool		 checkSubField(std::string const& name, std::string const& value) const;
-	bool		 isUpload() const;
-	void		 upload_all();
-	unsigned int getUIntField(std::string const& name) const;
-	void		 addField(std::string const& field);
-	void		 setQuery(std::string const& query);
-	void		 setKeepAlive();
-	void		 setCgi(Cgi* c);
-	bool		 ready() const;
-	void		 feed(std::vector<Server> serv);
-	void		 eraseContent(int size);
+	bool	checkField(std::string const& name, std::string const& value) const;
+	bool	checkSubField(std::string const& name, std::string const& value) const;
+	bool	isUpload() const;
+	void	upload_all();
+	size_t	getContentLength() const;
+	void	addField(std::string const& field);
+	void	setQuery(std::string const& query);
+	void	setKeepAlive();
+	void	setCgi(Cgi* c);
+	bool	ready() const;
+	void	feed(std::vector<Server> serv);
+	void	eraseContent(int size);
+	Server& findServ(std::vector<Server>& servers, int listeningPort);
 
 	class RequestException : public std::exception {
 	   public:
@@ -72,10 +74,11 @@ class Request {
 	void		 setContentByChunked();
 	unsigned int readChunk();
 	void		 setTrailer();
-	void		 setContentByLength(unsigned int len);
+	void		 setContentByLength();
 	void		 checkControlData() const;
 	void		 checkHeader() const;
 	bool		 contentExist() const;
+	void		 addMultipart(std::string& line);
 
 	int								   port;
 	int								   status;

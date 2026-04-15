@@ -148,3 +148,6 @@ BitSet Location::getAllowedMethods() const {
 bool Location::isAllowed(HttpMethod method) const {
 	return allowed_method.isSet(method);
 }
+bool Location::isRooted() const {
+	return !root.empty();
+}

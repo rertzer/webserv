@@ -19,18 +19,6 @@ Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort) {
 	return *(serv.begin());
 }
 
-Server& findTheServ(Request& req, std::vector<Server>& serv, int listeningPort) {
-	std::vector<Server>::iterator it = serv.begin();
-	while (it != serv.end()) {
-		if (req.getField("Host") == it->getServName() + ":" + std::to_string(req.getPort())) {
-			if (listeningPort == it->getListenPort())
-				return *it;
-		}
-		it++;
-	};
-	return findTheDefaultServ(serv, listeningPort);
-}
-
 BitSet getAllowMethodsServer(LineList const& list) {
 	BitSet methods;
 	for (auto it = std::next(list.begin()); it != list.end(); ++it) {
@@ -45,13 +33,6 @@ BitSet getAllowMethodsServer(LineList const& list) {
 	return methods;
 }
 
-int isThereAspecRoot(Location& loc) {
-	if (loc.getRoot().empty()) {
-		return 0;
-	}
-	return 1;
-}
-
 int checkIfOnlyDigits(std::string str) {
 	for (auto l : str) {
 		if (!isdigit(l))
@@ -61,13 +42,11 @@ int checkIfOnlyDigits(std::string str) {
 }
 
 std::string join(LineList const& list) {
-	if (list.empty())
-		return "";
-
 	std::ostringstream oss;
-	auto			   it = list.begin();
 
-	oss << *it++;  // first element
+	auto it = list.begin();
+
+	oss << *it++;
 
 	for (; it != list.end(); ++it)
 		oss << ' ' << *it;

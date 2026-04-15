@@ -27,7 +27,7 @@ EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
 LISTING_SOURCES := DirListing.cpp FileDesc.cpp
 PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp ServerException.cpp ServerParsing.cpp HttpMethod.cpp autoindex.cpp
 RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp
-UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp  BitSet.cpp files.cpp
+UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp  BitSet.cpp files.cpp splitPairs.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
 SOURCES += $(addprefix $(RESP_DIR), $(RESP_SOURCES))

@@ -151,7 +151,7 @@ Response Event::getListeningSocketResponse() {
 }
 
 Server& Event::getListentingSocketServer() {
-	return findTheServ(*soc->req, servers, soc->getListeningSocketPort());
+	return soc->req->findServ(servers, soc->getListeningSocketPort());
 }
 
 void Event::handleCgiIn() {

@@ -51,6 +51,7 @@ class Location {
 	std::string getUploadPath() const;
 	BitSet		getAllowedMethods() const;
 	bool		isAllowed(HttpMethod method) const;
+	bool		isRooted() const;
 };
 
 #endif

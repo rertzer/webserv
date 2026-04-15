@@ -57,9 +57,7 @@ std::vector<std::string> splitCsv(std::string const& str, std::string const& sep
 bool					 ciCompare(std::string const& left, std::string const& right);
 std::string				 lowString(std::string const& str);
 std::string				 envFormat(std::string const& str);
-Server&					 findTheServ(Request& req, std::vector<Server>& serv, int listeningPort);
 bool					 changeToIndex(Location loc, Request& req, std::string root);
-int						 isThereAspecRoot(Location& loc);
 BitSet					 getAllowMethodsServer(LineList const& list);
 int						 checkIfOnlyDigits(std::string str);
 void					 dealWithGet(Request req, Response& rep);
