@@ -88,7 +88,7 @@ const std::string& Request::getQuery() const {
 }
 
 std::string Request::getField(std::string const& name) const {
-	std::map<std::string, std::string>::const_iterator it = header.find(name);
+	auto it = header.find(name);
 	if (it == header.end()) {
 		it = trailer.find(name);
 		if (it == trailer.end())
@@ -115,27 +115,17 @@ void Request::setUploadPath(std::string up) {
 }
 
 bool Request::checkField(std::string const& name, std::string const& value) const {
-	std::string				 field = getField(name);
-	std::vector<std::string> all_values = splitCsv(field);
-	for (size_t i = 0; i < all_values.size(); i++) {
-		if (ciCompare(all_values[i], value))
-			return true;
-	}
-	return false;
-}
-
-bool Request::checkSubField(std::string const& name, std::string const& value) const {
-	std::string				 field = getField(name);
-	std::vector<std::string> all_values = splitCsv(field, ";");
-	for (size_t i = 0; i < all_values.size(); i++) {
-		if (ciCompare(all_values[i], value))
+	auto field = getField(name);
+	auto all_values = splitCsv(field, ";");
+	for (auto csv_value : all_values) {
+		if (ciCompare(csv_value, value))
 			return true;
 	}
 	return false;
 }
 
 bool Request::isUpload() const {
-	if (getMethod() == POST && checkSubField("Content-Type", "multipart/form-data") &&
+	if (getMethod() == POST && checkField("Content-Type", "multipart/form-data") &&
 		!upload_path.empty()) {
 		return true;
 	}
@@ -143,8 +133,8 @@ bool Request::isUpload() const {
 }
 
 void Request::upload_all() {
-	std::string boundary = getLine("\r\n");
-	std::string part = getLine(boundary);
+	auto boundary = getLine("\r\n");
+	auto part = getLine(boundary);
 	multipart.clear();
 	upload(part);
 }
@@ -446,13 +436,12 @@ bool Request::contentExist() const {
 }
 
 Server& Request::findServ(std::vector<Server>& servers, int listeningPort) {
-	std::vector<Server>::iterator it = servers.begin();
-	while (it != servers.end()) {
-		if (getField("Host") == it->getServName() + ":" + std::to_string(getPort())) {
-			if (listeningPort == it->getListenPort())
-				return *it;
+	for (auto& server : servers) {
+		if (getField("Host") == server.getServName() + ":" + std::to_string(getPort())) {
+			if (listeningPort == server.getListenPort()) {
+				return server;
+			}
 		}
-		it++;
 	};
 	return findTheDefaultServ(servers, listeningPort);
 }
@@ -466,13 +455,11 @@ std::ostream& operator<<(std::ostream& ost, Request const& rhs) {
 	ost << "status: " << rhs.getStatus() << "\n";
 	ost << "Body size: " << rhs.getBodySize() << "\n";
 	ost << "Header:\n";
-	for (std::map<std::string, std::string>::const_iterator it = rhs.getHeader().begin();
-		 it != rhs.getHeader().end(); it++)
-		ost << "\t" << it->first << ": " << it->second << "\n";
+	for (auto& header : rhs.getHeader())
+		ost << "\t" << header.first << ": " << header.second << "\n";
 	ost << "Trailer:\n";
-	for (std::map<std::string, std::string>::const_iterator it = rhs.getTrailer().begin();
-		 it != rhs.getTrailer().end(); it++)
-		ost << "\t" << it->first << ": " << it->second << "\n";
+	for (auto& trailer : rhs.getTrailer())
+		ost << "\t" << trailer.first << ": " << trailer.second << "\n";
 	ost << "content: " << rhs.getContent() << "\n";
 	return ost;
 }

@@ -41,7 +41,6 @@ class Request {
 	void									  setUploadPath(std::string up);
 	void									  initCgi(std::string root, Location& loc);
 	bool	checkField(std::string const& name, std::string const& value) const;
-	bool	checkSubField(std::string const& name, std::string const& value) const;
 	bool	isUpload() const;
 	void	upload_all();
 	size_t	getContentLength() const;
