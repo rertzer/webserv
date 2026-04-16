@@ -8,20 +8,22 @@
 
 extern sig_atomic_t quitok;
 
-statusCode serverRun(std::vector<Server> serv) {
+statusCode serverRun(std::vector<Server> servers) {
 	statusCode status = statusCode::OK;
 	try {
 		Polling pool;
-		loadListeningSocket(pool, serv);
+		loadListeningSocket(pool, servers);
 		std::cout << "Listening...\n";
 
 		while (1) {
 			int rc = pool.wait();
-			if (quitok)
+			if (quitok) {
 				break;
+			}
 
-			for (int n = 0; n < rc; n++)
-				handleEvent(pool, serv);
+			for (int n = 0; n < rc; n++) {
+				handleEvent(pool, servers);
+			}
 		}
 	} catch (const TCPSocket::SocketException& e) {
 		status = handleException(e, statusCode::SOCKET);
@@ -90,18 +92,18 @@ void eventOnOther(Event& ev, Polling& pool) {
 }
 
 void handleEventStatus(Event& ev, Polling& pool) {
-	std::map<int, handlestatus> whichandle;
-	whichandle[1] = &handleInOk;
-	whichandle[2] = &handleOutOk;
-	whichandle[3] = &handleClose;
-	whichandle[4] = &handleCgiPostStart;
-	whichandle[5] = &handleCgiContinue;
-	whichandle[6] = &handleCgiEnd;
-	whichandle[7] = &handleCgiPostExec;
-	whichandle[8] = &handleCgiGetExec;
-	whichandle[9] = &handleCgiError;
+	std::map<eventStatus, handlestatus> handlers;
+	handlers[eventStatus::IN] = &handleInOk;
+	handlers[eventStatus::OUT] = &handleOutOk;
+	handlers[eventStatus::CLOSE] = &handleClose;
+	handlers[eventStatus::CGI_INIT] = &handleCgiPostStart;
+	handlers[eventStatus::CGI_CONTINUE] = &handleCgiContinue;
+	handlers[eventStatus::CGI_CLOSE] = &handleCgiEnd;
+	handlers[eventStatus::CGI_POST_EXEC] = &handleCgiPostExec;
+	handlers[eventStatus::CGI_GET_EXEC] = &handleCgiGetExec;
+	handlers[eventStatus::CGI_ERROR] = &handleCgiError;
 
-	handlestatus hs = whichandle[static_cast<int>(ev.getStatus())];
+	handlestatus hs = handlers[ev.getStatus()];
 	(hs)(ev, pool);
 }
 
@@ -143,7 +145,7 @@ void handleCgiGetExec(Event& ev, Polling& pool) {
 }
 
 void handleCgiError(Event& ev, Polling& pool) {
-	std::cout << RED "Cgi Error. Stopping connection.\n";
+	std::cerr << RED "Cgi Error. Stopping connection.\n";
 	pool.removeCgiFd(ev.getSocket()->req->getCgi()->getFds()[2]);
 	pool.removeSocket(ev.getFd());
 }
