@@ -126,13 +126,13 @@ void TCPSocket::setMessageOut(std::string msg) {
 }
 
 std::string TCPSocket::getLine() {
-	int			pos = -1;
 	std::string line;
 
-	pos = msg_in.find("\r\n");
-	if (pos > 20000)
+	auto pos = msg_in.find("\r\n");
+	if (pos != std::string::npos && pos > max_line_len) {
 		throw ErrorException(400);
-	if (pos != -1) {
+	}
+	if (pos != std::string::npos) {
 		line = msg_in.substr(0, pos);
 		msg_in = msg_in.erase(0, pos + 2);
 	}
@@ -153,8 +153,8 @@ bool TCPSocket::getKeepAlive() const {
 	return keep_alive;
 }
 
-void TCPSocket::setKeepAlive(bool k) {
-	keep_alive = k;
+void TCPSocket::setKeepAlive(bool keep) {
+	keep_alive = keep;
 }
 
 void TCPSocket::deleteRequest() {
@@ -174,6 +174,6 @@ int TCPSocket::send() {
 
 // STATIC CONST
 // max length to which the queue of pending connections may grow
-const int TCPSocket::backlog = 42;
-// read buffer size
-const int TCPSocket::buffer_size = 220000;
+constexpr int	 TCPSocket::backlog = 42;
+constexpr size_t TCPSocket::buffer_size = 220000;
+constexpr size_t TCPSocket::max_line_len = 20000;

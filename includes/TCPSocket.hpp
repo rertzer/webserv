@@ -34,7 +34,7 @@ class TCPSocket {
 	void		getRawData(std::string& content, int len);
 	void		addRawData(std::string& content, int len);
 	bool		getKeepAlive() const;
-	void		setKeepAlive(bool k);
+	void		setKeepAlive(bool keep);
 	void		deleteRequest();
 	int			send();
 
@@ -55,8 +55,9 @@ class TCPSocket {
 	bool			   keep_alive;
 	bool			   error;
 
-	static const int backlog;
-	static const int buffer_size;
+	static const int	backlog;
+	static const size_t buffer_size;
+	static const size_t max_line_len;
 };
 
 #endif
