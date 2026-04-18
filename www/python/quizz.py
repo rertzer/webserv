@@ -1,9 +1,17 @@
 #! /usr/bin/python3
 
-import cgi
-import sys
 import os
 from http import cookies
+from urllib.parse import parse_qs
+
+
+def get_params():
+    query = os.environ.get("QUERY_STRING", "")
+    return parse_qs(query)
+
+def get_value(params, key):
+    return params.get(key, [None])[0]
+
 
 quizz = (("Qui a écrit le <i>Guide Intergalactique</i> ?", "Xavier Niel", "Doug Adams", 2),
         ("Qui n'est pas un personnage du <i>Guide</i> ?", "Marvin", "Norminet", 2),
@@ -38,11 +46,11 @@ content += "<a href=\"/php/whoswho.php\">Who's who</a>"
 content += "<a href=\"/html/kitty/kitty.html\">Kitty</a></nav>"
 content += "<section><form id=\"session_reset\" action=\"goodbye.py\" method=\"get\"><input type=\"submit\" name=\"r_reset\" value=\"The End\" /></form></section><section id=\"main\">"
 
-form = cgi.FieldStorage()
-r_reset = form.getvalue('r_reset')
-c_name = form.getvalue('c_name')
-q_id = form.getvalue('q_id')
-q_answer = form.getvalue('q_answer')
+params = get_params()
+r_reset = get_value(params, 'r_reset')
+c_name = get_value(params, 'c_name')
+q_id = get_value(params, 'q_id')
+q_answer = get_value(params, 'q_answer')
 
 if not q_id:
     q_id = 0

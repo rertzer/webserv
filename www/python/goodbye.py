@@ -1,7 +1,5 @@
 #! /usr/bin/python3
 
-import cgi
-import sys
 import os
 from http import cookies
 

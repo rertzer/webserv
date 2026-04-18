@@ -6,6 +6,8 @@ LDFLAGS := -stdlib=libc++ -static-libstdc++
 
 NAME := webserv
 
+DOCKER := podman
+
 SRC_DIR := ./src/
 
 OBJ_DIR := ./obj/
@@ -60,7 +62,7 @@ $(NAME): $(OBJS)
 #	mkdir  $(OBJ_DIR)
 
 docker:
-	docker run --rm -v "$$(pwd)":/src -w /src silkeh/clang make all
+	$(DOCKER) run --rm -v "$$(pwd)":/src -w /src silkeh/clang make all
 
 clean:
 	rm -f $(OBJS)
