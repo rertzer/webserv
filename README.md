@@ -133,7 +133,7 @@ location /php {
 
 This route:
 
-- Executes .php files using php-cgi
+- Executes `.php` files using php-cgi
 - Passes full request data to the CGI process
 
 ### 📤 File Upload Example
@@ -156,6 +156,15 @@ server {
 	listen 8080;
 	root /path/to/webserv/www;
 	index index.html;
+
+	error_page 400 /html/wsstatus/ws_400.html;
+	error_page 403 /html/wsstatus/ws_403.html;
+	error_page 404 /html/wsstatus/ws_404.html;
+	error_page 405 /html/wsstatus/ws_405.html;
+	error_page 413 /html/wsstatus/ws_413.html;
+	error_page 500 /html/wsstatus/ws_500.html;
+	error_page 501 /html/wsstatus/ws_501.html;
+	error_page 505 /html/wsstatus/ws_505.html;
 
 	location / {
 		allow_methods GET;
