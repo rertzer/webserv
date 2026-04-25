@@ -69,7 +69,7 @@ static std::string getConfFileName(char** av) {
 		conf_file_name = av[1];
 		checkConfFileExtension(conf_file_name);
 	} else {
-		conf_file_name = "conf/webserv_3rertzer.conf";
+		conf_file_name = "conf/webserv_default.conf";
 	}
 
 	return conf_file_name;

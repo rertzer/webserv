@@ -61,6 +61,10 @@ $(NAME): $(OBJS)
 #$(OBJ_DIR):
 #	mkdir  $(OBJ_DIR)
 
+confpath:
+	sed -i 's?SERVER_PATH?'`pwd`'?g' conf/*.conf
+	sed -i 's?SERVER_PATH?'`pwd`'?g' tests/conf_test/*.conf
+
 docker:
 	$(DOCKER) run --rm -v "$$(pwd)":/src -w /src silkeh/clang make all
 
@@ -83,4 +87,4 @@ re: fclean
 
 -include $(DEPS)
 
-.PHONY: all clean docker fclean re test
+.PHONY: all clean confpath docker fclean re test
