@@ -45,21 +45,22 @@ class VirtualRequestTester:
             and request.status == resp.status
             and self.check_content(request, resp)
         )
-
         tu.print_result(f"request_{self.index}", request.index, ok)
         return ok
 
     def check_content(self, request, resp):
-        return (
-            (
-                request.same_length(resp)
-                if request.length != 0
-                else self.check_location(resp)
-            )
-            and self.test_cookies(request, resp)
-            if request.cookies is not None
-            else True
-        )
+        ok = False
+        ok_cookie = True
+
+        if request.length != 0:
+            ok = request.same_length(resp)
+        else:
+            ok = self.check_location(resp)
+        
+        if request.cookies is not None:
+            ok_cookie = self.test_cookies(request, resp)
+        return ok and ok_cookie 
+        
 
     def check_location(self, resp):
         return (

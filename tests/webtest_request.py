@@ -282,8 +282,8 @@ def test_3():
 
     requests = (
         SimpleRequest("GET", "/html/", headers, HTTPStatus.OK, 1457),
-        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2327),
-        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1512),
+        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2310),
+        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1503),
         SimpleRequest(
             "GET", "/html/page/delete/toDelete.html", headers, HTTPStatus.OK, 478
         ),
@@ -345,8 +345,8 @@ def test_delete():
             HTTPStatus.NOT_FOUND,
             281,
         ),
-        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1372),
-        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2327),
+        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1364),
+        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2310),
         SimpleRequest(
             "DELETE",
             "/html/page/delete/toDelete.html",
@@ -450,6 +450,12 @@ def test_6():
     )
 
     requests = (
+            RawRequest(
+            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
+            HTTPStatus.OK,
+            1444,
+        ),
+
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
@@ -464,7 +470,7 @@ def test_6():
         RawRequest(
             ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
             HTTPStatus.OK,
-            1198,
+            1444,
         ),
         RawRequest(
             (
@@ -480,7 +486,7 @@ def test_6():
         RawRequest(
             ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
             HTTPStatus.OK,
-            1321,
+            1580,
         ),
         RawRequest(
             ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
@@ -501,10 +507,10 @@ def test_7():
 
     requests = (
         SimpleRequest("GET", "/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GET", "/css/", headers, HTTPStatus.OK, 2296),
-        SimpleRequest("GET", "/upload/", headers, HTTPStatus.OK, 1453),
+        SimpleRequest("GET", "/css/", headers, HTTPStatus.OK, 2280),
+        SimpleRequest("GET", "/upload/", headers, HTTPStatus.OK, 1444),
         SimpleRequest("GET", "/img/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GET", "/img/toDelete/", headers, HTTPStatus.OK, 1358),
+        SimpleRequest("GET", "/img/toDelete/", headers, HTTPStatus.OK, 1350),
     )
 
     passed = SimpleTester(7, host, port).proceed_requests(
