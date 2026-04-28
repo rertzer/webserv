@@ -292,7 +292,12 @@ std::string Response::getDirContent(std::string path) {
 std::string Response::appendDirContent(std::string content, FileDesc const& filedesc) {
 	replaceAll(content, "NAME", filedesc.getName());
 	replaceAll(content, "TYPE", filedesc.getTypeName());
-	replaceAll(content, "SIZE", std::to_string(filedesc.getSize()));
+	if (filedesc.isDirectory()){
+		replaceAll(content, "SIZE", "");
+	}
+	else {
+		replaceAll(content, "SIZE", std::to_string(filedesc.getSize()));
+	}
 	replaceAll(content, "LASTMODIFIED", filedesc.getLastModified());
 	return content;
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <time.h>
 
 #include "FileDesc.hpp"
 
@@ -16,7 +17,17 @@ FileDesc::FileDesc(std::string path, struct dirent* sd) {
 	}
 	size = statbuf.st_size;
 	type = statbuf.st_mode & S_IFMT;
-	last_modified = std::ctime(&statbuf.st_mtim.tv_sec);
+	setTime(statbuf);
+	
+}
+
+void FileDesc::setTime(struct stat stat_buffer){
+	char timebuf[32];
+	::tm tm_time;
+
+	localtime_r(&stat_buffer.st_mtim.tv_sec, &tm_time);
+	::strftime(timebuf, sizeof(timebuf), "%a %b %d %H:%M:%S %Y", &tm_time);
+	last_modified = timebuf;
 }
 
 FileDesc::FileDesc(FileDesc const& rhs) {

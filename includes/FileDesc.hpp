@@ -3,7 +3,6 @@
 
 #include <dirent.h>
 #include <sys/stat.h>
-#include <ctime>
 #include <string>
 
 class FileDesc {
@@ -21,6 +20,7 @@ class FileDesc {
 
    private:
 	FileDesc();
+	void setTime(struct stat stat_buffer);
 
 	std::string	 name;
 	std::string	 last_modified;
