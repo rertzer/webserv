@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+
 import webtest_conf_parsing as conf_parsing
 import webtest_request as request
 from testutils import tester
@@ -21,8 +23,8 @@ def main():
 
     passed, total = map(sum, zip(*(tester(f) for f in test_fun)))
     print(f"{passed}/{total} tests passed")
-    return 0
+    return  total - passed
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
