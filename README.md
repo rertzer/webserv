@@ -45,16 +45,8 @@ The project is currently being heavily refactored and modernized:
   - 📌 Full unit test coverage (planned)
 - 🔁 DevOps
   - 🚧 Docker containerization
-  - 📌 Jenkins CI/CD pipeline with Docker Hub deployment (planned)
-
-### 🎯 Direction
-
-The goal is to turn this project into a clean, reliable, and maintainable system, combining:
-
-- Systems-level programming
-- Modern C++ practices
-- Automated testing
-- Continuous integration & deployment
+  - 🚧 Jenkins CI/CD pipeline
+  - 📌 Docker Hub deployment (planned)
 
 ## 🛠️ Build & Deployment
 
@@ -70,6 +62,8 @@ The project uses a Makefile with multiple targets depending on your workflow:
   → Build the project inside a Docker container (recommended for reproducibility)
 - `make test`
   → Build inside Docker and run the Python functional test suite
+- `make re`
+  → Complete clean-up, set the config files PATH and build inside Docker
 
 ### 🧹 Cleanup
 
