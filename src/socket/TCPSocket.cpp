@@ -23,7 +23,9 @@ TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true),
 		throw(SocketException());
 
 	if (listen(socket_fd, backlog) == -1)
+	{
 		throw(SocketException());
+	}
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
 }
 
@@ -101,8 +103,9 @@ int TCPSocket::readAll() {
 	int	  read_size = ::read(socket_fd, buffer, buffer_size);
 	if (read_size >= 0)
 		buffer[read_size] = '\0';
-	else
+	else{
 		throw(SocketException());
+	}
 
 	msg_in.insert(0, buffer, static_cast<size_t>(read_size));
 	delete[] buffer;
@@ -166,8 +169,9 @@ void TCPSocket::deleteRequest() {
 
 int TCPSocket::send() {
 	int len = ::send(socket_fd, msg_out.c_str(), msg_out.length(), 0);
-	if (len <= 0)
+	if (len <= 0){
 		throw(SocketException());
+	}
 	msg_out.erase(0, len);
 	return len;
 }
