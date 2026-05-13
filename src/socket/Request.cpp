@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "Cgi.hpp"
+#include "color.hpp"
 #include "ErrorException.hpp"
 #include "HttpMethod.hpp"
 #include "Request.hpp"
@@ -437,6 +438,17 @@ Server& Request::findServ(std::vector<Server>& servers, int listeningPort) {
 	};
 	return findTheDefaultServ(servers, listeningPort);
 }
+
+
+void Request::printCleanRequest() const {
+	std::cout << "\n" << CYAN "Request = {";
+	std::cout << "[Method: " << getMethod() << "]";
+	std::cout << "[File: " << getQuery() << "]";
+	std::cout << "[Port: " << getPort() << "]";
+	std::cout << "[Host: " << getField("Host") << "]";
+	std::cout << "}" RESET << std::endl;
+}
+
 // Non member functions
 
 std::ostream& operator<<(std::ostream& ost, Request const& rhs) {
@@ -454,3 +466,4 @@ std::ostream& operator<<(std::ostream& ost, Request const& rhs) {
 	ost << "content: " << rhs.getContent() << "\n";
 	return ost;
 }
+

@@ -58,11 +58,4 @@ std::string envFormat(std::string const& str) {
 	return ci_string;
 }
 
-void printCleanRequest(Request req) {
-	std::cout << "\n" << CYAN "Request = {";
-	std::cout << "[Method: " << req.getMethod() << "]";
-	std::cout << "[File: " << req.getQuery() << "]";
-	std::cout << "[Port: " << req.getPort() << "]";
-	std::cout << "[Host: " << req.getField("Host") << "]";
-	std::cout << "}" RESET << std::endl;
-}
+

@@ -51,6 +51,7 @@ class Request {
 	void	feed(std::vector<Server> serv);
 	void	eraseContent(int size);
 	Server& findServ(std::vector<Server>& servers, int listeningPort);
+	void	printCleanRequest() const;
 
 	class RequestException : public std::exception {
 	   public:

@@ -118,7 +118,7 @@ void Event::handleIn() {
 	} else if (checkAndHandleCgiIn()) {
 		return;
 	}
-	printCleanRequest(*soc->req);
+	soc->req->printCleanRequest();
 	if (soc->req->ready()) {
 		handleInRequestReady();
 	}
