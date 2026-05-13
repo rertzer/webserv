@@ -2,7 +2,7 @@
 #include "ErrorException.hpp"
 #include "Request.hpp"
 
-// PUBLIC
+/* ========================================= Coplien Methods ================================= */
 TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true), error(false) {
 	socket_addr_length = sizeof(socket_addr);
 
@@ -63,6 +63,8 @@ TCPSocket& TCPSocket::operator=(TCPSocket const& rhs) {
 	return *this;
 }
 
+/* ====================================== Getters ===================================== */
+
 int TCPSocket::getPort() const {
 	return ntohs(socket_addr.sin_port);
 }
@@ -79,9 +81,56 @@ bool TCPSocket::getError() const {
 	return error;
 }
 
+std::string TCPSocket::getMessageIn() const {
+	return msg_in;
+}
+
+std::string TCPSocket::getMessageOut() const {
+	return msg_out;
+}
+
+std::string TCPSocket::getLine() {
+	std::string line;
+
+	auto pos = msg_in.find("\r\n");
+	if (pos != std::string::npos && pos > max_line_len) {
+		throw ErrorException(400);
+	}
+	if (pos != std::string::npos) {
+		line = msg_in.substr(0, pos);
+		msg_in = msg_in.erase(0, pos + 2);
+	}
+	return line;
+}
+
+void TCPSocket::getRawData(std::string& content, int len) {
+	content = msg_in.substr(0, len);
+	msg_in.erase(0, len);
+}
+
+bool TCPSocket::getKeepAlive() const {
+	return keep_alive;
+}
+
+/* ====================================== Setters ===================================== */
+
 void TCPSocket::setError(bool er) {
 	error = er;
 }
+
+void TCPSocket::setMessageIn(std::string msg) {
+	msg_in = msg;
+}
+
+void TCPSocket::setMessageOut(std::string msg) {
+	msg_out = msg;
+}
+
+void TCPSocket::setKeepAlive(bool keep) {
+	keep_alive = keep;
+}
+
+/* ==================================== Other Methods ================================= */
 
 void TCPSocket::accept(TCPSocket* csoc) {
 	csoc->socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&csoc->socket_addr),
@@ -112,52 +161,9 @@ int TCPSocket::readAll() {
 	return read_size;
 }
 
-std::string TCPSocket::getMessageIn() const {
-	return msg_in;
-}
-
-std::string TCPSocket::getMessageOut() const {
-	return msg_out;
-}
-
-void TCPSocket::setMessageIn(std::string msg) {
-	msg_in = msg;
-}
-
-void TCPSocket::setMessageOut(std::string msg) {
-	msg_out = msg;
-}
-
-std::string TCPSocket::getLine() {
-	std::string line;
-
-	auto pos = msg_in.find("\r\n");
-	if (pos != std::string::npos && pos > max_line_len) {
-		throw ErrorException(400);
-	}
-	if (pos != std::string::npos) {
-		line = msg_in.substr(0, pos);
-		msg_in = msg_in.erase(0, pos + 2);
-	}
-	return line;
-}
-
-void TCPSocket::getRawData(std::string& content, int len) {
-	content = msg_in.substr(0, len);
-	msg_in.erase(0, len);
-}
-
 void TCPSocket::addRawData(std::string& content, int len) {
 	content += msg_in.substr(0, len);
 	msg_in.erase(0, len);
-}
-
-bool TCPSocket::getKeepAlive() const {
-	return keep_alive;
-}
-
-void TCPSocket::setKeepAlive(bool keep) {
-	keep_alive = keep;
 }
 
 void TCPSocket::deleteRequest() {
@@ -176,7 +182,7 @@ int TCPSocket::send() {
 	return len;
 }
 
-// STATIC CONST
+/* ============================================ STATIC CONST =============================== */
 // max length to which the queue of pending connections may grow
 constexpr int	 TCPSocket::backlog = 42;
 constexpr size_t TCPSocket::buffer_size = 220000;
