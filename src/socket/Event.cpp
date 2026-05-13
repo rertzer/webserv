@@ -136,9 +136,7 @@ bool Event::checkAndHandleCgiIn() {
 
 void Event::handleInRequestReady() {
 	Response resp = getListeningSocketResponse();
-	if (isCgiStatus(CgiStatus::WAIT_WRITE_POST)) {
-		status = eventStatus::CGI_INIT;
-	} else if (isCgiStatus(CgiStatus::READY_EXEC)) {
+	if (isCgiStatus(CgiStatus::WAIT_WRITE_POST) || isCgiStatus(CgiStatus::READY_EXEC)) {
 		status = eventStatus::CGI_INIT;
 	} else {
 		soc->setMessageOut(resp.getResponse());
