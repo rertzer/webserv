@@ -23,7 +23,6 @@ class Request {
 	Request& operator=(Request const& rhs);
 
 	int										  getPort() const;
-	int										  getStatus() const;
 	CgiStatus								  getCgiStatus() const;
 	const std::string&						  getProtocol() const;
 	HttpMethod								  getMethod() const;
@@ -80,7 +79,6 @@ class Request {
 	void		 addMultipart(std::string& line);
 
 	int								   port;
-	int								   status;
 	unsigned int					   body_size;
 	TCPSocket*						   soc;
 	Cgi*							   cgi;

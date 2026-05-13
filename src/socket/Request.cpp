@@ -10,7 +10,6 @@
 
 Request::Request(TCPSocket* s, std::vector<Server>& serv)
 	: port(s->getListeningSocketPort()),
-	  status(100),
 	  body_size(1000000),
 	  soc(s),
 	  cgi(nullptr),
@@ -26,9 +25,7 @@ Request::Request(TCPSocket* s, std::vector<Server>& serv)
 	setHeader(serv);
 	if (contentExist()) {
 		setContent();
-	} else
-		status = 5;
-}
+	}}
 
 Request::Request(Request const& rhs) {
 	*this = rhs;
@@ -44,7 +41,6 @@ Request::~Request() {
 Request& Request::operator=(Request const& rhs) {
 	if (this != &rhs) {
 		port = rhs.port;
-		status = rhs.status;
 		body_size = rhs.body_size;
 		soc = rhs.soc;
 		cgi = rhs.cgi;
@@ -62,10 +58,6 @@ Request& Request::operator=(Request const& rhs) {
 
 int Request::getPort() const {
 	return port;
-}
-
-int Request::getStatus() const {
-	return status;
 }
 
 CgiStatus Request::getCgiStatus() const {
@@ -452,7 +444,6 @@ std::ostream& operator<<(std::ostream& ost, Request const& rhs) {
 	ost << "protocol: " << rhs.getProtocol() << "\n";
 	ost << "method: " << rhs.getMethod() << "\n";
 	ost << "query: " << rhs.getQuery() << "\n";
-	ost << "status: " << rhs.getStatus() << "\n";
 	ost << "Body size: " << rhs.getBodySize() << "\n";
 	ost << "Header:\n";
 	for (auto& header : rhs.getHeader())
