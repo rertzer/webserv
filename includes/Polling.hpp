@@ -25,7 +25,6 @@ class Polling {
 	Event	   nextEvent();
 	TCPSocket* getSocketByFd(int fd);
 	TCPSocket* getSocketByCgiFd(int fd);
-	bool	   isListeningSocket(Event ev) const;
 	void	   setOut(int fd);
 	void	   resetOut(int fd);
 	void	   reset(int fd);

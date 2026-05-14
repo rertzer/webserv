@@ -54,7 +54,7 @@ void handleEvent(Polling& pool, std::vector<Server>& serv) {
 	Event ev = pool.nextEvent();
 	ev.setServ(serv);
 
-	if (pool.isListeningSocket(ev)) {
+	if (ev.getSocket()->getListening()) {
 		eventOnListeningSocket(ev, pool);
 	} else {
 		eventOnOther(ev, pool);

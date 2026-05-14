@@ -93,13 +93,6 @@ TCPSocket* Polling::getSocketByCgiFd(int fd) {
 	return getSocketFromStrip(fd, powerstripCgi);
 }
 
-bool Polling::isListeningSocket(Event ev) const {
-	auto li = std::find(listening_fds.begin(), listening_fds.end(), ev.getFd());
-	if (li != listening_fds.end())
-		return true;
-	return false;
-}
-
 void Polling::setOut(int fd) {
 	for (nfds_t i = 0; i < nfds; i++) {
 		if (fds[i].fd == fd) {

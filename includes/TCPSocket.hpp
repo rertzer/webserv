@@ -22,21 +22,22 @@ class TCPSocket {
 	int			getListeningSocketPort() const;
 	int			getFd() const;
 	bool		getError() const;
-	void		setError(bool er);
-	void		accept(TCPSocket* csoc);
-	void		close();
-	int			readAll();
 	std::string getMessageIn() const;
 	std::string getMessageOut() const;
+	bool		getKeepAlive() const;
+	bool 		getListening() const;
+	void		getRawData(std::string& content, int len);
+	std::string getLine();
 	void		setMessageIn(std::string msg);
 	void		setMessageOut(std::string msg);
-	std::string getLine();
-	void		getRawData(std::string& content, int len);
-	void		addRawData(std::string& content, int len);
-	bool		getKeepAlive() const;
+	void		setError(bool er);
 	void		setKeepAlive(bool keep);
+	void		addRawData(std::string& content, int len);
 	void		deleteRequest();
+	void		accept(TCPSocket* csoc);
 	int			send();
+	void		close();
+	int			readAll();
 
 	Request* req;
 
@@ -54,6 +55,7 @@ class TCPSocket {
 	std::string		   msg_out;
 	bool			   keep_alive;
 	bool			   error;
+	bool			   listening;
 
 	static const int	backlog;
 	static const size_t buffer_size;

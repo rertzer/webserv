@@ -3,7 +3,8 @@
 #include "Request.hpp"
 
 /* ========================================= Coplien Methods ================================= */
-TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true), error(false) {
+// Used for listening sockets
+TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true), error(false), listening(true) {
 	socket_addr_length = sizeof(socket_addr);
 
 	memset(&socket_addr, 0, socket_addr_length);
@@ -29,8 +30,9 @@ TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true),
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
 }
 
+// Used for non listening sockets
 TCPSocket::TCPSocket()
-	: req(nullptr), socket_fd(0), listening_port(0), keep_alive(false), error(false) {
+	: req(nullptr), socket_fd(0), listening_port(0), keep_alive(false), error(false), listening(false){
 	socket_addr_length = sizeof(socket_addr);
 	memset(&socket_addr, 0, socket_addr_length);
 }
@@ -59,6 +61,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket const& rhs) {
 		req = rhs.req;
 		keep_alive = rhs.keep_alive;
 		error = rhs.error;
+		listening = rhs.listening;
 	}
 	return *this;
 }
@@ -89,6 +92,14 @@ std::string TCPSocket::getMessageOut() const {
 	return msg_out;
 }
 
+bool TCPSocket::getKeepAlive() const {
+	return keep_alive;
+}
+
+bool TCPSocket::getListening() const {
+	return listening;
+}
+
 std::string TCPSocket::getLine() {
 	std::string line;
 
@@ -106,10 +117,6 @@ std::string TCPSocket::getLine() {
 void TCPSocket::getRawData(std::string& content, int len) {
 	content = msg_in.substr(0, len);
 	msg_in.erase(0, len);
-}
-
-bool TCPSocket::getKeepAlive() const {
-	return keep_alive;
 }
 
 /* ====================================== Setters ===================================== */
