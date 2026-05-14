@@ -6,7 +6,6 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <vector>
 
 #include "Cgi.hpp"
 #include "Server.hpp"
@@ -16,7 +15,7 @@ class TCPSocket;
 
 class Request {
    public:
-	Request(TCPSocket* s, std::vector<Server>& serv);
+	Request(TCPSocket* s);
 	Request(Request const& rhs);
 	~Request();
 
@@ -36,6 +35,7 @@ class Request {
 	Cgi*									  getCgi() const;
 	std::optional<std::string>				  getExtension() const;
 	size_t									  getExtensionEnd(size_t begin) const;
+	Server* getServer();
 	void									  setBodySize(int bs);
 	void									  setUploadPath(std::string up);
 	void									  initCgi(std::string root, Location& loc);
@@ -48,9 +48,8 @@ class Request {
 	void	setKeepAlive();
 	void	setCgi(Cgi* c);
 	bool	ready() const;
-	void	feed(std::vector<Server> serv);
+	void	feed();
 	void	eraseContent(int size);
-	Server& findServ(std::vector<Server>& servers, int listeningPort);
 	void	printCleanRequest() const;
 
 	class RequestException : public std::exception {
@@ -67,13 +66,14 @@ class Request {
 	void		 uploadFile(std::string const& filename, std::string const& part);
 	void		 checkValidFileName(std::string const& filename) const;
 	void		 setControlData();
-	void		 setHeader(std::vector<Server> serv);
+	void		 setHeader();
 	void		 setFields();
 	void		 setContent();
 	void		 setContentByChunked();
 	unsigned int readChunk();
 	void		 setTrailer();
 	void		 setContentByLength();
+	void		 setServer();
 	void		 checkControlData() const;
 	void		 checkHeader() const;
 	bool		 contentExist() const;
@@ -93,6 +93,7 @@ class Request {
 	std::string						   upload_path;
 	bool							   header_ok;
 	bool							   content_ok;
+	Server*								server;
 };
 
 std::ostream& operator<<(std::ostream& ost, Request const& rhs);

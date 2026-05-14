@@ -9,12 +9,12 @@
 #include "macroDef.hpp"
 #include "utils.hpp"
 
-Response::Response(Request& req, Server& serv)
-	: _serv(serv),
+Response::Response(Request& req)
+	: _serv(*req.getServer()),
 	  _readFileAccess(OK),
-	  _autoIndex(serv.getAutoIndex()),
-	  _root(serv.getRoot()),
-	  allowed_methods(serv.getAllowMethods()) {
+	  _autoIndex(_serv.getAutoIndex()),
+	  _root(_serv.getRoot()),
+	  allowed_methods(_serv.getAllowMethods()) {
 	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
 		return;
 	}

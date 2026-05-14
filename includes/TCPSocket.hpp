@@ -26,6 +26,7 @@ class TCPSocket {
 	std::string getMessageOut() const;
 	bool		getKeepAlive() const;
 	bool 		getListening() const;
+	Server* getDefaultServer() const;
 	std::vector<Server>& getServers();
 	void		getRawData(std::string& content, int len);
 	std::string getLine();
@@ -49,15 +50,18 @@ class TCPSocket {
 	};
 
    private:
+	void	setDefaultServer();
+
 	int				   socket_fd;
 	int				   listening_port;
 	struct sockaddr_in socket_addr;
 	socklen_t		   socket_addr_length;
 	std::string		   msg_in;
 	std::string		   msg_out;
-	bool			   keep_alive;
-	bool			   error;
-	bool			   listening;
+	bool				keep_alive;
+	bool				error;
+	bool				listening;
+	Server*				default_server;
 	std::vector<Server> servers;
 
 	static const int	backlog;

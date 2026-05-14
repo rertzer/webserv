@@ -75,7 +75,7 @@ class Event {
 	bool	 checkAndHandleCgiIn();
 	void	 handleInRequestReady();
 	Response getListeningSocketResponse();
-	Server&	 getListentingSocketServer();
+	Server*	 getListentingSocketServer();
 
 	int					fd;
 	int					events;

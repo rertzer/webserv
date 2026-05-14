@@ -1,10 +1,13 @@
+#include <cstring>
+
 #include "TCPSocket.hpp"
 #include "ErrorException.hpp"
+#include "ServerException.hpp"
 #include "Request.hpp"
 
 /* ========================================= Coplien Methods ================================= */
 // Used for listening sockets
-TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true), error(false), listening(true) {
+TCPSocket::TCPSocket(int p) : req(nullptr), listening_port(p), keep_alive(true), error(false), listening(true), default_server(nullptr) {
 	socket_addr_length = sizeof(socket_addr);
 
 	memset(&socket_addr, 0, socket_addr_length);
@@ -63,6 +66,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket const& rhs) {
 		error = rhs.error;
 		listening = rhs.listening;
 		servers = rhs.servers;
+		default_server= rhs.default_server;
 	}
 	return *this;
 }
@@ -99,6 +103,10 @@ bool TCPSocket::getKeepAlive() const {
 
 bool TCPSocket::getListening() const {
 	return listening;
+}
+
+Server* TCPSocket::getDefaultServer() const{
+	return default_server;
 }
 
 std::vector<Server>& TCPSocket::getServers(){
@@ -148,10 +156,23 @@ void TCPSocket::setServers(std::vector<Server> serv){
 			servers.push_back(s);
 		}
 	}
+	setDefaultServer();
 }
 
 
 /* ==================================== Other Methods ================================= */
+void  TCPSocket::setDefaultServer() {
+	std::vector<Server>::iterator it = servers.begin();
+
+	while (it != servers.end()) {
+		if (it->getListenPort() == listening_port) {
+			default_server =  &*it;
+			return;
+		}
+		it++;
+	}
+	throw(ServerException());
+}
 
 TCPSocket* TCPSocket::accept() const {
 	TCPSocket* connection_socket = new TCPSocket();

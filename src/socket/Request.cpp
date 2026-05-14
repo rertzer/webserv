@@ -9,24 +9,28 @@
 #include "TCPSocket.hpp"
 #include "files.hpp"
 
-Request::Request(TCPSocket* s, std::vector<Server>& serv)
+Request::Request(TCPSocket* s)
 	: port(s->getListeningSocketPort()),
 	  body_size(1000000),
 	  soc(s),
 	  cgi(nullptr),
 	  header_ok(false),
-	  content_ok(false)
+	  content_ok(false),
+	  server(nullptr)
 
 {
+
 	std::cout << " ------------------------------ " << std::endl << "\n";
 	int len = soc->readAll();
 	if (len == 0)
 		throw(RequestException());
 	setControlData();
-	setHeader(serv);
+	setServer();
+	setHeader();
 	if (contentExist()) {
 		setContent();
-	}}
+	}
+}
 
 Request::Request(Request const& rhs) {
 	*this = rhs;
@@ -53,6 +57,7 @@ Request& Request::operator=(Request const& rhs) {
 		content = rhs.content;
 		header_ok = rhs.header_ok;
 		content_ok = rhs.content_ok;
+		server = rhs.server;
 	}
 	return *this;
 }
@@ -96,6 +101,10 @@ unsigned int Request::getBodySize() const {
 
 Cgi* Request::getCgi() const {
 	return cgi;
+}
+
+Server* Request::getServer(){
+	return server;
 }
 
 void Request::setBodySize(int bs) {
@@ -208,8 +217,10 @@ void Request::uploadFile(std::string const& filename, std::string const& part) {
 
 void Request::checkValidFileName(std::string const& filename) const {
 	if (filename.size() > 255 || filename.find_first_of("\\\0") != std::string::npos ||
-		filename == "." || filename == "..")
+		filename == "." || filename == ".."){
+
 		throw ErrorException(400);
+	}
 }
 
 std::string Request::getLine(std::string const& sep) {
@@ -227,12 +238,12 @@ bool Request::ready() const {
 	return header_ok && ((contentExist() && content_ok) || !contentExist());
 }
 
-void Request::feed(std::vector<Server> serv) {
+void Request::feed() {
 	if (soc->readAll() == 0) {
 		throw(RequestException());
 	}
 	if (!header_ok) {
-		setHeader(serv);
+		setHeader();
 	}
 	if (header_ok && contentExist() && !content_ok) {
 		setContent();
@@ -315,10 +326,9 @@ void Request::setQuery(std::string const& q) {
 	query = q;
 }
 
-void Request::setHeader(std::vector<Server> servers) {
+void Request::setHeader() {
 	setFields();
-	Server theserv = findServ(servers, soc->getListeningSocketPort());
-	setBodySize(theserv.getBodySize());
+	setBodySize(server->getBodySize());
 	checkHeader();
 	setKeepAlive();
 	header_ok = true;
@@ -332,6 +342,16 @@ void Request::setKeepAlive() {
 
 void Request::setCgi(Cgi* c) {
 	cgi = c;
+}
+
+void Request::setServer(){
+for (auto& serv : soc->getServers()) {
+		if (getField("Host") == serv.getServName() + ":" + std::to_string(getPort())) {
+				server = &serv;
+				return;
+		}
+	};
+	server = soc->getDefaultServer();
 }
 
 void Request::setFields() {
@@ -409,8 +429,9 @@ void Request::checkControlData() const {
 }
 
 void Request::checkHeader() const {
-	if (getField("Host").empty())
+	if (getField("Host").empty()){
 		throw(ErrorException(400));
+	}
 	if (getContentLength() > body_size) {
 		throw(ErrorException(413));
 	}
@@ -423,18 +444,10 @@ bool Request::contentExist() const {
 	if (!getField("Content-Length").empty())
 		content++;
 	if (content == 2) {
+
 		throw(ErrorException(400));
 	}
 	return static_cast<bool>(content);
-}
-
-Server& Request::findServ(std::vector<Server>& servers, int listeningPort) {
-	for (auto& server : servers) {
-		if (getField("Host") == server.getServName() + ":" + std::to_string(getPort())) {
-				return server;
-		}
-	};
-	return findTheDefaultServ(servers, listeningPort);
 }
 
 

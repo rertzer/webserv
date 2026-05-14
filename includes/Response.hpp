@@ -56,7 +56,7 @@ class Response {
 	bool		testFileAccess(std::string file);
 
    public:
-	Response(Request& req, Server& serv);
+	Response(Request& req);
 	Response(Server& serv, int errcode);
 	Response(Response const& resp);
 	Response&	operator=(Response const& rhs);

@@ -1,23 +1,10 @@
 #include <charconv>
 #include <sstream>
 
-#include "Request.hpp"
-#include "Server.hpp"
+#include "HttpMethod.hpp"
 #include "ServerException.hpp"
 #include "macroDef.hpp"
 
-Server& findTheDefaultServ(std::vector<Server>& serv, int listeningPort) {
-	std::vector<Server>::iterator it = serv.begin();
-
-	while (it != serv.end()) {
-		if (it->getListenPort() == listeningPort) {
-			return *it;
-		}
-		it++;
-	}
-	throw(ServerException());
-	return *(serv.begin());
-}
 
 BitSet getAllowMethodsServer(LineList const& list) {
 	BitSet methods;

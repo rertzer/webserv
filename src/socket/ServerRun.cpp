@@ -92,6 +92,7 @@ void ServerRun::checkBadEventOnListeningSocket(Event& ev) {
 
 void ServerRun::eventOnOther(Event& ev) {
 	ev.handleEvent();
+
 	if (ev.getStatus() != eventStatus::NOTHING) {
 		handleEventStatus(ev);
 	}

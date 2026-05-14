@@ -8,7 +8,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -67,7 +66,6 @@ std::string				 getContentKey(std::string value, Response& rep);
 std::string				 findLocation(std::string path, Response& rep);
 int						 respWithCgi(Request& req, Response& rep);
 int						 respWithOutLoc(Request& req, Response& rep);
-Server&					 findTheDefaultServ(std::vector<Server>& serv, int listeningPort);
 std::string				 extractDirPath(std::string path);
 
 #endif

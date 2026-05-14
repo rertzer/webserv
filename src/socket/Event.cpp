@@ -79,7 +79,6 @@ void Event::handleOneEvent(int ev) {
 											 {POLLERR, &Event::handleError},
 											 {POLLHUP, &Event::handleHup},
 											 {POLLNVAL, &Event::handleNval}};
-
 	if (events & ev) {
 		handlefun fun = whichfun[ev];
 		(this->*fun)();
@@ -89,12 +88,12 @@ void Event::handleOneEvent(int ev) {
 void Event::handleErrorException(const ErrorException& e) {
 	Server server;
 	if (soc->req == nullptr) {
-		server = findTheDefaultServ(soc->getServers(), soc->getListeningSocketPort());
+		server = *soc->getDefaultServer();
 	} else {
 		if (!isCgiStatus(CgiStatus::NO_INIT)) {
 			status = eventStatus::CGI_INIT;
 		}
-		server = getListentingSocketServer();
+		server = *getListentingSocketServer();
 	}
 	soc->setMessageOut((Response(server, e.getCode())).getResponse());
 	soc->setKeepAlive(false);
@@ -110,7 +109,7 @@ void Event::handleIn() {
 		return;
 	}
 	if (soc->req == nullptr) {
-		soc->req = new Request(soc, soc->getServers());
+		soc->req = new Request(soc);
 	} else if (checkAndHandleCgiIn()) {
 		return;
 	}
@@ -125,7 +124,7 @@ bool Event::checkAndHandleCgiIn() {
 		handleCgiIn();
 		return true;
 	} else if (isCgiStatus(CgiStatus::NO_INIT)) {
-		soc->req->feed(soc->getServers());
+		soc->req->feed();
 	}
 	return false;
 }
@@ -140,12 +139,12 @@ void Event::handleInRequestReady() {
 	}
 }
 Response Event::getListeningSocketResponse() {
-	Response resp(*soc->req, getListentingSocketServer());
+	Response resp(*soc->req);
 	return resp;
 }
 
-Server& Event::getListentingSocketServer() {
-	return soc->req->findServ(soc->getServers(), soc->getListeningSocketPort());
+Server* Event::getListentingSocketServer() {
+	return soc->req->getServer();
 }
 
 void Event::handleCgiIn() {
