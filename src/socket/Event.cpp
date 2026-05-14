@@ -32,10 +32,6 @@ eventStatus Event::getStatus() const {
 	return status;
 }
 
-void Event::setServ(std::vector<Server> s) {
-	servers = s;
-}
-
 bool Event::isIn() const {
 	return (events & POLLIN);
 }
@@ -93,7 +89,7 @@ void Event::handleOneEvent(int ev) {
 void Event::handleErrorException(const ErrorException& e) {
 	Server server;
 	if (soc->req == nullptr) {
-		server = findTheDefaultServ(servers, soc->getListeningSocketPort());
+		server = findTheDefaultServ(soc->getServers(), soc->getListeningSocketPort());
 	} else {
 		if (!isCgiStatus(CgiStatus::NO_INIT)) {
 			status = eventStatus::CGI_INIT;
@@ -114,7 +110,7 @@ void Event::handleIn() {
 		return;
 	}
 	if (soc->req == nullptr) {
-		soc->req = new Request(soc, servers);
+		soc->req = new Request(soc, soc->getServers());
 	} else if (checkAndHandleCgiIn()) {
 		return;
 	}
@@ -129,7 +125,7 @@ bool Event::checkAndHandleCgiIn() {
 		handleCgiIn();
 		return true;
 	} else if (isCgiStatus(CgiStatus::NO_INIT)) {
-		soc->req->feed(servers);
+		soc->req->feed(soc->getServers());
 	}
 	return false;
 }
@@ -149,7 +145,7 @@ Response Event::getListeningSocketResponse() {
 }
 
 Server& Event::getListentingSocketServer() {
-	return soc->req->findServ(servers, soc->getListeningSocketPort());
+	return soc->req->findServ(soc->getServers(), soc->getListeningSocketPort());
 }
 
 void Event::handleCgiIn() {

@@ -29,16 +29,9 @@ Polling& Polling::operator=(Polling const& rhs) {
 	return *this;
 }
 
-void Polling::addListeningSocket(int port) {
-	TCPSocket* soc = new TCPSocket(port);
+void Polling::addListeningSocket(TCPSocket* soc) {
 	addSocket(soc);
 	listening_fds.push_back(soc->getFd());
-}
-
-void Polling::connect(Event const& ev) {
-	TCPSocket* soc = new TCPSocket();
-	powerstrip[ev.getFd()]->accept(soc);
-	addSocket(soc);
 }
 
 void Polling::removeListeningSocket(int fd) {

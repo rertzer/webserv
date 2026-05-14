@@ -62,6 +62,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket const& rhs) {
 		keep_alive = rhs.keep_alive;
 		error = rhs.error;
 		listening = rhs.listening;
+		servers = rhs.servers;
 	}
 	return *this;
 }
@@ -98,6 +99,10 @@ bool TCPSocket::getKeepAlive() const {
 
 bool TCPSocket::getListening() const {
 	return listening;
+}
+
+std::vector<Server>& TCPSocket::getServers(){
+	return servers;
 }
 
 std::string TCPSocket::getLine() {
@@ -137,14 +142,25 @@ void TCPSocket::setKeepAlive(bool keep) {
 	keep_alive = keep;
 }
 
+void TCPSocket::setServers(std::vector<Server> serv){
+	for (auto s : serv){
+		if (s.getListenPort() == listening_port){
+			servers.push_back(s);
+		}
+	}
+}
+
+
 /* ==================================== Other Methods ================================= */
 
-void TCPSocket::accept(TCPSocket* csoc) {
-	csoc->socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&csoc->socket_addr),
-							   &csoc->socket_addr_length);
-	if (csoc->socket_fd == -1)
+TCPSocket* TCPSocket::accept() const {
+	TCPSocket* connection_socket = new TCPSocket();
+	connection_socket->socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&connection_socket->socket_addr),
+							   &connection_socket->socket_addr_length);
+	if (connection_socket->socket_fd == -1)
 		throw(ErrorException(500));
-	csoc->listening_port = getPort();
+	connection_socket->listening_port = getPort();
+	return connection_socket;
 }
 
 void TCPSocket::close() {

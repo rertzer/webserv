@@ -4,15 +4,18 @@
 #include "ServerException.hpp"
 #include "color.hpp"
 #include "macroDef.hpp"
-#include "serverRun.hpp"
+#include "ServerRun.hpp"
+
 
 extern sig_atomic_t quitok;
 
-statusCode serverRun(std::vector<Server> servers) {
-	statusCode status = statusCode::OK;
+ServerRun::ServerRun(std::vector<Server> servers):servers(servers), status(statusCode::OK){
+	
+}
+
+statusCode ServerRun::run() {
 	try {
-		Polling pool;
-		loadListeningSocket(pool, servers);
+		loadListeningSocket();
 		std::cout << "Listening...\n";
 
 		while (1) {
@@ -22,7 +25,7 @@ statusCode serverRun(std::vector<Server> servers) {
 			}
 
 			for (int n = 0; n < rc; n++) {
-				handleEvent(pool, servers);
+				handleEvent();
 			}
 		}
 	} catch (const TCPSocket::SocketException& e) {
@@ -39,37 +42,40 @@ statusCode serverRun(std::vector<Server> servers) {
 	return status;
 }
 
-void loadListeningSocket(Polling& pool, std::vector<Server> servers) {
+void ServerRun::loadListeningSocket() {
 	std::set<int> unique_ports;
 	for (auto& serv : servers) {
 		int port = serv.getListenPort();
 		if (unique_ports.find(port) == unique_ports.end()) {
 			unique_ports.insert(port);
-			pool.addListeningSocket(port);
+			TCPSocket* soc = new TCPSocket(port);
+			soc->setServers(servers);
+			pool.addListeningSocket(soc);
 		}
 	}
 }
 
-void handleEvent(Polling& pool, std::vector<Server>& serv) {
+void ServerRun::handleEvent() {
 	Event ev = pool.nextEvent();
-	ev.setServ(serv);
 
 	if (ev.getSocket()->getListening()) {
-		eventOnListeningSocket(ev, pool);
+		eventOnListeningSocket(ev);
 	} else {
-		eventOnOther(ev, pool);
+		eventOnOther(ev);
 	}
 	pool.reset(ev.getFd());
 }
 
-void eventOnListeningSocket(Event& ev, Polling& pool) {
+void ServerRun::eventOnListeningSocket(Event& ev) {
 	if (ev.isIn()) {
-		pool.connect(ev);
+		TCPSocket* soc = ev.getSocket()->accept();
+		soc->setServers(servers);
+		pool.addSocket(soc);
 	}
-	checkBadEventOnListeningSocket(ev, pool);
+	checkBadEventOnListeningSocket(ev);
 }
 
-void checkBadEventOnListeningSocket(Event& ev, Polling& pool) {
+void ServerRun::checkBadEventOnListeningSocket(Event& ev) {
 	std::string event_msg;
 	if (ev.isErr()) {
 		event_msg += "EPOLLERR ";
@@ -84,67 +90,67 @@ void checkBadEventOnListeningSocket(Event& ev, Polling& pool) {
 	}
 }
 
-void eventOnOther(Event& ev, Polling& pool) {
+void ServerRun::eventOnOther(Event& ev) {
 	ev.handleEvent();
 	if (ev.getStatus() != eventStatus::NOTHING) {
-		handleEventStatus(ev, pool);
+		handleEventStatus(ev);
 	}
 }
 
-void handleEventStatus(Event& ev, Polling& pool) {
+void ServerRun::handleEventStatus(Event& ev) {
 	std::map<eventStatus, handlestatus> handlers;
-	handlers[eventStatus::IN] = &handleInOk;
-	handlers[eventStatus::OUT] = &handleOutOk;
-	handlers[eventStatus::CLOSE] = &handleClose;
-	handlers[eventStatus::CGI_INIT] = &handleCgiPostStart;
-	handlers[eventStatus::CGI_CONTINUE] = &handleCgiContinue;
-	handlers[eventStatus::CGI_CLOSE] = &handleCgiEnd;
-	handlers[eventStatus::CGI_POST_EXEC] = &handleCgiPostExec;
-	handlers[eventStatus::CGI_GET_EXEC] = &handleCgiGetExec;
-	handlers[eventStatus::CGI_ERROR] = &handleCgiError;
+	handlers[eventStatus::IN] = &ServerRun::handleInOk;
+	handlers[eventStatus::OUT] = &ServerRun::handleOutOk;
+	handlers[eventStatus::CLOSE] = &ServerRun::handleClose;
+	handlers[eventStatus::CGI_INIT] = &ServerRun::handleCgiPostStart;
+	handlers[eventStatus::CGI_CONTINUE] = &ServerRun::handleCgiContinue;
+	handlers[eventStatus::CGI_CLOSE] = &ServerRun::handleCgiEnd;
+	handlers[eventStatus::CGI_POST_EXEC] = &ServerRun::handleCgiPostExec;
+	handlers[eventStatus::CGI_GET_EXEC] = &ServerRun::handleCgiGetExec;
+	handlers[eventStatus::CGI_ERROR] = &ServerRun::handleCgiError;
 
 	handlestatus hs = handlers[ev.getStatus()];
-	(hs)(ev, pool);
+	(this->*hs)(ev);
 }
 
-void handleInOk(Event& ev, Polling& pool) {
+void ServerRun::handleInOk(Event& ev) {
 	pool.setOut(ev.getFd());
 }
 
-void handleOutOk(Event& ev, Polling& pool) {
+void ServerRun::handleOutOk(Event& ev) {
 	pool.resetOut(ev.getFd());
 }
 
-void handleClose(Event& ev, Polling& pool) {
+void ServerRun::handleClose(Event& ev) {
 	pool.removeSocket(ev.getFd());
 }
 
-void handleCgiPostStart(Event& ev, Polling& pool) {
+void ServerRun::handleCgiPostStart(Event& ev) {
 	pool.addCgiFds(ev.getSocket());
 	ev.cgiExec();
 }
 
-void handleCgiContinue(Event& ev, Polling& pool) {
+void ServerRun::handleCgiContinue(Event& ev) {
 	(void)pool;
 	(void)ev;
 }
 
-void handleCgiEnd(Event& ev, Polling& pool) {
+void ServerRun::handleCgiEnd(Event& ev) {
 	pool.removeCgiFd(ev.getFd());
 	pool.setOut(ev.getSocket()->getFd());
 }
 
-void handleCgiPostExec(Event& ev, Polling& pool) {
+void ServerRun::handleCgiPostExec(Event& ev) {
 	pool.setCgiIn(ev.getSocket());
 	pool.removeCgiFd(ev.getFd());
 }
 
-void handleCgiGetExec(Event& ev, Polling& pool) {
+void ServerRun::handleCgiGetExec(Event& ev) {
 	pool.addCgiFds(ev.getSocket());
 	ev.cgiExec();
 }
 
-void handleCgiError(Event& ev, Polling& pool) {
+void ServerRun::handleCgiError(Event& ev) {
 	std::cerr << RED "Cgi Error. Stopping connection.\n";
 	pool.removeCgiFd(ev.getSocket()->req->getCgi()->getFds()[2]);
 	pool.removeSocket(ev.getFd());

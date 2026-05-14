@@ -26,15 +26,17 @@ class TCPSocket {
 	std::string getMessageOut() const;
 	bool		getKeepAlive() const;
 	bool 		getListening() const;
+	std::vector<Server>& getServers();
 	void		getRawData(std::string& content, int len);
 	std::string getLine();
 	void		setMessageIn(std::string msg);
 	void		setMessageOut(std::string msg);
 	void		setError(bool er);
 	void		setKeepAlive(bool keep);
+	void		setServers(std::vector<Server> serv);
 	void		addRawData(std::string& content, int len);
 	void		deleteRequest();
-	void		accept(TCPSocket* csoc);
+	TCPSocket* 	accept() const;
 	int			send();
 	void		close();
 	int			readAll();
@@ -56,6 +58,7 @@ class TCPSocket {
 	bool			   keep_alive;
 	bool			   error;
 	bool			   listening;
+	std::vector<Server> servers;
 
 	static const int	backlog;
 	static const size_t buffer_size;

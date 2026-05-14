@@ -431,9 +431,7 @@ bool Request::contentExist() const {
 Server& Request::findServ(std::vector<Server>& servers, int listeningPort) {
 	for (auto& server : servers) {
 		if (getField("Host") == server.getServName() + ":" + std::to_string(getPort())) {
-			if (listeningPort == server.getListenPort()) {
 				return server;
-			}
 		}
 	};
 	return findTheDefaultServ(servers, listeningPort);

@@ -4,7 +4,7 @@
 
 #include "Server.hpp"
 #include "color.hpp"
-#include "serverRun.hpp"
+#include "ServerRun.hpp"
 
 volatile sig_atomic_t quitok = false;
 
@@ -30,7 +30,8 @@ int main(int ac, char** av) {
 	}
 	if (status == statusCode::OK) {
 		std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
-		status = serverRun(serv);
+		ServerRun runner = ServerRun{serv};
+		status = runner.run();
 	}
 	if (status == statusCode::OK) {
 		std::cout << GREEN "Good bye!" << WHITE << std::endl;

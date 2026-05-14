@@ -49,7 +49,6 @@ class Event {
 	TCPSocket*	getSocket() const;
 	int			getEvents() const;
 	eventStatus getStatus() const;
-	void		setServ(std::vector<Server> s);
 	bool		isIn() const;
 	bool		isOut() const;
 	bool		isErr() const;
@@ -82,7 +81,6 @@ class Event {
 	int					events;
 	eventStatus			status;
 	TCPSocket*			soc;
-	std::vector<Server> servers;
 
 	typedef void (Event::*handlefun)();
 	static const int poll_event[MAX_POLL_EVENT];

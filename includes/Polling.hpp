@@ -15,9 +15,8 @@ class Polling {
 	Polling();
 	~Polling();
 
-	void	   addListeningSocket(int port);
+	void	   addListeningSocket(TCPSocket* soc);
 	void	   addCgiFds(std::vector<int> fds);
-	void	   connect(Event const& ev);
 	void	   removeListeningSocket(int fd);
 	void	   removeSocket(int fd);
 	void	   removeCgiFd(int fd);
@@ -30,6 +29,7 @@ class Polling {
 	void	   reset(int fd);
 	void	   setCgiIn(TCPSocket* soc);
 	void	   addCgiFds(TCPSocket* soc);
+	void	   addSocket(TCPSocket* soc);
 
 	class PollingException : public std::exception {
 	   public:
@@ -39,7 +39,6 @@ class Polling {
    private:
 	Polling& operator=(const Polling& rhs);
 	Polling(const Polling& rhs);
-	void	   addSocket(TCPSocket* soc);
 	void	   addCgiFd(int fd, int events, TCPSocket* soc);
 	void	   removeFd(int fd);
 	TCPSocket* getSocketFromStrip(int fd, std::map<int, TCPSocket*>& strip) const;
