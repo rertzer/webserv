@@ -45,8 +45,9 @@ TCPSocket::TCPSocket(TCPSocket const& rhs) {
 }
 
 TCPSocket::~TCPSocket() {
-	if (socket_fd)
+	if (socket_fd){
 		::close(socket_fd);
+	}
 	if (req) {
 		delete req;
 		req = nullptr;

@@ -21,7 +21,7 @@ class Polling {
 	void	   removeSocket(int fd);
 	void	   removeCgiFd(int fd);
 	int		   wait();
-	Event	   nextEvent();
+	Event*	   nextEvent();
 	TCPSocket* getSocketByFd(int fd);
 	TCPSocket* getSocketByCgiFd(int fd);
 	void	   setOut(int fd);
@@ -42,7 +42,7 @@ class Polling {
 	void	   addCgiFd(int fd, int events, TCPSocket* soc);
 	void	   removeFd(int fd);
 	TCPSocket* getSocketFromStrip(int fd, std::map<int, TCPSocket*>& strip) const;
-	Event	   extractEvent(nfds_t i);
+	Event*	   extractEvent(nfds_t i);
 
 	struct pollfd			  fds[256];
 	nfds_t					  nfds;

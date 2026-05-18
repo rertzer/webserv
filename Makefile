@@ -24,7 +24,8 @@ UTILS_DIR := utils/
 
 SOURCES := main.cpp
 
-SOCKET_SOURCES := TCPSocket.cpp Event.cpp Polling.cpp Request.cpp stringTrim.cpp utils.cpp ServerRun.cpp
+SOCKET_SOURCES := TCPSocket.cpp Event.cpp ListeningEvent.cpp OtherEvent.cpp Polling.cpp Request.cpp stringTrim.cpp utils.cpp ServerRun.cpp
+
 EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
 LISTING_SOURCES := DirListing.cpp FileDesc.cpp
 PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp ServerException.cpp ServerParsing.cpp HttpMethod.cpp autoindex.cpp

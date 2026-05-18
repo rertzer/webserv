@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "Request.hpp"
-#include "color.hpp"
 #include "macroDef.hpp"
 
 std::vector<std::string> splitCsv(std::string const& str) {

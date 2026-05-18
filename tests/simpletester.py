@@ -12,8 +12,11 @@ class SimpleTester(VirtualRequestTester):
         resp = None
         try:
             conn = http.client.HTTPConnection(self.host, self.port)
+            print("send request A")
             conn.request(request.method, request.path, request.content, request.headers)
+            print("send request B")
             resp =  conn.getresponse()
+            print("send request C")
             # print(resp.read())
             # conn.close()
 

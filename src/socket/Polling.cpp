@@ -1,7 +1,9 @@
-#include "Polling.hpp"
-#include "Cgi.hpp"
+#include <cstring>
 
-#include <algorithm>
+#include "Polling.hpp"
+#include "ListeningEvent.hpp"
+#include "OtherEvent.hpp"
+#include "Cgi.hpp"
 
 extern sig_atomic_t quitok;
 
@@ -66,7 +68,7 @@ int Polling::wait() {
 	return events_nb;
 }
 
-Event Polling::nextEvent() {
+Event* Polling::nextEvent() {
 	if (!events_nb)
 		throw(PollingException());
 
@@ -178,12 +180,28 @@ TCPSocket* Polling::getSocketFromStrip(int fd, std::map<int, TCPSocket*>& strip)
 	return nullptr;
 }
 
-Event Polling::extractEvent(nfds_t i) {
+Event* Polling::extractEvent(nfds_t i) {
+	Event* ev = nullptr;
+
 	events_nb--;
 	short rev = fds[i].revents;
 	fds[i].revents = 0;
 	TCPSocket* soc = getSocketByFd(fds[i].fd);
 	if (soc == nullptr)
 		soc = getSocketByCgiFd(fds[i].fd);
-	return Event(fds[i].fd, rev, soc);
+	if (soc == nullptr){
+		throw(PollingException());
+		std::cerr << "Socket not Found\n";
+	}
+	if (soc->getListening()){
+		ev = new ListeningEvent();
+	}
+	else{
+		ev = new OtherEvent();
+	}
+	ev->setFd(fds[i].fd);
+	ev->setEvents(rev);
+	ev->setPool(this);
+	ev->setSoc(soc);
+	return ev;
 }

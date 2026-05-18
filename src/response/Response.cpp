@@ -63,11 +63,12 @@ std::string Response::getResponseHeader() {
 		header += getResponseContentHeader();
 		header += getResponseCookies();
 	}
+	header += "\r\n";
 	return header;
 }
 
 std::string Response::getResponseStatus() const {
-	return "HTTP/1.1 " + _status + " \r\n";
+	return "HTTP/1.1 " + _status + "\r\n";
 }
 
 std::string Response::getResponseLocation() const {
@@ -78,6 +79,9 @@ std::string Response::getResponseConnection() const {
 	std::string connection = "";
 	if (!_connectionClose.empty()) {
 		connection = "Connection: " + _connectionClose + "\r\n";
+	}
+	else{
+		connection = "Connection: close\r\n";
 	}
 	return connection;
 }
@@ -96,7 +100,7 @@ std::string Response::getResponseCookies() const {
 }
 
 std::string Response::getResponseContent() const {
-	return "\r\n" + _content;
+	return  _content;
 }
 
 void Response::logResponse(std::string resp) const {

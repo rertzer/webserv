@@ -26,7 +26,7 @@ class TCPSocket {
 	std::string getMessageOut() const;
 	bool		getKeepAlive() const;
 	bool 		getListening() const;
-	Server* getDefaultServer() const;
+	Server* 	getDefaultServer() const;
 	std::vector<Server>& getServers();
 	void		getRawData(std::string& content, int len);
 	std::string getLine();

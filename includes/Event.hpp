@@ -2,7 +2,6 @@
 #define EVENT_HPP
 
 #include <poll.h>
-#include <vector>
 
 #include "ErrorException.hpp"
 #include "Request.hpp"
@@ -10,6 +9,8 @@
 #include "Server.hpp"
 #include "TCPSocket.hpp"
 #include "macroDef.hpp"
+
+class Polling;
 
 constexpr size_t MAX_POLL_EVENT = 5;
 /* Event status: message for/from Polling
@@ -39,47 +40,40 @@ enum class eventStatus {
 
 class Event {
    public:
-	Event(int f, int e, TCPSocket* soc);
+	Event();
 	Event(Event const& rhs);
-	~Event();
+	virtual ~Event();
 
 	Event& operator=(Event const& rhs);
 
-	int			getFd() const;
-	TCPSocket*	getSocket() const;
-	int			getEvents() const;
-	eventStatus getStatus() const;
-	bool		isIn() const;
-	bool		isOut() const;
-	bool		isErr() const;
-	bool		isHup() const;
-	bool		isCgiFd() const;
-	bool		isCgiStatus(CgiStatus cgi_status) const;
-	void		handleEvent();
-	void		handleIn();
-	void		handleOut();
-	void		handleError();
-	void		handleHup();
-	void		handleNval();
-	void		internalError();
-	void		cgiExec();
+	int				getFd() const;
+	TCPSocket*		getSocket() const;
+	int				getEvents() const;
+	eventStatus 	getStatus() const;
+	void			setFd(int fd);
+	void			setEvents(int events);
+	void			setPool(Polling* pool);
+	void			setSoc(TCPSocket* soc);
+	void			handleEvent();
 
-   private:
-	Event();
-	void	 handleCgiIn();
-	void	 handleCgiOut();
-	void	 handleMessageOut();
-	bool	 cgiIsPending();
-	void	 handleOneEvent(int i);
-	void	 handleErrorException(const ErrorException& e);
-	bool	 checkAndHandleCgiIn();
-	void	 handleInRequestReady();
-	Response getListeningSocketResponse();
-	Server*	 getListentingSocketServer();
+   protected:
+	bool			isIn() const;
+	bool			isOut() const;
+	bool			isErr() const;
+	bool			isHup() const;
+	virtual void	handleIn() = 0;
+	virtual void	handleOut() = 0;
+	virtual void	handleError() = 0;
+	virtual void	handleHup() = 0;
+	virtual void	handleNval() = 0;
+	void	 		handleOneEvent(int i);
+	virtual void	handleErrorException(const ErrorException& e) = 0;
+	virtual void	handleEventStatus() = 0;
 
 	int					fd;
 	int					events;
 	eventStatus			status;
+	Polling*			pool;
 	TCPSocket*			soc;
 
 	typedef void (Event::*handlefun)();
