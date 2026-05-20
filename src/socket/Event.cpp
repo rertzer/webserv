@@ -1,5 +1,9 @@
 #include "Event.hpp"
 #include "Cgi.hpp"
+#include "Polling.hpp"
+
+
+/* ================================= Coplien Methods ========================*/
 
 Event::Event(): fd(0), events(0), status(eventStatus::NOTHING), pool(nullptr), soc(nullptr){}
 
@@ -17,6 +21,8 @@ Event& Event::operator=(Event const& rhs) {
 	return *this;
 }
 
+/* ================================= Getters =============================== */
+
 int Event::getFd() const {
 	return fd;
 }
@@ -33,6 +39,7 @@ eventStatus Event::getStatus() const {
 	return status;
 }
 
+/* ================================== Setters ============================== */
 
 void Event::setFd(int fd){
 	this->fd = fd;
@@ -50,6 +57,8 @@ void Event::setSoc(TCPSocket* soc){
 	this->soc = soc;
 }
 
+/* =============================== Is Pollin Event ========================= */
+
 bool Event::isIn() const {
 	return (events & POLLIN);
 }
@@ -65,6 +74,8 @@ bool Event::isErr() const {
 bool Event::isHup() const {
 	return (events & POLLHUP);
 }
+
+/* ================================== Handle Event ========================= */
 void Event::handleEvent() {
 	try {
 		for (auto ev : poll_event) {
@@ -82,6 +93,7 @@ void Event::handleEvent() {
 		handleErrorException(e);
 		handleEventStatus();
 	}
+	pool->reset(fd);
 }
 
 void Event::handleOneEvent(int ev) {
@@ -95,5 +107,5 @@ void Event::handleOneEvent(int ev) {
 		(this->*fun)();
 	}
 }
-// Static const
+/* ============================== Static const ============================= */
 int const Event::poll_event[MAX_POLL_EVENT] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};

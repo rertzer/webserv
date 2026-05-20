@@ -80,12 +80,30 @@ Event* Polling::nextEvent() {
 	throw(PollingException());
 }
 
-TCPSocket* Polling::getSocketByFd(int fd) {
+TCPSocket* Polling::getSocket(nfds_t i) const{
+	TCPSocket* soc = getSocketByFd(fds[i].fd);
+	if (soc == nullptr)
+		soc = getSocketByCgiFd(fds[i].fd);
+	if (soc == nullptr){
+		throw(PollingException());
+		std::cerr << "Socket not Found\n";
+	}
+	return soc;
+}
+
+TCPSocket* Polling::getSocketByFd(int fd) const {
 	return getSocketFromStrip(fd, powerstrip);
 }
 
-TCPSocket* Polling::getSocketByCgiFd(int fd) {
+TCPSocket* Polling::getSocketByCgiFd(int fd) const {
 	return getSocketFromStrip(fd, powerstripCgi);
+}
+
+TCPSocket* Polling::getSocketFromStrip(int fd,  const std::map<int, TCPSocket*>& strip) const {
+	auto it = strip.find(fd);
+	if (it != strip.end())
+		return it->second;
+	return nullptr;
 }
 
 void Polling::setOut(int fd) {
@@ -173,28 +191,15 @@ void Polling::removeFd(int fd) {
 	fds[nfds].revents = 0;
 }
 
-TCPSocket* Polling::getSocketFromStrip(int fd, std::map<int, TCPSocket*>& strip) const {
-	auto it = strip.find(fd);
-	if (it != strip.end())
-		return it->second;
-	return nullptr;
-}
-
 Event* Polling::extractEvent(nfds_t i) {
 	Event* ev = nullptr;
 
 	events_nb--;
 	short rev = fds[i].revents;
 	fds[i].revents = 0;
-	TCPSocket* soc = getSocketByFd(fds[i].fd);
-	if (soc == nullptr)
-		soc = getSocketByCgiFd(fds[i].fd);
-	if (soc == nullptr){
-		throw(PollingException());
-		std::cerr << "Socket not Found\n";
-	}
+	TCPSocket* soc = getSocket(i);
 	if (soc->getListening()){
-		ev = new ListeningEvent();
+	ev = new ListeningEvent();
 	}
 	else{
 		ev = new OtherEvent();

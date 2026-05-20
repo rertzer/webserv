@@ -1,6 +1,8 @@
 #include "ListeningEvent.hpp"
 #include "Polling.hpp"
 
+/* ============================== Coplien Methods ========================== */
+
 ListeningEvent::ListeningEvent():Event(){
 	
 }
@@ -14,9 +16,11 @@ ListeningEvent& ListeningEvent::operator=(ListeningEvent const& rhs) {
 	return *this;
 }
 
-void ListeningEvent::handleErrorException(const ErrorException& e) {
-	(void)e;
-}
+/* =========================== handle event status ========================= */
+
+void ListeningEvent::handleEventStatus(){}
+
+/* =========================== Handle Poll Events ========================== */
 
 void ListeningEvent::handleIn() {
 	TCPSocket* new_soc = soc->accept();
@@ -26,12 +30,10 @@ void ListeningEvent::handleIn() {
 	}
 }
 
-void ListeningEvent::handleEventStatus(){}
-
 void ListeningEvent::handleOut() {
 	internalError("POLLOUT");
-
 }
+
 void ListeningEvent::handleError() {
 	internalError("POLLERR");
 }
@@ -42,6 +44,12 @@ void ListeningEvent::handleHup() {
 
 void ListeningEvent::handleNval() {
 	internalError("POLLNVAL");
+}
+
+/* ============================ Error Handling ============================= */
+
+void ListeningEvent::handleErrorException(const ErrorException& e) {
+	(void)e;
 }
 
 void ListeningEvent::internalError(std::string message) {

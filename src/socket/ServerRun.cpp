@@ -22,9 +22,7 @@ statusCode ServerRun::run() {
 			if (quitok) {
 				break;
 			}
-			for (int n = 0; n < rc; n++) {
-				handleEvent();
-			}
+			handleAllEvents(rc);	
 		}
 	} catch (const TCPSocket::SocketException& e) {
 		status = handleException(e, statusCode::SOCKET);
@@ -53,10 +51,14 @@ void ServerRun::loadListeningSocket() {
 	}
 }
 
+void ServerRun::handleAllEvents(int rc){
+	for (int n = 0; n < rc; n++) {
+		handleEvent();
+	}
+}
+
 void ServerRun::handleEvent() {
 	Event* ev = pool.nextEvent();
 	ev->handleEvent();
-	
-	pool.reset(ev->getFd());
 	delete ev;
 }
