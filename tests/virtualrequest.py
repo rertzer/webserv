@@ -1,6 +1,5 @@
 import testutils as tu
 
-
 class VirtualRequest:
 
     def __init__(self, status, length):

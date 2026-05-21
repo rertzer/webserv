@@ -1,6 +1,5 @@
 from virtualrequest import VirtualRequest
 
-
 class SimpleRequest(VirtualRequest):
 
     def __init__(self, method, path, headers, status, length, content="", cookies=""):

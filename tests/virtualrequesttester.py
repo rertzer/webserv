@@ -25,6 +25,7 @@ class VirtualRequestTester:
 
     def check_server_output(self):
         assert isinstance(self.server, WebServer)
+        # Uncomment for verbose mode
         #self.server.check_output()
 
     def run_requests(self, requests):

@@ -2,7 +2,6 @@ import http.client
 
 from virtualrequesttester import VirtualRequestTester
 
-
 class SimpleTester(VirtualRequestTester):
 
     def __init__(self, index, host, port):
