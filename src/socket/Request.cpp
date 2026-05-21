@@ -6,10 +6,10 @@
 #include "ErrorException.hpp"
 #include "HttpMethod.hpp"
 #include "Request.hpp"
-#include "TCPSocket.hpp"
+#include "Connection.hpp"
 #include "files.hpp"
 
-Request::Request(TCPSocket* s)
+Request::Request(Connection* s)
 	: port(s->getListeningSocketPort()),
 	  body_size(1000000),
 	  soc(s),
@@ -254,7 +254,7 @@ void Request::eraseContent(int size) {
 	content.erase(0, size);
 }
 
-TCPSocket* Request::getSocket() const {
+Connection* Request::getSocket() const {
 	return soc;
 }
 

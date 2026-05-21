@@ -11,11 +11,11 @@
 #include "Server.hpp"
 #include "macroDef.hpp"
 
-class TCPSocket;
+class Connection;
 
 class Request {
    public:
-	Request(TCPSocket* s);
+	Request(Connection* s);
 	Request(Request const& rhs);
 	~Request();
 
@@ -25,7 +25,7 @@ class Request {
 	CgiStatus								  getCgiStatus() const;
 	const std::string&						  getProtocol() const;
 	HttpMethod								  getMethod() const;
-	TCPSocket*								  getSocket() const;
+	Connection*								  getSocket() const;
 	const std::string&						  getQuery() const;
 	const std::map<std::string, std::string>& getHeader() const;
 	const std::map<std::string, std::string>& getTrailer() const;
@@ -81,7 +81,7 @@ class Request {
 
 	int								   port;
 	unsigned int					   body_size;
-	TCPSocket*						   soc;
+	Connection*						   soc;
 	Cgi*							   cgi;
 	std::map<std::string, std::string> header;
 	std::map<std::string, std::string> trailer;

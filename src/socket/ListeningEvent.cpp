@@ -23,7 +23,7 @@ void ListeningEvent::handleEventStatus(){}
 /* =========================== Handle Poll Events ========================== */
 
 void ListeningEvent::handleIn() {
-	TCPSocket* new_soc = soc->accept();
+	Connection* new_soc = soc->accept();
 	if (new_soc){
 		new_soc->setServers(soc->getServers());
 		pool->addSocket(new_soc);

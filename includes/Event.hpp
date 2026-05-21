@@ -7,7 +7,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Server.hpp"
-#include "TCPSocket.hpp"
+#include "Connection.hpp"
 #include "macroDef.hpp"
 
 class Polling;
@@ -47,13 +47,13 @@ class Event {
 	Event& operator=(Event const& rhs);
 
 	int				getFd() const;
-	TCPSocket*		getSocket() const;
+	Connection*		getSocket() const;
 	int				getEvents() const;
 	eventStatus 	getStatus() const;
 	void			setFd(int fd);
 	void			setEvents(int events);
 	void			setPool(Polling* pool);
-	void			setSoc(TCPSocket* soc);
+	void			setSoc(Connection* soc);
 	void			handleEvent();
 
    protected:
@@ -74,7 +74,7 @@ class Event {
 	int					events;
 	eventStatus			status;
 	Polling*			pool;
-	TCPSocket*			soc;
+	Connection*			soc;
 
 	typedef void (Event::*handlefun)();
 	static const int poll_event[MAX_POLL_EVENT];

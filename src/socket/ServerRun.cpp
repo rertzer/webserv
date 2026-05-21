@@ -24,7 +24,7 @@ statusCode ServerRun::run() {
 			}
 			handleAllEvents(rc);	
 		}
-	} catch (const TCPSocket::SocketException& e) {
+	} catch (const TcpSocket::SocketException& e) {
 		status = handleException(e, statusCode::SOCKET);
 	} catch (const Cgi::CgiException& e) {
 		status = handleException(e, statusCode::CGI);
@@ -44,7 +44,7 @@ void ServerRun::loadListeningSocket() {
 		int port = serv.getListenPort();
 		if (unique_ports.find(port) == unique_ports.end()) {
 			unique_ports.insert(port);
-			TCPSocket* soc = new TCPSocket(port);
+			Connection* soc = new Connection(port);
 			soc->setServers(servers);
 			pool.addListeningSocket(soc);
 		}

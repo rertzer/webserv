@@ -6,7 +6,7 @@
 #include "Server.hpp"
 #include "macroDef.hpp"
 
-class TCPSocket;
+class Connection;
 enum codeProb {
 	OK = 200,
 	FILE_NOT_FOUND = 404,

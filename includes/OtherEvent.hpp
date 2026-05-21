@@ -7,7 +7,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Server.hpp"
-#include "TCPSocket.hpp"
+#include "Connection.hpp"
 #include "macroDef.hpp"
 #include "Event.hpp"
 

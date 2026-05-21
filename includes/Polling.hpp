@@ -8,29 +8,29 @@
 #include <map>
 
 #include "Event.hpp"
-#include "TCPSocket.hpp"
+#include "Connection.hpp"
 
 class Polling {
    public:
 	Polling();
 	~Polling();
 
-	void	   addListeningSocket(TCPSocket* soc);
+	void	   addListeningSocket(Connection* soc);
 	void	   addCgiFds(std::vector<int> fds);
 	void	   removeListeningSocket(int fd);
 	void	   removeSocket(int fd);
 	void	   removeCgiFd(int fd);
 	int		   wait();
 	Event*	   nextEvent();
-	TCPSocket* getSocket(nfds_t i) const;
-	TCPSocket* getSocketByFd(int fd) const;
-	TCPSocket* getSocketByCgiFd(int fd) const;
+	Connection* getSocket(nfds_t i) const;
+	Connection* getSocketByFd(int fd) const;
+	Connection* getSocketByCgiFd(int fd) const;
 	void	   setOut(int fd);
 	void	   resetOut(int fd);
 	void	   reset(int fd);
-	void	   setCgiIn(TCPSocket* soc);
-	void	   addCgiFds(TCPSocket* soc);
-	void	   addSocket(TCPSocket* soc);
+	void	   setCgiIn(Connection* soc);
+	void	   addCgiFds(Connection* soc);
+	void	   addSocket(Connection* soc);
 
 	class PollingException : public std::exception {
 	   public:
@@ -40,17 +40,17 @@ class Polling {
    private:
 	Polling& operator=(const Polling& rhs);
 	Polling(const Polling& rhs);
-	void	   addCgiFd(int fd, int events, TCPSocket* soc);
+	void	   addCgiFd(int fd, int events, Connection* soc);
 	void	   removeFd(int fd);
-	TCPSocket* getSocketFromStrip(int fd,  const std::map<int, TCPSocket*>& strip) const;
+	Connection* getSocketFromStrip(int fd,  const std::map<int, Connection*>& strip) const;
 	Event*	   extractEvent(nfds_t i);
 
 	struct pollfd			  fds[256];
 	nfds_t					  nfds;
 	int						  events_nb;
 	std::list<int>			  listening_fds;
-	std::map<int, TCPSocket*> powerstrip;
-	std::map<int, TCPSocket*> powerstripCgi;
+	std::map<int, Connection*> powerstrip;
+	std::map<int, Connection*> powerstripCgi;
 };
 
 #endif

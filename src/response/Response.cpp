@@ -2,7 +2,7 @@
 #include "Cgi.hpp"
 #include "DirListing.hpp"
 #include "Status.hpp"
-#include "TCPSocket.hpp"
+#include "Connection.hpp"
 #include "autoindex.hpp"
 #include "color.hpp"
 #include "files.hpp"

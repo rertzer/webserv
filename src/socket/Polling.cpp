@@ -31,7 +31,7 @@ Polling& Polling::operator=(Polling const& rhs) {
 	return *this;
 }
 
-void Polling::addListeningSocket(TCPSocket* soc) {
+void Polling::addListeningSocket(Connection* soc) {
 	addSocket(soc);
 	listening_fds.push_back(soc->getFd());
 }
@@ -80,8 +80,8 @@ Event* Polling::nextEvent() {
 	throw(PollingException());
 }
 
-TCPSocket* Polling::getSocket(nfds_t i) const{
-	TCPSocket* soc = getSocketByFd(fds[i].fd);
+Connection* Polling::getSocket(nfds_t i) const{
+	Connection* soc = getSocketByFd(fds[i].fd);
 	if (soc == nullptr)
 		soc = getSocketByCgiFd(fds[i].fd);
 	if (soc == nullptr){
@@ -91,15 +91,15 @@ TCPSocket* Polling::getSocket(nfds_t i) const{
 	return soc;
 }
 
-TCPSocket* Polling::getSocketByFd(int fd) const {
+Connection* Polling::getSocketByFd(int fd) const {
 	return getSocketFromStrip(fd, powerstrip);
 }
 
-TCPSocket* Polling::getSocketByCgiFd(int fd) const {
+Connection* Polling::getSocketByCgiFd(int fd) const {
 	return getSocketFromStrip(fd, powerstripCgi);
 }
 
-TCPSocket* Polling::getSocketFromStrip(int fd,  const std::map<int, TCPSocket*>& strip) const {
+Connection* Polling::getSocketFromStrip(int fd,  const std::map<int, Connection*>& strip) const {
 	auto it = strip.find(fd);
 	if (it != strip.end())
 		return it->second;
@@ -132,7 +132,7 @@ void Polling::reset(int fd) {
 		}
 	}
 }
-void Polling::setCgiIn(TCPSocket* soc) {
+void Polling::setCgiIn(Connection* soc) {
 	auto cgi_fds = soc->req->getCgi()->getFds();
 	for (nfds_t i = 0; i < nfds; i++) {
 		if (fds[i].fd == cgi_fds[2]) {
@@ -142,7 +142,7 @@ void Polling::setCgiIn(TCPSocket* soc) {
 	}
 }
 
-void Polling::addCgiFds(TCPSocket* soc) {
+void Polling::addCgiFds(Connection* soc) {
 	std::vector<int> cgi_fds = soc->req->getCgi()->getFds();
 	if (cgi_fds[1] != -1) {
 		addCgiFd(cgi_fds[1], POLLOUT, soc);
@@ -156,7 +156,7 @@ Polling::Polling(Polling const& rhs) {
 	static_cast<void>(rhs);
 }
 
-void Polling::addSocket(TCPSocket* soc) {
+void Polling::addSocket(Connection* soc) {
 	if (nfds > 254)
 		throw(PollingException());
 	fds[nfds].fd = soc->getFd();
@@ -166,7 +166,7 @@ void Polling::addSocket(TCPSocket* soc) {
 	powerstrip[soc->getFd()] = soc;
 }
 
-void Polling::addCgiFd(int fd, int events, TCPSocket* soc) {
+void Polling::addCgiFd(int fd, int events, Connection* soc) {
 	if (nfds > 254)
 		throw(PollingException());
 	fds[nfds].fd = fd;
@@ -197,7 +197,7 @@ Event* Polling::extractEvent(nfds_t i) {
 	events_nb--;
 	short rev = fds[i].revents;
 	fds[i].revents = 0;
-	TCPSocket* soc = getSocket(i);
+	Connection* soc = getSocket(i);
 	if (soc->getListening()){
 	ev = new ListeningEvent();
 	}

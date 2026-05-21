@@ -1,22 +1,22 @@
-#ifndef TCPSOCKET_HPP
-#define TCPSOCKET_HPP
+#ifndef CONNECTION_HPP
+#define CONNECTION_HPP
 
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <exception>
 #include <string>
 
 #include "Request.hpp"
+#include "TcpSocket.hpp"
 
-class TCPSocket {
+class Connection {
    public:
-	TCPSocket(int p);
-	TCPSocket(TCPSocket const& rhs);
-	TCPSocket();
-	~TCPSocket();
-	TCPSocket& operator=(TCPSocket const& rhs);
+	Connection(int p);
+	Connection(Connection const& rhs);
+	Connection();
+	~Connection();
+	Connection& operator=(Connection const& rhs);
 
 	int			getPort() const;
 	int			getListeningSocketPort() const;
@@ -37,25 +37,20 @@ class TCPSocket {
 	void		setServers(std::vector<Server> serv);
 	void		addRawData(std::string& content, int len);
 	void		deleteRequest();
-	TCPSocket* 	accept() const;
+	Connection* 	accept() const;
 	int			send();
 	void		close();
 	int			readAll();
 
 	Request* req;
 
-	class SocketException : public std::exception {
-	   public:
-		virtual const char* what() const throw() { return ("Error: socket failed"); }
-	};
+
 
    private:
 	void	setDefaultServer();
 
-	int				   socket_fd;
 	int				   listening_port;
-	struct sockaddr_in socket_addr;
-	socklen_t		   socket_addr_length;
+	
 	std::string		   msg_in;
 	std::string		   msg_out;
 	bool				keep_alive;
@@ -63,9 +58,8 @@ class TCPSocket {
 	bool				listening;
 	Server*				default_server;
 	std::vector<Server> servers;
+	TcpSocket			soc;
 
-	static const int	backlog;
-	static const size_t buffer_size;
 	static const size_t max_line_len;
 };
 

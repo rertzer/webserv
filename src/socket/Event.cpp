@@ -27,7 +27,7 @@ int Event::getFd() const {
 	return fd;
 }
 
-TCPSocket* Event::getSocket() const {
+Connection* Event::getSocket() const {
 	return soc;
 }
 
@@ -53,7 +53,7 @@ void Event::setPool(Polling* pool){
 	this->pool = pool;
 }
 
-void Event::setSoc(TCPSocket* soc){
+void Event::setSoc(Connection* soc){
 	this->soc = soc;
 }
 
