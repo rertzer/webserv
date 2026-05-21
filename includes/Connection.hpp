@@ -20,42 +20,46 @@ class Connection {
 
 	int			getPort() const;
 	int			getListeningSocketPort() const;
-	int			getFd() const;
+	int			getSocketFd() const;
 	bool		getError() const;
 	std::string getMessageIn() const;
 	std::string getMessageOut() const;
 	bool		getKeepAlive() const;
-	bool 		getListening() const;
 	Server* 	getDefaultServer() const;
 	std::vector<Server>& getServers();
 	void		getRawData(std::string& content, int len);
+	Request*	getRequest();
 	std::string getLine();
+
 	void		setMessageIn(std::string msg);
 	void		setMessageOut(std::string msg);
 	void		setError(bool er);
 	void		setKeepAlive(bool keep);
 	void		setServers(std::vector<Server> serv);
-	void		addRawData(std::string& content, int len);
+
+	bool 		isListening() const;
+
+	void		createRequest();
 	void		deleteRequest();
-	Connection* 	accept() const;
+	void		addRawData(std::string& content, int len);
+	Connection*	accept() const;
+	int			readAll();
 	int			send();
 	void		close();
-	int			readAll();
 
-	Request* req;
 
 
 
    private:
 	void	setDefaultServer();
 
-	int				   listening_port;
-	
-	std::string		   msg_in;
-	std::string		   msg_out;
+	int					listening_port;
+	std::string			msg_in;
+	std::string			msg_out;
 	bool				keep_alive;
 	bool				error;
 	bool				listening;
+	Request*			request;
 	Server*				default_server;
 	std::vector<Server> servers;
 	TcpSocket			soc;

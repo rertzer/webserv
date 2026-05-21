@@ -15,22 +15,22 @@ class Polling {
 	Polling();
 	~Polling();
 
-	void	   addListeningSocket(Connection* soc);
+	void	   addListeningConnection(Connection* connection);
 	void	   addCgiFds(std::vector<int> fds);
-	void	   removeListeningSocket(int fd);
-	void	   removeSocket(int fd);
+	void	   removeListeningConnection(int fd);
+	void	   removeConnection(int fd);
 	void	   removeCgiFd(int fd);
 	int		   wait();
 	Event*	   nextEvent();
-	Connection* getSocket(nfds_t i) const;
-	Connection* getSocketByFd(int fd) const;
-	Connection* getSocketByCgiFd(int fd) const;
+	Connection* getConnection(nfds_t i) const;
+	Connection* getConnectionByFd(int fd) const;
+	Connection* getConnectionByCgiFd(int fd) const;
 	void	   setOut(int fd);
 	void	   resetOut(int fd);
 	void	   reset(int fd);
-	void	   setCgiIn(Connection* soc);
-	void	   addCgiFds(Connection* soc);
-	void	   addSocket(Connection* soc);
+	void	   setCgiIn(Connection* connection);
+	void	   addCgiFds(Connection* connection);
+	void	   addConnection(Connection* connection);
 
 	class PollingException : public std::exception {
 	   public:
@@ -40,9 +40,9 @@ class Polling {
    private:
 	Polling& operator=(const Polling& rhs);
 	Polling(const Polling& rhs);
-	void	   addCgiFd(int fd, int events, Connection* soc);
+	void	   addCgiFd(int fd, int events, Connection* connection);
 	void	   removeFd(int fd);
-	Connection* getSocketFromStrip(int fd,  const std::map<int, Connection*>& strip) const;
+	Connection* getConnectionFromStrip(int fd,  const std::map<int, Connection*>& strip) const;
 	Event*	   extractEvent(nfds_t i);
 
 	struct pollfd			  fds[256];

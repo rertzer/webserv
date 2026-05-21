@@ -23,10 +23,10 @@ void ListeningEvent::handleEventStatus(){}
 /* =========================== Handle Poll Events ========================== */
 
 void ListeningEvent::handleIn() {
-	Connection* new_soc = soc->accept();
-	if (new_soc){
-		new_soc->setServers(soc->getServers());
-		pool->addSocket(new_soc);
+	Connection* new_connection = connection->accept();
+	if (new_connection){
+		new_connection->setServers(connection->getServers());
+		pool->addConnection(new_connection);
 	}
 }
 
@@ -53,6 +53,6 @@ void ListeningEvent::handleErrorException(const ErrorException& e) {
 }
 
 void ListeningEvent::internalError(std::string message) {
-		std::cerr << message << " Stopping connection on port " << soc->getPort() << std::endl;
-		pool->removeSocket(fd);
+		std::cerr << message << " Stopping connection on port " << connection->getPort() << std::endl;
+		pool->removeConnection(fd);
 }

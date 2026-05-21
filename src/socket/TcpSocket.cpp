@@ -56,7 +56,7 @@ int TcpSocket::getPort() const {
 	return ntohs(socket_addr.sin_port);
 }
 
-int TcpSocket::getSocketFd() const {
+int TcpSocket::getFd() const {
 	return socket_fd;
 }
 

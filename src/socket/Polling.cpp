@@ -31,17 +31,17 @@ Polling& Polling::operator=(Polling const& rhs) {
 	return *this;
 }
 
-void Polling::addListeningSocket(Connection* soc) {
-	addSocket(soc);
-	listening_fds.push_back(soc->getFd());
+void Polling::addListeningConnection(Connection* connection) {
+	addConnection(connection);
+	listening_fds.push_back(connection->getSocketFd());
 }
 
-void Polling::removeListeningSocket(int fd) {
+void Polling::removeListeningConnection(int fd) {
 	listening_fds.remove(fd);
-	removeSocket(fd);
+	removeConnection(fd);
 }
 
-void Polling::removeSocket(int fd) {
+void Polling::removeConnection(int fd) {
 	auto it = powerstrip.find(fd);
 	if (it != powerstrip.end()) {
 		removeFd(fd);
@@ -80,26 +80,26 @@ Event* Polling::nextEvent() {
 	throw(PollingException());
 }
 
-Connection* Polling::getSocket(nfds_t i) const{
-	Connection* soc = getSocketByFd(fds[i].fd);
-	if (soc == nullptr)
-		soc = getSocketByCgiFd(fds[i].fd);
-	if (soc == nullptr){
+Connection* Polling::getConnection(nfds_t i) const{
+	Connection* connection = getConnectionByFd(fds[i].fd);
+	if (connection == nullptr)
+		connection = getConnectionByCgiFd(fds[i].fd);
+	if (connection == nullptr){
 		throw(PollingException());
-		std::cerr << "Socket not Found\n";
+		std::cerr << "Connection not Found\n";
 	}
-	return soc;
+	return connection;
 }
 
-Connection* Polling::getSocketByFd(int fd) const {
-	return getSocketFromStrip(fd, powerstrip);
+Connection* Polling::getConnectionByFd(int fd) const {
+	return getConnectionFromStrip(fd, powerstrip);
 }
 
-Connection* Polling::getSocketByCgiFd(int fd) const {
-	return getSocketFromStrip(fd, powerstripCgi);
+Connection* Polling::getConnectionByCgiFd(int fd) const {
+	return getConnectionFromStrip(fd, powerstripCgi);
 }
 
-Connection* Polling::getSocketFromStrip(int fd,  const std::map<int, Connection*>& strip) const {
+Connection* Polling::getConnectionFromStrip(int fd,  const std::map<int, Connection*>& strip) const {
 	auto it = strip.find(fd);
 	if (it != strip.end())
 		return it->second;
@@ -132,8 +132,8 @@ void Polling::reset(int fd) {
 		}
 	}
 }
-void Polling::setCgiIn(Connection* soc) {
-	auto cgi_fds = soc->req->getCgi()->getFds();
+void Polling::setCgiIn(Connection* connection) {
+	auto cgi_fds = connection->getRequest()->getCgi()->getFds();
 	for (nfds_t i = 0; i < nfds; i++) {
 		if (fds[i].fd == cgi_fds[2]) {
 			fds[i].events = POLLIN;
@@ -142,13 +142,13 @@ void Polling::setCgiIn(Connection* soc) {
 	}
 }
 
-void Polling::addCgiFds(Connection* soc) {
-	std::vector<int> cgi_fds = soc->req->getCgi()->getFds();
+void Polling::addCgiFds(Connection* connection) {
+	std::vector<int> cgi_fds = connection->getRequest()->getCgi()->getFds();
 	if (cgi_fds[1] != -1) {
-		addCgiFd(cgi_fds[1], POLLOUT, soc);
-		addCgiFd(cgi_fds[2], 0, soc);
+		addCgiFd(cgi_fds[1], POLLOUT, connection);
+		addCgiFd(cgi_fds[2], 0, connection);
 	} else if (cgi_fds[2] != -1)
-		addCgiFd(cgi_fds[2], POLLIN, soc);
+		addCgiFd(cgi_fds[2], POLLIN, connection);
 }
 
 // Private
@@ -156,23 +156,23 @@ Polling::Polling(Polling const& rhs) {
 	static_cast<void>(rhs);
 }
 
-void Polling::addSocket(Connection* soc) {
+void Polling::addConnection(Connection* connection) {
 	if (nfds > 254)
 		throw(PollingException());
-	fds[nfds].fd = soc->getFd();
+	fds[nfds].fd = connection->getSocketFd();
 	fds[nfds].events = POLLIN;
 	nfds++;
 
-	powerstrip[soc->getFd()] = soc;
+	powerstrip[connection->getSocketFd()] = connection;
 }
 
-void Polling::addCgiFd(int fd, int events, Connection* soc) {
+void Polling::addCgiFd(int fd, int events, Connection* connection) {
 	if (nfds > 254)
 		throw(PollingException());
 	fds[nfds].fd = fd;
 	fds[nfds].events = events;
 	nfds++;
-	powerstripCgi[fd] = soc;
+	powerstripCgi[fd] = connection;
 }
 
 void Polling::removeFd(int fd) {
@@ -197,8 +197,8 @@ Event* Polling::extractEvent(nfds_t i) {
 	events_nb--;
 	short rev = fds[i].revents;
 	fds[i].revents = 0;
-	Connection* soc = getSocket(i);
-	if (soc->getListening()){
+	Connection* connection = getConnection(i);
+	if (connection->isListening()){
 	ev = new ListeningEvent();
 	}
 	else{
@@ -207,6 +207,6 @@ Event* Polling::extractEvent(nfds_t i) {
 	ev->setFd(fds[i].fd);
 	ev->setEvents(rev);
 	ev->setPool(this);
-	ev->setSoc(soc);
+	ev->setConnection(connection);
 	return ev;
 }

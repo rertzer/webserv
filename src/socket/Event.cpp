@@ -5,9 +5,9 @@
 
 /* ================================= Coplien Methods ========================*/
 
-Event::Event(): fd(0), events(0), status(eventStatus::NOTHING), pool(nullptr), soc(nullptr){}
+Event::Event(): fd(0), events(0), status(eventStatus::NOTHING), pool(nullptr), connection(nullptr){}
 
-Event::Event(Event const& rhs) : fd(rhs.fd), events(rhs.events), status(rhs.status), pool(rhs.pool), soc(rhs.soc) {}
+Event::Event(Event const& rhs) : fd(rhs.fd), events(rhs.events), status(rhs.status), pool(rhs.pool), connection(rhs.connection) {}
 
 Event::~Event() {}
 Event& Event::operator=(Event const& rhs) {
@@ -16,7 +16,7 @@ Event& Event::operator=(Event const& rhs) {
 		events = rhs.events;
 		status = rhs.status;
 		pool = rhs.pool;
-		soc = rhs.soc;
+		connection = rhs.connection;
 	}
 	return *this;
 }
@@ -27,8 +27,8 @@ int Event::getFd() const {
 	return fd;
 }
 
-Connection* Event::getSocket() const {
-	return soc;
+Connection* Event::getConnection() const {
+	return connection;
 }
 
 int Event::getEvents() const {
@@ -53,8 +53,8 @@ void Event::setPool(Polling* pool){
 	this->pool = pool;
 }
 
-void Event::setSoc(Connection* soc){
-	this->soc = soc;
+void Event::setConnection(Connection* connection){
+	this->connection = connection;
 }
 
 /* =============================== Is Pollin Event ========================= */

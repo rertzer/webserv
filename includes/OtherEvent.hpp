@@ -21,7 +21,7 @@ class OtherEvent: public Event {
 
    private:
 
-	Response	getSocketResponse() const;
+	Response	getConnectionResponse() const;
 	Server*		getRequestServer() const;
 
 	bool		isCgiFd() const;

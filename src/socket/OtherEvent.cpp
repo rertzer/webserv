@@ -22,29 +22,29 @@ OtherEvent& OtherEvent::operator=(Event const& rhs) {
 }
 
 /* =================================== Getters ============================= */
-Response OtherEvent::getSocketResponse() const {
-	Response resp(*soc->req);
+Response OtherEvent::getConnectionResponse() const {
+	Response resp(*connection->getRequest());
 	return resp;
 }
 
 Server* OtherEvent::getRequestServer() const {
-	return soc->req->getServer();
+	return connection->getRequest()->getServer();
 }
 
 /* ============================== Is Methods =============================== */
 
 bool OtherEvent::isCgiFd() const {
-	if (fd == getSocket()->getFd())
+	if (fd == getConnection()->getSocketFd())
 		return false;
 	return true;
 }
 
 bool OtherEvent::isCgiStatus(CgiStatus cgi_status) const {
-	return (soc->req->getCgiStatus() == cgi_status);
+	return (connection->getRequest()->getCgiStatus() == cgi_status);
 }
 
 bool OtherEvent::isCgiPending() const {
-	if (soc->req && soc->req->getCgi() && soc->req->getCgi()->getPid()) {
+	if (connection->getRequest() && connection->getRequest()->getCgi() && connection->getRequest()->getCgi()->getPid()) {
 		return true;
 	}
 	return false;
@@ -53,26 +53,26 @@ bool OtherEvent::isCgiPending() const {
 /* ============================== Handle Poll Methods =========================== */
 
 void OtherEvent::handleIn() {
-	if (soc->getError()) {
-		soc->readAll();
+	if (connection->getError()) {
+		connection->readAll();
 		return;
 	}
-	if (soc->req == nullptr) {
-		soc->req = new Request(soc);
+	if (connection->getRequest() == nullptr) {
+		connection->createRequest();
 	} else if (checkAndHandleCgiIn()) {
 		return;
 	}
-	soc->req->printCleanRequest();
-	if (soc->req->ready()) {
+	connection->getRequest()->printCleanRequest();
+	if (connection->getRequest()->ready()) {
 		handleInRequestReady();
 	}
 }
 
 void OtherEvent::handleOut() {
-	if (soc->req &&
+	if (connection->getRequest() &&
 		(isCgiStatus(CgiStatus::WAIT_WRITE_POST) || isCgiStatus(CgiStatus::POST_TO_READ))) {
 		handleCgiOut();
-	} else if (!soc->getMessageOut().empty()) {
+	} else if (!connection->getMessageOut().empty()) {
 		handleMessageOut();
 	}
 }
@@ -84,12 +84,12 @@ void OtherEvent::handleError() {
 void OtherEvent::handleHup() {
 	status = eventStatus::CLOSE;
 	if (isCgiFd()) {
-		soc->req->getCgi()->closePipe();
-		Response resp = getSocketResponse();
-		soc->setMessageOut(resp.getResponse());
+		connection->getRequest()->getCgi()->closePipe();
+		Response resp = getConnectionResponse();
+		connection->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
 	} else if (isCgiPending()) {
-		soc->req->getCgi()->stop();
+		connection->getRequest()->getCgi()->stop();
 	}
 }
 
@@ -100,22 +100,22 @@ void OtherEvent::handleNval() {
 /* =============================== Handle In and Out ======================= */
 
 void OtherEvent::handleInRequestReady() {
-	Response resp = getSocketResponse();
+	Response resp = getConnectionResponse();
 	if (isCgiStatus(CgiStatus::WAIT_WRITE_POST) || isCgiStatus(CgiStatus::READY_EXEC)) {
 		status = eventStatus::CGI_INIT;
 	} else {
-		soc->setMessageOut(resp.getResponse());
+		connection->setMessageOut(resp.getResponse());
 		status = eventStatus::IN;
 	}
 }
 
 void OtherEvent::handleMessageOut() {
-	soc->send();
-	if (soc->getMessageOut().empty()) {
-		soc->deleteRequest();
+	connection->send();
+	if (connection->getMessageOut().empty()) {
+		connection->deleteRequest();
 	}
-	if (soc->getKeepAlive()) {
-		soc->setKeepAlive(false);
+	if (connection->getKeepAlive()) {
+		connection->setKeepAlive(false);
 		status = eventStatus::OUT;
 	} else {
 		status = eventStatus::CLOSE;
@@ -125,7 +125,7 @@ void OtherEvent::handleMessageOut() {
 /* ============================ CGI ======================================== */
 
 void OtherEvent::cgiExec() {
-	soc->req->getCgi()->exec();
+	connection->getRequest()->getCgi()->exec();
 }
 
 bool OtherEvent::checkAndHandleCgiIn() {
@@ -133,23 +133,23 @@ bool OtherEvent::checkAndHandleCgiIn() {
 		handleCgiIn();
 		return true;
 	} else if (isCgiStatus(CgiStatus::NO_INIT)) {
-		soc->req->feed();
+		connection->getRequest()->feed();
 	}
 	return false;
 }
 
 void OtherEvent::handleCgiIn() {
 	if (!isCgiFd()) {
-		soc->req->getCgi()->closePipe();
+		connection->getRequest()->getCgi()->closePipe();
 		status = eventStatus::CGI_ERROR;
 		return;
 	} else {
-		soc->req->getCgi()->readPipeFd();
+		connection->getRequest()->getCgi()->readPipeFd();
 	}
 
 	if (isCgiStatus(CgiStatus::DONE)) {
-		Response resp = getSocketResponse();
-		soc->setMessageOut(resp.getResponse());
+		Response resp = getConnectionResponse();
+		connection->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
 	} else {
 		status = eventStatus::NOTHING;
@@ -157,7 +157,7 @@ void OtherEvent::handleCgiIn() {
 }
 
 void OtherEvent::handleCgiOut() {
-	soc->req->getCgi()->writePostFd();
+	connection->getRequest()->getCgi()->writePostFd();
 	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE))
 		status = eventStatus::CGI_POST_EXEC;
 	else
@@ -177,17 +177,17 @@ void OtherEvent::internalError() {
 
 void OtherEvent::handleErrorException(const ErrorException& e) {
 	Server server;
-	if (soc->req == nullptr) {
-		server = *soc->getDefaultServer();
+	if (connection->getRequest() == nullptr) {
+		server = *connection->getDefaultServer();
 	} else {
 		if (!isCgiStatus(CgiStatus::NO_INIT)) {
 			status = eventStatus::CGI_INIT;
 		}
 		server = *getRequestServer();
 	}
-	soc->setMessageOut((Response(server, e.getCode())).getResponse());
-	soc->setKeepAlive(false);
-	soc->setError(true);
+	connection->setMessageOut((Response(server, e.getCode())).getResponse());
+	connection->setKeepAlive(false);
+	connection->setError(true);
 	if (status == eventStatus::NOTHING) {
 		status = eventStatus::IN;
 	}
@@ -219,11 +219,11 @@ void OtherEvent::handleOutOk() {
 }
 
 void OtherEvent::handleClose() {
-	pool->removeSocket(fd);
+	pool->removeConnection(fd);
 }
 
 void OtherEvent::handleCgiPostStart() {
-	pool->addCgiFds(soc);
+	pool->addCgiFds(connection);
 	cgiExec();
 }
 
@@ -232,21 +232,21 @@ void OtherEvent::handleCgiContinue() {
 
 void OtherEvent::handleCgiEnd() {
 	pool->removeCgiFd(fd);
-	pool->setOut(soc->getFd());
+	pool->setOut(connection->getSocketFd());
 }
 
 void OtherEvent::handleCgiPostExec() {
-	pool->setCgiIn(soc);
+	pool->setCgiIn(connection);
 	pool->removeCgiFd(fd);
 }
 
 void OtherEvent::handleCgiGetExec() {
-	pool->addCgiFds(soc);
+	pool->addCgiFds(connection);
 	cgiExec();
 }
 
 void OtherEvent::handleCgiError() {
 	std::cerr << RED "Cgi Error. Stopping connection.\n";
-	pool->removeCgiFd(soc->req->getCgi()->getFds()[2]);
-	pool->removeSocket(fd);
+	pool->removeCgiFd(connection->getRequest()->getCgi()->getFds()[2]);
+	pool->removeConnection(fd);
 }

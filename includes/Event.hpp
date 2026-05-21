@@ -47,13 +47,13 @@ class Event {
 	Event& operator=(Event const& rhs);
 
 	int				getFd() const;
-	Connection*		getSocket() const;
+	Connection*		getConnection() const;
 	int				getEvents() const;
 	eventStatus 	getStatus() const;
 	void			setFd(int fd);
 	void			setEvents(int events);
 	void			setPool(Polling* pool);
-	void			setSoc(Connection* soc);
+	void			setConnection(Connection* connection);
 	void			handleEvent();
 
    protected:
@@ -74,7 +74,7 @@ class Event {
 	int					events;
 	eventStatus			status;
 	Polling*			pool;
-	Connection*			soc;
+	Connection*			connection;
 
 	typedef void (Event::*handlefun)();
 	static const int poll_event[MAX_POLL_EVENT];
