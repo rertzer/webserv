@@ -3,6 +3,7 @@ from http.client import HTTPResponse
 from http.cookies import SimpleCookie
 
 import testutils as tu
+from colors import Color
 from webserver import WebServer
 
 
@@ -26,15 +27,26 @@ class VirtualRequestTester:
     def check_server_output(self):
         assert isinstance(self.server, WebServer)
         # Uncomment for verbose mode
-        #self.server.check_output()
+        # self.server.check_output()
 
     def run_requests(self, requests):
         return sum(self.test_request(i + 1, t) for i, t in enumerate(requests))
 
     def test_request(self, index, request):
         request.index = index
-        resp = self.send_request(request)
-        return self.check_resp(request, resp)
+        ok = False
+        if request.pre_test is not None:
+            request.pre_test()
+        try:
+            resp = self.send_request(request)
+            ok =self.check_resp(request, resp)
+        except:
+            tu.print_result(f"request_{self.index}", request.index, ok)
+            print(f"  {Color.RED}Send Request: Error{Color.ENDC}")
+        finally:
+            if request.post_test is not None:
+                request.post_test()
+        return ok
 
     def send_request(self, request):
         raise NotImplementedError()
@@ -45,6 +57,7 @@ class VirtualRequestTester:
             isinstance(resp, HTTPResponse)
             and request.status == resp.status
             and self.check_content(request, resp)
+            and self.check_server(request)
         )
         tu.print_result(f"request_{self.index}", request.index, ok)
         return ok
@@ -84,3 +97,10 @@ class VirtualRequestTester:
 
     def cookies_identical(self, request_cookies, resp_cookies):
         return reduce(lambda a, b: a and b.test(resp_cookies), request_cookies, True)
+
+    def check_server(self, request):
+        ok = True
+        if request.server_test is not None:
+            ok = request.server_test()
+        return ok
+

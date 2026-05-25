@@ -19,83 +19,85 @@ def test_1():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GOT", "/", headers, HTTPStatus.BAD_REQUEST, 847),
-        SimpleRequest("GET", "/nowhere", headers, HTTPStatus.NOT_FOUND, 851),
-        SimpleRequest("GET", "/html/kitty/kitty.html", headers, HTTPStatus.OK, 1469),
+        SimpleRequest("GET")
+            .set_path("/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1146),
+        SimpleRequest("GOT")
+            .set_path("/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.BAD_REQUEST)
+            .set_length(847),
+        SimpleRequest("GET")
+            .set_path("/nowhere")
+            .set_headers(headers)
+            .set_status(HTTPStatus.NOT_FOUND)
+            .set_length(851),
+        SimpleRequest("GET")
+            .set_path("/html/kitty/kitty.html")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1469),
         # 5
-        SimpleRequest(
-            "GET",
-            "/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
-            headers,
-            HTTPStatus.OK,
-            2678,
-        ),
-        SimpleRequest(
-            "GET",
-            "/php/brutus_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
-            headers,
-            HTTPStatus.OK,
-            27,
-        ),
-        SimpleRequest("GET", "/", {"Host": "hostile"}, HTTPStatus.OK, 1146),
-        SimpleRequest(
-            "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
-            HTTPStatus.OK,
-            2664,
-            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
-        ),
-        SimpleRequest(
-            "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
-            HTTPStatus.OK,
-            2684,
-            urlencode(
+        SimpleRequest("GET")
+            .set_path("/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(2678),
+        SimpleRequest("GET")
+            .set_path("/php/brutus_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(27),
+        SimpleRequest("GET")
+            .set_path("/")
+            .set_headers({"Host": "hostile"})
+            .set_status(HTTPStatus.OK)
+            .set_length(1146),
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}))
+            .set_status(HTTPStatus.OK)
+            .set_length(2664),
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode(
                 {
                     "cipher_key": "23",
                     "texte_area": "Ave Ceasar morituri te salutant",
                     "cipher": "on",
                 }
-            ),
-        ),
+            ))
+            .set_status(HTTPStatus.OK)
+            .set_length(2684),
         # 10
-        SimpleRequest(
-            "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
-            HTTPStatus.OK,
-            487,
-            urlencode(
-                {"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}
-            ),
-        ),
-        SimpleRequest(
-            "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
-            HTTPStatus.OK,
-            2630,
-            urlencode({"texte_area": "hello world"}),
-        ),
-        SimpleRequest(
-            "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
-            HTTPStatus.OK,
-            2664,
-            urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}),
-        ),
-        SimpleRequest(
-            "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "text/html"},
-            HTTPStatus.OK,
-            2630,
-            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
-        ),
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}))
+            .set_status(HTTPStatus.OK)
+            .set_length(487),
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"texte_area": "hello world"}))
+            .set_status(HTTPStatus.OK)
+            .set_length(2630),
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}))
+            .set_status(HTTPStatus.OK)
+            .set_length(2664),
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "text/html"})
+            .set_content(urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}))
+            .set_status(HTTPStatus.OK)
+            .set_length(2630),
     )
 
     passed = SimpleTester(1, host, port).proceed_requests("", requests)
@@ -107,33 +109,35 @@ def test_2():
     port = 8080
 
     requests = (
-        RawRequest(b"\r\nHost: localhost\r\n\r\n", HTTPStatus.BAD_REQUEST, 847),
+        RawRequest(b"\r\nHost: localhost\r\n\r\n", )
+            .set_status(HTTPStatus.BAD_REQUEST)
+            .set_length(847),
         RawRequest(
             b"GET / HTTP/6.1\r\nHost: localhost\r\n\r\n",
-            HTTPStatus.HTTP_VERSION_NOT_SUPPORTED,
-            864,
-        ),
+        )
+            .set_status(HTTPStatus.HTTP_VERSION_NOT_SUPPORTED)
+            .set_length(864),
         RawRequest(
             b"PUT / HTTP/1.1\r\nHost: localhost\r\n\r\n",
-            HTTPStatus.NOT_IMPLEMENTED,
-            844,
-        ),
+        )
+            .set_status(HTTPStatus.NOT_IMPLEMENTED)
+            .set_length(844),
         RawRequest(
             b"HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n",
-            HTTPStatus.NOT_IMPLEMENTED,
-            844,
-        ),
+        )
+            .set_status(HTTPStatus.NOT_IMPLEMENTED)
+            .set_length(844),
         # 5
         RawRequest(
             b"Thisisnotavalidrequest HTTP/1.1\r\nHost: localhost\r\n\r\n",
-            HTTPStatus.BAD_REQUEST,
-            847,
-        ),
+        )
+            .set_status(HTTPStatus.BAD_REQUEST)
+            .set_length(847),
         RawRequest(
             b"POST /php/norminet.html HTTP/1.1\r\nHost: localhost\r\n\r\n",
-            HTTPStatus.NOT_FOUND,
-            851,
-        ),
+        )
+            .set_status(HTTPStatus.NOT_FOUND)
+            .set_length(851),
         RawRequest(
             (
                 "POST /php/cesar_post.php HTTP/1.1\r\n"
@@ -144,9 +148,9 @@ def test_2():
                     {"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}
                 )
             ).encode(),
-            HTTPStatus.OK,
-            2630,
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(2630),
         RawRequest(
             (
                 "POST /php/cesar_post.php HTTP/1.1\r\n"
@@ -157,18 +161,18 @@ def test_2():
                     {"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}
                 )
             ).encode(),
-            HTTPStatus.OK,
-            2630,
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(2630),
         RawRequest(
             ("GET /python/quizz.py HTTP/1.1\r\n" + "Host: localhost\r\n").encode(),
-            HTTPStatus.OK,
-            1299,
             (
                 RequestCookie("good", "0", {"SameSite": "Strict"}),
                 RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1299),
         # 10
         RawRequest(
             (
@@ -176,71 +180,71 @@ def test_2():
                 + "Host: localhost\r\n"
                 + "Cookie: good=0; total=0; name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1451,
             (
                 RequestCookie("good", "0", {"SameSite": "Strict"}),
                 RequestCookie("total", "1", {"SameSite": "Strict"}),
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1451),
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=son+chat HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + "Cookie: good=3; total=4; name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1509,
             (
                 RequestCookie("good", "3", {"SameSite": "Strict"}),
                 RequestCookie("total", "5", {"SameSite": "Strict"}),
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1509),
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + "Cookie: good=3; total=4; name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1519,
             (
                 RequestCookie("good", "3", {"SameSite": "Strict"}),
                 RequestCookie("total", "5", {"SameSite": "Strict"}),
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1519),
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + "Cookie: bad=3; total=4; name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1519,
             (
                 RequestCookie("bad", "3", {}),
                 RequestCookie("good", "0", {"SameSite": "Strict"}),
                 RequestCookie("total", "5", {"SameSite": "Strict"}),
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1519),
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + "Cookie: total=4; name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1519,
             (
                 RequestCookie("good", "0", {"SameSite": "Strict"}),
                 RequestCookie("total", "5", {"SameSite": "Strict"}),
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1519),
         # 15
         RawRequest(
             (
@@ -248,27 +252,27 @@ def test_2():
                 + "Host: localhost\r\n"
                 + "Cookie: good=3 total=4;name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1519,
             (
                 RequestCookie("good", "3", {"SameSite": "Strict"}),
                 RequestCookie("total", "5", {"SameSite": "Strict"}),
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1519),
         RawRequest(
             (
                 "GET /python/quizz.py?q_id=4&q_answer=notanexpectedvalue HTTP/1.1\r\n"
                 + "Host: localhost\r\r"
                 + "Cookie: good=3; total=4; name=Droopy\r\n"
             ).encode(),
-            HTTPStatus.OK,
-            1299,
             (
                 RequestCookie("good", "0", {"SameSite": "Strict"}),
                 RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
-        ),
+        )
+            .set_status(HTTPStatus.OK)
+            .set_length(1299),
     )
 
     passed = RawTester(2, host, port).proceed_requests("", requests)
@@ -281,102 +285,98 @@ def test_3():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/html/", headers, HTTPStatus.OK, 1457),
-        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2310),
-        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1503),
-        SimpleRequest(
-            "GET", "/html/page/delete/toDelete.html", headers, HTTPStatus.OK, 478
-        ),
-        SimpleRequest(
-            "GET", "/redir/anything", headers, HTTPStatus.MOVED_PERMANENTLY, 0
-        ),
-        SimpleRequest("GET", "/newRoot/newRoot.html", headers, HTTPStatus.OK, 379),
-        SimpleRequest("GET", "/newIndex/", headers, HTTPStatus.OK, 370),
+        SimpleRequest("GET")
+            .set_path("/html/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1457),
+        SimpleRequest("GET")
+            .set_path("/html/page/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(2310),
+        SimpleRequest("GET")
+            .set_path("/html/page/delete/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1503),
+        SimpleRequest("GET")
+            .set_path("/html/page/delete/toDelete.html")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(478),
+        SimpleRequest("GET")
+            .set_path("/redir/anything")
+            .set_headers(headers)
+            .set_status(HTTPStatus.MOVED_PERMANENTLY)
+            .set_length(0),
+        SimpleRequest("GET")
+            .set_path("/newRoot/newRoot.html")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(379),
+        SimpleRequest("GET")
+            .set_path("/newIndex/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(370),
     )
 
     passed = SimpleTester(3, host, port).proceed_requests("", requests)
     return (passed, len(requests))
 
 
-def test_not_delete():
-    file = "/html/page/notToDelete.html"
-    path = "../www" + file
-
-    assert os.path.isfile(path)
-    host = "localhost"
-    port = 8081
-    headers = {"Host": host}
-    requests = (
-        SimpleRequest(
-            "DELETE",
-            file,
-            headers,
-            HTTPStatus.METHOD_NOT_ALLOWED,
-            285,
-        ),
-    )
-    passed = SimpleTester(3, host, port).proceed_requests(
-        "", requests
-    ) and os.path.isfile(path)
-    return (passed, len(requests))
-
-
 def test_delete():
-    file = "/html/page/delete/toDelete.html"
-    path = "../www" + file
+    file_not_to_delete = "/html/page/notToDelete.html"
+    path_not_to_delete = "../www" + file_not_to_delete
+    file_to_delete = "/html/page/delete/toDelete.html"
+    path_to_delete = "../www" + file_to_delete
 
-    assert os.path.isfile(path)
+    assert os.path.isfile(path_not_to_delete)
+    assert os.path.isfile(path_to_delete)
     host = "localhost"
     port = 8081
     headers = {"Host": host}
     requests = (
-        SimpleRequest(
-            "DELETE", "/html/page/delete/toDelete.html", headers, HTTPStatus.OK, 38
-        ),
-    )
-    passed = SimpleTester(3, host, port).proceed_requests(
-        "", requests
-    ) and not os.path.isfile(path)
-    requests = (
-        SimpleRequest(
-            "DELETE",
-            "/html/page/delete/toDelete.html",
-            headers,
-            HTTPStatus.NOT_FOUND,
-            281,
-        ),
-        SimpleRequest("GET", "/html/page/delete/", headers, HTTPStatus.OK, 1364),
-        SimpleRequest("GET", "/html/page/", headers, HTTPStatus.OK, 2310),
-        SimpleRequest(
-            "DELETE",
-            "/html/page/delete/toDelete.html",
-            headers,
-            HTTPStatus.NOT_FOUND,
-            281,
-        ),
-    )
-
-    passed += SimpleTester(3, host, port).proceed_requests("", requests)
-
-    tu.cp_backup_to_delete("toDelete.html")
-    return (passed, len(requests) + 1)
-
-
-def test_4():
-    host = "localhost"
-    port = 8081
-    headers = {"Host": host}
-
-    requests = (
-        SimpleRequest(
-            "GET", "/html/page/forbidden.html", headers, HTTPStatus.FORBIDDEN, 304
-        ),
+        SimpleRequest("DELETE")
+            .set_path(file_not_to_delete)
+            .set_headers(headers)
+            .set_status(HTTPStatus.METHOD_NOT_ALLOWED)
+            .set_length(285)
+            .set_server_test(lambda: os.path.isfile(path_not_to_delete)),
+        SimpleRequest("DELETE")
+            .set_path(file_to_delete)
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(38)
+            .set_server_test(lambda: not os.path.isfile(path_to_delete)),
+        SimpleRequest("DELETE")
+            .set_path("/html/page/delete/toDelete.html")
+            .set_headers(headers)
+            .set_status(HTTPStatus.NOT_FOUND)
+            .set_length(281),
+        SimpleRequest("GET")
+            .set_path("/html/page/delete/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1364),
+        SimpleRequest("GET")
+            .set_path("/html/page/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(2310)
+            .set_post_test(lambda: tu.cp_backup_to_delete("toDelete.html")),
+        SimpleRequest("GET")
+            .set_path("/html/page/forbidden.html")
+            .set_status(HTTPStatus.FORBIDDEN)
+            .set_headers(headers)
+            .set_length(304)
+            .set_pre_test(lambda: tu.chmod_in_page("forbidden.html", "000"))
+            .set_post_test(lambda: tu.chmod_in_page("forbidden.html", "644")),
     )
 
-    tu.chmod_in_page("forbidden.html", "000")
-    passed = SimpleTester(4, host, port).proceed_requests("", requests)
-    tu.chmod_in_page("forbidden.html", "644")
-
+    passed = SimpleTester(3, host, port).proceed_requests("", requests)
+    
     return (passed, len(requests))
 
 
@@ -397,41 +397,32 @@ def test_5():
         "../www/img/kitty2.jpg"
     )
 
-    requests_1 = (
+    requests = (
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + f"Content-Type: multipart/form-data; boundary={boundary_1}\r\n"
                 + f"Content-Length: {length_1}\r\n\r\n"
-            ).encode()
-            + kitty_1_content,
-            HTTPStatus.OK,
-            1284,
-        ),
-    )
-    passed = RawTester(5, host, port).proceed_requests(
-        "", requests_1
-    ) and os.path.isfile(path + kitty_1)
-
-    requests_2 = (
+            ).encode() + kitty_1_content)
+            .set_status(HTTPStatus.OK)
+            .set_length(1284)
+            .set_server_test(lambda: os.path.isfile(path + kitty_1))
+            .set_post_test(lambda: tu.remove_from_upload("kitty1.jpeg")),
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + f"Content-Type: multipart/form-data; boundary={boundary_2}\r\n"
                 + f"Content-Length: {length_2}\r\n\r\n"
-            ).encode()
-            + kitty_2_content,
-            HTTPStatus.REQUEST_ENTITY_TOO_LARGE,
-            877,
-        ),
+            ).encode() + kitty_2_content)
+            .set_status(HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
+            .set_length(877)
+            .set_server_test(lambda: not os.path.isfile(path + kitty_2)),
     )
-    passed += RawTester(5, host, port).proceed_requests(
-        "", requests_2
-    ) and not os.path.isfile(path + kitty_2)
-    tu.remove_from_upload("kitty1.jpeg")
-    return (passed, len(requests_1) + len(requests_2))
+    passed = RawTester(5, host, port).proceed_requests("", requests) 
+    
+    return (passed, len(requests))
 
 
 def test_6():
@@ -451,10 +442,9 @@ def test_6():
 
     requests = (
             RawRequest(
-            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
-            HTTPStatus.OK,
-            1444,
-        ),
+            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_status(HTTPStatus.OK)
+            .set_length(1444),
 
         RawRequest(
             (
@@ -462,42 +452,35 @@ def test_6():
                 + "Host: localhost\r\n"
                 + f"Content-Type: multipart/form-data; boundary={boundary_2} \r\n"
                 + f"Content-Length: {length_2}\r\n\r\n"
-            ).encode()
-            + kitty_2_content,
-            HTTPStatus.OK,
-            1284,
-        ),
+            ).encode() + kitty_2_content)
+            .set_status(HTTPStatus.OK)
+            .set_length(1284),
         RawRequest(
-            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
-            HTTPStatus.OK,
-            1444,
-        ),
+            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_status(HTTPStatus.OK)
+            .set_length(1444),
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
                 + "Host: localhost\r\n"
                 + f"Content-Type: multipart/form-data; boundary={boundary_1}\r\n"
                 + f"Content-Length: {length_1}\r\n\r\n"
-            ).encode()
-            + kitty_1_content,
-            HTTPStatus.OK,
-            1284,
-        ),
+            ).encode() + kitty_1_content)
+            .set_status(HTTPStatus.OK)
+            .set_length(1284),
         # 5
         RawRequest(
-            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
-            HTTPStatus.OK,
-            1580,
-        ),
+            ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_status(HTTPStatus.OK)
+            .set_length(1580),
         RawRequest(
-            ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode(),
-            HTTPStatus.OK,
-            178976,
-        ),
+            ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_status(HTTPStatus.OK)
+            .set_length(178976)
+            .set_post_test(lambda: tu.remove_from_upload("kitty2.jpg")),
     )
 
     passed = RawTester(6, host, port).proceed_requests("", requests)
-    tu.remove_from_upload("kitty2.jpg")
     return (passed, len(requests))
 
 
@@ -507,11 +490,31 @@ def test_7():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GET", "/css/", headers, HTTPStatus.OK, 2280),
-        SimpleRequest("GET", "/upload/", headers, HTTPStatus.OK, 1444),
-        SimpleRequest("GET", "/img/", headers, HTTPStatus.OK, 1146),
-        SimpleRequest("GET", "/img/toDelete/", headers, HTTPStatus.OK, 1350),
+        SimpleRequest("GET")
+            .set_path("/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1146),
+        SimpleRequest("GET")
+            .set_path("/css/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(2280),
+        SimpleRequest("GET")
+            .set_path("/upload/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1444),
+        SimpleRequest("GET")
+            .set_path("/img/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1146),
+        SimpleRequest("GET")
+            .set_path("/img/toDelete/")
+            .set_headers(headers)
+            .set_status(HTTPStatus.OK)
+            .set_length(1350),
     )
 
     passed = SimpleTester(7, host, port).proceed_requests(

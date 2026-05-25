@@ -2,11 +2,16 @@ import testutils as tu
 
 class VirtualRequest:
 
-    def __init__(self, length):
+    def __init__(self):
         self.status = None 
-        self.length = length
+        self.length = None 
         self.pre_test = None
         self.post_test = None
+        self.server_test = None
+    
+    def set_server_test(self, server_test):
+        self.server_test = server_test
+        return self
 
     def same_length(self, resp):
         content = tu.read_content(resp)
@@ -16,6 +21,10 @@ class VirtualRequest:
 
     def set_status(self, status):
         self.status = status
+        return self
+
+    def set_length(self, length):
+        self.length = length
         return self
 
     def set_pre_test(self, func):
