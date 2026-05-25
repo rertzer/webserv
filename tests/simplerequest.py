@@ -3,7 +3,8 @@ from virtualrequest import VirtualRequest
 class SimpleRequest(VirtualRequest):
 
     def __init__(self, method, path, headers, status, length, content="", cookies=""):
-        VirtualRequest.__init__(self, status, length)
+        VirtualRequest.__init__(self,length)
+        self.set_status(status)
         self.method = method
         self.path = path
         self.headers = headers

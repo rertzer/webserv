@@ -7,8 +7,11 @@ from io import BytesIO
 from colors import Color
 
 
-def print_result(name, index, ok):
-    print(f"test_{name}.{index}", okko(ok))
+def print_result(test_name, file_name, ok):
+    if (ok):
+        print(f"test_{test_name}", okko(ok))
+    else:
+        print(f"test_{test_name}: {file_name}", okko(ok))
 
 
 def okko(val):
