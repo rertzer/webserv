@@ -2,6 +2,7 @@ import io
 import os
 
 import testutils as tu
+from colors import Color
 from confrequest import ConfRequest
 from webserver import WebServer
 
@@ -216,12 +217,21 @@ def conf_tester(index, test):
     # print("|", server_output, "|")
     # print("!", server_error, "!")
 
-    ok = (
-        server_status == test.status
-        and server_output == test.stdout
-        and server_error == test.stderr
-    )
+    ok_status = server_status == test.status
+    ok_out = server_output == test.stdout
+    ok_err = server_error == test.stderr
+    ok = ok_status and ok_out and ok_err    
+
     tu.print_result(f"conf_1.{index}", os.path.basename(test.conf_file), ok)
+    if not ok_status:
+        print(f"{Color.YELLOW}  status: expected: {Color.ENDC}{test.status}, found: {Color.ENDC}{server_status}")
+    if not ok_out:
+        print(f"{Color.YELLOW}  stdout:\n    expected: {Color.ENDC}{test.stdout}")
+        print(f"{Color.YELLOW}    found: {Color.ENDC}{server_output}")
+    if not ok_err:
+        print(f"{Color.YELLOW}  stderr:\n    expected: {Color.ENDC}{test.stderr}")
+        print(f" {Color.YELLOW}   found: {Color.ENDC}{server_error}")
+
     if test.post_test is not None:
         test.post_test()
     return ok

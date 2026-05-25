@@ -11,7 +11,7 @@ def print_result(test_name, file_name, ok):
     if (ok):
         print(f"test_{test_name}", okko(ok))
     else:
-        print(f"test_{test_name}: {file_name}", okko(ok))
+        print(f"{Color.RED}test_{test_name}{Color.ENDC}: {file_name}", okko(ok))
 
 
 def okko(val):
@@ -20,7 +20,7 @@ def okko(val):
 
 def tester(fun):
     passed, total = fun()
-    print(fun.__name__, "series", okko(passed == total))
+    print(f"{Color.CYAN}{fun.__name__} series{Color.ENDC}", okko(passed == total))
     return (passed, total)
 
 
