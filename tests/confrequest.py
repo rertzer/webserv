@@ -4,7 +4,7 @@ from virtualrequest import VirtualRequest
 class ConfRequest(VirtualRequest):
 
     def __init__(self, conf_file):
-        VirtualRequest.__init__(self, None)
+        VirtualRequest.__init__(self)
         self.conf_file = conf_file
         self.stdout = None 
         self.stderr = None 
