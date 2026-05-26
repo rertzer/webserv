@@ -19,46 +19,52 @@ def test_1():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/", headers)
+        SimpleRequest("GET")
+            .set_path("/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1146),
-        SimpleRequest("GOT", "/", headers)
+        SimpleRequest("GOT")
+            .set_path("/")
+            .set_headers(headers)
             .set_status(HTTPStatus.BAD_REQUEST)
             .set_length(847),
-        SimpleRequest("GET", "/nowhere", headers)
+        SimpleRequest("GET")
+            .set_path("/nowhere")
+            .set_headers(headers)
             .set_status(HTTPStatus.NOT_FOUND)
             .set_length(851),
-        SimpleRequest("GET", "/html/kitty/kitty.html", headers)
+        SimpleRequest("GET")
+            .set_path("/html/kitty/kitty.html")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1469),
         # 5
-        SimpleRequest(
-            "GET",
-            "/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
-            headers)
+        SimpleRequest("GET")
+            .set_path("/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2678),
-        SimpleRequest(
-            "GET",
-            "/php/brutus_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer",
-            headers)
+        SimpleRequest("GET")
+            .set_path("/php/brutus_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(27),
-        SimpleRequest("GET", "/", {"Host": "hostile"}, )
+        SimpleRequest("GET")
+            .set_path("/")
+            .set_headers({"Host": "hostile"})
             .set_status(HTTPStatus.OK)
             .set_length(1146),
         SimpleRequest(
             "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
         )
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_status(HTTPStatus.OK)
             .set_length(2664),
         SimpleRequest(
             "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             urlencode(
                 {
                     "cipher_key": "23",
@@ -66,40 +72,44 @@ def test_1():
                     "cipher": "on",
                 }
             ),
-        ).set_status(HTTPStatus.OK)
+        )
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_status(HTTPStatus.OK)
             .set_length(2684),
         # 10
         SimpleRequest(
             "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             urlencode(
                 {"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}
             ),
-        ).set_status(HTTPStatus.OK)
+        )
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_status(HTTPStatus.OK)
             .set_length(487),
         SimpleRequest(
             "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             urlencode({"texte_area": "hello world"}),
         )
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_status(HTTPStatus.OK)
             .set_length(2630),
         SimpleRequest(
             "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "application/x-www-form-urlencoded"},
             urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}),
         )
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_status(HTTPStatus.OK)
             .set_length(2664),
         SimpleRequest(
             "POST",
-            "/php/cesar_post.php",
-            {"Host": host, "Content-Type": "text/html"},
             urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
         )
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "text/html"})
             .set_status(HTTPStatus.OK)
             .set_length(2630),
     )
@@ -289,28 +299,39 @@ def test_3():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/html/", headers)
+        SimpleRequest("GET")
+            .set_path("/html/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1457),
-        SimpleRequest("GET", "/html/page/", headers)
+        SimpleRequest("GET")
+            .set_path("/html/page/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2310),
-        SimpleRequest("GET", "/html/page/delete/", headers)
+        SimpleRequest("GET")
+            .set_path("/html/page/delete/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1503),
-        SimpleRequest(
-            "GET", "/html/page/delete/toDelete.html", headers)
+        SimpleRequest("GET")
+            .set_path("/html/page/delete/toDelete.html")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(478),
-        SimpleRequest(
-            "GET", "/redir/anything", headers)
+        SimpleRequest("GET")
+            .set_path("/redir/anything")
+            .set_headers(headers)
             .set_status(HTTPStatus.MOVED_PERMANENTLY)
-            .set_length(0
-),
-        SimpleRequest("GET", "/newRoot/newRoot.html", headers, )
+            .set_length(0),
+        SimpleRequest("GET")
+            .set_path("/newRoot/newRoot.html")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(379),
-        SimpleRequest("GET", "/newIndex/", headers, )
+        SimpleRequest("GET")
+            .set_path("/newIndex/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(370),
     )
@@ -328,10 +349,9 @@ def test_not_delete():
     port = 8081
     headers = {"Host": host}
     requests = (
-        SimpleRequest(
-            "DELETE",
-            file,
-            headers)
+        SimpleRequest("DELETE")
+            .set_path(file)
+            .set_headers(headers)
             .set_status(HTTPStatus.METHOD_NOT_ALLOWED)
             .set_length(285),
     )
@@ -350,7 +370,9 @@ def test_delete():
     port = 8081
     headers = {"Host": host}
     requests = (
-        SimpleRequest("DELETE", "/html/page/delete/toDelete.html", headers)
+        SimpleRequest("DELETE")
+            .set_path("/html/page/delete/toDelete.html")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(38),
     )
@@ -358,21 +380,24 @@ def test_delete():
         "", requests
     ) and not os.path.isfile(path)
     requests = (
-        SimpleRequest(
-            "DELETE",
-            "/html/page/delete/toDelete.html", headers)
+        SimpleRequest("DELETE")
+            .set_path("/html/page/delete/toDelete.html")
+            .set_headers(headers)
             .set_status(HTTPStatus.NOT_FOUND)
             .set_length(281),
-        SimpleRequest("GET", "/html/page/delete/", headers)
+        SimpleRequest("GET")
+            .set_path("/html/page/delete/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1364),
-        SimpleRequest("GET", "/html/page/", headers)
+        SimpleRequest("GET")
+            .set_path("/html/page/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2310),
-        SimpleRequest(
-            "DELETE",
-            "/html/page/delete/toDelete.html",
-            headers)
+        SimpleRequest("DELETE")
+            .set_path("/html/page/delete/toDelete.html")
+            .set_headers(headers)
             .set_status(HTTPStatus.NOT_FOUND)
             .set_length(281),
     )
@@ -389,8 +414,10 @@ def test_4():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/html/page/forbidden.html", headers)
+        SimpleRequest("GET")
+            .set_path("/html/page/forbidden.html")
             .set_status(HTTPStatus.FORBIDDEN)
+            .set_headers(headers)
             .set_length(304),
     )
 
@@ -516,19 +543,29 @@ def test_7():
     headers = {"Host": host}
 
     requests = (
-        SimpleRequest("GET", "/", headers)
+        SimpleRequest("GET")
+            .set_path("/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1146),
-        SimpleRequest("GET", "/css/", headers)
+        SimpleRequest("GET")
+            .set_path("/css/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2280),
-        SimpleRequest("GET", "/upload/", headers)
+        SimpleRequest("GET")
+            .set_path("/upload/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1444),
-        SimpleRequest("GET", "/img/", headers)
+        SimpleRequest("GET")
+            .set_path("/img/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1146),
-        SimpleRequest("GET", "/img/toDelete/", headers)
+        SimpleRequest("GET")
+            .set_path("/img/toDelete/")
+            .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1350),
     )

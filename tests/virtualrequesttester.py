@@ -3,6 +3,7 @@ from http.client import HTTPResponse
 from http.cookies import SimpleCookie
 
 import testutils as tu
+from colors import Color
 from webserver import WebServer
 
 
@@ -33,8 +34,14 @@ class VirtualRequestTester:
 
     def test_request(self, index, request):
         request.index = index
-        resp = self.send_request(request)
-        return self.check_resp(request, resp)
+        ok = False
+        try:
+            resp = self.send_request(request)
+            ok =self.check_resp(request, resp)
+        except:
+            tu.print_result(f"request_{self.index}", request.index, ok)
+            print(f"  {Color.RED}Send Request: Error{Color.ENDC}")
+        return ok
 
     def send_request(self, request):
         raise NotImplementedError()
