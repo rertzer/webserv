@@ -7,6 +7,11 @@ class VirtualRequest:
         self.length = None 
         self.pre_test = None
         self.post_test = None
+        self.server_test = None
+    
+    def set_server_test(self, server_test):
+        self.server_test = server_test
+        return self
 
     def same_length(self, resp):
         content = tu.read_content(resp)

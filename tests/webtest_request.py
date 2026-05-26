@@ -360,12 +360,8 @@ def test_delete():
             .set_path("/html/page/delete/toDelete.html")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
-            .set_length(38),
-    )
-    passed = SimpleTester(3, host, port).proceed_requests(
-        "", requests
-    ) and not os.path.isfile(path)
-    requests = (
+            .set_length(38)
+            .set_server_test(lambda: not os.path.isfile(path)),
         SimpleRequest("DELETE")
             .set_path("/html/page/delete/toDelete.html")
             .set_headers(headers)
@@ -388,10 +384,10 @@ def test_delete():
             .set_length(281),
     )
 
-    passed += SimpleTester(3, host, port).proceed_requests("", requests)
+    passed = SimpleTester(3, host, port).proceed_requests("", requests)
 
     tu.cp_backup_to_delete("toDelete.html")
-    return (passed, len(requests) + 1)
+    return (passed, len(requests))
 
 
 def test_4():

@@ -52,6 +52,7 @@ class VirtualRequestTester:
             isinstance(resp, HTTPResponse)
             and request.status == resp.status
             and self.check_content(request, resp)
+            and self.check_server(request)
         )
         tu.print_result(f"request_{self.index}", request.index, ok)
         return ok
@@ -91,3 +92,10 @@ class VirtualRequestTester:
 
     def cookies_identical(self, request_cookies, resp_cookies):
         return reduce(lambda a, b: a and b.test(resp_cookies), request_cookies, True)
+
+    def check_server(self, request):
+        ok = True
+        if request.server_test is not None:
+            ok = request.server_test()
+        return ok
+
