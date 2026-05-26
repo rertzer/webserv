@@ -3,12 +3,18 @@ import testutils as tu
 class VirtualRequest:
 
     def __init__(self):
+        self.description = ""
         self.status = None 
         self.length = None 
         self.pre_test = None
         self.post_test = None
         self.server_test = None
-    
+        self.index = 0
+   
+    def set_description(self, description):
+        self.description = description
+        return self
+
     def set_server_test(self, server_test):
         self.server_test = server_test
         return self

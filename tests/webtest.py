@@ -10,13 +10,13 @@ def main():
 
     test_fun = (
         conf_parsing.test_cmdline_and_conf,
+        request.test_get_post,
+        request.test_misc_and_post_cgi,
+        request.test_get_misc,
         request.test_delete,
-        request.test_1,
-        request.test_2,
-        request.test_3,
-        request.test_5,
-        request.test_6,
-        request.test_7,
+        request.test_multipart_upload_boundary,
+        request.test_multipart_upload_size_limit,
+        request.test_autoindex,
     )
 
     passed, total = map(sum, zip(*(tester(f) for f in test_fun)))
