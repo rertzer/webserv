@@ -27,7 +27,7 @@ class VirtualRequestTester:
     def check_server_output(self):
         assert isinstance(self.server, WebServer)
         # Uncomment for verbose mode
-        #self.server.check_output()
+        # self.server.check_output()
 
     def run_requests(self, requests):
         return sum(self.test_request(i + 1, t) for i, t in enumerate(requests))
@@ -35,12 +35,17 @@ class VirtualRequestTester:
     def test_request(self, index, request):
         request.index = index
         ok = False
+        if request.pre_test is not None:
+            request.pre_test()
         try:
             resp = self.send_request(request)
             ok =self.check_resp(request, resp)
         except:
             tu.print_result(f"request_{self.index}", request.index, ok)
             print(f"  {Color.RED}Send Request: Error{Color.ENDC}")
+        finally:
+            if request.post_test is not None:
+                request.post_test()
         return ok
 
     def send_request(self, request):

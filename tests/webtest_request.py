@@ -326,42 +326,30 @@ def test_3():
     return (passed, len(requests))
 
 
-def test_not_delete():
-    file = "/html/page/notToDelete.html"
-    path = "../www" + file
+def test_delete():
+    file_not_to_delete = "/html/page/notToDelete.html"
+    path_not_to_delete = "../www" + file_not_to_delete
+    file_to_delete = "/html/page/delete/toDelete.html"
+    path_to_delete = "../www" + file_to_delete
 
-    assert os.path.isfile(path)
+    assert os.path.isfile(path_not_to_delete)
+    assert os.path.isfile(path_to_delete)
     host = "localhost"
     port = 8081
     headers = {"Host": host}
     requests = (
         SimpleRequest("DELETE")
-            .set_path(file)
+            .set_path(file_not_to_delete)
             .set_headers(headers)
             .set_status(HTTPStatus.METHOD_NOT_ALLOWED)
-            .set_length(285),
-    )
-    passed = SimpleTester(3, host, port).proceed_requests(
-        "", requests
-    ) and os.path.isfile(path)
-    return (passed, len(requests))
-
-
-def test_delete():
-    file = "/html/page/delete/toDelete.html"
-    path = "../www" + file
-
-    assert os.path.isfile(path)
-    host = "localhost"
-    port = 8081
-    headers = {"Host": host}
-    requests = (
+            .set_length(285)
+            .set_server_test(lambda: os.path.isfile(path_not_to_delete)),
         SimpleRequest("DELETE")
-            .set_path("/html/page/delete/toDelete.html")
+            .set_path(file_to_delete)
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(38)
-            .set_server_test(lambda: not os.path.isfile(path)),
+            .set_server_test(lambda: not os.path.isfile(path_to_delete)),
         SimpleRequest("DELETE")
             .set_path("/html/page/delete/toDelete.html")
             .set_headers(headers)
@@ -376,37 +364,19 @@ def test_delete():
             .set_path("/html/page/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
-            .set_length(2310),
-        SimpleRequest("DELETE")
-            .set_path("/html/page/delete/toDelete.html")
-            .set_headers(headers)
-            .set_status(HTTPStatus.NOT_FOUND)
-            .set_length(281),
-    )
-
-    passed = SimpleTester(3, host, port).proceed_requests("", requests)
-
-    tu.cp_backup_to_delete("toDelete.html")
-    return (passed, len(requests))
-
-
-def test_4():
-    host = "localhost"
-    port = 8081
-    headers = {"Host": host}
-
-    requests = (
+            .set_length(2310)
+            .set_post_test(lambda: tu.cp_backup_to_delete("toDelete.html")),
         SimpleRequest("GET")
             .set_path("/html/page/forbidden.html")
             .set_status(HTTPStatus.FORBIDDEN)
             .set_headers(headers)
-            .set_length(304),
+            .set_length(304)
+            .set_pre_test(lambda: tu.chmod_in_page("forbidden.html", "000"))
+            .set_post_test(lambda: tu.chmod_in_page("forbidden.html", "644")),
     )
 
-    tu.chmod_in_page("forbidden.html", "000")
-    passed = SimpleTester(4, host, port).proceed_requests("", requests)
-    tu.chmod_in_page("forbidden.html", "644")
-
+    passed = SimpleTester(3, host, port).proceed_requests("", requests)
+    
     return (passed, len(requests))
 
 
@@ -427,7 +397,7 @@ def test_5():
         "../www/img/kitty2.jpg"
     )
 
-    requests_1 = (
+    requests = (
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
@@ -436,13 +406,9 @@ def test_5():
                 + f"Content-Length: {length_1}\r\n\r\n"
             ).encode() + kitty_1_content)
             .set_status(HTTPStatus.OK)
-            .set_length(1284),
-    )
-    passed = RawTester(5, host, port).proceed_requests(
-        "", requests_1
-    ) and os.path.isfile(path + kitty_1)
-
-    requests_2 = (
+            .set_length(1284)
+            .set_server_test(lambda: os.path.isfile(path + kitty_1))
+            .set_post_test(lambda: tu.remove_from_upload("kitty1.jpeg")),
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
@@ -451,13 +417,12 @@ def test_5():
                 + f"Content-Length: {length_2}\r\n\r\n"
             ).encode() + kitty_2_content)
             .set_status(HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
-            .set_length(877),
+            .set_length(877)
+            .set_server_test(lambda: not os.path.isfile(path + kitty_2)),
     )
-    passed += RawTester(5, host, port).proceed_requests(
-        "", requests_2
-    ) and not os.path.isfile(path + kitty_2)
-    tu.remove_from_upload("kitty1.jpeg")
-    return (passed, len(requests_1) + len(requests_2))
+    passed = RawTester(5, host, port).proceed_requests("", requests) 
+    
+    return (passed, len(requests))
 
 
 def test_6():
@@ -511,11 +476,11 @@ def test_6():
         RawRequest(
             ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
             .set_status(HTTPStatus.OK)
-            .set_length(178976),
+            .set_length(178976)
+            .set_post_test(lambda: tu.remove_from_upload("kitty2.jpg")),
     )
 
     passed = RawTester(6, host, port).proceed_requests("", requests)
-    tu.remove_from_upload("kitty2.jpg")
     return (passed, len(requests))
 
 
