@@ -55,61 +55,47 @@ def test_1():
             .set_headers({"Host": "hostile"})
             .set_status(HTTPStatus.OK)
             .set_length(1146),
-        SimpleRequest(
-            "POST",
-            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
-        )
+        SimpleRequest("POST")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(2664),
-        SimpleRequest(
-            "POST",
-            urlencode(
+        SimpleRequest("POST")
+            .set_path("/php/cesar_post.php")
+            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode(
                 {
                     "cipher_key": "23",
                     "texte_area": "Ave Ceasar morituri te salutant",
                     "cipher": "on",
                 }
-            ),
-        )
-            .set_path("/php/cesar_post.php")
-            .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            ))
             .set_status(HTTPStatus.OK)
             .set_length(2684),
         # 10
-        SimpleRequest(
-            "POST",
-            urlencode(
-                {"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}
-            ),
-        )
+        SimpleRequest("POST")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(487),
-        SimpleRequest(
-            "POST",
-            urlencode({"texte_area": "hello world"}),
-        )
+        SimpleRequest("POST")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"texte_area": "hello world"}))
             .set_status(HTTPStatus.OK)
             .set_length(2630),
-        SimpleRequest(
-            "POST",
-            urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}),
-        )
+        SimpleRequest("POST")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
+            .set_content(urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(2664),
-        SimpleRequest(
-            "POST",
-            urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}),
-        )
+        SimpleRequest("POST")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "text/html"})
+            .set_content(urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(2630),
     )
