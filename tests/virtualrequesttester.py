@@ -59,7 +59,8 @@ class VirtualRequestTester:
             and self.check_content(request, resp)
             and self.check_server(request)
         )
-        tu.print_result(f"request_{self.index}", request.index, ok)
+        tu.print_result(f"request_{self.index}", request.description, ok)
+
         return ok
 
     def check_content(self, request, resp):

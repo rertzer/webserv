@@ -20,48 +20,57 @@ def test_1():
 
     requests = (
         SimpleRequest("GET")
+            .set_description("GET request on /")
             .set_path("/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1146),
         SimpleRequest("GOT")
+            .set_description("bad (GOT) method on /")
             .set_path("/")
             .set_headers(headers)
             .set_status(HTTPStatus.BAD_REQUEST)
             .set_length(847),
         SimpleRequest("GET")
+            .set_description("GET request on non existing file")
             .set_path("/nowhere")
             .set_headers(headers)
             .set_status(HTTPStatus.NOT_FOUND)
             .set_length(851),
         SimpleRequest("GET")
+            .set_description("GET request on existing html file")
             .set_path("/html/kitty/kitty.html")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1469),
         # 5
         SimpleRequest("GET")
+            .set_description("GET request on php cgi with query")
             .set_path("/php/cesar_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2678),
         SimpleRequest("GET")
+            .set_description("GET request on php cgi with query on non existing file")
             .set_path("/php/brutus_get.php?texte_area=salut+Jules&cipher_key=2&cipher=chiffrer")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(27),
         SimpleRequest("GET")
+            .set_description("get request on / with wrong Host name")
             .set_path("/")
             .set_headers({"Host": "hostile"})
             .set_status(HTTPStatus.OK)
             .set_length(1146),
         SimpleRequest("POST")
+            .set_description("POST request on php cgi with content")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_content(urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(2664),
         SimpleRequest("POST")
+            .set_description("POST request on php cgi with content")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_content(urlencode(
@@ -75,24 +84,28 @@ def test_1():
             .set_length(2684),
         # 10
         SimpleRequest("POST")
+            .set_description("POST request on php cgi with bad value in content")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_content(urlencode({"cipher_key": "NAN", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(487),
         SimpleRequest("POST")
+            .set_description("POST request on php cgi with incomplete content")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_content(urlencode({"texte_area": "hello world"}))
             .set_status(HTTPStatus.OK)
             .set_length(2630),
         SimpleRequest("POST")
+            .set_description("POST request on php cgi with bad content")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "application/x-www-form-urlencoded"})
             .set_content(urlencode({"gloup": "3", "texte_area": "hello world", "cipher": "on"}))
             .set_status(HTTPStatus.OK)
             .set_length(2664),
         SimpleRequest("POST")
+            .set_description("POST request on php content with text/html as Content-Type header")
             .set_path("/php/cesar_post.php")
             .set_headers({"Host": host, "Content-Type": "text/html"})
             .set_content(urlencode({"cipher_key": "3", "texte_area": "hello world", "cipher": "on"}))
@@ -110,32 +123,38 @@ def test_2():
 
     requests = (
         RawRequest(b"\r\nHost: localhost\r\n\r\n", )
+            .set_description("start line missing")
             .set_status(HTTPStatus.BAD_REQUEST)
             .set_length(847),
         RawRequest(
             b"GET / HTTP/6.1\r\nHost: localhost\r\n\r\n",
         )
+            .set_description("Non existant HTTP version number in start line")
             .set_status(HTTPStatus.HTTP_VERSION_NOT_SUPPORTED)
             .set_length(864),
         RawRequest(
             b"PUT / HTTP/1.1\r\nHost: localhost\r\n\r\n",
         )
+            .set_description("Not implemented PUT request")
             .set_status(HTTPStatus.NOT_IMPLEMENTED)
             .set_length(844),
         RawRequest(
             b"HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n",
         )
+            .set_description("Not implemented HEAD request")
             .set_status(HTTPStatus.NOT_IMPLEMENTED)
             .set_length(844),
         # 5
         RawRequest(
             b"Thisisnotavalidrequest HTTP/1.1\r\nHost: localhost\r\n\r\n",
         )
+            .set_description("Invalid start line")
             .set_status(HTTPStatus.BAD_REQUEST)
             .set_length(847),
         RawRequest(
             b"POST /php/norminet.html HTTP/1.1\r\nHost: localhost\r\n\r\n",
         )
+            .set_description("POST request on non existing path")
             .set_status(HTTPStatus.NOT_FOUND)
             .set_length(851),
         RawRequest(
@@ -149,6 +168,7 @@ def test_2():
                 )
             ).encode(),
         )
+            .set_description("POST cgi php request")
             .set_status(HTTPStatus.OK)
             .set_length(2630),
         RawRequest(
@@ -162,6 +182,7 @@ def test_2():
                 )
             ).encode(),
         )
+            .set_description("POST request on php cgi; Content-Length to short")
             .set_status(HTTPStatus.OK)
             .set_length(2630),
         RawRequest(
@@ -171,6 +192,7 @@ def test_2():
                 RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi request with cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1299),
         # 10
@@ -186,6 +208,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi with cookies and query")
             .set_status(HTTPStatus.OK)
             .set_length(1451),
         RawRequest(
@@ -200,6 +223,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1509),
         RawRequest(
@@ -214,6 +238,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1519),
         RawRequest(
@@ -243,6 +268,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1519),
         # 15
@@ -258,6 +284,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1519),
         RawRequest(
@@ -271,6 +298,7 @@ def test_2():
                 RequestCookie("total", "0", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python cgi request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1299),
     )
@@ -506,6 +534,7 @@ def test_7():
             .set_status(HTTPStatus.OK)
             .set_length(1444),
         SimpleRequest("GET")
+            .set_description("GET request on directory with autoindex off")
             .set_path("/img/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
