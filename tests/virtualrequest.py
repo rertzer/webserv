@@ -9,6 +9,7 @@ class VirtualRequest:
         self.pre_test = None
         self.post_test = None
         self.server_test = None
+        self.index = 0
    
     def set_description(self, description):
         self.description = description

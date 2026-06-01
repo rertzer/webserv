@@ -9,8 +9,8 @@ from webserver import WebServer
 
 class VirtualRequestTester:
 
-    def __init__(self, index, host, port):
-        self.index = index
+    def __init__(self, name, host, port):
+        self.name = name 
         self.host = host
         self.port = port
         self.server = None
@@ -41,7 +41,7 @@ class VirtualRequestTester:
             resp = self.send_request(request)
             ok =self.check_resp(request, resp)
         except:
-            tu.print_result(f"request_{self.index}", request.index, ok)
+            tu.print_result(f"request_{self.name}_{request.index}", request.index, ok)
             print(f"  {Color.RED}Send Request: Error{Color.ENDC}")
         finally:
             if request.post_test is not None:
@@ -59,7 +59,7 @@ class VirtualRequestTester:
             and self.check_content(request, resp)
             and self.check_server(request)
         )
-        tu.print_result(f"request_{self.index}", request.description, ok)
+        tu.print_result(f"request_{self.name}_{request.index}", request.description, ok)
 
         return ok
 

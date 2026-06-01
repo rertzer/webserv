@@ -4,8 +4,8 @@ from virtualrequesttester import VirtualRequestTester
 
 class SimpleTester(VirtualRequestTester):
 
-    def __init__(self, index, host, port):
-        VirtualRequestTester.__init__(self, index, host, port)
+    def __init__(self, name, host, port):
+        VirtualRequestTester.__init__(self, name, host, port)
 
     def send_request(self, request):
         resp = None

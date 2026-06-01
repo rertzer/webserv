@@ -10,7 +10,7 @@ from simplerequest import SimpleRequest
 from simpletester import SimpleTester
 
 
-def test_1():
+def test_get_post():
     """
     ! server behavior in subtest 6 (brutus_get) isn't satisfactory
     """
@@ -113,11 +113,11 @@ def test_1():
             .set_length(2630),
     )
 
-    passed = SimpleTester(1, host, port).proceed_requests("", requests)
+    passed = SimpleTester("get_post", host, port).proceed_requests("", requests)
     return (passed, len(requests))
 
 
-def test_2():
+def test_misc_and_post_cgi():
     host = "localhost"
     port = 8080
 
@@ -254,6 +254,7 @@ def test_2():
                 RequestCookie("name", "Droopy", {"SameSite": "Strict"}),
             ),
         )
+            .set_description("GET python CGI request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1519),
         RawRequest(
@@ -303,54 +304,61 @@ def test_2():
             .set_length(1299),
     )
 
-    passed = RawTester(2, host, port).proceed_requests("", requests)
+    passed = RawTester("misc_and_post_cgi", host, port).proceed_requests("", requests)
     return (passed, len(requests))
 
 
-def test_3():
+def test_get_misc():
     host = "localhost"
     port = 8081
     headers = {"Host": host}
 
     requests = (
         SimpleRequest("GET")
+            .set_description("GET request on /html/ path (autoindex off)")
             .set_path("/html/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1457),
         SimpleRequest("GET")
+            .set_description("GET request on /html/page/ path autoindex on")
             .set_path("/html/page/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2310),
         SimpleRequest("GET")
+            .set_description("GET request on /html/page/delete/ path autoindex on")
             .set_path("/html/page/delete/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1503),
         SimpleRequest("GET")
+            .set_description("GET request on /html/page/delete/toDelete.html path")
             .set_path("/html/page/delete/toDelete.html")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(478),
         SimpleRequest("GET")
+            .set_description("GET request on /redir/anything moved permanently")
             .set_path("/redir/anything")
             .set_headers(headers)
             .set_status(HTTPStatus.MOVED_PERMANENTLY)
             .set_length(0),
         SimpleRequest("GET")
+            .set_description("GET request on /newRoot/newRoot.html with another root directory")
             .set_path("/newRoot/newRoot.html")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(379),
         SimpleRequest("GET")
+            .set_description("GET request on /newIndex/ with another index file")
             .set_path("/newIndex/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(370),
     )
 
-    passed = SimpleTester(3, host, port).proceed_requests("", requests)
+    passed = SimpleTester("GET_misc", host, port).proceed_requests("", requests)
     return (passed, len(requests))
 
 
@@ -367,34 +375,40 @@ def test_delete():
     headers = {"Host": host}
     requests = (
         SimpleRequest("DELETE")
+            .set_description("DELETE request on /html/page/notToDelete.html, method not allowed")
             .set_path(file_not_to_delete)
             .set_headers(headers)
             .set_status(HTTPStatus.METHOD_NOT_ALLOWED)
             .set_length(285)
             .set_server_test(lambda: os.path.isfile(path_not_to_delete)),
         SimpleRequest("DELETE")
+            .set_description("DELETE request on /html/page/delete/toDelelte.html, file deletion expected")
             .set_path(file_to_delete)
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(38)
             .set_server_test(lambda: not os.path.isfile(path_to_delete)),
         SimpleRequest("DELETE")
+            .set_description("DELETE request on /html/page/delet/toDelete.html, not found expected")
             .set_path("/html/page/delete/toDelete.html")
             .set_headers(headers)
             .set_status(HTTPStatus.NOT_FOUND)
             .set_length(281),
         SimpleRequest("GET")
+            .set_description("GET request on /html/page/delete/ autoindex on toDelete.html should not appear")
             .set_path("/html/page/delete/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1364),
         SimpleRequest("GET")
+            .set_description("GET request on /html/page/ autoindex on")
             .set_path("/html/page/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2310)
             .set_post_test(lambda: tu.cp_backup_to_delete("toDelete.html")),
         SimpleRequest("GET")
+            .set_description("GET request on /html/page/forbidden.html FORBIDDEN status expected")
             .set_path("/html/page/forbidden.html")
             .set_status(HTTPStatus.FORBIDDEN)
             .set_headers(headers)
@@ -403,12 +417,12 @@ def test_delete():
             .set_post_test(lambda: tu.chmod_in_page("forbidden.html", "644")),
     )
 
-    passed = SimpleTester(3, host, port).proceed_requests("", requests)
+    passed = SimpleTester("delete", host, port).proceed_requests("", requests)
     
     return (passed, len(requests))
 
 
-def test_5():
+def test_multipart_upload_size_limit():
     host = "localhost"
     port = 8080
 
@@ -433,6 +447,7 @@ def test_5():
                 + f"Content-Type: multipart/form-data; boundary={boundary_1}\r\n"
                 + f"Content-Length: {length_1}\r\n\r\n"
             ).encode() + kitty_1_content)
+            .set_description("POST request sending jpeg file to upload")
             .set_status(HTTPStatus.OK)
             .set_length(1284)
             .set_server_test(lambda: os.path.isfile(path + kitty_1))
@@ -444,16 +459,17 @@ def test_5():
                 + f"Content-Type: multipart/form-data; boundary={boundary_2}\r\n"
                 + f"Content-Length: {length_2}\r\n\r\n"
             ).encode() + kitty_2_content)
+            .set_description("POST request sending oversized jpeg file to upload, REQUEST_ENTITY_TOO_LARGE expected")
             .set_status(HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
             .set_length(877)
             .set_server_test(lambda: not os.path.isfile(path + kitty_2)),
     )
-    passed = RawTester(5, host, port).proceed_requests("", requests) 
+    passed = RawTester("multipart_upload_size_limit", host, port).proceed_requests("", requests) 
     
     return (passed, len(requests))
 
 
-def test_6():
+def test_multipart_upload_boundary():
     """
     ! ResetError needs to be investigated
     ! Get no error when doing a boundary mistake during upload
@@ -469,11 +485,11 @@ def test_6():
     )
 
     requests = (
-            RawRequest(
+        RawRequest(
             ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_description("GET request on /upload/ autoindex on kitty2.jpg should not appear")
             .set_status(HTTPStatus.OK)
             .set_length(1444),
-
         RawRequest(
             (
                 "POST /html/kitty/success.html HTTP/1.1\r\n"
@@ -481,6 +497,7 @@ def test_6():
                 + f"Content-Type: multipart/form-data; boundary={boundary_2} \r\n"
                 + f"Content-Length: {length_2}\r\n\r\n"
             ).encode() + kitty_2_content)
+            .set_description("POST request upload multipart/form-data, bad boundaries")
             .set_status(HTTPStatus.OK)
             .set_length(1284),
         RawRequest(
@@ -494,41 +511,47 @@ def test_6():
                 + f"Content-Type: multipart/form-data; boundary={boundary_1}\r\n"
                 + f"Content-Length: {length_1}\r\n\r\n"
             ).encode() + kitty_1_content)
+            .set_description("POST request upload multipart/form-data")
             .set_status(HTTPStatus.OK)
             .set_length(1284),
         # 5
         RawRequest(
             ("GET /upload/ HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_description("GET request on /upload/ autoindex on kitty2.jpg should appear")
             .set_status(HTTPStatus.OK)
             .set_length(1580),
         RawRequest(
             ("GET /upload/kitty2.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n").encode())
+            .set_description("GET request on /upload/kitty2.jpg, the previously uploaded file")
             .set_status(HTTPStatus.OK)
             .set_length(178976)
             .set_post_test(lambda: tu.remove_from_upload("kitty2.jpg")),
     )
 
-    passed = RawTester(6, host, port).proceed_requests("", requests)
+    passed = RawTester("multipart_upload_boundary", host, port).proceed_requests("", requests)
     return (passed, len(requests))
 
 
-def test_7():
+def test_autoindex():
     host = "localhost"
     port = 8080
     headers = {"Host": host}
 
     requests = (
         SimpleRequest("GET")
+            .set_description("GET request on / ; index file expected")
             .set_path("/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1146),
         SimpleRequest("GET")
+            .set_description("GET request on directory with no autoindex indication index file expected")
             .set_path("/css/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(2280),
         SimpleRequest("GET")
+            .set_description("GET request on directory with autoindex on")
             .set_path("/upload/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
@@ -540,13 +563,14 @@ def test_7():
             .set_status(HTTPStatus.OK)
             .set_length(1146),
         SimpleRequest("GET")
+            .set_description("GET request on sub-directory with autoindex on in a directory with autoindex off")
             .set_path("/img/toDelete/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)
             .set_length(1350),
     )
 
-    passed = SimpleTester(7, host, port).proceed_requests(
+    passed = SimpleTester("autoindex", host, port).proceed_requests(
         "tests/conf_test/test_ok_5.conf", requests
     )
     return (passed, len(requests))
