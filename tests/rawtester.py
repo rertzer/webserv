@@ -10,6 +10,7 @@ class RawTester(VirtualTester):
     def __init__(self, name, host, port):
         VirtualTester.__init__(self, name, host, port)
 
+
     def send_request(self, request):
         with socket.create_connection((self.host, self.port)) as sock:
             sock.sendall(request.raw)
