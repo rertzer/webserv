@@ -7,13 +7,14 @@ from colors import Color
 from webserver import WebServer
 
 
-class VirtualRequestTester:
+class VirtualTester:
 
     def __init__(self, name, host, port):
         self.name = name 
         self.host = host
         self.port = port
         self.server = None
+        self.current_connection = None
 
     def proceed_requests(self, conf_file, requests):
         self.server = WebServer.start(conf_file)
@@ -40,12 +41,17 @@ class VirtualRequestTester:
         try:
             resp = self.send_request(request)
             ok =self.check_resp(request, resp)
+            # print("Response extra: ", resp.read())
         except:
             tu.print_result(f"request_{self.name}_{request.index}", request.index, ok)
             print(f"  {Color.RED}Send Request: Error{Color.ENDC}")
         finally:
             if request.post_test is not None:
                 request.post_test()
+                
+            if self.current_connection is not None:
+                self.current_connection.close()
+                self.current_connection = None
         return ok
 
     def send_request(self, request):

@@ -2,25 +2,13 @@ import socket
 import sys
 
 import testutils as tu
-from virtualrequesttester import VirtualRequestTester
+from virtualtester import VirtualTester
 
 
-class RawTester(VirtualRequestTester):
+class RawTester(VirtualTester):
 
-    def __init__(self, index, host, port):
-        VirtualRequestTester.__init__(self, index, host, port)
-
-    def test_request(self, index, request):
-        if request.pre_test is not None:
-            request.pre_test()
-
-        request.index = index
-        raw_res = self.send_request(request)
-        ok = self.check_resp(request, tu.raw_to_http_response(raw_res))
-
-        if request.post_test is not None:
-            request.post_test()
-        return ok
+    def __init__(self, name, host, port):
+        VirtualTester.__init__(self, name, host, port)
 
     def send_request(self, request):
         with socket.create_connection((self.host, self.port)) as sock:
@@ -34,4 +22,4 @@ class RawTester(VirtualRequestTester):
                     raw_res += chunk
             except ConnectionResetError as e:
                 print("Reset Error", e, file=sys.stderr)
-        return raw_res
+        return tu.raw_to_http_response(raw_res)

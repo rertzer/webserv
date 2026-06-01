@@ -1,20 +1,18 @@
 import http.client
 
-from virtualrequesttester import VirtualRequestTester
+from virtualtester import VirtualTester
 
-class SimpleTester(VirtualRequestTester):
+class SimpleTester(VirtualTester):
 
     def __init__(self, name, host, port):
-        VirtualRequestTester.__init__(self, name, host, port)
+        VirtualTester.__init__(self, name, host, port)
 
     def send_request(self, request):
         resp = None
         try:
-            conn = http.client.HTTPConnection(self.host, self.port)
-            conn.request(request.method, request.path, request.content, request.headers)
-            resp =  conn.getresponse()
-            # print(resp.read())
-            # conn.close()
+            current_connection = http.client.HTTPConnection(self.host, self.port)
+            current_connection.request(request.method, request.path, request.content, request.headers)
+            resp =  current_connection.getresponse()
 
         except ConnectionRefusedError as e:
             print({e})
