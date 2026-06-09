@@ -17,15 +17,13 @@ Request::Request(Connection* s)
 	  header_ok(false),
 	  content_ok(false),
 	  server(nullptr)
-
 {
 
 	std::cout << " ------------------------------ " << std::endl << "\n";
-	int len = soc->readAll();
-	if (len == 0)
+	if ( soc->readAll() == 0){
 		throw(RequestException());
-	setControlData();
-	setServer();
+	}
+	setStartLine();
 	setHeader();
 	if (contentExist()) {
 		setContent();
@@ -61,6 +59,8 @@ Request& Request::operator=(Request const& rhs) {
 	}
 	return *this;
 }
+
+/* =========================== Getter ====================================== */
 
 int Request::getPort() const {
 	return port;
@@ -107,6 +107,50 @@ Server* Request::getServer(){
 	return server;
 }
 
+size_t Request::getContentLength() const {
+	auto len = toInt(getField("Content-Length"));
+	if (!len.has_value()) {
+		len = 0;
+	}
+	return len.value();
+}
+
+const std::map<std::string, std::string>& Request::getHeader() const {
+	return header;
+}
+
+const std::map<std::string, std::string>& Request::getTrailer() const {
+	return trailer;
+}
+
+const std::string& Request::getContent() const {
+	return content;
+}
+
+Connection* Request::getSocket() const {
+	return soc;
+}
+
+std::optional<std::string> Request::getExtension() const {
+	std::optional<std::string> extension;
+	auto					   begin = query.find(".");
+
+	if (begin != std::string::npos) {
+		auto end = getExtensionEnd(begin);
+		extension = query.substr(begin, end - begin);
+	}
+	return extension;
+}
+
+size_t Request::getExtensionEnd(size_t begin) const {
+	auto end = query.find('?', begin);
+	if (end == std::string::npos) {
+		end = query.find('/', begin);
+	}
+	return end;
+}
+/* ========================== Setter ======================================= */
+
 void Request::setBodySize(int bs) {
 	if (bs > 0)
 		body_size = bs;
@@ -116,15 +160,119 @@ void Request::setUploadPath(std::string up) {
 	upload_path = up;
 }
 
-bool Request::checkField(std::string const& name, std::string const& value) const {
-	auto field = getField(name);
-	auto all_values = splitCsv(field, ";");
-	for (auto csv_value : all_values) {
-		if (ciCompare(csv_value, value))
-			return true;
+void Request::setStartLine() {
+	std::string line = soc->getLine();
+
+	if (line.empty()) {
+		line = soc->getLine();
 	}
-	return false;
+
+	auto start_line = split(line);
+	if (start_line.size() != 3) {
+		throw(ErrorException(400));
+	}
+
+	method = stringToMethod(start_line[0]);
+	query = start_line[1];
+	protocol = start_line[2];
+
+	checkStartLine();
 }
+
+void Request::setQuery(std::string const& q) {
+	query = q;
+}
+
+void Request::setHeader() {
+	setFields();
+	setServer();
+	updateHeader();	
+}
+
+void Request::setKeepAlive() {
+	std::string keep = getField("Connection");
+	if (keep == "keep-alive")
+		soc->setKeepAlive(true);
+}
+
+void Request::setCgi(Cgi* c) {
+	cgi = c;
+}
+
+void Request::setServer(){
+for (auto& serv : soc->getServers()) {
+		if (getField("Host") == serv.getServName() + ":" + std::to_string(getPort())) {
+				server = &serv;
+				std::cerr << "Find host server\n";
+				return;
+		}
+	};
+	std::cerr << "Default server\n";
+	server = soc->getDefaultServer();
+}
+
+void Request::setFields() {
+	std::string line = soc->getLine();
+
+	while (line.length()) {
+		addField(line);
+		line = soc->getLine();
+	}
+}
+
+void Request::setContent() {
+	std::string trans_encoding = getField("Transfer-Encoding");
+
+	if (!trans_encoding.empty()) {
+		if (checkField("Transfer-Encoding", "chunked"))
+			setContentByChunked();
+		else
+			throw(ErrorException(501));
+	} else {
+		setContentByLength();
+	}
+}
+
+void Request::setContentByChunked() {
+	int len = 1;
+	while (len) {
+		len = readChunk();
+	}
+	std::stringstream ss;
+	ss << content.size();
+	header.erase(header.find("Transfer-Encoding"));
+	header["Content-Length"] = ss.str().c_str();
+	setTrailer();
+}
+
+void Request::setTrailer() {
+	setFields();
+}
+
+void Request::setContentByLength() {
+	size_t	len = getContentLength();
+	ssize_t remain = len - content.size();
+	if (remain > 0) {
+		soc->addRawData(content, remain);
+	}
+	if (content.size() == len)
+		content_ok = true;
+}
+/* ================================ Field ================================== */
+void Request::addField(std::string const& field) {
+	auto kv = splitPair(field, ':');
+	if (kv.first.empty()) {
+		throw(ErrorException(400));
+	}
+	stringTrim(kv.first);
+	stringTrim(kv.second);
+	if (header.find(kv.first) == header.end())
+		header[kv.first] = kv.second;
+	else
+		header[kv.first] += ", " + kv.second;
+}
+
+/* ================================= Upload ================================ */
 
 bool Request::isUpload() const {
 	if (getMethod() == POST && checkField("Content-Type", "multipart/form-data") &&
@@ -176,29 +324,6 @@ std::string Request::getFileName() {
 	return fn;
 }
 
-std::optional<std::string> Request::getExtension() const {
-	std::optional<std::string> extension;
-	auto					   begin = query.find(".");
-
-	if (begin != std::string::npos) {
-		auto end = getExtensionEnd(begin);
-		extension = query.substr(begin, end - begin);
-	}
-	return extension;
-}
-
-size_t Request::getExtensionEnd(size_t begin) const {
-	auto end = query.find('?', begin);
-	if (end == std::string::npos) {
-		end = query.find('/', begin);
-	}
-	return end;
-}
-
-void Request::initCgi(std::string root, Location& loc) {
-	cgi = new Cgi(root, *this, loc.getExtension(), loc.getCgiPath());
-}
-
 void Request::uploadFile(std::string const& filename, std::string const& part) {
 	checkValidFileName(filename);
 	std::string path = upload_path + filename;
@@ -215,12 +340,29 @@ void Request::uploadFile(std::string const& filename, std::string const& part) {
 	}
 }
 
-void Request::checkValidFileName(std::string const& filename) const {
-	if (filename.size() > 255 || filename.find_first_of("\\\0") != std::string::npos ||
-		filename == "." || filename == ".."){
+/* ========================================================================= */
+void Request::initCgi(std::string root, Location& loc) {
+	cgi = new Cgi(root, *this, loc.getExtension(), loc.getCgiPath());
+}
 
-		throw ErrorException(400);
+bool Request::ready() const {
+	return header_ok && ((contentExist() && content_ok) || !contentExist());
+}
+
+void Request::feed() {
+	if (soc->readAll() == 0) {
+		throw(RequestException());
 	}
+	if (!header_ok) {
+		appendHeader();
+	}
+	if (header_ok && contentExist() && !content_ok) {
+		setContent();
+	}
+}
+
+void Request::eraseContent(int size) {
+	content.erase(0, size);
 }
 
 std::string Request::getLine(std::string const& sep) {
@@ -233,31 +375,6 @@ std::string Request::getLine(std::string const& sep) {
 	}
 	return line;
 }
-
-bool Request::ready() const {
-	return header_ok && ((contentExist() && content_ok) || !contentExist());
-}
-
-void Request::feed() {
-	if (soc->readAll() == 0) {
-		throw(RequestException());
-	}
-	if (!header_ok) {
-		setHeader();
-	}
-	if (header_ok && contentExist() && !content_ok) {
-		setContent();
-	}
-}
-
-void Request::eraseContent(int size) {
-	content.erase(0, size);
-}
-
-Connection* Request::getSocket() const {
-	return soc;
-}
-
 std::string Request::getLine(std::string& data, std::string const& sep) {
 	std::string line;
 
@@ -269,123 +386,16 @@ std::string Request::getLine(std::string& data, std::string const& sep) {
 	return line;
 }
 
-size_t Request::getContentLength() const {
-	auto len = toInt(getField("Content-Length"));
-	if (!len.has_value()) {
-		len = 0;
-	}
-	return len.value();
-}
-
-const std::map<std::string, std::string>& Request::getHeader() const {
-	return header;
-}
-
-const std::map<std::string, std::string>& Request::getTrailer() const {
-	return trailer;
-}
-
-const std::string& Request::getContent() const {
-	return content;
-}
-
-void Request::addField(std::string const& field) {
-	auto kv = splitPair(field, ':');
-	if (kv.first.empty()) {
-		throw(ErrorException(400));
-	}
-	stringTrim(kv.first);
-	stringTrim(kv.second);
-	if (header.find(kv.first) == header.end())
-		header[kv.first] = kv.second;
-	else
-		header[kv.first] += ", " + kv.second;
-}
-
-// Private
-void Request::setControlData() {
-	std::string line = soc->getLine();
-
-	if (line.empty()) {
-		line = soc->getLine();
-	}
-
-	auto control_data = split(line);
-	if (control_data.size() != 3) {
-		throw(ErrorException(400));
-	}
-
-	method = stringToMethod(control_data[0]);
-	query = control_data[1];
-	protocol = control_data[2];
-
-	checkControlData();
-}
-
-void Request::setQuery(std::string const& q) {
-	query = q;
-}
-
-void Request::setHeader() {
-	setFields();
+void Request::updateHeader(){
 	setBodySize(server->getBodySize());
-	checkHeader();
 	setKeepAlive();
+	checkHeader();
 	header_ok = true;
 }
 
-void Request::setKeepAlive() {
-	std::string keep = getField("Connection");
-	if (keep == "keep-alive")
-		soc->setKeepAlive(true);
-}
-
-void Request::setCgi(Cgi* c) {
-	cgi = c;
-}
-
-void Request::setServer(){
-for (auto& serv : soc->getServers()) {
-		if (getField("Host") == serv.getServName() + ":" + std::to_string(getPort())) {
-				server = &serv;
-				return;
-		}
-	};
-	server = soc->getDefaultServer();
-}
-
-void Request::setFields() {
-	std::string line = soc->getLine();
-
-	while (line.length()) {
-		addField(line);
-		line = soc->getLine();
-	}
-}
-
-void Request::setContent() {
-	std::string trans_encoding = getField("Transfer-Encoding");
-
-	if (!trans_encoding.empty()) {
-		if (checkField("Transfer-Encoding", "chunked"))
-			setContentByChunked();
-		else
-			throw(ErrorException(501));
-	} else {
-		setContentByLength();
-	}
-}
-
-void Request::setContentByChunked() {
-	int len = 1;
-	while (len) {
-		len = readChunk();
-	}
-	std::stringstream ss;
-	ss << content.size();
-	header.erase(header.find("Transfer-Encoding"));
-	header["Content-Length"] = ss.str().c_str();
-	setTrailer();
+void Request::appendHeader(){
+	setFields();
+	updateHeader();
 }
 
 unsigned int Request::readChunk() {
@@ -403,21 +413,25 @@ unsigned int Request::readChunk() {
 	return size;
 }
 
-void Request::setTrailer() {
-	setFields();
-}
-
-void Request::setContentByLength() {
-	size_t	len = getContentLength();
-	ssize_t remain = len - content.size();
-	if (remain > 0) {
-		soc->addRawData(content, remain);
+/* ================================ Check Methods ========================== */
+bool Request::checkField(std::string const& name, std::string const& value) const {
+	auto field = getField(name);
+	auto all_values = splitCsv(field, ";");
+	for (auto csv_value : all_values) {
+		if (ciCompare(csv_value, value))
+			return true;
 	}
-	if (content.size() == len)
-		content_ok = true;
+	return false;
 }
 
-void Request::checkControlData() const {
+void Request::checkValidFileName(std::string const& filename) const {
+	if (filename.size() > 255 || filename.find_first_of("\\\0") != std::string::npos ||
+		filename == "." || filename == ".."){
+		throw ErrorException(400);
+	}
+}
+
+void Request::checkStartLine() const {
 	if (protocol != "HTTP/1.1") {
 		throw(ErrorException(505));
 	}
@@ -438,18 +452,16 @@ void Request::checkHeader() const {
 }
 
 bool Request::contentExist() const {
-	int content = 0;
-	if (!getField("Transfer-Encoding").empty())
-		content++;
-	if (!getField("Content-Length").empty())
-		content++;
-	if (content == 2) {
+	bool transfer = !getField("Transfer-Encoding").empty();
+	bool content = !getField("Content-Length").empty();
 
+	if (transfer && content) {
 		throw(ErrorException(400));
 	}
-	return static_cast<bool>(content);
+	return (transfer || content);
 }
 
+/* =============================== Print Methods =========================== */
 
 void Request::printCleanRequest() const {
 	std::cout << "\n" << CYAN "Request = {";

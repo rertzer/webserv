@@ -61,7 +61,6 @@ BitSet					 getAllowMethodsServer(LineList const& list);
 int						 checkIfOnlyDigits(std::string str);
 void					 dealWithGet(Request req, Response& rep);
 void					 dealWithPost(Request req, Response& rep);
-void					 dealWithDelete(Request req, Response& rep);
 std::string				 getContentKey(std::string value, Response& rep);
 std::string				 findLocation(std::string path, Response& rep);
 int						 respWithCgi(Request& req, Response& rep);

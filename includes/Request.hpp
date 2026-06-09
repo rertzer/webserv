@@ -65,7 +65,7 @@ class Request {
 	void		 upload(std::string& part);
 	void		 uploadFile(std::string const& filename, std::string const& part);
 	void		 checkValidFileName(std::string const& filename) const;
-	void		 setControlData();
+	void		 setStartLine();
 	void		 setHeader();
 	void		 setFields();
 	void		 setContent();
@@ -74,10 +74,12 @@ class Request {
 	void		 setTrailer();
 	void		 setContentByLength();
 	void		 setServer();
-	void		 checkControlData() const;
+	void		 checkStartLine() const;
 	void		 checkHeader() const;
 	bool		 contentExist() const;
 	void		 addMultipart(std::string& line);
+	void		appendHeader();
+	void		updateHeader();
 
 	int								   port;
 	unsigned int					   body_size;

@@ -485,7 +485,6 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 		setMethod(method);
 		setContentType("text/html");
 	} else {
-		std::cerr << "fill response 88\n";
 		setErrorPage(405);
 	}
 }
