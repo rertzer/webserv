@@ -196,6 +196,10 @@ def test_cmdline_and_conf():
             .set_stderr("Cannot open file: data/index_header.html\n")
             .set_pre_test(lambda : tu.backup_data("index_header.html"))
             .set_post_test(lambda : tu.backup_data("index_header.html", False)),
+        ConfRequest("tests/conf_test/test_ko_redirect.conf")
+            .set_status(3)
+            .set_stdout("Return status not a valid number\n")
+            .set_stderr("Error: Server parsing error\n"),
     )
 
     passed = sum(conf_tester(index + 1, test) for index, test in enumerate(tests))

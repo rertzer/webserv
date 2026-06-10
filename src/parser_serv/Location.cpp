@@ -83,7 +83,7 @@ void Location::setRedirection(std::vector<std::string> list) {
 		redirection_path = list[2];
 	}
 	if (redirection_status == HttpStatus::UNDEFINED) {
-		std::cerr << "return status not a valid number\n";
+		std::cout << "Return status not a valid number\n";
 		throw ServerException();
 	}
 }
