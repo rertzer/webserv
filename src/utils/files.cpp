@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "ErrorException.hpp"
+#include "HttpStatus.hpp"
 #include "files.hpp"
 
 namespace fs = std::filesystem;
@@ -18,7 +19,7 @@ std::string readSpecFile(std::string file) {
 		fileStr << fileOp.rdbuf();
 		fileOp.close();
 	} else {
-		throw(ErrorException(404));
+		throw(ErrorException(HttpStatus::NOT_FOUND));
 	}
 	return fileStr.str();
 }
@@ -46,10 +47,10 @@ bool fileExists(const std::string& path) {
 
 void checkRegularReadable(std::string path) {
 	if (!isRegularFile(path)) {
-		throw(ErrorException(404));
+		throw(ErrorException(HttpStatus::NOT_FOUND));
 	}
 	if (!isReadable(path)) {
-		throw(ErrorException(403));
+		throw(ErrorException(HttpStatus::FORBIDDEN));
 	}
 }
 

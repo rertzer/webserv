@@ -1,15 +1,16 @@
 #include "DirListing.hpp"
 #include "ErrorException.hpp"
+#include "HttpStatus.hpp"
 
 DirListing::DirListing(std::string p) : path(p) {
 	DIR* dd;
 	dd = opendir(path.c_str());
 	if (dd == nullptr) {
-		int error = 500;
+		HttpStatus error = HttpStatus::INTERNAL_SERVER_ERROR;
 		if (errno == ENOTDIR || errno == ENOENT)
-			error = 404;
+			error = HttpStatus::NOT_FOUND;
 		else if (errno == EACCES)
-			error = 403;
+			error = HttpStatus::FORBIDDEN;
 		throw(ErrorException(error));
 	}
 	setDirContent(dd);
@@ -46,5 +47,5 @@ void DirListing::setDirContent(DIR* dd) {
 		entry = readdir(dd);
 	}
 	if (errno)
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 }

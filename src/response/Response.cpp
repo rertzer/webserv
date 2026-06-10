@@ -1,7 +1,7 @@
 #include "Response.hpp"
 #include "Cgi.hpp"
 #include "DirListing.hpp"
-#include "Status.hpp"
+#include "HttpStatus.hpp"
 #include "Connection.hpp"
 #include "autoindex.hpp"
 #include "color.hpp"
@@ -11,7 +11,7 @@
 
 Response::Response(Request& req)
 	: _serv(*req.getServer()),
-	  _readFileAccess(OK),
+	  readFileAccess(HttpStatus::OK),
 	  _autoIndex(_serv.getAutoIndex()),
 	  _root(_serv.getRoot()),
 	  allowed_methods(_serv.getAllowMethods()) {
@@ -26,7 +26,7 @@ Response::Response(Request& req)
 	}
 	dealWithMethod(req);
 }
-Response::Response(Server& serv, int errcode) : _serv(serv) {
+Response::Response(Server& serv, HttpStatus errcode) : _serv(serv) {
 	setErrorPage(errcode);
 }
 
@@ -35,7 +35,7 @@ Response::Response(Response const& resp) : _serv(resp._serv) {
 }
 
 Response& Response::operator=(Response const& rhs) {
-	_status = rhs._status;
+	status = rhs.status;
 	_contentType = rhs._contentType;
 	_contentLength = rhs._contentLength;
 	_connectionClose = rhs._connectionClose;
@@ -68,7 +68,7 @@ std::string Response::getResponseHeader() {
 }
 
 std::string Response::getResponseStatus() const {
-	return "HTTP/1.1 " + _status + "\r\n";
+	return "HTTP/1.1 " + getStatusLine(status)+ "\r\n";
 }
 
 std::string Response::getResponseLocation() const {
@@ -104,10 +104,12 @@ std::string Response::getResponseContent() const {
 }
 
 void Response::logResponse(std::string resp) const {
-	if (_status == "200 OK")
+	if (isStatusSuccess(status)){
 		std::cout << GREEN "\nReponse send:\n" << resp << RESET << std::endl;
-	else
+	}
+	else{
 		std::cout << RED "\nReponse send:\n" << resp << RESET << std::endl;
+	}
 }
 
 void Response::dealWithMethod(Request& req) {
@@ -119,16 +121,16 @@ void Response::dealWithMethod(Request& req) {
 			dealWithDelete(req);
 		}
 	} else {
-		setErrorPage(405);
+		setErrorPage(HttpStatus::METHOD_NOT_ALLOWED);
 	}
 }
 
 void Response::dealWithDelete(Request& req) {
 	checkRegularReadable(getRoot() + req.getQuery());
 	if (std::remove((getRoot() + req.getQuery()).c_str()) != 0) {
-		setErrorPage(404);
+		setErrorPage(HttpStatus::NOT_FOUND);
 	} else {
-		setStatus("200 OK");
+		setStatus(HttpStatus::OK);
 		setContentType("text/html");
 		setContentWithLength("<html><body>File deleted</body></html>");
 	}
@@ -147,22 +149,17 @@ void Response::fillPart(Request req) {
 	}
 
 	auto fileStr = readFile(getFilePath(filename));
-	if (_readFileAccess == OK) {
+	if (readFileAccess == HttpStatus::OK) {
 		setContentType(getContentMap().getContentValue(fileExtension(filename)));
 	}
 
-	switch (_readFileAccess) {
-		case OK:
+	switch (readFileAccess) {
+		case HttpStatus::OK:
 			fillOK(fileStr);
 			break;
-		case ACCESS_DENIED:
-			setErrorPage(403);
-			break;
-		case FILE_NOT_FOUND:
-			setErrorPage(404);
-			break;
+		
 		default:
-			setErrorPage(500);
+			setErrorPage(readFileAccess);
 			break;
 	}
 }
@@ -171,9 +168,9 @@ std::string Response::readFile(std::string file) {
 	if (testFileAccess(file)) {
 		try {
 			file_content = getFileContent(file);
-			setReadFileAccess(OK);
+			setReadFileAccess(HttpStatus::OK);
 		} catch (std::exception& e) {
-			setReadFileAccess(FILE_NOT_FOUND);
+			setReadFileAccess(HttpStatus::NOT_FOUND);
 		}
 	}
 
@@ -183,9 +180,9 @@ std::string Response::readFile(std::string file) {
 bool Response::testFileAccess(std::string file) {
 	bool allowed = false;
 	if (!fileExists(file)) {
-		setReadFileAccess(FILE_NOT_FOUND);
+		setReadFileAccess(HttpStatus::NOT_FOUND);
 	} else if (!isRegularFile(file) || !isReadable(file)) {
-		setReadFileAccess(ACCESS_DENIED);
+		setReadFileAccess(HttpStatus::FORBIDDEN);
 	} else {
 		allowed = true;
 	}
@@ -193,7 +190,7 @@ bool Response::testFileAccess(std::string file) {
 }
 
 void Response::fillOK(std::string content) {
-	setStatus("200 OK");
+	setStatus(HttpStatus::OK);
 	setContentWithLength(content);
 	setConnectionClose("keep-alive");
 }
@@ -218,12 +215,12 @@ void Response::setLocation(std::string location) {
 	_location = location;
 }
 
-void Response::setStatus(std::string status) {
-	_status = status;
+void Response::setStatus(HttpStatus status) {
+	this->status = status;
 }
 
-void Response::setMethod(HttpMethod m) {
-	method = m;
+void Response::setMethod(HttpMethod method) {
+	this->method = method;
 }
 
 void Response::setContentType(std::string contentType) {
@@ -268,7 +265,7 @@ std::pair<std::string, std::string> Response::extractField(size_t pos) {
 
 int Response::respWithCgi(Request& req) {
 	method = req.getMethod();
-	_status = "200 OK";
+	status = HttpStatus::OK;
 	_connectionClose = "keep-alive";
 	_contentType = "text/html";
 	_content = req.getCgi()->getContent();
@@ -323,8 +320,8 @@ void Response::setExtensionAllowed(std::pair<std::string, std::string> extension
 	_extensionAllowed = extensionAllowed;
 }
 
-void Response::setReadFileAccess(int readFileAccess) {
-	_readFileAccess = readFileAccess;
+void Response::setReadFileAccess(HttpStatus readFileAccess) {
+	this->readFileAccess = readFileAccess;
 }
 
 void Response::setContentMap(ContentMap contentMap) {
@@ -343,8 +340,8 @@ std::string Response::getContentLength(void) const {
 	return _contentLength;
 }
 
-std::string Response::getStatus(void) const {
-	return _status;
+HttpStatus Response::getStatus(void) const {
+	return status;
 }
 
 HttpMethod Response::getMethod(void) const {
@@ -375,8 +372,8 @@ std::pair<std::string, std::string> Response::getExtensionAllowed(void) const {
 	return _extensionAllowed;
 }
 
-int Response::getReadFileAccess(void) const {
-	return _readFileAccess;
+HttpStatus Response::getReadFileAccess(void) const {
+	return readFileAccess;
 }
 
 BitSet Response::getAllowedMethods(void) const {
@@ -451,9 +448,9 @@ void Response::setWithLocRoot(Location& loc) {
 bool Response::setWithLocRedirection(Location& loc, Request& req) {
 	bool redir = false;
 	if (loc.checkForRedirection()) {
-		setStatus(Status::getMsg(loc.getRedirectionStatus()));
+		setStatus(loc.getRedirectionStatus());
 		setLocation(loc.getRedirectionPath());
-		std::cout << GREEN "Redir = {[Status :" << getStatus()
+		std::cout << GREEN "Redir = {[Status :" << static_cast<int>(getStatus())
 				  << "][New Location: " << getLocation() << "]" RESET << std::endl;
 		req.getSocket()->setKeepAlive(false);
 		redir = true;
@@ -481,11 +478,11 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 	auto method = req.getMethod();
 	if ((method == GET || method == POST) && (isAllowed(method))) {
 		setContentWithLength(getDirContent(req.getQuery()));
-		setStatus("200 OK");
+		setStatus(HttpStatus::OK);
 		setMethod(method);
 		setContentType("text/html");
 	} else {
-		setErrorPage(405);
+		setErrorPage(HttpStatus::METHOD_NOT_ALLOWED);
 	}
 }
 
@@ -524,12 +521,12 @@ std::string Response::getFilePath(std::string const& file) const {
 	return _root + file;
 }
 
-void Response::setErrorPage(int errcode) {
+void Response::setErrorPage(HttpStatus error) {
 	std::string content;
-	_status = Status::getMsg(errcode);
-	_contentType = ContentMap().getContentValue(fileExtension(_serv.getErrorPage(errcode)));
+	status = error;
+	_contentType = ContentMap().getContentValue(fileExtension(_serv.getErrorPage(static_cast<int>(status))));
 	try {
-		content = readSpecFile(_serv.getRoot() + _serv.getErrorPage(errcode));
+		content = readSpecFile(_serv.getRoot() + _serv.getErrorPage(static_cast<int>(status)));
 	} catch (const std::exception& e) {
 		content = "<html><body>File deleted</body></html>";
 	}

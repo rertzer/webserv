@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <stdio.h>
+#include <cstring>
 
 #include "Cgi.hpp"
 #include "ErrorException.hpp"
@@ -141,13 +142,13 @@ void Cgi::initPipes() {
 
 void Cgi::setPostFd() {
 	if (::pipe(post_fd) == -1)
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 	fcntl(post_fd[1], F_SETFL, fcntl(post_fd[1], F_GETFL) | O_NONBLOCK);
 }
 
 void Cgi::setPipeFd() {
 	if (::pipe(pipe_fd) == -1)
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 	fcntl(pipe_fd[0], F_SETFL, fcntl(pipe_fd[0], F_GETFL) | O_NONBLOCK);
 }
 
@@ -159,7 +160,7 @@ int Cgi::writePostFd() {
 		if (size <= 0) {
 			perror("pipe error");
 			::close(post_fd[1]);
-			throw(ErrorException(500));
+			throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 		}
 	}
 	if (static_cast<size_t>(size) == content_size) {
@@ -185,7 +186,7 @@ int Cgi::readPipeFd() {
 	}
 	delete[] buffer;
 	if (size < 0) {
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 	}
 	return size;
 }
@@ -203,7 +204,7 @@ void Cgi::closePipe() {
 void Cgi::exec() {
 	pid = ::fork();
 	if (pid < 0) {
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 	} else if (pid == 0) {
 		execSon();
 	} else {

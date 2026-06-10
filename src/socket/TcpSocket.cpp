@@ -66,7 +66,7 @@ void TcpSocket::accept(TcpSocket& csoc) const {
 	csoc.socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&csoc.socket_addr),
 							   &csoc.socket_addr_length);
 	if (csoc.socket_fd == -1)
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 }
 
 void TcpSocket::close() {

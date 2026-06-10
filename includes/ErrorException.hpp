@@ -3,15 +3,17 @@
 
 #include <exception>
 
+#include "HttpStatus.hpp"
+
 class ErrorException : public std::exception {
    public:
-	ErrorException(int c) throw();
+	ErrorException(HttpStatus status) throw();
 
-	int					getCode() const throw();
+	HttpStatus				getStatus() const throw();
 	virtual const char* what() const throw();
 
    private:
-	int code;
+	HttpStatus status;
 };
 
 #endif

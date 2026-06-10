@@ -3,9 +3,10 @@
 
 #include <functional>
 
+#include "autoindex.hpp"
 #include "BitSet.hpp"
 #include "HttpMethod.hpp"
-#include "autoindex.hpp"
+#include "HttpStatus.hpp"
 
 using LocationParsingHandler = std::function<void(const std::vector<std::string>&)>;
 
@@ -17,7 +18,7 @@ class Location {
 	AutoIndex				 autoindex;
 	std::string				 index;
 	std::string				 root;
-	int						 redirection_status;
+	HttpStatus				 redirection_status;
 	std::string				 redirection_path;
 	std::vector<std::string> allow_methods;
 	std::string				 extension;
@@ -43,7 +44,7 @@ class Location {
 	bool		checkForRedirection();
 	std::string getIndex() const;
 	std::string getRoot() const;
-	int			getRedirectionStatus() const;
+	HttpStatus	getRedirectionStatus() const;
 	std::string getRedirectionPath() const;
 	AutoIndex	getAutoindex() const;
 	std::string getExtension() const;

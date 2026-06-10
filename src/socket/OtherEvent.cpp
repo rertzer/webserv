@@ -169,7 +169,7 @@ void OtherEvent::handleCgiOut() {
 void OtherEvent::internalError() {
 	if (isCgiFd()) {
 		status = eventStatus::CGI_CLOSE;
-		throw(ErrorException(500));
+		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 	} else {
 		status = eventStatus::CLOSE;
 	}
@@ -185,7 +185,7 @@ void OtherEvent::handleErrorException(const ErrorException& e) {
 		}
 		server = *getRequestServer();
 	}
-	connection->setMessageOut((Response(server, e.getCode())).getResponse());
+	connection->setMessageOut((Response(server, e.getStatus())).getResponse());
 	connection->setKeepAlive(false);
 	connection->setError(true);
 	if (status == eventStatus::NOTHING) {

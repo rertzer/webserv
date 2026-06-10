@@ -26,10 +26,10 @@ SOURCES := main.cpp
 
 SOCKET_SOURCES := Connection.cpp Event.cpp ListeningEvent.cpp OtherEvent.cpp Polling.cpp Request.cpp stringTrim.cpp TcpSocket.cpp utils.cpp ServerRun.cpp
 
-EXCEPTION_SOURCES := ErrorException.cpp Status.cpp
+EXCEPTION_SOURCES := ErrorException.cpp
 LISTING_SOURCES := DirListing.cpp FileDesc.cpp
 PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp ServerException.cpp ServerParsing.cpp HttpMethod.cpp autoindex.cpp
-RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp
+RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp HttpStatus.cpp
 UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp  BitSet.cpp files.cpp splitPairs.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))

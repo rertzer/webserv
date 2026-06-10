@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "Cgi.hpp"
+#include "HttpStatus.hpp"
 #include "color.hpp"
 #include "ErrorException.hpp"
 #include "HttpMethod.hpp"
@@ -169,7 +170,7 @@ void Request::setStartLine() {
 
 	auto start_line = split(line);
 	if (start_line.size() != 3) {
-		throw(ErrorException(400));
+		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 
 	method = stringToMethod(start_line[0]);
@@ -227,7 +228,7 @@ void Request::setContent() {
 		if (checkField("Transfer-Encoding", "chunked"))
 			setContentByChunked();
 		else
-			throw(ErrorException(501));
+			throw(ErrorException(HttpStatus::NOT_IMPLEMENTED));
 	} else {
 		setContentByLength();
 	}
@@ -262,7 +263,7 @@ void Request::setContentByLength() {
 void Request::addField(std::string const& field) {
 	auto kv = splitPair(field, ':');
 	if (kv.first.empty()) {
-		throw(ErrorException(400));
+		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 	stringTrim(kv.first);
 	stringTrim(kv.second);
@@ -303,7 +304,7 @@ void Request::upload(std::string& part) {
 void Request::addMultipart(std::string& line) {
 	auto kv = splitPair(line, ':');
 	if (kv.first.empty()) {
-		throw(ErrorException(400));
+		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 	stringTrim(kv.first);
 	stringTrim(kv.second);
@@ -333,7 +334,7 @@ void Request::uploadFile(std::string const& filename, std::string const& part) {
 		std::ofstream upfile(path.c_str(), std::ofstream::out);
 		if (upfile.fail()) {
 			perror(" creation failed");
-			throw(ErrorException(500));
+			throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
 		}
 		upfile << part;
 		upfile.close();
@@ -404,7 +405,7 @@ unsigned int Request::readChunk() {
 	unsigned int size = 0;
 	if (ss >> size) {
 		if (content.size() + size > body_size)
-			throw(ErrorException(413));
+			throw(ErrorException(HttpStatus::CONTENT_TO_LARGE));
 		soc->addRawData(content, size);
 		soc->getLine();
 		if (size == 0)
@@ -427,27 +428,27 @@ bool Request::checkField(std::string const& name, std::string const& value) cons
 void Request::checkValidFileName(std::string const& filename) const {
 	if (filename.size() > 255 || filename.find_first_of("\\\0") != std::string::npos ||
 		filename == "." || filename == ".."){
-		throw ErrorException(400);
+		throw ErrorException(HttpStatus::BAD_REQUEST);
 	}
 }
 
 void Request::checkStartLine() const {
 	if (protocol != "HTTP/1.1") {
-		throw(ErrorException(505));
+		throw(ErrorException(HttpStatus::HTTP_VERSION_NOT_SUPPORTED));
 	}
 	if (method == NONE) {
-		throw(ErrorException(400));
+		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 	if (method == PUT || method == HEAD)
-		throw(ErrorException(501));
+		throw(ErrorException(HttpStatus::NOT_IMPLEMENTED));
 }
 
 void Request::checkHeader() const {
 	if (getField("Host").empty()){
-		throw(ErrorException(400));
+		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 	if (getContentLength() > body_size) {
-		throw(ErrorException(413));
+		throw(ErrorException(HttpStatus::CONTENT_TO_LARGE));
 	}
 }
 
@@ -456,7 +457,7 @@ bool Request::contentExist() const {
 	bool content = !getField("Content-Length").empty();
 
 	if (transfer && content) {
-		throw(ErrorException(400));
+		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 	return (transfer || content);
 }

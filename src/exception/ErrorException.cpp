@@ -1,9 +1,9 @@
 #include "ErrorException.hpp"
 
-ErrorException::ErrorException(int c) throw() : code(c) {}
+ErrorException::ErrorException(HttpStatus status) throw() : status(status) {}
 
-int ErrorException::getCode() const throw() {
-	return code;
+HttpStatus ErrorException::getStatus() const throw() {
+	return status;
 }
 
 const char* ErrorException::what() const throw() {

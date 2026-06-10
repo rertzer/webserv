@@ -9,7 +9,7 @@
 #include "utils.hpp"
 
 Location::Location(std::vector<std::string> locString)
-	: autoindex(AutoIndex::NONE), redirection_status(0) {
+	: autoindex(AutoIndex::NONE), redirection_status(HttpStatus::UNDEFINED) {
 	auto loc = split(locString[0]);
 	_locationPath = loc[1];
 	for (auto& ls : locString | std::views::drop(1)) {
@@ -70,9 +70,19 @@ void Location::setRedirection(std::vector<std::string> list) {
 	}
 	auto stat = toInt(list[1]);
 	if (stat.has_value()) {
-		redirection_status = stat.value();
+		switch (stat.value()) {
+			case 301:
+				redirection_status = HttpStatus::MOVED_PERMANENTLY;
+				break;
+			case 302:
+				redirection_status = HttpStatus::FOUND;
+				break;
+			default:
+				break;
+		}
 		redirection_path = list[2];
-	} else {
+	}
+	if (redirection_status == HttpStatus::UNDEFINED) {
 		std::cerr << "return status not a valid number\n";
 		throw ServerException();
 	}
@@ -112,14 +122,14 @@ std::string Location::getIndex() const {
 }
 
 bool Location::checkForRedirection() {
-	return redirection_status;
+	return (redirection_status != HttpStatus::UNDEFINED);
 }
 
 std::string Location::getRoot() const {
 	return root;
 }
 
-int Location::getRedirectionStatus() const {
+HttpStatus Location::getRedirectionStatus() const {
 	return redirection_status;
 }
 

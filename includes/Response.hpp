@@ -1,31 +1,27 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
+
 #include "ContentMap.hpp"
 #include "FileDesc.hpp"
 #include "Request.hpp"
 #include "Server.hpp"
 #include "macroDef.hpp"
+#include "HttpStatus.hpp"
 
 class Connection;
-enum codeProb {
-	OK = 200,
-	FILE_NOT_FOUND = 404,
-	ACCESS_DENIED = 403,
-	METHOD_NOT_ALLOWED = 405,
-};
 
 class Response {
    private:
 	Server&								_serv;
 	HttpMethod							method;
-	std::string							_status;
+	HttpStatus							status;
 	std::string							_contentType;
 	std::string							_contentLength;
 	std::string							_connectionClose;
 	std::string							_content;
 	std::vector<std::string>			_setCookie;
 	std::pair<std::string, std::string> _extensionAllowed;
-	int									_readFileAccess;
+	HttpStatus							readFileAccess;
 	AutoIndex							_autoIndex;
 	ContentMap							_contentMap;
 	std::string							_location;
@@ -35,7 +31,7 @@ class Response {
 	std::pair<std::string, std::string> extractField(size_t pos);
 	void								extractFields();
 	std::string appendDirContent(std::string content, FileDesc const& filedesc);
-	std::string getResponseStatus() const;
+	std::string	getResponseStatus() const;
 	std::string getResponseHeader();
 	std::string getResponseLocation() const;
 	std::string getResponseConnection() const;
@@ -57,17 +53,17 @@ class Response {
 
    public:
 	Response(Request& req);
-	Response(Server& serv, int errcode);
+	Response(Server& serv, HttpStatus errcode);
 	Response(Response const& resp);
 	Response&	operator=(Response const& rhs);
 	std::string getResponse();
 	int			respWithCgi(Request& req);
-	void		setErrorPage(int errcode);
+	void		setErrorPage(HttpStatus);
 	// setter
 	void setCookie(std::string ck);
 	void Setserv(Server);
 	void setMethod(HttpMethod);
-	void setStatus(std::string);
+	void setStatus(HttpStatus);
 	void setContentType(std::string);
 	void setContentLength(std::string);
 	void setConnectionClose(std::string);
@@ -77,14 +73,14 @@ class Response {
 	void setRoot(std::string);
 	void setAutoIndex(std::string);
 	void setExtensionAllowed(std::pair<std::string, std::string>);
-	void setReadFileAccess(int);
+	void setReadFileAccess(HttpStatus);
 	void setContentMap(ContentMap);
 	void setAllowedMethods(BitSet);
 	void fillOK(std::string content);
 	// getter
 	Server&								getServ(void);
 	HttpMethod							getMethod(void) const;
-	std::string							getStatus(void) const;
+	HttpStatus							getStatus(void) const;
 	std::string							getContentType(void) const;
 	std::string							getContentLength(void) const;
 	std::string							getConnectionClose(void) const;
@@ -94,7 +90,7 @@ class Response {
 	std::string							getRoot(void) const;
 	AutoIndex							getAutoIndex(void) const;
 	std::pair<std::string, std::string> getExtensionAllowed(void) const;
-	int									getReadFileAccess(void) const;
+	HttpStatus							getReadFileAccess(void) const;
 	ContentMap							getContentMap(void) const;
 	BitSet								getAllowedMethods(void) const;
 	bool								isAllowed(HttpMethod method) const;

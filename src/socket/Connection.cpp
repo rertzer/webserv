@@ -2,6 +2,7 @@
 
 #include "Connection.hpp"
 #include "ErrorException.hpp"
+#include "HttpStatus.hpp"
 #include "ServerException.hpp"
 #include "Request.hpp"
 
@@ -91,7 +92,7 @@ std::string Connection::getLine() {
 
 	auto pos = msg_in.find("\r\n");
 	if (pos != std::string::npos && pos > max_line_len) {
-		throw ErrorException(400);
+		throw ErrorException(HttpStatus::BAD_REQUEST);
 	}
 	if (pos != std::string::npos) {
 		line = msg_in.substr(0, pos);
