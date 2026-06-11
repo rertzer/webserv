@@ -25,7 +25,7 @@ class Request {
 	CgiStatus								  getCgiStatus() const;
 	const std::string&						  getProtocol() const;
 	HttpMethod								  getMethod() const;
-	Connection*								  getSocket() const;
+	// Connection*								  getConnection() const;
 	const std::string&						  getQuery() const;
 	const std::map<std::string, std::string>& getHeader() const;
 	const std::map<std::string, std::string>& getTrailer() const;
@@ -34,16 +34,13 @@ class Request {
 	unsigned int							  getBodySize() const;
 	Cgi*									  getCgi() const;
 	std::optional<std::string>				  getExtension() const;
-	size_t									  getExtensionEnd(size_t begin) const;
 	Server* getServer();
 	void									  setBodySize(int bs);
 	void									  setUploadPath(std::string up);
+	void									setKeepAlive(bool keep);
 	void									  initCgi(std::string root, Location& loc);
-	bool	checkField(std::string const& name, std::string const& value) const;
 	bool	isUpload() const;
-	void	upload_all();
-	size_t	getContentLength() const;
-	void	addField(std::string const& field);
+	void	uploadAll();
 	void	setQuery(std::string const& query);
 	void	setKeepAlive();
 	void	setCgi(Cgi* c);
@@ -62,6 +59,8 @@ class Request {
 	std::string	 getLine(std::string const& sep);
 	std::string	 getLine(std::string& data, std::string const& sep);
 	std::string	 getFileName();
+	size_t		getContentLength() const;
+	size_t	 	getExtensionEnd(size_t begin) const;
 	void		 upload(std::string& part);
 	void		 uploadFile(std::string const& filename, std::string const& part);
 	void		 checkValidFileName(std::string const& filename) const;
@@ -74,7 +73,9 @@ class Request {
 	void		 setTrailer();
 	void		 setContentByLength();
 	void		 setServer();
+	void		addField(std::string const& field);
 	void		 checkStartLine() const;
+	bool		checkField(std::string const& name, std::string const& value) const;
 	void		 checkHeader() const;
 	bool		 contentExist() const;
 	void		 addMultipart(std::string& line);
@@ -83,7 +84,7 @@ class Request {
 
 	int								   port;
 	unsigned int					   body_size;
-	Connection*						   soc;
+	Connection*						   connection;
 	Cgi*							   cgi;
 	std::map<std::string, std::string> header;
 	std::map<std::string, std::string> trailer;

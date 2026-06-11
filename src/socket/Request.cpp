@@ -13,7 +13,7 @@
 Request::Request(Connection* s)
 	: port(s->getListeningSocketPort()),
 	  body_size(1000000),
-	  soc(s),
+	  connection(s),
 	  cgi(nullptr),
 	  header_ok(false),
 	  content_ok(false),
@@ -21,7 +21,7 @@ Request::Request(Connection* s)
 {
 
 	std::cout << " ------------------------------ " << std::endl << "\n";
-	if ( soc->readAll() == 0){
+	if ( connection->readAll() == 0){
 		throw(RequestException());
 	}
 	setStartLine();
@@ -46,7 +46,7 @@ Request& Request::operator=(Request const& rhs) {
 	if (this != &rhs) {
 		port = rhs.port;
 		body_size = rhs.body_size;
-		soc = rhs.soc;
+		connection = rhs.connection;
 		cgi = rhs.cgi;
 		header = rhs.header;
 		trailer = rhs.trailer;
@@ -127,10 +127,10 @@ const std::map<std::string, std::string>& Request::getTrailer() const {
 const std::string& Request::getContent() const {
 	return content;
 }
-
-Connection* Request::getSocket() const {
-	return soc;
-}
+//
+// Connection* Request::getConnection() const {
+// 	return connection;
+// }
 
 std::optional<std::string> Request::getExtension() const {
 	std::optional<std::string> extension;
@@ -162,10 +162,10 @@ void Request::setUploadPath(std::string up) {
 }
 
 void Request::setStartLine() {
-	std::string line = soc->getLine();
+	std::string line = connection->getLine();
 
 	if (line.empty()) {
-		line = soc->getLine();
+		line = connection->getLine();
 	}
 
 	auto start_line = split(line);
@@ -193,7 +193,11 @@ void Request::setHeader() {
 void Request::setKeepAlive() {
 	std::string keep = getField("Connection");
 	if (keep == "keep-alive")
-		soc->setKeepAlive(true);
+		connection->setKeepAlive(true);
+}
+
+void Request::setKeepAlive(bool keep){
+	connection->setKeepAlive(keep);
 }
 
 void Request::setCgi(Cgi* c) {
@@ -201,7 +205,7 @@ void Request::setCgi(Cgi* c) {
 }
 
 void Request::setServer(){
-for (auto& serv : soc->getServers()) {
+for (auto& serv : connection->getServers()) {
 		if (getField("Host") == serv.getServName() + ":" + std::to_string(getPort())) {
 				server = &serv;
 				std::cerr << "Find host server\n";
@@ -209,15 +213,15 @@ for (auto& serv : soc->getServers()) {
 		}
 	};
 	std::cerr << "Default server\n";
-	server = soc->getDefaultServer();
+	server = connection->getDefaultServer();
 }
 
 void Request::setFields() {
-	std::string line = soc->getLine();
+	std::string line = connection->getLine();
 
 	while (line.length()) {
 		addField(line);
-		line = soc->getLine();
+		line = connection->getLine();
 	}
 }
 
@@ -254,7 +258,7 @@ void Request::setContentByLength() {
 	size_t	len = getContentLength();
 	ssize_t remain = len - content.size();
 	if (remain > 0) {
-		soc->addRawData(content, remain);
+		connection->addRawData(content, remain);
 	}
 	if (content.size() == len)
 		content_ok = true;
@@ -283,7 +287,7 @@ bool Request::isUpload() const {
 	return false;
 }
 
-void Request::upload_all() {
+void Request::uploadAll() {
 	auto boundary = getLine("\r\n");
 	auto part = getLine(boundary);
 	multipart.clear();
@@ -351,7 +355,7 @@ bool Request::ready() const {
 }
 
 void Request::feed() {
-	if (soc->readAll() == 0) {
+	if (connection->readAll() == 0) {
 		throw(RequestException());
 	}
 	if (!header_ok) {
@@ -401,13 +405,13 @@ void Request::appendHeader(){
 
 unsigned int Request::readChunk() {
 	std::stringstream ss;
-	ss << std::hex << soc->getLine();
+	ss << std::hex << connection->getLine();
 	unsigned int size = 0;
 	if (ss >> size) {
 		if (content.size() + size > body_size)
 			throw(ErrorException(HttpStatus::CONTENT_TO_LARGE));
-		soc->addRawData(content, size);
-		soc->getLine();
+		connection->addRawData(content, size);
+		connection->getLine();
 		if (size == 0)
 			content_ok = true;
 	}

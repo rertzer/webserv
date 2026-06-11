@@ -411,7 +411,7 @@ int Response::respWithLoc(Request& req) {
 	} else {
 		req.setUploadPath(loc.getUploadPath());
 		if (req.isUpload()) {
-			req.upload_all();
+			req.uploadAll();
 		}
 	}
 	return 1;
@@ -452,7 +452,7 @@ bool Response::setWithLocRedirection(Location& loc, Request& req) {
 		setLocation(loc.getRedirectionPath());
 		std::cout << GREEN "Redir = {[Status :" << static_cast<int>(getStatus())
 				  << "][New Location: " << getLocation() << "]" RESET << std::endl;
-		req.getSocket()->setKeepAlive(false);
+		req.setKeepAlive(false);
 		redir = true;
 	}
 	return redir;
