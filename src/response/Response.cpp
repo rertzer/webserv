@@ -2,12 +2,13 @@
 #include "Cgi.hpp"
 #include "DirListing.hpp"
 #include "HttpStatus.hpp"
-#include "Connection.hpp"
 #include "autoindex.hpp"
 #include "color.hpp"
 #include "files.hpp"
 #include "macroDef.hpp"
 #include "utils.hpp"
+
+/* ========================== Constructor & Co ============================= */
 
 Response::Response(Request& req)
 	: _serv(*req.getServer()),
@@ -15,10 +16,12 @@ Response::Response(Request& req)
 	  _autoIndex(_serv.getAutoIndex()),
 	  _root(_serv.getRoot()),
 	  allowed_methods(_serv.getAllowMethods()) {
+	std::cerr << "RESP const autoi " << _autoIndex << std::endl;
 	if (req.getCgiStatus() == CgiStatus::DONE && respWithCgi(req) == 0) {
 		return;
 	}
-	if (checkIfLocation(req.getQuery()) && respWithLoc(req) == 0) {
+	setLocation(req.getQuery());
+	if (loc.has_value() && respWithLoc(req) == 0) {
 		return;
 	}
 	if (respWithoutLoc(req) == 0) {
@@ -26,6 +29,7 @@ Response::Response(Request& req)
 	}
 	dealWithMethod(req);
 }
+
 Response::Response(Server& serv, HttpStatus errcode) : _serv(serv) {
 	setErrorPage(errcode);
 }
@@ -42,8 +46,11 @@ Response& Response::operator=(Response const& rhs) {
 	_content = rhs._content;
 	_root = rhs._root;
 	root_path = rhs.root_path;
+	loc = rhs.loc;
 	return *this;
 }
+
+/* ================================== Getters ============================== */
 
 std::string Response::getResponse() {
 	std::string header = getResponseHeader();
@@ -56,7 +63,7 @@ std::string Response::getResponseHeader() {
 	std::string header;
 
 	header += getResponseStatus();
-	if (!_location.empty()) {
+	if (!relocation.empty()) {
 		header += getResponseLocation();
 	} else {
 		header += getResponseConnection();
@@ -72,7 +79,7 @@ std::string Response::getResponseStatus() const {
 }
 
 std::string Response::getResponseLocation() const {
-	return "Location: " + _location + "\r\n";
+	return "Location: " + relocation + "\r\n";
 }
 
 std::string Response::getResponseConnection() const {
@@ -103,6 +110,7 @@ std::string Response::getResponseContent() const {
 	return  _content;
 }
 
+/* ========================================================================= */
 void Response::logResponse(std::string resp) const {
 	if (isStatusSuccess(status)){
 		std::cout << GREEN "\nReponse send:\n" << resp << RESET << std::endl;
@@ -209,10 +217,6 @@ void Response::setAutoIndex(std::string autoIndex) {
 
 void Response::setAllowedMethods(BitSet methods) {
 	allowed_methods = methods;
-}
-
-void Response::setLocation(std::string location) {
-	_location = location;
 }
 
 void Response::setStatus(HttpStatus status) {
@@ -356,16 +360,8 @@ std::string Response::getContent(void) const {
 	return _content;
 }
 
-std::string Response::getLocation(void) const {
-	return _location;
-}
-
 std::string Response::getRoot(void) const {
 	return _root;
-}
-
-AutoIndex Response::getAutoIndex(void) const {
-	return _autoIndex;
 }
 
 std::pair<std::string, std::string> Response::getExtensionAllowed(void) const {
@@ -393,23 +389,23 @@ bool Response::isAllowed(HttpMethod m) const {
 }
 
 int Response::respWithLoc(Request& req) {
-	Location loc = getTheLocation(req.getQuery());
 
-	if (setRequestQuery(loc, req)) {
+	if (setRequestQuery(req)) {
 		return 0;
 	}
 
-	BitSet allow_method = loc.getAllowedMethods();
+	Location& location = loc.value();
+	BitSet allow_method = location.getAllowedMethods();
 	setAllowedMethods(allow_method);
-	setWithLocRoot(loc);
-	if (setWithLocRedirection(loc, req)) {
+	setWithLocRoot(location);
+	if (setWithLocRedirection(location, req)) {
 		return 0;
 	}
-	if (!loc.getExtension().empty() && req.getExtension() == loc.getExtension()) {
-		req.initCgi(getRoot(), loc);
+	if (!location.getExtension().empty() && req.getExtension() == location.getExtension()) {
+		req.initCgi(getRoot(), location);
 		return 0;
 	} else {
-		req.setUploadPath(loc.getUploadPath());
+		req.setUploadPath(location.getUploadPath());
 		if (req.isUpload()) {
 			req.uploadAll();
 		}
@@ -417,21 +413,21 @@ int Response::respWithLoc(Request& req) {
 	return 1;
 }
 
-bool Response::setRequestQuery(Location& loc, Request& req) {
+bool Response::setRequestQuery(Request& req) {
+	Location& location = loc.value();
 	auto req_query = req.getQuery();
+
 	if (req_query != "/") {
 		if (req_query.back() == '/') {
-			if (loc.getAutoindex() == AutoIndex::OFF) {
-				if (getSpecIndex(loc) == "")
+			if (_autoIndex == AutoIndex::ON) {
+				createAutoIndexResp(req, location);
+				return true;
+			} else {
+				if (getSpecIndex() == "")
 					req_query = "/";
 				else
-					req_query = getSpecIndex(loc);
-				loc = getTheLocation(req_query);
-			} else if (loc.getAutoindex() == AutoIndex::ON || _autoIndex == AutoIndex::ON) {
-				createAutoIndexResp(req, loc);
-				return true;
-			} else
-				req_query = "/";
+					req_query = getSpecIndex();
+			}
 		}
 		req.setQuery(req_query);
 	}
@@ -449,9 +445,9 @@ bool Response::setWithLocRedirection(Location& loc, Request& req) {
 	bool redir = false;
 	if (loc.checkForRedirection()) {
 		setStatus(loc.getRedirectionStatus());
-		setLocation(loc.getRedirectionPath());
+		relocation = loc.getRedirectionPath();
 		std::cout << GREEN "Redir = {[Status :" << static_cast<int>(getStatus())
-				  << "][New Location: " << getLocation() << "]" RESET << std::endl;
+				  << "][New Location: " << relocation << "]" RESET << std::endl;
 		req.setKeepAlive(false);
 		redir = true;
 	}
@@ -486,8 +482,9 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 	}
 }
 
-std::string Response::getSpecIndex(Location loc) {
-	auto item = loc.getIndex();
+std::string Response::getSpecIndex() {
+	
+	auto item = loc->get().getIndex();
 	auto path = _root + item;
 	if (item.empty() || !isRegularFile(path) || !isReadable(path)) {
 		item.erase();
@@ -495,23 +492,18 @@ std::string Response::getSpecIndex(Location loc) {
 	return item;
 }
 
-Location Response::getTheLocation(std::string path) {
+void Response::setLocation(std::string path){
 	path = extractDirPath(path);
-	auto loc = getServ().findLocation(path);
-
-	if (loc.has_value()) {
-		return loc.value();
+	loc = _serv.findLocation(path);
+	std::cerr << "setLocation\n";
+	if (loc.has_value()){
+		AutoIndex ai = loc->get().getAutoindex();
+		std::cerr << "loc value "<< ai<<"\n";
+		if (ai != AutoIndex::NONE){
+			_autoIndex = ai;
+		}
+	std::cerr << "loc value "<< _autoIndex<<"\n";
 	}
-	return Location();
-}
-
-int Response::checkIfLocation(std::string path) {
-	if (path != "/") {
-		path = path.substr(0, path.rfind("."));
-	}
-
-	auto loc = _serv.findLocation(path);
-	return loc.has_value();
 }
 
 std::string Response::getFilePath(std::string const& file) const {

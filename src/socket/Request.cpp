@@ -127,10 +127,6 @@ const std::map<std::string, std::string>& Request::getTrailer() const {
 const std::string& Request::getContent() const {
 	return content;
 }
-//
-// Connection* Request::getConnection() const {
-// 	return connection;
-// }
 
 std::optional<std::string> Request::getExtension() const {
 	std::optional<std::string> extension;
@@ -494,4 +490,3 @@ std::ostream& operator<<(std::ostream& ost, Request const& rhs) {
 	ost << "content: " << rhs.getContent() << "\n";
 	return ost;
 }
-

@@ -545,7 +545,7 @@ def test_autoindex():
             .set_status(HTTPStatus.OK)
             .set_length(1146),
         SimpleRequest("GET")
-            .set_description("GET request on directory with no autoindex indication index file expected")
+            .set_description("GET request on directory with no autoindex indication autoindex file expected")
             .set_path("/css/")
             .set_headers(headers)
             .set_status(HTTPStatus.OK)

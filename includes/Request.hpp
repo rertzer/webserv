@@ -25,7 +25,6 @@ class Request {
 	CgiStatus								  getCgiStatus() const;
 	const std::string&						  getProtocol() const;
 	HttpMethod								  getMethod() const;
-	// Connection*								  getConnection() const;
 	const std::string&						  getQuery() const;
 	const std::map<std::string, std::string>& getHeader() const;
 	const std::map<std::string, std::string>& getTrailer() const;

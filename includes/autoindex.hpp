@@ -6,4 +6,5 @@
 enum class AutoIndex { NONE, ON, OFF };
 
 AutoIndex autoIndexFromString(std::string str);
+std::ostream& operator<<(std::ostream& ost, AutoIndex const& rhs);
 #endif

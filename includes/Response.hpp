@@ -24,10 +24,12 @@ class Response {
 	HttpStatus							readFileAccess;
 	AutoIndex							_autoIndex;
 	ContentMap							_contentMap;
-	std::string							_location;
+	std::string							relocation;
 	std::string							_root;
 	std::string							root_path;
 	BitSet								allowed_methods;
+	LocationRefOpt						loc;
+
 	std::pair<std::string, std::string> extractField(size_t pos);
 	void								extractFields();
 	std::string appendDirContent(std::string content, FileDesc const& filedesc);
@@ -42,7 +44,7 @@ class Response {
 	void		dealWithMethod(Request& req);
 	void		dealWithDelete(Request& req);
 	int			respWithLoc(Request& req);
-	bool		setRequestQuery(Location& loc, Request& req);
+	bool		setRequestQuery(Request& req);
 	void		createAutoIndexResp(Request& req, Location loc);
 	void		setWithLocRoot(Location& loc);
 	bool		setWithLocRedirection(Location& loc, Request& req);
@@ -50,6 +52,8 @@ class Response {
 	void		fillPart(Request req);
 	std::string readFile(std::string file);
 	bool		testFileAccess(std::string file);
+	void setLocation(std::string path);
+	std::string			getSpecIndex();
 
    public:
 	Response(Request& req);
@@ -69,7 +73,6 @@ class Response {
 	void setConnectionClose(std::string);
 	void setContent(std::string);
 	void setContentWithLength(std::string);
-	void setLocation(std::string);
 	void setRoot(std::string);
 	void setAutoIndex(std::string);
 	void setExtensionAllowed(std::pair<std::string, std::string>);
@@ -86,18 +89,13 @@ class Response {
 	std::string							getConnectionClose(void) const;
 	std::string							getContent(void) const;
 	std::string							getDirContent(std::string path);
-	std::string							getLocation(void) const;
 	std::string							getRoot(void) const;
-	AutoIndex							getAutoIndex(void) const;
 	std::pair<std::string, std::string> getExtensionAllowed(void) const;
 	HttpStatus							getReadFileAccess(void) const;
 	ContentMap							getContentMap(void) const;
 	BitSet								getAllowedMethods(void) const;
 	bool								isAllowed(HttpMethod method) const;
 	std::vector<std::string>			getCookie(void) const;
-	std::string							getSpecIndex(Location loc);
-	Location							getTheLocation(std::string path);
-	int									checkIfLocation(std::string path);
 	std::string							getFilePath(std::string const& file) const;
 };
 
