@@ -20,8 +20,9 @@ Polling::~Polling() {
 Polling& Polling::operator=(Polling const& rhs) {
 	if (this != &rhs) {
 		memset(fds, 0, sizeof(fds));
-		for (nfds_t i = 0; i < rhs.nfds; i++)
+		for (nfds_t i = 0; i < rhs.nfds; i++){
 			fds[i] = rhs.fds[i];
+		}
 		nfds = rhs.nfds;
 		events_nb = rhs.events_nb;
 		listening_fds = rhs.listening_fds;
@@ -82,11 +83,11 @@ Event* Polling::nextEvent() {
 
 Connection* Polling::getConnection(nfds_t i) const{
 	Connection* connection = getConnectionByFd(fds[i].fd);
-	if (connection == nullptr)
+	if (!connection)
 		connection = getConnectionByCgiFd(fds[i].fd);
-	if (connection == nullptr){
-		throw(PollingException());
+	if (!connection){
 		std::cerr << "Connection not Found\n";
+		throw(PollingException());
 	}
 	return connection;
 }
@@ -101,8 +102,9 @@ Connection* Polling::getConnectionByCgiFd(int fd) const {
 
 Connection* Polling::getConnectionFromStrip(int fd,  const std::map<int, Connection*>& strip) const {
 	auto it = strip.find(fd);
-	if (it != strip.end())
+	if (it != strip.end()){
 		return it->second;
+	}
 	return nullptr;
 }
 
@@ -133,7 +135,7 @@ void Polling::reset(int fd) {
 	}
 }
 void Polling::setCgiIn(Connection* connection) {
-	auto cgi_fds = connection->getRequest()->getCgi()->getFds();
+	auto cgi_fds = connection->getCgi()->getFds();
 	for (nfds_t i = 0; i < nfds; i++) {
 		if (fds[i].fd == cgi_fds[2]) {
 			fds[i].events = POLLIN;
@@ -143,7 +145,7 @@ void Polling::setCgiIn(Connection* connection) {
 }
 
 void Polling::addCgiFds(Connection* connection) {
-	std::vector<int> cgi_fds = connection->getRequest()->getCgi()->getFds();
+	std::vector<int> cgi_fds = connection->getCgi()->getFds();
 	if (cgi_fds[1] != -1) {
 		addCgiFd(cgi_fds[1], POLLOUT, connection);
 		addCgiFd(cgi_fds[2], 0, connection);
@@ -199,9 +201,9 @@ Event* Polling::extractEvent(nfds_t i) {
 	fds[i].revents = 0;
 	Connection* connection = getConnection(i);
 	if (connection->isListening()){
-	ev = new ListeningEvent();
+		ev = new ListeningEvent();
 	}
-	else{
+	else {
 		ev = new OtherEvent();
 	}
 	ev->setFd(fds[i].fd);

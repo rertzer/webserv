@@ -34,20 +34,16 @@ Server* OtherEvent::getRequestServer() const {
 /* ============================== Is Methods =============================== */
 
 bool OtherEvent::isCgiFd() const {
-	if (fd == getConnection()->getSocketFd())
-		return false;
-	return true;
+	return fd != getConnection()->getSocketFd();
 }
 
 bool OtherEvent::isCgiStatus(CgiStatus cgi_status) const {
-	return (connection->getRequest()->getCgiStatus() == cgi_status);
+	return connection->getRequest()->getCgiStatus() == cgi_status;
 }
 
 bool OtherEvent::isCgiPending() const {
-	if (connection->getRequest() && connection->getRequest()->getCgi() && connection->getRequest()->getCgi()->getPid()) {
-		return true;
-	}
-	return false;
+
+	return connection->getCgiStatus() != CgiStatus::NO_INIT;
 }
 
 /* ============================== Handle Poll Methods =========================== */
@@ -125,7 +121,7 @@ void OtherEvent::handleMessageOut() {
 /* ============================ CGI ======================================== */
 
 void OtherEvent::cgiExec() {
-	connection->getRequest()->getCgi()->exec();
+	connection->getCgi()->exec();
 }
 
 bool OtherEvent::checkAndHandleCgiIn() {
@@ -140,11 +136,11 @@ bool OtherEvent::checkAndHandleCgiIn() {
 
 void OtherEvent::handleCgiIn() {
 	if (!isCgiFd()) {
-		connection->getRequest()->getCgi()->closePipe();
+		connection->getCgi()->closePipe();
 		status = eventStatus::CGI_ERROR;
 		return;
 	} else {
-		connection->getRequest()->getCgi()->readPipeFd();
+		connection->getCgi()->readPipeFd();
 	}
 
 	if (isCgiStatus(CgiStatus::DONE)) {
@@ -157,7 +153,7 @@ void OtherEvent::handleCgiIn() {
 }
 
 void OtherEvent::handleCgiOut() {
-	connection->getRequest()->getCgi()->writePostFd();
+	connection->getCgi()->writePostFd();
 	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE))
 		status = eventStatus::CGI_POST_EXEC;
 	else
@@ -247,6 +243,6 @@ void OtherEvent::handleCgiGetExec() {
 
 void OtherEvent::handleCgiError() {
 	std::cerr << RED "Cgi Error. Stopping connection.\n";
-	pool->removeCgiFd(connection->getRequest()->getCgi()->getFds()[2]);
+	pool->removeCgiFd(connection->getCgi()->getFds()[2]);
 	pool->removeConnection(fd);
 }

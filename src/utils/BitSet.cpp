@@ -1,5 +1,4 @@
 #include "BitSet.hpp"
-#include <iostream>
 
 BitSet::BitSet(uint8_t bits) : bitset(bits) {}
 

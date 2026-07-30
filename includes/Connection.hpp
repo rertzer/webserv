@@ -18,6 +18,8 @@ class Connection {
 	~Connection();
 	Connection& operator=(Connection const& rhs);
 
+	Cgi*		getCgi() const;
+	CgiStatus	getCgiStatus() const;
 	int			getPort() const;
 	int			getListeningSocketPort() const;
 	int			getSocketFd() const;

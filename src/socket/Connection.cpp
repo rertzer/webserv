@@ -47,6 +47,22 @@ Connection& Connection::operator=(Connection const& rhs) {
 
 /* ============================= Getters ==================================== */
 
+Cgi* Connection::getCgi() const{
+	Cgi* cgi = nullptr;
+	if (request){
+		cgi = request->getCgi();
+	}
+	return cgi;
+}
+
+ CgiStatus Connection::getCgiStatus() const{
+	CgiStatus status = CgiStatus::NO_INIT;
+	if (request){
+		status = request->getCgiStatus();
+	}
+	return status; 
+}
+
 int Connection::getPort() const {
 	return soc.getPort();
 }

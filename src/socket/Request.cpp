@@ -68,7 +68,7 @@ int Request::getPort() const {
 }
 
 CgiStatus Request::getCgiStatus() const {
-	if (cgi != nullptr)
+	if (cgi)
 		return cgi->getStatus();
 	else
 		return CgiStatus::NO_INIT;
@@ -259,7 +259,9 @@ void Request::setContentByLength() {
 	if (content.size() == len)
 		content_ok = true;
 }
+
 /* ================================ Field ================================== */
+
 void Request::addField(std::string const& field) {
 	auto kv = splitPair(field, ':');
 	if (kv.first.empty()) {
@@ -276,11 +278,8 @@ void Request::addField(std::string const& field) {
 /* ================================= Upload ================================ */
 
 bool Request::isUpload() const {
-	if (getMethod() == POST && checkField("Content-Type", "multipart/form-data") &&
-		!upload_path.empty()) {
-		return true;
-	}
-	return false;
+	return (getMethod() == POST && checkField("Content-Type", "multipart/form-data") &&
+		!upload_path.empty());
 }
 
 void Request::uploadAll() {
