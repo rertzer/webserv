@@ -20,17 +20,17 @@ int main(int ac, char** av) {
 	auto status = statusCode::OK;
 
 	std::string			conf_file_name = getConfFileName(av);
-	std::vector<Server> serv;
+	std::vector<Server> servers;
 
 	try {
-		status = fillServ(conf_file_name, serv);
+		status = fillServ(conf_file_name, servers);
 	} catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
 		status = statusCode::PARSING;
 	}
 	if (status == statusCode::OK) {
-		std::cout << "-------------TEST SOCKET------------------" << std::endl << std::endl;
-		ServerRun runner = ServerRun{serv};
+		std::cout <<  std::endl;
+		ServerRun runner = ServerRun{servers};
 		status = runner.run();
 	}
 	if (status == statusCode::OK) {

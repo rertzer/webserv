@@ -46,6 +46,7 @@ Server::Server(LineList servStrings)
 	}
 	checkIfConform();
 	loadHtmlCode();
+	std::cout << "Created Server: Port: " << _nPort << ", Hostname: " << _servName << std::endl;
 }
 
 ParsingState Server::parseStart(LineList& list, LocParsing& loc) {
@@ -203,8 +204,8 @@ ParsingState Server::setDefaultPage(LineList& list, LocParsing& loc) {
 	if (list.size() < 3) {
 		throw(ServerException());
 	}
-	for (auto& it : list | std::views::drop(1) | std::views::take(list.size() - 2)) {
-		_defaultPage.push_back(it);
+	for (auto& page : list | std::views::drop(1) | std::views::take(list.size() - 2)) {
+		_defaultPage.push_back(page);
 	}
 	if (_defaultPage.size() == 0) {
 		throw(ServerException());
