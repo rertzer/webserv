@@ -75,6 +75,7 @@ class VirtualTester:
 
         if request.length != 0:
             ok = request.same_length(resp)
+            print("Content length", resp.getheader("Content-Length"))
         else:
             ok = self.check_location(resp)
         

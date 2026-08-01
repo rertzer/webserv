@@ -13,6 +13,7 @@ def main():
         request.test_get_post,
         request.test_misc_and_post_cgi,
         request.test_get_misc,
+        request.test_get_hostname,
         request.test_delete,
         request.test_multipart_upload_boundary,
         request.test_multipart_upload_size_limit,

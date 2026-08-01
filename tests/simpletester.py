@@ -13,7 +13,6 @@ class SimpleTester(VirtualTester):
             current_connection = http.client.HTTPConnection(self.host, self.port)
             current_connection.request(request.method, request.path, request.content, request.headers)
             resp =  current_connection.getresponse()
-
         except ConnectionRefusedError as e:
             print({e})
         return resp 

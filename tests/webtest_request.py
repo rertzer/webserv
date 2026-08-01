@@ -361,7 +361,44 @@ def test_get_misc():
     passed = SimpleTester("GET_misc", host, port).proceed_requests("", requests)
     return (passed, len(requests))
 
+def test_get_hostname():
+    host = "localhost"
+    port = 8080
+    headers_localhost = {"Host": host}
+    headers_default = {"Host": "default"}
+    headers_another = {"Host": "anotherserver"}
+    headers_badhost = {"Host": "badhostname"}
 
+    requests = (
+        SimpleRequest("GET")
+            .set_description("GET request for default host")
+            .set_path("/")
+            .set_headers(headers_default)
+            .set_status(HTTPStatus.OK)
+            .set_length(1457),
+        SimpleRequest("GET")
+            .set_description("GET request for non default localhost")
+            .set_path("/")
+            .set_headers(headers_localhost)
+            .set_status(HTTPStatus.OK)
+            .set_length(1146),
+        SimpleRequest("GET")
+            .set_description("GET request for anotherserver host")
+            .set_path("/")
+            .set_headers(headers_another)
+            .set_status(HTTPStatus.OK)
+            .set_length(370),
+        SimpleRequest("GET")
+            .set_description("GET request for bad hostname, default expected")
+            .set_path("/")
+            .set_headers(headers_badhost)
+            .set_status(HTTPStatus.OK)
+            .set_length(1457),
+    )
+
+    passed = SimpleTester("GET_hostname", host, port).proceed_requests("tests/conf_test/test_ok_default_server.conf", requests)
+    return (passed, len(requests))
+ 
 def test_delete():
     file_not_to_delete = "/html/page/notToDelete.html"
     path_not_to_delete = "../www" + file_not_to_delete
