@@ -202,13 +202,12 @@ void Request::setCgi(Cgi* c) {
 
 void Request::setServer(){
 for (auto& serv : connection->getServers()) {
-		if (getField("Host") == serv.getServName() + ":" + std::to_string(getPort())) {
+		if (	getField("Host") == serv.getServName() + ":" + std::to_string(getPort()) ||
+				getField("Host") == serv.getServName()) {
 				server = &serv;
-				std::cerr << "Find host server\n";
 				return;
 		}
 	};
-	std::cerr << "Default server\n";
 	server = connection->getDefaultServer();
 }
 
