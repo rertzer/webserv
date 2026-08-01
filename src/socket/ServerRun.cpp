@@ -14,7 +14,7 @@ ServerRun::ServerRun(std::vector<Server> servers):servers(servers), status(statu
 
 statusCode ServerRun::run() {
 	try {
-		loadListeningConnection();
+		loadListeningConnections();
 		std::cout << "Listening...\n";
 
 		while (1) {
@@ -38,15 +38,15 @@ statusCode ServerRun::run() {
 	return status;
 }
 
-void ServerRun::loadListeningConnection() {
+void ServerRun::loadListeningConnections() {
 	std::set<int> unique_ports;
 	for (auto& serv : servers) {
 		int port = serv.getListenPort();
 		if (unique_ports.find(port) == unique_ports.end()) {
 			unique_ports.insert(port);
-			Connection* soc = new Connection(port);
-			soc->setServers(servers);
-			pool.addListeningConnection(soc);
+			Connection* connection = new Connection(port);
+			connection->setServers(servers);
+			pool.addListeningConnection(connection);
 		}
 	}
 }

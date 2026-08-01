@@ -64,7 +64,7 @@ class Server {
 	std::map<int, std::string>& getAllErrorPage();
 	std::vector<Location>&		getAllLocation();
 	LocationRefOpt				findLocation(std::string path);
-	int&						getListenPort();
+	int							getListenPort() const;
 	BitSet						getAllowMethods() const;
 	AutoIndex					getAutoIndex();
 	void						checkIfConform();

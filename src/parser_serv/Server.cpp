@@ -129,7 +129,7 @@ std::vector<Location>& Server::getAllLocation() {
 	return _location;
 }
 
-int& Server::getListenPort() {
+int Server::getListenPort() const {
 	return _nPort;
 }
 

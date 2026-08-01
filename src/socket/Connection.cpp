@@ -1,5 +1,6 @@
 #include <cstring>
-
+#include <ranges>
+#include <algorithm>
 #include "Connection.hpp"
 #include "ErrorException.hpp"
 #include "HttpStatus.hpp"
@@ -141,11 +142,14 @@ void Connection::setKeepAlive(bool keep) {
 }
 
 void Connection::setServers(std::vector<Server> serv){
-	for (auto s : serv){
-		if (s.getListenPort() == listening_port){
-			servers.push_back(s);
+	std::ranges::copy_if(
+		serv,
+		std::back_inserter(servers),
+		[lp = listening_port] (const Server& s)
+		{
+			return s.getListenPort() == lp;
 		}
-	}
+	);
 	setDefaultServer();
 }
 

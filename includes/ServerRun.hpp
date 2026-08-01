@@ -16,7 +16,7 @@ class ServerRun{
 
 		void	handleAllEvents(int rc);
 		void	handleEvent();
-		void	loadListeningConnection();
+		void	loadListeningConnections();
 
 		std::vector<Server>	servers;
 		Polling				pool;
