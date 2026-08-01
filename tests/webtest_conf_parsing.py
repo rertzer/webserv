@@ -27,11 +27,15 @@ def test_cmdline_and_conf():
 
         ConfRequest("tests/conf_test/test_ok_4.conf")
             .set_status(-15)
-            .set_stdout("-------------TEST SOCKET------------------\n\n"
+            .set_stdout(
+                "Created Server: Port: 8080, Hostname: localhost\n"
+                "Created Server: Port: 8081, Hostname: localhost\n"
+                "Created Server: Port: 8083, Hostname: \n\n"
                 "TCP socket 3 on port 8080 created\n"
                 "TCP socket 4 on port 8081 created\n"
                 "TCP socket 5 on port 8083 created\n"
-                "Listening...\n")
+                "Listening...\n"
+                )
             .set_stderr(""),
 
         # test 5
@@ -125,12 +129,13 @@ def test_cmdline_and_conf():
 
         ConfRequest("tests/conf_test/test_ko_bad_port.conf")
             .set_status(6)
-            .set_stdout("-------------TEST SOCKET------------------\n\n")
+            .set_stdout("Created Server: Port: 42, Hostname: localhost\n\n")
             .set_stderr( "Error: socket failed\n"),
 
         ConfRequest("tests/conf_test/test_ko_two_identical_servers.conf")
             .set_status(3)
-            .set_stdout("")
+            .set_stdout("Created Server: Port: 8080, Hostname: localhost\n"
+                        "Created Server: Port: 8080, Hostname: localhost\n")
             .set_stderr("Servers with the same name must have different port numbers.\n"),
 
         ConfRequest("tests/conf_test/test_ko_server_in_a_server.conf")
@@ -172,7 +177,7 @@ def test_cmdline_and_conf():
 
         ConfRequest("tests/conf_test/test_ko_extra_line_outside_server.conf")
             .set_status(3)
-            .set_stdout("")
+            .set_stdout("Created Server: Port: 8080, Hostname: localhost\n")
             .set_stderr("Error: Server parsing error.\n"),
 
         ConfRequest("tests/conf_test/test_ko_invalid_line.conf")
