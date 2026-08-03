@@ -302,6 +302,12 @@ def test_misc_and_post_cgi():
             .set_description("GET python cgi request with query and cookies")
             .set_status(HTTPStatus.OK)
             .set_length(1299),
+        RawRequest(
+            "GET / HTTP/1.1\r\n\r\n".encode(),
+            )
+        .set_description("HTTP/1.1: Host header missing")
+            .set_status(HTTPStatus.BAD_REQUEST)
+            .set_length(847),
     )
 
     passed = RawTester("misc_and_post_cgi", host, port).proceed_requests("", requests)
