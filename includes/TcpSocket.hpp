@@ -34,8 +34,9 @@ private:
 	socklen_t		   socket_addr_length;
 
 
-	static const int	backlog;
-	static const size_t buffer_size;
+	// max length to which the queue of pending connections may grow
+	constexpr static int	 backlog = 42;
+	constexpr static size_t buffer_size = 220000;
 };
 
 #endif

@@ -77,6 +77,7 @@ class Event {
 	Connection*			connection;
 
 	typedef void (Event::*handlefun)();
-	static const int poll_event[MAX_POLL_EVENT];
+
+	constexpr static int poll_event[MAX_POLL_EVENT] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};
 };
 #endif

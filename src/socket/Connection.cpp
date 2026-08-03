@@ -204,7 +204,3 @@ int Connection::send() {
 void Connection::close() {
 	soc.close();	
 }
-
-/* =============================== STATIC CONST ============================= */
-// max length to which the queue of pending connections may grow
-constexpr size_t Connection::max_line_len = 20000;

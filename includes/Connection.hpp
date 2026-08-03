@@ -66,7 +66,8 @@ class Connection {
 	std::vector<Server> servers;
 	TcpSocket			soc;
 
-	static const size_t max_line_len;
+// max length to which the queue of pending connections may grow
+constexpr static size_t max_line_len = 20000;
 };
 
 #endif

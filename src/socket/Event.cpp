@@ -107,5 +107,3 @@ void Event::handleOneEvent(int ev) {
 		(this->*fun)();
 	}
 }
-/* ============================== Static const ============================= */
-int const Event::poll_event[MAX_POLL_EVENT] = {POLLERR, POLLHUP, POLLNVAL, POLLIN, POLLOUT};

@@ -98,8 +98,3 @@ int TcpSocket::send(std::string& msg) const {
 	msg.erase(0, len);
 	return len;
 }
-
-/* ============================= STATIC CONST =============================== */
-// max length to which the queue of pending connections may grow
-constexpr int	 TcpSocket::backlog = 42;
-constexpr size_t TcpSocket::buffer_size = 220000;
