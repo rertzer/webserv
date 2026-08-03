@@ -1,6 +1,6 @@
 # 🌐 Webserv — From Educational HTTP Server to Modern System
 
-Webserv started as a school project: a from-scratch implementation of an HTTP/1.0 server in C++98, designed to deepen understanding of one of the core protocols of the web.
+Webserv started as a school project: a from-scratch implementation of an HTTP/1.1 server in C++98, designed to deepen understanding of one of the core protocols of the web.
 
 What began as a low-level exercise in socket programming and protocol handling is now evolving into a modern, production-inspired engineering project focused on:
 
@@ -11,7 +11,7 @@ What began as a low-level exercise in socket programming and protocol handling i
 
 ## 📌 Overview
 
-Webserv is a fully functional HTTP/1.0 server in C++20, designed to handle real browser requests with a strict non-blocking architecture.
+Webserv is a fully functional HTTP/1.1 server in C++20, designed to handle real browser requests with a strict non-blocking architecture.
 
 It implements core web server features from scratch:
 
