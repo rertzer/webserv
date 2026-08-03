@@ -83,11 +83,12 @@ Event* Polling::nextEvent() {
 
 Connection* Polling::getConnection(nfds_t i) const{
 	Connection* connection = getConnectionByFd(fds[i].fd);
-	if (!connection)
-		connection = getConnectionByCgiFd(fds[i].fd);
 	if (!connection){
-		std::cerr << "Connection not Found\n";
-		throw(PollingException());
+		connection = getConnectionByCgiFd(fds[i].fd);
+		if (!connection){
+			std::cerr << "Connection not Found\n";
+			throw(PollingException());
+		}
 	}
 	return connection;
 }

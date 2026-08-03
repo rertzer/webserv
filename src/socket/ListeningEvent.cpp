@@ -7,10 +7,14 @@ ListeningEvent::ListeningEvent():Event(){
 	
 }
 
+ListeningEvent::ListeningEvent(Event const &rhs){
+	*this = rhs;
+}
+
 ListeningEvent::~ListeningEvent() {}
 
 ListeningEvent& ListeningEvent::operator=(ListeningEvent const& rhs) {
-	if (this != &rhs) {
+	if (this != &rhs) [[likely]] {
 		Event::operator=(rhs);	
 	}
 	return *this;

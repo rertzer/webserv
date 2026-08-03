@@ -15,7 +15,7 @@ OtherEvent::OtherEvent(OtherEvent const &rhs){
 OtherEvent::~OtherEvent() {}
 
 OtherEvent& OtherEvent::operator=(Event const& rhs) {
-	if (this != &rhs) {
+	if (this != &rhs) [[likely]] {
 		Event::operator=(rhs);	
 	}
 	return *this;
@@ -38,11 +38,10 @@ bool OtherEvent::isCgiFd() const {
 }
 
 bool OtherEvent::isCgiStatus(CgiStatus cgi_status) const {
-	return connection->getRequest()->getCgiStatus() == cgi_status;
+	return connection->getCgiStatus() == cgi_status;
 }
 
 bool OtherEvent::isCgiPending() const {
-
 	return connection->getCgiStatus() != CgiStatus::NO_INIT;
 }
 
@@ -80,12 +79,12 @@ void OtherEvent::handleError() {
 void OtherEvent::handleHup() {
 	status = eventStatus::CLOSE;
 	if (isCgiFd()) {
-		connection->getRequest()->getCgi()->closePipe();
+		connection->getCgi()->closePipe();
 		Response resp = getConnectionResponse();
 		connection->setMessageOut(resp.getResponse());
 		status = eventStatus::CGI_CLOSE;
 	} else if (isCgiPending()) {
-		connection->getRequest()->getCgi()->stop();
+		connection->getCgi()->stop();
 	}
 }
 
@@ -154,10 +153,12 @@ void OtherEvent::handleCgiIn() {
 
 void OtherEvent::handleCgiOut() {
 	connection->getCgi()->writePostFd();
-	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE))
+	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE)){
 		status = eventStatus::CGI_POST_EXEC;
-	else
+	}
+	else {
 		status = eventStatus::CGI_CONTINUE;
+	}
 }
 
 /* =============================== Handle Exception ======================== */
