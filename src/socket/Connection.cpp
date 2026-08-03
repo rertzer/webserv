@@ -145,23 +145,20 @@ void Connection::setServers(std::vector<Server> serv){
 	std::ranges::copy_if(
 		serv,
 		std::back_inserter(servers),
-		[lp = listening_port] (const Server& s)
-		{
-			return s.getListenPort() == lp;
-		}
+		[lp = listening_port] (const Server& s) {return s.getListenPort() == lp;}
 	);
 	setDefaultServer();
 }
 
 void  Connection::setDefaultServer() {
-	for (auto& s: servers){
-		if (s.getListenPort() == listening_port){
-			default_server =  &s;
-			return;
-		}
+	auto it = std::ranges::find_if(
+		servers,
+		[lp = listening_port](const Server& s){return s.getListenPort() == lp;}
+	);
+	if (it == servers.end()) [[unlikely]]{
+		throw(ServerException());
 	}
-
-	throw(ServerException());
+	default_server = &(*it);
 }
 
 /* =================================== is Methods =========================== */
