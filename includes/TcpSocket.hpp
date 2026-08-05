@@ -18,6 +18,7 @@ public:
 	TcpSocket& operator=(TcpSocket const & rhs);
 
 	int getPort() const;
+	std::string getAddress() const;
 	int getFd() const;
 	void accept(TcpSocket& csoc) const;
 	void close();

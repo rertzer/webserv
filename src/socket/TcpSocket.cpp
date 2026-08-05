@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <arpa/inet.h>
 #include "TcpSocket.hpp"
 #include "ErrorException.hpp"
 
@@ -56,6 +57,16 @@ int TcpSocket::getPort() const {
 	return ntohs(socket_addr.sin_port);
 }
 
+std::string TcpSocket::getAddress() const{
+	char ip_address[INET_ADDRSTRLEN];
+	::inet_ntop(
+			AF_INET,
+			 &socket_addr.sin_addr,
+			 ip_address, sizeof(ip_address)
+	);
+	return std::string{ip_address};
+}
+
 int TcpSocket::getFd() const {
 	return socket_fd;
 }
@@ -67,6 +78,7 @@ void TcpSocket::accept(TcpSocket& csoc) const {
 							   &csoc.socket_addr_length);
 	if (csoc.socket_fd == -1)
 		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
+	std::cout << "Accepted connection from " << getAddress() << ":" << getPort() << std::endl; 
 }
 
 void TcpSocket::close() {
