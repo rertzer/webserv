@@ -14,23 +14,21 @@ OBJ_DIR := ./obj/
 
 INC_DIR := ./includes
 
-SOCKET_DIR := socket/
+SOCKET_DIR := engine/
 EXCEPTION_DIR := exception/
-LISTING_DIR := dirlisting/
-PARS_DIR := parser_serv/
+PARS_DIR := server/
 RESP_DIR := response/
 UTILS_DIR := utils/
 
 
 SOURCES := main.cpp
 
-SOCKET_SOURCES := Connection.cpp Event.cpp ListeningEvent.cpp OtherEvent.cpp Polling.cpp Request.cpp stringTrim.cpp TcpSocket.cpp utils.cpp ServerRun.cpp
+SOCKET_SOURCES := Connection.cpp Event.cpp ListeningEvent.cpp OtherEvent.cpp Polling.cpp Request.cpp stringTrim.cpp TcpSocket.cpp Engine.cpp
 
-EXCEPTION_SOURCES := ErrorException.cpp
-LISTING_SOURCES := DirListing.cpp FileDesc.cpp
-PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp ServerException.cpp ServerParsing.cpp HttpMethod.cpp autoindex.cpp
-RESP_SOURCES := Response.cpp utils.cpp contentMap.cpp Cgi.cpp HttpStatus.cpp
-UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp  BitSet.cpp files.cpp splitPairs.cpp
+EXCEPTION_SOURCES := ErrorException.cpp ServerException.cpp 
+PARS_SOURCES := Server.cpp fillServ.cpp Location.cpp ServerParsing.cpp HttpMethod.cpp autoindex.cpp
+RESP_SOURCES := Response.cpp contentMap.cpp Cgi.cpp HttpStatus.cpp DirListing.cpp FileDesc.cpp
+UTILS_SOURCES := printLineList.cpp split.cpp extract.cpp serverLineSplit.cpp replaceAll.cpp  BitSet.cpp files.cpp splitPairs.cpp response_utils.cpp  engine_utils.cpp
 
 SOURCES += $(addprefix $(SOCKET_DIR), $(SOCKET_SOURCES))
 SOURCES += $(addprefix $(RESP_DIR), $(RESP_SOURCES))
@@ -76,7 +74,6 @@ clean:
 	rm -fd $(OBJ_DIR)$(EXCEPTION_DIR)
 	rm -fd $(OBJ_DIR)$(SOCKET_DIR)
 	rm -fd $(OBJ_DIR)$(RESP_DIR)
-	rm -fd $(OBJ_DIR)$(LISTING_DIR)
 	rm -fd $(OBJ_DIR)$(UTILS_DIR)
 	rm -fd $(OBJ_DIR)
 
