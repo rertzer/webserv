@@ -172,7 +172,7 @@ server {
 server {
 	listen 8080;
 	client_max_body_size 100000;
-	root /paht/to/webserv/www;
+	root /path/to/webserv/www;
 	index /html/page/index.html;
 	server_name localhost;
 

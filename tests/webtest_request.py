@@ -407,9 +407,9 @@ def test_get_hostname():
  
 def test_delete():
     file_not_to_delete = "/html/page/notToDelete.html"
-    path_not_to_delete = "../www" + file_not_to_delete
+    path_not_to_delete = "../sitetest/www" + file_not_to_delete
     file_to_delete = "/html/page/delete/toDelete.html"
-    path_to_delete = "../www" + file_to_delete
+    path_to_delete = "../sitetest/www" + file_to_delete
 
     assert os.path.isfile(path_not_to_delete)
     assert os.path.isfile(path_to_delete)
@@ -471,15 +471,15 @@ def test_multipart_upload_size_limit():
 
     kitty_1 = "kitty1.jpeg"
     kitty_2 = "kitty2.jpg"
-    path = "../www/upload/"
+    path = "../sitetest/www/upload/"
 
     assert not os.path.isfile(path + kitty_1)
     assert not os.path.isfile(path + kitty_2)
     kitty_1_content, boundary_1, length_1 = tu.get_kitty_content(
-        "../www/img/kitty1.jpeg"
+        "../sitetest/www/img/kitty1.jpeg"
     )
     kitty_2_content, boundary_2, length_2 = tu.get_kitty_content(
-        "../www/img/kitty2.jpg"
+        "../sitetest/www/img/kitty2.jpg"
     )
 
     requests = (
@@ -521,10 +521,10 @@ def test_multipart_upload_boundary():
     port = 8081
 
     kitty_1_content, boundary_1, length_1 = tu.get_kitty_content(
-        "../www/img/kitty2.jpg"
+        "../sitetest/www/img/kitty2.jpg"
     )
     kitty_2_content, boundary_2, length_2 = tu.get_wrong_kitty_content(
-        "../www/img/kitty2.jpg"
+        "../sitetest/www/img/kitty2.jpg"
     )
 
     requests = (

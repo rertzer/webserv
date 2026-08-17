@@ -93,7 +93,7 @@ def remove_from_upload(file):
     try:
         subprocess.run(
             ["rm", "-f", file],
-            cwd="../www/upload/",
+            cwd="../sitetest/www/upload/",
             check=True,
         )
     except subprocess.CalledProcessError as e:
@@ -105,7 +105,7 @@ def chmod_in_page(file, mode):
     try:
         subprocess.run(
             ["chmod", mode, file],
-            cwd="../www/html/page/",
+            cwd="../sitetest/www/html/page/",
             check=True,
         )
     except subprocess.CalledProcessError as e:
@@ -117,7 +117,7 @@ def cp_backup_to_delete(file):
     try:
         subprocess.run(
             ["cp", file + ".bak", file],
-            cwd="../www/html/page/delete/",
+            cwd="../sitetest/www/html/page/delete/",
             check=True,
         )
     except subprocess.CalledProcessError as e:
