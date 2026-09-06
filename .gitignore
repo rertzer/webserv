@@ -1,10 +1,10 @@
 .env
-.swp
-.o
-.d
 webserv
 /obj/
-#.txt
-.vscode
+*.conf
+*.swp
+*.o
+*.d
+*.vscode
 **/.vscode
 __pycache__
