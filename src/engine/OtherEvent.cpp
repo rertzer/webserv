@@ -1,14 +1,13 @@
-#include "OtherEvent.hpp"
 #include "Cgi.hpp"
+#include "OtherEvent.hpp"
 #include "Polling.hpp"
 #include "color.hpp"
 
 /* ================================ Coplien Methods ======================== */
 
-OtherEvent::OtherEvent(): Event(){}
+OtherEvent::OtherEvent() : Event() {}
 
-
-OtherEvent::OtherEvent(OtherEvent const &rhs){
+OtherEvent::OtherEvent(OtherEvent const& rhs) {
 	*this = rhs;
 }
 
@@ -16,7 +15,7 @@ OtherEvent::~OtherEvent() {}
 
 OtherEvent& OtherEvent::operator=(Event const& rhs) {
 	if (this != &rhs) [[likely]] {
-		Event::operator=(rhs);	
+		Event::operator=(rhs);
 	}
 	return *this;
 }
@@ -153,10 +152,9 @@ void OtherEvent::handleCgiIn() {
 
 void OtherEvent::handleCgiOut() {
 	connection->getCgi()->writePostFd();
-	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE)){
+	if (isCgiStatus(CgiStatus::WAIT_READ_PIPE)) {
 		status = eventStatus::CGI_POST_EXEC;
-	}
-	else {
+	} else {
 		status = eventStatus::CGI_CONTINUE;
 	}
 }
@@ -224,8 +222,7 @@ void OtherEvent::handleCgiPostStart() {
 	cgiExec();
 }
 
-void OtherEvent::handleCgiContinue() {
-}
+void OtherEvent::handleCgiContinue() {}
 
 void OtherEvent::handleCgiEnd() {
 	pool->removeCgiFd(fd);

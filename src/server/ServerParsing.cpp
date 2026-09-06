@@ -1,5 +1,5 @@
-#include "ServerParsing.hpp"
 #include "Server.hpp"
+#include "ServerParsing.hpp"
 
 bool ServerParsing::getOpen() {
 	return is_open;

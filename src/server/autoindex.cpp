@@ -1,5 +1,5 @@
-#include "autoindex.hpp"
 #include <iostream>
+#include "autoindex.hpp"
 
 AutoIndex autoIndexFromString(std::string str) {
 	if (str == "on") {
@@ -11,7 +11,7 @@ AutoIndex autoIndexFromString(std::string str) {
 }
 
 std::ostream& operator<<(std::ostream& ost, AutoIndex const& rhs) {
-	switch (rhs){
+	switch (rhs) {
 		case AutoIndex::NONE:
 			ost << "None";
 			break;

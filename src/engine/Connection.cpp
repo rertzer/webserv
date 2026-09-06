@@ -1,22 +1,31 @@
+#include <algorithm>
 #include <cstring>
 #include <ranges>
-#include <algorithm>
 #include "Connection.hpp"
 #include "ErrorException.hpp"
 #include "HttpStatus.hpp"
-#include "ServerException.hpp"
 #include "Request.hpp"
+#include "ServerException.hpp"
 
 /* ============================== Coplien Methods =========================== */
 // Used for listening sockets
-Connection::Connection(int port) :listening_port(port), keep_alive(true), error(false), listening(true), request(nullptr), default_server(nullptr),  soc(TcpSocket(port)) {
-	}
+Connection::Connection(int port)
+	: listening_port(port),
+	  keep_alive(true),
+	  error(false),
+	  listening(true),
+	  request(nullptr),
+	  default_server(nullptr),
+	  soc(TcpSocket(port)) {}
 
 // Used for non listening sockets
 Connection::Connection()
-	: listening_port(0), keep_alive(false), error(false), listening(false), request(nullptr), soc(TcpSocket()){
-	
-}
+	: listening_port(0),
+	  keep_alive(false),
+	  error(false),
+	  listening(false),
+	  request(nullptr),
+	  soc(TcpSocket()) {}
 
 Connection::Connection(Connection const& rhs) {
 	*this = rhs;
@@ -31,7 +40,6 @@ Connection::~Connection() {
 
 Connection& Connection::operator=(Connection const& rhs) {
 	if (this != &rhs) {
-	
 		listening_port = rhs.listening_port;
 		msg_in = rhs.msg_in;
 		msg_out = rhs.msg_out;
@@ -40,7 +48,7 @@ Connection& Connection::operator=(Connection const& rhs) {
 		error = rhs.error;
 		listening = rhs.listening;
 		servers = rhs.servers;
-		default_server= rhs.default_server;
+		default_server = rhs.default_server;
 		soc = rhs.soc;
 	}
 	return *this;
@@ -48,20 +56,20 @@ Connection& Connection::operator=(Connection const& rhs) {
 
 /* ============================= Getters ==================================== */
 
-Cgi* Connection::getCgi() const{
+Cgi* Connection::getCgi() const {
 	Cgi* cgi = nullptr;
-	if (request){
+	if (request) {
 		cgi = request->getCgi();
 	}
 	return cgi;
 }
 
- CgiStatus Connection::getCgiStatus() const{
+CgiStatus Connection::getCgiStatus() const {
 	CgiStatus status = CgiStatus::NO_INIT;
-	if (request){
+	if (request) {
 		status = request->getCgiStatus();
 	}
-	return status; 
+	return status;
 }
 
 int Connection::getPort() const {
@@ -92,15 +100,15 @@ bool Connection::getKeepAlive() const {
 	return keep_alive;
 }
 
-Server* Connection::getDefaultServer() const{
+Server* Connection::getDefaultServer() const {
 	return default_server;
 }
 
-std::vector<Server>& Connection::getServers(){
+std::vector<Server>& Connection::getServers() {
 	return servers;
 }
 
-Request* Connection::getRequest(){
+Request* Connection::getRequest() {
 	return request;
 }
 
@@ -141,21 +149,17 @@ void Connection::setKeepAlive(bool keep) {
 	keep_alive = keep;
 }
 
-void Connection::setServers(std::vector<Server> serv){
-	std::ranges::copy_if(
-		serv,
-		std::back_inserter(servers),
-		[lp = listening_port] (const Server& s) {return s.getListenPort() == lp;}
-	);
+void Connection::setServers(std::vector<Server> serv) {
+	std::ranges::copy_if(serv, std::back_inserter(servers), [lp = listening_port](const Server& s) {
+		return s.getListenPort() == lp;
+	});
 	setDefaultServer();
 }
 
-void  Connection::setDefaultServer() {
+void Connection::setDefaultServer() {
 	auto it = std::ranges::find_if(
-		servers,
-		[lp = listening_port](const Server& s){return s.getListenPort() == lp;}
-	);
-	if (it == servers.end()) [[unlikely]]{
+		servers, [lp = listening_port](const Server& s) { return s.getListenPort() == lp; });
+	if (it == servers.end()) [[unlikely]] {
 		throw(ServerException());
 	}
 	default_server = &(*it);
@@ -169,7 +173,7 @@ bool Connection::isListening() const {
 
 /* ================================ Other Methods =========================== */
 
-void Connection::createRequest(){
+void Connection::createRequest() {
 	deleteRequest();
 	request = new Request(this);
 }
@@ -198,9 +202,9 @@ int Connection::readAll() {
 }
 
 int Connection::send() {
-	return soc.send(msg_out);	
+	return soc.send(msg_out);
 }
 
 void Connection::close() {
-	soc.close();	
+	soc.close();
 }

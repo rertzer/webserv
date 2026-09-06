@@ -3,8 +3,8 @@
 #include <iostream>
 
 #include "Server.hpp"
-#include "color.hpp"
 #include "ServerRun.hpp"
+#include "color.hpp"
 
 volatile sig_atomic_t quitok = false;
 
@@ -29,7 +29,7 @@ int main(int ac, char** av) {
 		status = statusCode::PARSING;
 	}
 	if (status == statusCode::OK) {
-		std::cout <<  std::endl;
+		std::cout << std::endl;
 		ServerRun runner = ServerRun{servers};
 		status = runner.run();
 	}

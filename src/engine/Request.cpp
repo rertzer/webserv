@@ -2,12 +2,12 @@
 #include <sstream>
 
 #include "Cgi.hpp"
-#include "HttpStatus.hpp"
-#include "color.hpp"
+#include "Connection.hpp"
 #include "ErrorException.hpp"
 #include "HttpMethod.hpp"
+#include "HttpStatus.hpp"
 #include "Request.hpp"
-#include "Connection.hpp"
+#include "color.hpp"
 #include "files.hpp"
 
 Request::Request(Connection* s)
@@ -17,11 +17,9 @@ Request::Request(Connection* s)
 	  cgi(nullptr),
 	  header_ok(false),
 	  content_ok(false),
-	  server(nullptr)
-{
-
+	  server(nullptr) {
 	std::cout << " ------------------------------ " << std::endl << "\n";
-	if ( connection->readAll() == 0){
+	if (connection->readAll() == 0) {
 		throw(RequestException());
 	}
 	setStartLine();
@@ -104,7 +102,7 @@ Cgi* Request::getCgi() const {
 	return cgi;
 }
 
-Server* Request::getServer(){
+Server* Request::getServer() {
 	return server;
 }
 
@@ -183,7 +181,7 @@ void Request::setQuery(std::string const& q) {
 void Request::setHeader() {
 	setFields();
 	setServer();
-	updateHeader();	
+	updateHeader();
 }
 
 void Request::setKeepAlive() {
@@ -192,7 +190,7 @@ void Request::setKeepAlive() {
 		connection->setKeepAlive(true);
 }
 
-void Request::setKeepAlive(bool keep){
+void Request::setKeepAlive(bool keep) {
 	connection->setKeepAlive(keep);
 }
 
@@ -200,12 +198,12 @@ void Request::setCgi(Cgi* c) {
 	cgi = c;
 }
 
-void Request::setServer(){
-for (auto& serv : connection->getServers()) {
-		if (	getField("Host") == serv.getServName() + ":" + std::to_string(getPort()) ||
-				getField("Host") == serv.getServName()) {
-				server = &serv;
-				return;
+void Request::setServer() {
+	for (auto& serv : connection->getServers()) {
+		if (getField("Host") == serv.getServName() + ":" + std::to_string(getPort()) ||
+			getField("Host") == serv.getServName()) {
+			server = &serv;
+			return;
 		}
 	};
 	server = connection->getDefaultServer();
@@ -278,7 +276,7 @@ void Request::addField(std::string const& field) {
 
 bool Request::isUpload() const {
 	return (getMethod() == POST && checkField("Content-Type", "multipart/form-data") &&
-		!upload_path.empty());
+			!upload_path.empty());
 }
 
 void Request::uploadAll() {
@@ -385,14 +383,14 @@ std::string Request::getLine(std::string& data, std::string const& sep) {
 	return line;
 }
 
-void Request::updateHeader(){
+void Request::updateHeader() {
 	setBodySize(server->getBodySize());
 	setKeepAlive();
 	checkHeader();
 	header_ok = true;
 }
 
-void Request::appendHeader(){
+void Request::appendHeader() {
 	setFields();
 	updateHeader();
 }
@@ -425,7 +423,7 @@ bool Request::checkField(std::string const& name, std::string const& value) cons
 
 void Request::checkValidFileName(std::string const& filename) const {
 	if (filename.size() > 255 || filename.find_first_of("\\\0") != std::string::npos ||
-		filename == "." || filename == ".."){
+		filename == "." || filename == "..") {
 		throw ErrorException(HttpStatus::BAD_REQUEST);
 	}
 }
@@ -442,7 +440,7 @@ void Request::checkStartLine() const {
 }
 
 void Request::checkHeader() const {
-	if (getField("Host").empty()){
+	if (getField("Host").empty()) {
 		throw(ErrorException(HttpStatus::BAD_REQUEST));
 	}
 	if (getContentLength() > body_size) {

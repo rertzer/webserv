@@ -2,15 +2,12 @@
 
 #include "Cgi.hpp"
 #include "ServerException.hpp"
-#include "macroDef.hpp"
 #include "ServerRun.hpp"
-
+#include "macroDef.hpp"
 
 extern sig_atomic_t quitok;
 
-ServerRun::ServerRun(std::vector<Server> servers):servers(servers), status(statusCode::OK){
-	
-}
+ServerRun::ServerRun(std::vector<Server> servers) : servers(servers), status(statusCode::OK) {}
 
 statusCode ServerRun::run() {
 	try {
@@ -22,7 +19,7 @@ statusCode ServerRun::run() {
 			if (quitok) {
 				break;
 			}
-			handleAllEvents(rc);	
+			handleAllEvents(rc);
 		}
 	} catch (const TcpSocket::SocketException& e) {
 		status = handleException(e, statusCode::SOCKET);
@@ -51,7 +48,7 @@ void ServerRun::loadListeningConnections() {
 	}
 }
 
-void ServerRun::handleAllEvents(int rc){
+void ServerRun::handleAllEvents(int rc) {
 	for (int n = 0; n < rc; n++) {
 		handleEvent();
 	}

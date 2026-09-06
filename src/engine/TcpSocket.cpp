@@ -1,15 +1,15 @@
+#include <arpa/inet.h>
 #include <cstring>
 #include <iostream>
-#include <arpa/inet.h>
-#include "TcpSocket.hpp"
 #include "ErrorException.hpp"
+#include "TcpSocket.hpp"
 
-
-TcpSocket::TcpSocket(): socket_fd(0){
+TcpSocket::TcpSocket() : socket_fd(0) {
 	socket_addr_length = sizeof(socket_addr);
-	memset(&socket_addr, 0, socket_addr_length);}
+	memset(&socket_addr, 0, socket_addr_length);
+}
 
-TcpSocket::TcpSocket(int port){
+TcpSocket::TcpSocket(int port) {
 	socket_addr_length = sizeof(socket_addr);
 
 	memset(&socket_addr, 0, socket_addr_length);
@@ -28,22 +28,20 @@ TcpSocket::TcpSocket(int port){
 		-1)
 		throw(SocketException());
 
-	if (listen(socket_fd, backlog) == -1)
-	{
+	if (listen(socket_fd, backlog) == -1) {
 		throw(SocketException());
 	}
 	std::cout << "TCP socket " << socket_fd << " on port " << getPort() << " created\n";
-
 }
 
-TcpSocket::~TcpSocket(){
-	if (socket_fd){
+TcpSocket::~TcpSocket() {
+	if (socket_fd) {
 		::close(socket_fd);
 	}
 }
 
-TcpSocket & TcpSocket::operator=(TcpSocket const& rhs){
-	if (this != &rhs){
+TcpSocket& TcpSocket::operator=(TcpSocket const& rhs) {
+	if (this != &rhs) {
 		socket_fd = rhs.socket_fd;
 		socket_addr = rhs.socket_addr;
 		socket_addr_length = rhs.socket_addr_length;
@@ -57,13 +55,9 @@ int TcpSocket::getPort() const {
 	return ntohs(socket_addr.sin_port);
 }
 
-std::string TcpSocket::getAddress() const{
+std::string TcpSocket::getAddress() const {
 	char ip_address[INET_ADDRSTRLEN];
-	::inet_ntop(
-			AF_INET,
-			 &socket_addr.sin_addr,
-			 ip_address, sizeof(ip_address)
-	);
+	::inet_ntop(AF_INET, &socket_addr.sin_addr, ip_address, sizeof(ip_address));
 	return std::string{ip_address};
 }
 
@@ -75,10 +69,10 @@ int TcpSocket::getFd() const {
 
 void TcpSocket::accept(TcpSocket& csoc) const {
 	csoc.socket_fd = ::accept(socket_fd, reinterpret_cast<struct sockaddr*>(&csoc.socket_addr),
-							   &csoc.socket_addr_length);
+							  &csoc.socket_addr_length);
 	if (csoc.socket_fd == -1)
 		throw(ErrorException(HttpStatus::INTERNAL_SERVER_ERROR));
-	std::cout << "Accepted connection from " << getAddress() << ":" << getPort() << std::endl; 
+	std::cout << "Accepted connection from " << getAddress() << ":" << getPort() << std::endl;
 }
 
 void TcpSocket::close() {
@@ -93,7 +87,7 @@ int TcpSocket::readAll(std::string& msg) const {
 	int	  read_size = ::read(socket_fd, buffer, buffer_size);
 	if (read_size >= 0)
 		buffer[read_size] = '\0';
-	else{
+	else {
 		throw(SocketException());
 	}
 
@@ -104,7 +98,7 @@ int TcpSocket::readAll(std::string& msg) const {
 
 int TcpSocket::send(std::string& msg) const {
 	int len = ::send(socket_fd, msg.c_str(), msg.length(), 0);
-	if (len <= 0){
+	if (len <= 0) {
 		throw(SocketException());
 	}
 	msg.erase(0, len);

@@ -5,7 +5,6 @@
 #include "ServerException.hpp"
 #include "macroDef.hpp"
 
-
 BitSet getAllowMethodsServer(LineList const& list) {
 	BitSet methods;
 	for (auto it = std::next(list.begin()); it != list.end(); ++it) {

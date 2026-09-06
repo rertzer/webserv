@@ -3,11 +3,9 @@
 
 /* ============================== Coplien Methods ========================== */
 
-ListeningEvent::ListeningEvent():Event(){
-	
-}
+ListeningEvent::ListeningEvent() : Event() {}
 
-ListeningEvent::ListeningEvent(Event const &rhs){
+ListeningEvent::ListeningEvent(Event const& rhs) {
 	*this = rhs;
 }
 
@@ -15,20 +13,20 @@ ListeningEvent::~ListeningEvent() {}
 
 ListeningEvent& ListeningEvent::operator=(ListeningEvent const& rhs) {
 	if (this != &rhs) [[likely]] {
-		Event::operator=(rhs);	
+		Event::operator=(rhs);
 	}
 	return *this;
 }
 
 /* =========================== handle event status ========================= */
 
-void ListeningEvent::handleEventStatus(){}
+void ListeningEvent::handleEventStatus() {}
 
 /* =========================== Handle Poll Events ========================== */
 
 void ListeningEvent::handleIn() {
 	Connection* new_connection = connection->accept();
-	if (new_connection){
+	if (new_connection) {
 		new_connection->setServers(connection->getServers());
 		pool->addConnection(new_connection);
 	}
@@ -57,6 +55,6 @@ void ListeningEvent::handleErrorException(const ErrorException& e) {
 }
 
 void ListeningEvent::internalError(std::string message) {
-		std::cerr << message << " Stopping connection on port " << connection->getPort() << std::endl;
-		pool->removeConnection(fd);
+	std::cerr << message << " Stopping connection on port " << connection->getPort() << std::endl;
+	pool->removeConnection(fd);
 }

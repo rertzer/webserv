@@ -1,13 +1,18 @@
-#include "Event.hpp"
 #include "Cgi.hpp"
+#include "Event.hpp"
 #include "Polling.hpp"
-
 
 /* ================================= Coplien Methods ========================*/
 
-Event::Event(): fd(0), events(0), status(eventStatus::NOTHING), pool(nullptr), connection(nullptr){}
+Event::Event()
+	: fd(0), events(0), status(eventStatus::NOTHING), pool(nullptr), connection(nullptr) {}
 
-Event::Event(Event const& rhs) : fd(rhs.fd), events(rhs.events), status(rhs.status), pool(rhs.pool), connection(rhs.connection) {}
+Event::Event(Event const& rhs)
+	: fd(rhs.fd),
+	  events(rhs.events),
+	  status(rhs.status),
+	  pool(rhs.pool),
+	  connection(rhs.connection) {}
 
 Event::~Event() {}
 Event& Event::operator=(Event const& rhs) {
@@ -41,19 +46,19 @@ eventStatus Event::getStatus() const {
 
 /* ================================== Setters ============================== */
 
-void Event::setFd(int fd){
+void Event::setFd(int fd) {
 	this->fd = fd;
 }
 
-void Event::setEvents(int events){
+void Event::setEvents(int events) {
 	this->events = events;
 }
 
-void Event::setPool(Polling* pool){
+void Event::setPool(Polling* pool) {
 	this->pool = pool;
 }
 
-void Event::setConnection(Connection* connection){
+void Event::setConnection(Connection* connection) {
 	this->connection = connection;
 }
 

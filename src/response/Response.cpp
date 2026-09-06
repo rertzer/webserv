@@ -1,7 +1,7 @@
-#include "Response.hpp"
 #include "Cgi.hpp"
 #include "DirListing.hpp"
 #include "HttpStatus.hpp"
+#include "Response.hpp"
 #include "autoindex.hpp"
 #include "color.hpp"
 #include "files.hpp"
@@ -75,7 +75,7 @@ std::string Response::getResponseHeader() {
 }
 
 std::string Response::getResponseStatus() const {
-	return "HTTP/1.1 " + getStatusLine(status)+ "\r\n";
+	return "HTTP/1.1 " + getStatusLine(status) + "\r\n";
 }
 
 std::string Response::getResponseLocation() const {
@@ -86,8 +86,7 @@ std::string Response::getResponseConnection() const {
 	std::string connection = "";
 	if (!_connectionClose.empty()) {
 		connection = "Connection: " + _connectionClose + "\r\n";
-	}
-	else{
+	} else {
 		connection = "Connection: close\r\n";
 	}
 	return connection;
@@ -107,15 +106,14 @@ std::string Response::getResponseCookies() const {
 }
 
 std::string Response::getResponseContent() const {
-	return  _content;
+	return _content;
 }
 
 /* ========================================================================= */
 void Response::logResponse(std::string resp) const {
-	if (isStatusSuccess(status)){
+	if (isStatusSuccess(status)) {
 		std::cout << GREEN "\nReponse send:\n" << resp << RESET << std::endl;
-	}
-	else{
+	} else {
 		std::cout << RED "\nReponse send:\n" << resp << RESET << std::endl;
 	}
 }
@@ -165,7 +163,7 @@ void Response::fillPart(Request req) {
 		case HttpStatus::OK:
 			fillOK(fileStr);
 			break;
-		
+
 		default:
 			setErrorPage(readFileAccess);
 			break;
@@ -297,10 +295,9 @@ std::string Response::getDirContent(std::string path) {
 std::string Response::appendDirContent(std::string content, FileDesc const& filedesc) {
 	replaceAll(content, "NAME", filedesc.getName());
 	replaceAll(content, "TYPE", filedesc.getTypeName());
-	if (filedesc.isDirectory()){
+	if (filedesc.isDirectory()) {
 		replaceAll(content, "SIZE", "");
-	}
-	else {
+	} else {
 		replaceAll(content, "SIZE", std::to_string(filedesc.getSize()));
 	}
 	replaceAll(content, "LASTMODIFIED", filedesc.getLastModified());
@@ -389,13 +386,12 @@ bool Response::isAllowed(HttpMethod m) const {
 }
 
 int Response::respWithLoc(Request& req) {
-
 	if (setRequestQuery(req)) {
 		return 0;
 	}
 
 	Location& location = loc.value();
-	BitSet allow_method = location.getAllowedMethods();
+	BitSet	  allow_method = location.getAllowedMethods();
 	setAllowedMethods(allow_method);
 	setWithLocRoot(location);
 	if (setWithLocRedirection(location, req)) {
@@ -415,7 +411,7 @@ int Response::respWithLoc(Request& req) {
 
 bool Response::setRequestQuery(Request& req) {
 	Location& location = loc.value();
-	auto req_query = req.getQuery();
+	auto	  req_query = req.getQuery();
 
 	if (req_query != "/") {
 		if (req_query.back() == '/') {
@@ -483,7 +479,6 @@ void Response::createAutoIndexResp(Request& req, Location loc) {
 }
 
 std::string Response::getSpecIndex() {
-	
 	auto item = loc->get().getIndex();
 	auto path = _root + item;
 	if (item.empty() || !isRegularFile(path) || !isReadable(path)) {
@@ -492,17 +487,17 @@ std::string Response::getSpecIndex() {
 	return item;
 }
 
-void Response::setLocation(std::string path){
+void Response::setLocation(std::string path) {
 	path = extractDirPath(path);
 	loc = _serv.findLocation(path);
 	std::cerr << "setLocation\n";
-	if (loc.has_value()){
+	if (loc.has_value()) {
 		AutoIndex ai = loc->get().getAutoindex();
-		std::cerr << "loc value "<< ai<<"\n";
-		if (ai != AutoIndex::NONE){
+		std::cerr << "loc value " << ai << "\n";
+		if (ai != AutoIndex::NONE) {
 			_autoIndex = ai;
 		}
-	std::cerr << "loc value "<< _autoIndex<<"\n";
+		std::cerr << "loc value " << _autoIndex << "\n";
 	}
 }
 
@@ -516,7 +511,8 @@ std::string Response::getFilePath(std::string const& file) const {
 void Response::setErrorPage(HttpStatus error) {
 	std::string content;
 	status = error;
-	_contentType = ContentMap().getContentValue(fileExtension(_serv.getErrorPage(static_cast<int>(status))));
+	_contentType =
+		ContentMap().getContentValue(fileExtension(_serv.getErrorPage(static_cast<int>(status))));
 	try {
 		content = readSpecFile(_serv.getRoot() + _serv.getErrorPage(static_cast<int>(status)));
 	} catch (const std::exception& e) {

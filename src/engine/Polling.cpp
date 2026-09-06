@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include "Polling.hpp"
+#include "Cgi.hpp"
 #include "ListeningEvent.hpp"
 #include "OtherEvent.hpp"
-#include "Cgi.hpp"
+#include "Polling.hpp"
 
 extern sig_atomic_t quitok;
 
@@ -20,7 +20,7 @@ Polling::~Polling() {
 Polling& Polling::operator=(Polling const& rhs) {
 	if (this != &rhs) {
 		memset(fds, 0, sizeof(fds));
-		for (nfds_t i = 0; i < rhs.nfds; i++){
+		for (nfds_t i = 0; i < rhs.nfds; i++) {
 			fds[i] = rhs.fds[i];
 		}
 		nfds = rhs.nfds;
@@ -81,11 +81,11 @@ Event* Polling::nextEvent() {
 	throw(PollingException());
 }
 
-Connection* Polling::getConnection(nfds_t i) const{
+Connection* Polling::getConnection(nfds_t i) const {
 	Connection* connection = getConnectionByFd(fds[i].fd);
-	if (!connection){
+	if (!connection) {
 		connection = getConnectionByCgiFd(fds[i].fd);
-		if (!connection){
+		if (!connection) {
 			std::cerr << "Connection not Found\n";
 			throw(PollingException());
 		}
@@ -101,9 +101,9 @@ Connection* Polling::getConnectionByCgiFd(int fd) const {
 	return getConnectionFromStrip(fd, powerstripCgi);
 }
 
-Connection* Polling::getConnectionFromStrip(int fd,  const std::map<int, Connection*>& strip) const {
+Connection* Polling::getConnectionFromStrip(int fd, const std::map<int, Connection*>& strip) const {
 	auto it = strip.find(fd);
-	if (it != strip.end()){
+	if (it != strip.end()) {
 		return it->second;
 	}
 	return nullptr;
@@ -201,10 +201,9 @@ Event* Polling::extractEvent(nfds_t i) {
 	short rev = fds[i].revents;
 	fds[i].revents = 0;
 	Connection* connection = getConnection(i);
-	if (connection->isListening()){
+	if (connection->isListening()) {
 		ev = new ListeningEvent();
-	}
-	else {
+	} else {
 		ev = new OtherEvent();
 	}
 	ev->setFd(fds[i].fd);

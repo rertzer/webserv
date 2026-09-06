@@ -1,8 +1,8 @@
+#include <time.h>
 #include <cstring>
 #include <iostream>
 #include <map>
 #include <string>
-#include <time.h>
 
 #include "FileDesc.hpp"
 
@@ -18,10 +18,9 @@ FileDesc::FileDesc(std::string path, struct dirent* sd) {
 	size = statbuf.st_size;
 	type = statbuf.st_mode & S_IFMT;
 	setTime(statbuf);
-	
 }
 
-void FileDesc::setTime(struct stat stat_buffer){
+void FileDesc::setTime(struct stat stat_buffer) {
 	char timebuf[32];
 	::tm tm_time;
 

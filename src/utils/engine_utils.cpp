@@ -55,5 +55,3 @@ std::string envFormat(std::string const& str) {
 	}
 	return ci_string;
 }
-
-
