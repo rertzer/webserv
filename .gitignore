@@ -1,7 +1,6 @@
 .env
 webserv
 /obj/
-*.conf
 *.swp
 *.o
 *.d

@@ -1,4 +1,4 @@
-CXX := c++
+CXX := clang++
 
 CXXFLAGS := -Wall -Wextra -Werror -g3 -std=c++20 -stdlib=libc++
 
@@ -50,7 +50,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -MMD $< -o $@ -I $(INC_DIR)
 
-test: docker 
+test: all 
 	cd tests/ && ./webtest.py
 	
 
