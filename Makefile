@@ -61,6 +61,8 @@ $(NAME): $(OBJS)
 #	mkdir  $(OBJ_DIR)
 
 confpath:
+	git update-index --skip-worktree conf/*.conf
+	git update-index --skip-worktree tests/conf_test/*.conf
 	sed -i 's?SERVER_PATH?'`pwd`'?g' conf/*.conf
 	sed -i 's?SERVER_PATH?'`pwd`'?g' tests/conf_test/*.conf
 
