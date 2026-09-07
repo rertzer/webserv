@@ -5,7 +5,7 @@
 
 ListeningEvent::ListeningEvent() : Event() {}
 
-ListeningEvent::ListeningEvent(Event const& rhs) {
+ListeningEvent::ListeningEvent(ListeningEvent const& rhs) {
   *this = rhs;
 }
 
