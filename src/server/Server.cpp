@@ -227,6 +227,7 @@ ParsingState Server::setErrorPage(LineList& list, LocParsing& loc) {
   (void)loc;
 
   if (list.size() < 3) {
+    throw(ServerException());
   }
   std::string errorNb = list[1];
   std::string errorPage = list[2];

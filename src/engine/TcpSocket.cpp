@@ -86,9 +86,9 @@ void TcpSocket::close() {
 int TcpSocket::readAll(std::string& msg) const {
   char* buffer = new char[buffer_size + 1];
   int   read_size = ::read(socket_fd, buffer, buffer_size);
-  if (read_size >= 0)
+  if (read_size >= 0) {
     buffer[read_size] = '\0';
-  else {
+  } else {
     throw(SocketException());
   }
 

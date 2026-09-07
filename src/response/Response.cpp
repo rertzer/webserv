@@ -460,8 +460,9 @@ int Response::respWithoutLoc(Request& req) {
     if (_autoIndex == AutoIndex::ON) {
       createAutoIndexResp(req, Location());
       return 0;
-    } else
+    } else {
       req.setQuery("/");
+    }
   }
   return 1;
 }

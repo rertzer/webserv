@@ -134,9 +134,9 @@ void Cgi::setEnv() {
 }
 
 void Cgi::initPipes() {
-  if (method == POST)
+  if (method == POST) {
     setPostFd();
-  else {
+  } else {
     post_fd[0] = -1;
     post_fd[1] = -1;
   }

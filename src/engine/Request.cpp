@@ -209,7 +209,7 @@ void Request::setServer() {
       server = &serv;
       return;
     }
-  };
+  }
   server = connection->getDefaultServer();
 }
 
@@ -328,9 +328,9 @@ std::string Request::getFileName() {
 void Request::uploadFile(std::string const& filename, std::string const& part) {
   checkValidFileName(filename);
   std::string path = upload_path + filename;
-  if (fileExists(path))
+  if (fileExists(path)) {
     std::cout << "File " << path << " already exist\n";
-  else {
+  } else {
     std::ofstream upfile(path.c_str(), std::ofstream::out);
     if (upfile.fail()) {
       perror(" creation failed");
