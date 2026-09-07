@@ -1,5 +1,5 @@
 .env
-webserv
+/webserv
 /obj/
 *.swp
 *.o
