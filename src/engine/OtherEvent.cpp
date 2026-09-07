@@ -1,3 +1,6 @@
+#include <iostream>
+#include <map>
+
 #include "webserv/Cgi.hpp"
 #include "webserv/OtherEvent.hpp"
 #include "webserv/Polling.hpp"

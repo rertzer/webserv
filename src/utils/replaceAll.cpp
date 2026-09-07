@@ -1,3 +1,5 @@
+#include <string>
+
 #include "webserv/utils.hpp"
 
 void replaceAll(std::string& str, std::string const& old_word, std::string const& new_word) {

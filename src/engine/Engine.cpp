@@ -1,3 +1,4 @@
+#include <iostream>
 #include <set>
 
 #include "webserv/Cgi.hpp"

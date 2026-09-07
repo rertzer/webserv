@@ -1,3 +1,8 @@
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "webserv/Cgi.hpp"
 #include "webserv/DirListing.hpp"
 #include "webserv/HttpStatus.hpp"

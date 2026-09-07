@@ -1,6 +1,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <cstring>
+#include <map>
+#include <string>
+#include <vector>
 
 #include "webserv/Cgi.hpp"
 #include "webserv/ErrorException.hpp"

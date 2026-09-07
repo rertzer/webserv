@@ -1,6 +1,7 @@
 #include <csignal>
 #include <cstdio>
 #include <iostream>
+#include <vector>
 
 #include "webserv/Server.hpp"
 #include "webserv/ServerRun.hpp"

@@ -1,3 +1,6 @@
+#include <string>
+#include <utility>
+
 #include "webserv/utils.hpp"
 
 std::pair<std::string, std::string> splitPair(std::string str, char c) {

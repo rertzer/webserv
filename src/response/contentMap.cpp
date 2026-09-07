@@ -1,3 +1,6 @@
+#include <map>
+#include <string>
+
 #include "webserv/ContentMap.hpp"
 
 std::string ContentMap::getContentValue(std::string value) {

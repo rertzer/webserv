@@ -1,6 +1,10 @@
 #ifndef INCLUDES_WEBSERV_RESPONSE_HPP_
 #define INCLUDES_WEBSERV_RESPONSE_HPP_
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "webserv/ContentMap.hpp"
 #include "webserv/FileDesc.hpp"
 #include "webserv/HttpStatus.hpp"

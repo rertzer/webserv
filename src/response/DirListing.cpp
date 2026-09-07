@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+
 #include "webserv/DirListing.hpp"
 #include "webserv/ErrorException.hpp"
 #include "webserv/HttpStatus.hpp"

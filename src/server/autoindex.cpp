@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+
 #include "webserv/autoindex.hpp"
 
 AutoIndex autoIndexFromString(std::string str) {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ranges>
+#include <string>
 #include <unordered_map>
 
 #include "webserv/Location.hpp"

@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+
 #include "webserv/Server.hpp"
 #include "webserv/ServerParsing.hpp"
 

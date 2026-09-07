@@ -4,6 +4,8 @@
 #include <functional>
 #include <map>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "webserv/BitSet.hpp"
 #include "webserv/HttpMethod.hpp"

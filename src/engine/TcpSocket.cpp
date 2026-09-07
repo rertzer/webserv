@@ -1,6 +1,8 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <iostream>
+#include <string>
+
 #include "webserv/ErrorException.hpp"
 #include "webserv/TcpSocket.hpp"
 

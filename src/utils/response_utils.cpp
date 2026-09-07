@@ -1,5 +1,6 @@
 #include <charconv>
 #include <sstream>
+#include <string>
 
 #include "webserv/HttpMethod.hpp"
 #include "webserv/ServerException.hpp"

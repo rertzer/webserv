@@ -2,6 +2,8 @@
 #define INCLUDES_WEBSERV_LOCATION_HPP_
 
 #include <functional>
+#include <string>
+#include <vector>
 
 #include "webserv/BitSet.hpp"
 #include "webserv/HttpMethod.hpp"

@@ -1,4 +1,7 @@
 #include <cstring>
+#include <iostream>
+#include <map>
+#include <vector>
 
 #include "webserv/Cgi.hpp"
 #include "webserv/ListeningEvent.hpp"
@@ -150,8 +153,9 @@ void Polling::addCgiFds(Connection* connection) {
   if (cgi_fds[1] != -1) {
     addCgiFd(cgi_fds[1], POLLOUT, connection);
     addCgiFd(cgi_fds[2], 0, connection);
-  } else if (cgi_fds[2] != -1)
+  } else if (cgi_fds[2] != -1) {
     addCgiFd(cgi_fds[2], POLLIN, connection);
+  }
 }
 
 // Private
@@ -198,7 +202,7 @@ Event* Polling::extractEvent(nfds_t i) {
   Event* ev = nullptr;
 
   events_nb--;
-  short rev = fds[i].revents;
+  uint16_t rev = fds[i].revents;
   fds[i].revents = 0;
   Connection* connection = getConnection(i);
   if (connection->isListening()) {

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 #include <ranges>
+#include <string>
+#include <vector>
 
 #include "webserv/Server.hpp"
 #include "webserv/ServerException.hpp"

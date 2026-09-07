@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+
 #include "webserv/ListeningEvent.hpp"
 #include "webserv/Polling.hpp"
 

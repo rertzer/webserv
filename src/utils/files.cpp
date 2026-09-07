@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <string>
 
 #include "webserv/ErrorException.hpp"
 #include "webserv/HttpStatus.hpp"

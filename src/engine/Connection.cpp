@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstring>
-#include <ranges>
+#include <string>
+#include <vector>
 #include "webserv/Connection.hpp"
 #include "webserv/ErrorException.hpp"
 #include "webserv/HttpStatus.hpp"
