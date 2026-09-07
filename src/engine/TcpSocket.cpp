@@ -1,8 +1,8 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <iostream>
-#include "ErrorException.hpp"
-#include "TcpSocket.hpp"
+#include "webserv/ErrorException.hpp"
+#include "webserv/TcpSocket.hpp"
 
 TcpSocket::TcpSocket() : socket_fd(0) {
 	socket_addr_length = sizeof(socket_addr);

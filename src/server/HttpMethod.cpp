@@ -1,6 +1,6 @@
 #include <map>
 
-#include "HttpMethod.hpp"
+#include "webserv/HttpMethod.hpp"
 
 std::string methodToString(HttpMethod method) {
 	std::map<HttpMethod, std::string> method_str{{NONE, ""},   {GET, "GET"},	   {POST, "POST"},

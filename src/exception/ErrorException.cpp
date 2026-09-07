@@ -1,4 +1,4 @@
-#include "ErrorException.hpp"
+#include "webserv/ErrorException.hpp"
 
 ErrorException::ErrorException(HttpStatus status) throw() : status(status) {}
 

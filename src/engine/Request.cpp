@@ -1,14 +1,14 @@
 #include <fstream>
 #include <sstream>
 
-#include "Cgi.hpp"
-#include "Connection.hpp"
-#include "ErrorException.hpp"
-#include "HttpMethod.hpp"
-#include "HttpStatus.hpp"
-#include "Request.hpp"
-#include "color.hpp"
-#include "files.hpp"
+#include "webserv/Cgi.hpp"
+#include "webserv/Connection.hpp"
+#include "webserv/ErrorException.hpp"
+#include "webserv/HttpMethod.hpp"
+#include "webserv/HttpStatus.hpp"
+#include "webserv/Request.hpp"
+#include "webserv/color.hpp"
+#include "webserv/files.hpp"
 
 Request::Request(Connection* s)
 	: port(s->getListeningSocketPort()),

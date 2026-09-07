@@ -1,5 +1,5 @@
 #include <iostream>
-#include "autoindex.hpp"
+#include "webserv/autoindex.hpp"
 
 AutoIndex autoIndexFromString(std::string str) {
 	if (str == "on") {

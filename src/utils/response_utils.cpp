@@ -1,9 +1,9 @@
 #include <charconv>
 #include <sstream>
 
-#include "HttpMethod.hpp"
-#include "ServerException.hpp"
-#include "macroDef.hpp"
+#include "webserv/HttpMethod.hpp"
+#include "webserv/ServerException.hpp"
+#include "webserv/macroDef.hpp"
 
 BitSet getAllowMethodsServer(LineList const& list) {
 	BitSet methods;

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "macroDef.hpp"
+#include "webserv/macroDef.hpp"
 
 std::vector<std::string> splitCsv(std::string const& str) {
 	return splitCsv(str, ",");

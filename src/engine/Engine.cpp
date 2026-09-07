@@ -1,9 +1,9 @@
 #include <set>
 
-#include "Cgi.hpp"
-#include "ServerException.hpp"
-#include "ServerRun.hpp"
-#include "macroDef.hpp"
+#include "webserv/Cgi.hpp"
+#include "webserv/ServerException.hpp"
+#include "webserv/ServerRun.hpp"
+#include "webserv/macroDef.hpp"
 
 extern sig_atomic_t quitok;
 

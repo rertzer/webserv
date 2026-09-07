@@ -1,11 +1,11 @@
 #include <algorithm>
 #include <cstring>
 #include <ranges>
-#include "Connection.hpp"
-#include "ErrorException.hpp"
-#include "HttpStatus.hpp"
-#include "Request.hpp"
-#include "ServerException.hpp"
+#include "webserv/Connection.hpp"
+#include "webserv/ErrorException.hpp"
+#include "webserv/HttpStatus.hpp"
+#include "webserv/Request.hpp"
+#include "webserv/ServerException.hpp"
 
 /* ============================== Coplien Methods =========================== */
 // Used for listening sockets

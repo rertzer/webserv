@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include "Cgi.hpp"
-#include "ListeningEvent.hpp"
-#include "OtherEvent.hpp"
-#include "Polling.hpp"
+#include "webserv/Cgi.hpp"
+#include "webserv/ListeningEvent.hpp"
+#include "webserv/OtherEvent.hpp"
+#include "webserv/Polling.hpp"
 
 extern sig_atomic_t quitok;
 

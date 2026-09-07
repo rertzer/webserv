@@ -1,6 +1,6 @@
-#include "DirListing.hpp"
-#include "ErrorException.hpp"
-#include "HttpStatus.hpp"
+#include "webserv/DirListing.hpp"
+#include "webserv/ErrorException.hpp"
+#include "webserv/HttpStatus.hpp"
 
 DirListing::DirListing(std::string p) : path(p) {
 	DIR* dd;

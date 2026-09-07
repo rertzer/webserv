@@ -1,4 +1,4 @@
-#include "ContentMap.hpp"
+#include "webserv/ContentMap.hpp"
 
 std::string ContentMap::getContentValue(std::string value) {
 	std::map<std::string, std::string>::iterator it = _allContentType.find(value);

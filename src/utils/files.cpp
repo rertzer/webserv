@@ -2,9 +2,9 @@
 #include <fstream>
 #include <sstream>
 
-#include "ErrorException.hpp"
-#include "HttpStatus.hpp"
-#include "files.hpp"
+#include "webserv/ErrorException.hpp"
+#include "webserv/HttpStatus.hpp"
+#include "webserv/files.hpp"
 
 namespace fs = std::filesystem;
 

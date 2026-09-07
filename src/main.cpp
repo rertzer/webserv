@@ -2,9 +2,9 @@
 #include <cstdio>
 #include <iostream>
 
-#include "Server.hpp"
-#include "ServerRun.hpp"
-#include "color.hpp"
+#include "webserv/Server.hpp"
+#include "webserv/ServerRun.hpp"
+#include "webserv/color.hpp"
 
 volatile sig_atomic_t quitok = false;
 

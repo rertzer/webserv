@@ -2,11 +2,11 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "Location.hpp"
-#include "ServerException.hpp"
-#include "autoindex.hpp"
-#include "macroDef.hpp"
-#include "utils.hpp"
+#include "webserv/Location.hpp"
+#include "webserv/ServerException.hpp"
+#include "webserv/autoindex.hpp"
+#include "webserv/macroDef.hpp"
+#include "webserv/utils.hpp"
 
 Location::Location(std::vector<std::string> locString)
 	: autoindex(AutoIndex::NONE), redirection_status(HttpStatus::UNDEFINED) {

@@ -1,12 +1,12 @@
-#include "Cgi.hpp"
-#include "DirListing.hpp"
-#include "HttpStatus.hpp"
-#include "Response.hpp"
-#include "autoindex.hpp"
-#include "color.hpp"
-#include "files.hpp"
-#include "macroDef.hpp"
-#include "utils.hpp"
+#include "webserv/Cgi.hpp"
+#include "webserv/DirListing.hpp"
+#include "webserv/HttpStatus.hpp"
+#include "webserv/Response.hpp"
+#include "webserv/autoindex.hpp"
+#include "webserv/color.hpp"
+#include "webserv/files.hpp"
+#include "webserv/macroDef.hpp"
+#include "webserv/utils.hpp"
 
 /* ========================== Constructor & Co ============================= */
 

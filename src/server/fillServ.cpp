@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Server.hpp"
-#include "ServerParsing.hpp"
-#include "macroDef.hpp"
+#include "webserv/Server.hpp"
+#include "webserv/ServerParsing.hpp"
+#include "webserv/macroDef.hpp"
 
 static void		  removeComments(std::string& line);
 static bool		  blankOnly(std::string const& line);

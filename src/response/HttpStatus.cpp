@@ -1,4 +1,4 @@
-#include "HttpStatus.hpp"
+#include "webserv/HttpStatus.hpp"
 
 HttpStatusInfo STATUS_TABLE[] = {{100, "Continue"},
 								 {101, "Switching Protocols"},

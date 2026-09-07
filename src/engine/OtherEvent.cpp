@@ -1,7 +1,7 @@
-#include "Cgi.hpp"
-#include "OtherEvent.hpp"
-#include "Polling.hpp"
-#include "color.hpp"
+#include "webserv/Cgi.hpp"
+#include "webserv/OtherEvent.hpp"
+#include "webserv/Polling.hpp"
+#include "webserv/color.hpp"
 
 /* ================================ Coplien Methods ======================== */
 

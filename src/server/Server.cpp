@@ -2,11 +2,11 @@
 #include <map>
 #include <ranges>
 
-#include "Server.hpp"
-#include "ServerException.hpp"
-#include "autoindex.hpp"
-#include "files.hpp"
-#include "utils.hpp"
+#include "webserv/Server.hpp"
+#include "webserv/ServerException.hpp"
+#include "webserv/autoindex.hpp"
+#include "webserv/files.hpp"
+#include "webserv/utils.hpp"
 
 static void trimAfterSemiColon(LineListIter& it);
 

@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <cstring>
 
-#include "Cgi.hpp"
-#include "ErrorException.hpp"
-#include "HttpMethod.hpp"
-#include "Request.hpp"
+#include "webserv/Cgi.hpp"
+#include "webserv/ErrorException.hpp"
+#include "webserv/HttpMethod.hpp"
+#include "webserv/Request.hpp"
 
 // public
 Cgi::Cgi(std::string p, Request& r, std::string ext, std::string cp)
