@@ -8,79 +8,79 @@
 
 volatile sig_atomic_t quitok = false;
 
-static void		   handleBreak(int signal);
-static void		   setSignals();
-static void		   checkArgNumber(int ac);
+static void        handleBreak(int signal);
+static void        setSignals();
+static void        checkArgNumber(int ac);
 static std::string getConfFileName(char** av);
-static void		   checkConfFileExtension(std::string conf_file_name);
+static void        checkConfFileExtension(std::string conf_file_name);
 
 int main(int ac, char** av) {
-	setSignals();
-	checkArgNumber(ac);
-	auto status = statusCode::OK;
+  setSignals();
+  checkArgNumber(ac);
+  auto status = statusCode::OK;
 
-	std::string			conf_file_name = getConfFileName(av);
-	std::vector<Server> servers;
+  std::string         conf_file_name = getConfFileName(av);
+  std::vector<Server> servers;
 
-	try {
-		status = fillServ(conf_file_name, servers);
-	} catch (std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		status = statusCode::PARSING;
-	}
-	if (status == statusCode::OK) {
-		std::cout << std::endl;
-		ServerRun runner = ServerRun{servers};
-		status = runner.run();
-	}
-	if (status == statusCode::OK) {
-		std::cout << GREEN "Good bye!" << WHITE << std::endl;
-	}
-	return static_cast<int>(status);
+  try {
+    status = fillServ(conf_file_name, servers);
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    status = statusCode::PARSING;
+  }
+  if (status == statusCode::OK) {
+    std::cout << std::endl;
+    ServerRun runner = ServerRun{servers};
+    status = runner.run();
+  }
+  if (status == statusCode::OK) {
+    std::cout << GREEN "Good bye!" << WHITE << std::endl;
+  }
+  return static_cast<int>(status);
 }
 
 static void setSignals() {
-	struct sigaction sigbreak;
-	sigbreak.sa_handler = &handleBreak;
-	sigemptyset(&sigbreak.sa_mask);
-	sigaddset(&sigbreak.sa_mask, SIGTERM);
-	sigbreak.sa_flags = 0;
-	if (sigaction(SIGINT, &sigbreak, nullptr) != 0) {
-		std::perror("sigaction");
-		exit(static_cast<int>(statusCode::INTERNAL));
-	}
+  struct sigaction sigbreak;
+  sigbreak.sa_handler = &handleBreak;
+  sigemptyset(&sigbreak.sa_mask);
+  sigaddset(&sigbreak.sa_mask, SIGTERM);
+  sigbreak.sa_flags = 0;
+  if (sigaction(SIGINT, &sigbreak, nullptr) != 0) {
+    std::perror("sigaction");
+    exit(static_cast<int>(statusCode::INTERNAL));
+  }
 }
 
 static void handleBreak(int signal) {
-	if (signal == SIGINT) {
-		quitok = true;
-	}
+  if (signal == SIGINT) {
+    quitok = true;
+  }
 }
 
 static void checkArgNumber(int ac) {
-	if (ac > 2) {
-		std::cerr << "The program can have 1 parameter not more" << std::endl;
-		exit(static_cast<int>(statusCode::INVALID_ARG));
-	}
+  if (ac > 2) {
+    std::cerr << "The program can have 1 parameter not more" << std::endl;
+    exit(static_cast<int>(statusCode::INVALID_ARG));
+  }
 }
 static std::string getConfFileName(char** av) {
-	std::string conf_file_name;
+  std::string conf_file_name;
 
-	if (av[1]) {
-		conf_file_name = av[1];
-		checkConfFileExtension(conf_file_name);
-	} else {
-		conf_file_name = "conf/webserv_default.conf";
-	}
+  if (av[1]) {
+    conf_file_name = av[1];
+    checkConfFileExtension(conf_file_name);
+  } else {
+    conf_file_name = "conf/webserv_default.conf";
+  }
 
-	return conf_file_name;
+  return conf_file_name;
 }
 
 static void checkConfFileExtension(std::string conf_file_name) {
-	std::string conf_extension = ".conf";
-	size_t		extension_pos = conf_file_name.length() - conf_extension.length();
-	if (conf_file_name.compare(extension_pos, conf_extension.length(), conf_extension) != 0) {
-		std::cerr << "The program needs a .conf parameter" << std::endl;
-		exit(static_cast<int>(statusCode::INVALID_ARG));
-	}
+  std::string conf_extension = ".conf";
+  size_t      extension_pos = conf_file_name.length() - conf_extension.length();
+  if (conf_file_name.compare(extension_pos, conf_extension.length(), conf_extension) != 0) {
+    std::cerr << "The program needs a .conf parameter" << std::endl;
+    exit(static_cast<int>(statusCode::INVALID_ARG));
+  }
 }

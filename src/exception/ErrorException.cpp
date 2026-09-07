@@ -3,9 +3,9 @@
 ErrorException::ErrorException(HttpStatus status) throw() : status(status) {}
 
 HttpStatus ErrorException::getStatus() const throw() {
-	return status;
+  return status;
 }
 
 const char* ErrorException::what() const throw() {
-	return "Error exception";
+  return "Error exception";
 }

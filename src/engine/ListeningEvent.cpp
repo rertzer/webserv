@@ -6,16 +6,16 @@
 ListeningEvent::ListeningEvent() : Event() {}
 
 ListeningEvent::ListeningEvent(Event const& rhs) {
-	*this = rhs;
+  *this = rhs;
 }
 
 ListeningEvent::~ListeningEvent() {}
 
 ListeningEvent& ListeningEvent::operator=(ListeningEvent const& rhs) {
-	if (this != &rhs) [[likely]] {
-		Event::operator=(rhs);
-	}
-	return *this;
+  if (this != &rhs) [[likely]] {
+    Event::operator=(rhs);
+  }
+  return *this;
 }
 
 /* =========================== handle event status ========================= */
@@ -25,36 +25,36 @@ void ListeningEvent::handleEventStatus() {}
 /* =========================== Handle Poll Events ========================== */
 
 void ListeningEvent::handleIn() {
-	Connection* new_connection = connection->accept();
-	if (new_connection) {
-		new_connection->setServers(connection->getServers());
-		pool->addConnection(new_connection);
-	}
+  Connection* new_connection = connection->accept();
+  if (new_connection) {
+    new_connection->setServers(connection->getServers());
+    pool->addConnection(new_connection);
+  }
 }
 
 void ListeningEvent::handleOut() {
-	internalError("POLLOUT");
+  internalError("POLLOUT");
 }
 
 void ListeningEvent::handleError() {
-	internalError("POLLERR");
+  internalError("POLLERR");
 }
 
 void ListeningEvent::handleHup() {
-	internalError("POLLUP");
+  internalError("POLLUP");
 }
 
 void ListeningEvent::handleNval() {
-	internalError("POLLNVAL");
+  internalError("POLLNVAL");
 }
 
 /* ============================ Error Handling ============================= */
 
 void ListeningEvent::handleErrorException(const ErrorException& e) {
-	(void)e;
+  (void)e;
 }
 
 void ListeningEvent::internalError(std::string message) {
-	std::cerr << message << " Stopping connection on port " << connection->getPort() << std::endl;
-	pool->removeConnection(fd);
+  std::cerr << message << " Stopping connection on port " << connection->getPort() << std::endl;
+  pool->removeConnection(fd);
 }

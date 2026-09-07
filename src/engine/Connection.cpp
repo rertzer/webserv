@@ -10,201 +10,200 @@
 /* ============================== Coplien Methods =========================== */
 // Used for listening sockets
 Connection::Connection(int port)
-	: listening_port(port),
-	  keep_alive(true),
-	  error(false),
-	  listening(true),
-	  request(nullptr),
-	  default_server(nullptr),
-	  soc(TcpSocket(port)) {}
+    : listening_port(port),
+      keep_alive(true),
+      error(false),
+      listening(true),
+      request(nullptr),
+      default_server(nullptr),
+      soc(TcpSocket(port)) {}
 
 // Used for non listening sockets
 Connection::Connection()
-	: listening_port(0),
-	  keep_alive(false),
-	  error(false),
-	  listening(false),
-	  request(nullptr),
-	  soc(TcpSocket()) {}
+    : listening_port(0),
+      keep_alive(false),
+      error(false),
+      listening(false),
+      request(nullptr),
+      soc(TcpSocket()) {}
 
 Connection::Connection(Connection const& rhs) {
-	*this = rhs;
+  *this = rhs;
 }
 
 Connection::~Connection() {
-	if (request) {
-		delete request;
-		request = nullptr;
-	}
+  if (request) {
+    delete request;
+    request = nullptr;
+  }
 }
 
 Connection& Connection::operator=(Connection const& rhs) {
-	if (this != &rhs) {
-		listening_port = rhs.listening_port;
-		msg_in = rhs.msg_in;
-		msg_out = rhs.msg_out;
-		request = rhs.request;
-		keep_alive = rhs.keep_alive;
-		error = rhs.error;
-		listening = rhs.listening;
-		servers = rhs.servers;
-		default_server = rhs.default_server;
-		soc = rhs.soc;
-	}
-	return *this;
+  if (this != &rhs) {
+    listening_port = rhs.listening_port;
+    msg_in = rhs.msg_in;
+    msg_out = rhs.msg_out;
+    request = rhs.request;
+    keep_alive = rhs.keep_alive;
+    error = rhs.error;
+    listening = rhs.listening;
+    servers = rhs.servers;
+    default_server = rhs.default_server;
+    soc = rhs.soc;
+  }
+  return *this;
 }
 
 /* ============================= Getters ==================================== */
 
 Cgi* Connection::getCgi() const {
-	Cgi* cgi = nullptr;
-	if (request) {
-		cgi = request->getCgi();
-	}
-	return cgi;
+  Cgi* cgi = nullptr;
+  if (request) {
+    cgi = request->getCgi();
+  }
+  return cgi;
 }
 
 CgiStatus Connection::getCgiStatus() const {
-	CgiStatus status = CgiStatus::NO_INIT;
-	if (request) {
-		status = request->getCgiStatus();
-	}
-	return status;
+  CgiStatus status = CgiStatus::NO_INIT;
+  if (request) {
+    status = request->getCgiStatus();
+  }
+  return status;
 }
 
 int Connection::getPort() const {
-	return soc.getPort();
+  return soc.getPort();
 }
 
 int Connection::getListeningSocketPort() const {
-	return listening_port;
+  return listening_port;
 }
 
 int Connection::getSocketFd() const {
-	return soc.getFd();
+  return soc.getFd();
 }
 
 bool Connection::getError() const {
-	return error;
+  return error;
 }
 
 std::string Connection::getMessageIn() const {
-	return msg_in;
+  return msg_in;
 }
 
 std::string Connection::getMessageOut() const {
-	return msg_out;
+  return msg_out;
 }
 
 bool Connection::getKeepAlive() const {
-	return keep_alive;
+  return keep_alive;
 }
 
 Server* Connection::getDefaultServer() const {
-	return default_server;
+  return default_server;
 }
 
 std::vector<Server>& Connection::getServers() {
-	return servers;
+  return servers;
 }
 
 Request* Connection::getRequest() {
-	return request;
+  return request;
 }
 
 std::string Connection::getLine() {
-	std::string line;
+  std::string line;
 
-	auto pos = msg_in.find("\r\n");
-	if (pos != std::string::npos && pos > max_line_len) {
-		throw ErrorException(HttpStatus::BAD_REQUEST);
-	}
-	if (pos != std::string::npos) {
-		line = msg_in.substr(0, pos);
-		msg_in = msg_in.erase(0, pos + 2);
-	}
-	return line;
+  auto pos = msg_in.find("\r\n");
+  if (pos != std::string::npos && pos > max_line_len) {
+    throw ErrorException(HttpStatus::BAD_REQUEST);
+  }
+  if (pos != std::string::npos) {
+    line = msg_in.substr(0, pos);
+    msg_in = msg_in.erase(0, pos + 2);
+  }
+  return line;
 }
 
 void Connection::getRawData(std::string& content, int len) {
-	content = msg_in.substr(0, len);
-	msg_in.erase(0, len);
+  content = msg_in.substr(0, len);
+  msg_in.erase(0, len);
 }
 
 /* ================================= Setters ================================ */
 
 void Connection::setError(bool er) {
-	error = er;
+  error = er;
 }
 
 void Connection::setMessageIn(std::string msg) {
-	msg_in = msg;
+  msg_in = msg;
 }
 
 void Connection::setMessageOut(std::string msg) {
-	msg_out = msg;
+  msg_out = msg;
 }
 
 void Connection::setKeepAlive(bool keep) {
-	keep_alive = keep;
+  keep_alive = keep;
 }
 
 void Connection::setServers(std::vector<Server> serv) {
-	std::ranges::copy_if(serv, std::back_inserter(servers), [lp = listening_port](const Server& s) {
-		return s.getListenPort() == lp;
-	});
-	setDefaultServer();
+  std::ranges::copy_if(serv, std::back_inserter(servers),
+                       [lp = listening_port](const Server& s) { return s.getListenPort() == lp; });
+  setDefaultServer();
 }
 
 void Connection::setDefaultServer() {
-	auto it = std::ranges::find_if(
-		servers, [lp = listening_port](const Server& s) { return s.getListenPort() == lp; });
-	if (it == servers.end()) [[unlikely]] {
-		throw(ServerException());
-	}
-	default_server = &(*it);
+  auto it = std::ranges::find_if(
+      servers, [lp = listening_port](const Server& s) { return s.getListenPort() == lp; });
+  if (it == servers.end()) [[unlikely]] {
+    throw(ServerException());
+  }
+  default_server = &(*it);
 }
 
 /* =================================== is Methods =========================== */
 
 bool Connection::isListening() const {
-	return listening;
+  return listening;
 }
 
 /* ================================ Other Methods =========================== */
 
 void Connection::createRequest() {
-	deleteRequest();
-	request = new Request(this);
+  deleteRequest();
+  request = new Request(this);
 }
 
 void Connection::deleteRequest() {
-	if (request != nullptr) {
-		delete request;
-		request = nullptr;
-	}
+  if (request != nullptr) {
+    delete request;
+    request = nullptr;
+  }
 }
 
 void Connection::addRawData(std::string& content, int len) {
-	content += msg_in.substr(0, len);
-	msg_in.erase(0, len);
+  content += msg_in.substr(0, len);
+  msg_in.erase(0, len);
 }
 
 Connection* Connection::accept() const {
-	Connection* connection = new Connection();
-	soc.accept(connection->soc);
-	connection->listening_port = getPort();
-	return connection;
+  Connection* connection = new Connection();
+  soc.accept(connection->soc);
+  connection->listening_port = getPort();
+  return connection;
 }
 
 int Connection::readAll() {
-	return soc.readAll(msg_in);
+  return soc.readAll(msg_in);
 }
 
 int Connection::send() {
-	return soc.send(msg_out);
+  return soc.send(msg_out);
 }
 
 void Connection::close() {
-	soc.close();
+  soc.close();
 }

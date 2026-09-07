@@ -3,21 +3,21 @@
 BitSet::BitSet(uint8_t bits) : bitset(bits) {}
 
 void BitSet::addFlag(uint8_t flag) {
-	bitset |= flag;
+  bitset |= flag;
 }
 
 void BitSet::removeFlag(uint8_t flag) {
-	bitset &= ~flag;
+  bitset &= ~flag;
 }
 
 uint8_t BitSet::getFlags() const {
-	return bitset;
+  return bitset;
 }
 
 bool BitSet::isSet(uint8_t flag) const {
-	return (bitset & flag);
+  return (bitset & flag);
 }
 
 void BitSet::reset() {
-	bitset = 0;
+  bitset = 0;
 }
